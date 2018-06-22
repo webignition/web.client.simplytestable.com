@@ -6,39 +6,41 @@
 {% set stacked = stacked is defined ? stacked : false %}
 {% set include_icon = include_icon is defined ? include_icon : true %}
 {% set split = split is defined ? split : false %}
-{% set count_additional_class = count_additional_class is defined ? count_additional_class : '' %}
+{% set issue_type = issue_type is defined ? issue_type : '' %}
 
 {% if count == 0 %}
-<span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
-    <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count {{ count_additional_class }}">
-        {{ count|number_format }}
-    </span>
-    <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">
-        {{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}{{ name_suffix }}
-    </span>
+    <span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ positive }}"
+          data-issue-type="{{ issue_type }}"
+    >
+        <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">
+            0
+        </span>
+        <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">
+            {{ name }}{{ plural_suffix }}{{ name_suffix }}
+        </span>
 
-    {% if include_icon %}
-        <span class="icon">
-        {% if count == 0 %}
-            <i class="fa fa-check"></i>
-        {% else %}
-            <i class="fa fa-caret-down"></i>
+        {% if include_icon %}
+            <span class="icon">
+                <i class="fa fa-check"></i>
+            </span>
         {% endif %}
     </span>
-    {% endif %}
-</span>
 {% else %}
     {% if anchor is empty %}
-        <span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
+        <span class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ negative }}"
+              data-issue-type="{{ issue_type }}"
+        >
     {% else %}
-        <a href="{{ anchor }}" class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
+        <a href="{{ anchor }}" class="{% if split %}split{% endif %} {% if stacked or split %}row{% endif %} label label-{{ negative }}"
+           data-issue-type="{{ issue_type }}"
+        >
     {% endif %}
 
-        <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count {{ count_additional_class }}">
+        <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">
             {{ count|number_format }}
         </span>
         <span class="{% if split %}col-lg-6 col-md-6 col-sm-6 col-xs-6{% endif %} {% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">
-            {{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %}{{ name_suffix }}
+            {{ name }}{% if count != 1 %}<span class="plural-suffix">{{ plural_suffix }}</span>{% endif %}{{ name_suffix }}
         </span>
 
         {% if include_icon %}

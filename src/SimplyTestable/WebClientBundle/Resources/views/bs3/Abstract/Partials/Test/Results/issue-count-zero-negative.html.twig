@@ -6,15 +6,15 @@
 {% set stacked = stacked is defined ? stacked : false %}
 
 {% if count == 0 %}
-<span class="{% if stacked %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
-    <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">{{ count|number_format }}</span>
-    <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %} {{ name_suffix }}</span>
+<span class="{% if stacked %}row{% endif %} label label-{{ negative }}">
+    <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">0</span>
+    <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">{{ name }}{{ plural_suffix }} {{ name_suffix }}</span>
     <span class="icon">
         <i class="fa fa-times"></i>
     </span>
 </span>
 {% else %}
-    <a href="{{ anchor }}" class="{% if stacked %}row{% endif %} label label-{{ count == 0 ? positive : negative }}">
+    <a href="{{ anchor }}" class="{% if stacked %}row{% endif %} label label-{{ negative }}">
         <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} count">{{ count|number_format }}</span>
         <span class="{% if stacked %}col-md-12 col-sm-6 col-xs-6{% endif %} name">{{ name }}{% if count != 1 %}{{ plural_suffix }}{% endif %} {{ name_suffix }}</span>
     <span class="icon">

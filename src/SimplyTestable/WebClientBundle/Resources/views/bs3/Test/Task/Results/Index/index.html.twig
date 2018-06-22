@@ -56,65 +56,65 @@
                     {% if task.state == 'completed' %}
                         <div class="summary-stats hidden-xs hidden-sm">
                             {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                                with {
-                                    count: task.output.errorCount,
-                                    name:'error',
-                                    anchor: '#errors',
-                                    count_additional_class: 'error-count'
+                            with {
+                                count: task.output.errorCount,
+                                name:'error',
+                                anchor: '#errors',
+                                issue_type: 'error'
                             } %}
 
                             {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                                with {
-                                    count: task.output.warningCount,
-                                    negative:'primary',
-                                    name:'warning',
-                                    anchor: '#warnings',
-                                    count_additional_class: 'warning-count'
+                            with {
+                                count: task.output.warningCount,
+                                negative:'primary',
+                                name:'warning',
+                                anchor: '#warnings',
+                                issue_type: 'warning'
                             } %}
 
                             {% if fix_count > 0 %}
                                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                                    with {
-                                        count: fix_count,
-                                        negative:'fixes',
-                                        name:'fix',
-                                        plural_suffix:'es',
-                                        anchor:'#fixes',
-                                        count_additional_class: 'fix-count'
+                                with {
+                                    count: fix_count,
+                                    negative:'fixes',
+                                    name:'fix',
+                                    plural_suffix:'es',
+                                    anchor:'#fixes',
+                                    issue_type: 'fix'
                                 } %}
                             {%  endif %}
                         </div>
 
                         <div class="summary-stats hidden-lg hidden-md">
-                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                                with {
-                                    count: task.output.errorCount,
-                                    name:'error',
-                                    anchor: '#errors',
-                                    stacked: true,
-                                    count_additional_class: 'error-count'
+                        {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            with {
+                                count: task.output.errorCount,
+                                name:'error',
+                                anchor: '#errors',
+                                stacked: true,
+                                issue_type: 'error'
                             } %}
 
                             {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                                with {
-                                    count: task.output.warningCount,
-                                    negative:'primary',
-                                    name:'warning',
-                                    anchor: '#warnings',
-                                    stacked: true,
-                                    count_additional_class: 'warning-count'
+                            with {
+                                count: task.output.warningCount,
+                                negative:'primary',
+                                name:'warning',
+                                anchor: '#warnings',
+                                stacked: true,
+                                issue_type: 'warning'
                             } %}
 
                             {% if fix_count > 0 %}
                                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                                    with {
-                                        count: fix_count,
-                                        negative:'fixes',
-                                        name:'fix',
-                                        plural_suffix:'es',
-                                        anchor:'#fixes',
-                                        stacked: true,
-                                        count_additional_class: 'fix-count'
+                                with {
+                                    count: fix_count,
+                                    negative:'fixes',
+                                    name:'fix',
+                                    plural_suffix:'es',
+                                    anchor:'#fixes',
+                                    stacked: true,
+                                    issue_type: 'fix'
                                 } %}
                             {%  endif %}
                         </div>
