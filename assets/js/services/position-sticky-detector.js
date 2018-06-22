@@ -8,7 +8,7 @@ class PositionStickyDetector {
 
         elementStyle.cssText = 'position:sticky;';
 
-        return elementStyle.position.indexOf('sticky') !== - 1;
+        return elementStyle.position.indexOf('sticky') !== -1;
     };
 }
 
