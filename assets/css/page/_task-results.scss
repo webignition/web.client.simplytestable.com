@@ -136,6 +136,11 @@ h1 {
         opacity: 1;
       }
     }
+
+    &.subtle {
+      border: none;
+      padding: 0;
+    }
   }
 
   &.html-validation-issue-list {

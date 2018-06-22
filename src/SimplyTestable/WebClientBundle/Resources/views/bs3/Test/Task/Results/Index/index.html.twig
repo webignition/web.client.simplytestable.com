@@ -1,6 +1,14 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
 
 {% set is_failed = task.state in ['failed',  'failed-retry-available', 'failed-no-retry-available', 'failed-retry-limit-reached'] %}
+{% set task_type_key = task.type|lower|replace({' ': '-'}) %}
+{% set filter_selectors = {
+    'html-validation':'p',
+    'css-validation':'.message',
+    'js-static-analysis':'.message',
+    'link-integrity':'.raw-error-message'
+} %}
+{% set fix_count = distinct_fixes is defined ? distinct_fixes|length : 0 %}
 
 {% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website_url} %} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
 
@@ -9,22 +17,11 @@
 
     {% javascripts
     '@SimplyTestableWebClientBundle/Resources/assets/vendor/jquery-scrollto/jquery.scrollTo-1.4.12/jquery.scrollTo.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/vendor/google-code-prettify/code-prettify-2013-03-04/src/prettify.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/vendor/spark-md5/js-spark-md5-3.0.0/spark-md5.js'
-    '@SimplyTestableWebClientBundle/Resources/assets/bs3/js/test-task-results.js'
     %}
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
-
-{% set task_type_key = task.type|lower|replace({' ': '-'}) %}
-
-{% set filter_selectors = {
-    'html-validation':'p',
-    'css-validation':'.message',
-    'js-static-analysis':'.message',
-    'link-integrity':'.raw-error-message'
-} %}
 
 {% block body_class %} {{ parent() }} {{ task_type_key }} full-width task-results {{ is_failed ? 'task-results-failed' : '' }} {% endblock %}
 
@@ -57,48 +54,81 @@
                     {% if task.state == 'completed' %}
                         <div class="summary-stats hidden-xs hidden-sm">
                             {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                            with { 'count': task.output.errorCount, 'name':'error', 'anchor': '#errors' }
-                            %}
+                            with {
+                                count: task.output.errorCount,
+                                name:'error',
+                                anchor: '#errors',
+                                issue_type: 'error'
+                            } %}
 
                             {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                            with { 'count': task.output.warningCount, 'negative':'primary', 'name':'warning', 'anchor': '#warnings' }
-                            %}
+                            with {
+                                count: task.output.warningCount,
+                                negative:'primary',
+                                name:'warning',
+                                anchor: '#warnings',
+                                issue_type: 'warning'
+                            } %}
 
-                            {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
+                            {% if fix_count > 0 %}
                                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                                with { 'count': distinct_fixes | length, 'negative':'fixes', 'name':'fix', 'plural_suffix':'es', 'anchor':'#fixes' }
-                                %}
+                                with {
+                                    count: fix_count,
+                                    negative:'fixes',
+                                    name:'fix',
+                                    plural_suffix:'es',
+                                    anchor:'#fixes',
+                                    issue_type: 'fix'
+                                } %}
                             {%  endif %}
                         </div>
 
                         <div class="summary-stats hidden-lg hidden-md">
-                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                            with { 'count': task.output.errorCount, 'name':'error', 'anchor': '#errors', 'stacked': true }
-                            %}
+                        {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            with {
+                                count: task.output.errorCount,
+                                name:'error',
+                                anchor: '#errors',
+                                stacked: true,
+                                issue_type: 'error'
+                            } %}
 
                             {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                            with { 'count': task.output.warningCount, 'negative':'primary', 'name':'warning', 'anchor': '#warnings', 'stacked': true }
-                            %}
+                            with {
+                                count: task.output.warningCount,
+                                negative:'primary',
+                                name:'warning',
+                                anchor: '#warnings',
+                                stacked: true,
+                                issue_type: 'warning'
+                            } %}
 
-                            {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
+                            {% if fix_count > 0 %}
                                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                                with { 'count': distinct_fixes | length, 'negative':'fixes', 'name':'fix', 'plural_suffix':'es', 'anchor':'#fixes', 'stacked': true }
-                                %}
+                                with {
+                                    count: fix_count,
+                                    negative:'fixes',
+                                    name:'fix',
+                                    plural_suffix:'es',
+                                    anchor:'#fixes',
+                                    stacked: true,
+                                    issue_type: 'fix'
+                                } %}
                             {%  endif %}
                         </div>
                     {% else %}
-                    <div class="summary-stats">
-                        <span class="label label-danger">
-                            Failed to perform test
-                        </span>
-                    </div>
+                        <div class="summary-stats">
+                            <span class="label label-danger">
+                                Failed to perform test
+                            </span>
+                        </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container issue-content" {% if filter_selectors[task_type_key] is defined %} data-filter-selector="{{ filter_selectors[task_type_key] }}" {% endif %}>
+    <div class="container issue-content" {% if filter_selectors[task_type_key] is defined %}" {% endif %}>
         {% if is_failed %}
             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Failed:failed.html.twig' %}
         {% else %}

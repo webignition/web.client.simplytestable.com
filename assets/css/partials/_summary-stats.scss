@@ -37,5 +37,11 @@
     .fa {
       font-size: 20px;
     }
+
+    &.singular {
+      .plural-suffix {
+        display: none;
+      }
+    }
   }
 }

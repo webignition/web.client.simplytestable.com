@@ -61,21 +61,46 @@
         {% else %}
             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 summary-col">
                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                with { 'count': test.test.errorCount, 'name':'error', 'anchor': [results_url, '?filter=with-errors']|join(''), 'include_icon': false, 'split': true }
-                %}
+                with {
+                    count: test.test.errorCount,
+                    name:'error',
+                    anchor: [results_url, '?filter=with-errors']|join(''),
+                    include_icon: false,
+                    split: true,
+                    issue_type: 'error'
+                } %}
 
                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                with { 'count': test.test.urlCount, 'name':'url', 'include_icon': false, 'split': true, 'negative': 'plain', 'positive': 'plain' }
-                %}
+                with {
+                    count: test.test.urlCount,
+                    name:'url',
+                    include_icon: false,
+                    split: true,
+                    negative: 'plain',
+                    positive: 'plain',
+                    issue_type: 'error'
+                } %}
             </div>
             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 summary-col">
                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                with { 'count': test.test.warningCount, 'name':'warning', 'anchor': [results_url, '?filter=with-warnings']|join(''), 'include_icon': false, 'split': true, 'negative': 'primary' }
-                %}
+                with {
+                    count: test.test.warningCount,
+                    name:'warning',
+                    anchor: [results_url, '?filter=with-warnings']|join(''),
+                    include_icon: false,
+                    split: true,
+                    negative: 'primary'
+                } %}
 
                 {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
-                with { 'count': test.test.taskCount, 'name':'test', 'include_icon': false, 'split': true, 'negative': 'plain', 'positive': 'plain' }
-                %}
+                with {
+                    count: test.test.taskCount,
+                    name:'test',
+                    include_icon: false,
+                    split: true,
+                    negative: 'plain',
+                    positive: 'plain'
+                } %}
             </div>
             <div class="col-lg-6 col-md-6 col-sm-4 col-xs-12">
                 {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results:errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}

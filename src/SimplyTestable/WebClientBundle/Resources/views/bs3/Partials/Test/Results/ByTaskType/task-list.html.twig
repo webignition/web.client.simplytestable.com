@@ -7,7 +7,7 @@
         } %}
 
         <li class="js-sortable-item" data-sort-values="{{ sort_values|json_encode }}">
-            <a href="{{ path('view_test_task_results_index_index', test_results_route_parameters|merge({task_id: task.taskId})) }}">
+            <a href="{{ path('view_test_task_results_index_index', test_results_route_parameters|merge({task_id: task.taskId})) }}{% block link_hash %}{% endblock %}">
                 <div class="row task">
                     <div class="meta">
                         <div class="col-lg-10 url-container">

@@ -1,6 +1,13 @@
+{% set warning_count = task.output.warningCount %}
+
 <div class="row issue-list  {{ [task_type_key, 'issue-list']|join('-') }} warning-list {{ [task_type_key, 'warning-list']|join('-') }}" id="warnings">
     <div class="col-lg-12">
-        <h2 data-section="warning-list">Warnings <span class="badge alert-info">{{ task.output.warningCount }}</span></h2>
+        <h2 data-section="warning-list">
+            Warnings <span class="badge alert-info issue-count">{{ warning_count }}</span>
+            {% if warning_count > 1 %}
+                <span  class="collapse-control link" data-toggle="collapse" data-target="#warning-list-content"></span>
+            {% endif %}
+        </h2>
 
         {% include [
         'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/WarningList/',
