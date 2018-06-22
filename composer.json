@@ -20,7 +20,6 @@
         "symfony/polyfill-apcu": "^1.0",
         "symfony/symfony": "3.3.*",
         "twig/twig": "^1.0||^2.0",
-        "symfony/assetic-bundle": "~2.8",
         "doctrine/migrations": "~1.2",
         "doctrine/doctrine-migrations-bundle": "~1.2",
         "webignition/url":">=2.1, <3",
@@ -55,8 +54,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "php bin/console assetic:dump"
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
         ],
         "post-install-cmd": [
             "@symfony-scripts"
