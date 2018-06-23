@@ -107,3 +107,22 @@ services:
     calls:
       - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser']]
       - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser', 'cookies']]
+
+  webignition\ResqueJobFactory\ResqueJobFactory:
+    arguments:
+        $queues:
+          email-list-subscribe:
+            queue: email-list-subscribe
+            jobClassName: SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob
+            requiredArgs:
+              - listId
+              - email
+          email-list-unsubscribe:
+            queue: email-list-unsubscribe
+            jobClassName: SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob
+            requiredArgs:
+              - listId
+              - email
+
+  test.logger:
+    alias: Psr\Log\LoggerInterface
