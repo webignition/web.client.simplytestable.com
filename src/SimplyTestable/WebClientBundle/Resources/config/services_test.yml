@@ -1,2 +1,3 @@
 imports:
     - { resource: services_test/public.yml }
+    - { resource: services_test/public-event-listeners.yml }
