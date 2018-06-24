@@ -2,8 +2,9 @@
 
 namespace Tests\WebClientBundle\Unit\Services;
 
-use GuzzleHttp\Message\Request;
-use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\RequestInterface;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 
@@ -33,7 +34,7 @@ class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
     {
         $this->coreApplicationResponseCache->set(
             $request,
-            HttpResponseFactory::createSuccessResponse()
+            new Response()
         );
     }
 
