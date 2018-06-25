@@ -70,7 +70,7 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testGetLatest(array $httpFixtures, $expectedEvent)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $event = $this->userStripeEventService->getLatest($this->user, 'customer.subscription.created');
 

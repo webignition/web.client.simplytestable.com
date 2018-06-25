@@ -50,7 +50,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      */
     public function testGetEmailChangeRequest(array $httpFixtures, $expectedEmailChangeRequest)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $emailChangeRequest = $this->userEmailChangeRequestService->getEmailChangeRequest(
             $this->user->getUsername()
@@ -59,7 +59,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         $this->assertEquals($expectedEmailChangeRequest, $emailChangeRequest);
         $this->assertEquals(
             'http://null/user/user@example.com/email-change-request/',
-            $this->getLastRequest()->getUrl()
+            $this->httpHistory->getLastRequestUrl()
         );
     }
 
@@ -99,17 +99,17 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      */
     public function testCancelEmailChangeRequest(array $httpFixtures, $expectedRequestIsMade)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->userManager->setUser($this->user);
         $this->userEmailChangeRequestService->cancelEmailChangeRequest();
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         if ($expectedRequestIsMade) {
             $this->assertEquals(
                 'http://null/user/user@example.com/email-change-request/cancel/',
-                $lastRequest->getUrl()
+                $lastRequest->getUri()
             );
         } else {
             $this->assertNull($lastRequest);
@@ -131,7 +131,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException(UserEmailChangeException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -155,7 +155,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      */
     public function testConfirmEmailChangeRequest(array $httpFixtures, $expectedRequestIsMade)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->userManager->setUser($this->user);
         $this->userEmailChangeRequestService->confirmEmailChangeRequest([
@@ -163,12 +163,12 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
             'token' => 'token-value',
         ]);
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         if ($expectedRequestIsMade) {
             $this->assertEquals(
                 'http://null/user/user@example.com/email-change-request/token-value/',
-                $lastRequest->getUrl()
+                $lastRequest->getUri()
             );
         } else {
             $this->assertNull($lastRequest);
@@ -190,7 +190,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException(UserEmailChangeException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -211,17 +211,17 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
      */
     public function testCreateEmailChangeRequestSuccess(array $httpFixtures, $expectedRequestIsMade)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->userManager->setUser($this->user);
         $this->userEmailChangeRequestService->createEmailChangeRequest('foo@example.com');
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         if ($expectedRequestIsMade) {
             $this->assertEquals(
                 'http://null/user/user@example.com/email-change-request/foo@example.com/create/',
-                $lastRequest->getUrl()
+                $lastRequest->getUri()
             );
         } else {
             $this->assertNull($lastRequest);
