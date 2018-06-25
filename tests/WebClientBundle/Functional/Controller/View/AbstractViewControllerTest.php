@@ -21,6 +21,9 @@ abstract class AbstractViewControllerTest extends AbstractBaseTestCase
      */
     protected $httpMockHandler;
 
+    /**
+     * {@inheritdoc}
+     */
     protected function setUp()
     {
         parent::setUp();

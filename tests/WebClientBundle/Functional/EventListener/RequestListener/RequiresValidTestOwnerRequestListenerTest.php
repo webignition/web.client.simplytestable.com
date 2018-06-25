@@ -37,7 +37,7 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
      */
     public function testOnKernelController(array $httpFixtures, array $testValues, $expectedHasResponse)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -111,7 +111,7 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
 
     public function testOnKernelControllerCoreApplicationRequestException()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 

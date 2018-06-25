@@ -31,7 +31,7 @@ class OnKernelControllerRequiresValidUserTest extends AbstractKernelControllerTe
      */
     public function testOnKernelController(array $httpFixtures, $expectedHasResponse, $expectedRedirectUrl = null)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $request = new Request();
 

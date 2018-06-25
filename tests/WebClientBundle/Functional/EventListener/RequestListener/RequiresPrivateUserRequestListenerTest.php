@@ -40,7 +40,7 @@ class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTes
         $userManager = $this->container->get(UserManager::class);
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var NewsSubscriptionsController $controller */
         $controller = $this->container->get(NewsSubscriptionsController::class);
