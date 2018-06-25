@@ -52,7 +52,7 @@ class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
         array $httpFixtures,
         $expectedHasRemoteTest
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->remoteTestService->setTest($this->test);
 

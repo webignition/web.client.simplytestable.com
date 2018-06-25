@@ -17,13 +17,12 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
      */
     public function testGetFinishedCount(array $httpFixtures, $urlFilter, $expectedResponse, $expectedRequestUrl)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->remoteTestService->getFinishedCount($urlFilter);
 
         $this->assertEquals($expectedResponse, $response);
-
-        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**

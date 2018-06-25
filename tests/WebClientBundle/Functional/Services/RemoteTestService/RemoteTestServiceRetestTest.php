@@ -30,7 +30,7 @@ class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
 
         $this->setRemoteTestServiceTest($this->test);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => self::NEW_TEST_ID,
             ]),
@@ -46,7 +46,7 @@ class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
 
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Fexample.com%2F/1/re-test/',
-            $this->getLastRequest()->getUrl()
+            $this->httpHistory->getLastRequestUrl()
         );
     }
 }

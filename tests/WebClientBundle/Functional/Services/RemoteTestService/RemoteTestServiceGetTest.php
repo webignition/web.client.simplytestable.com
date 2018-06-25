@@ -48,7 +48,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -105,7 +105,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 
     public function testGetRemoteTestNotJsonDocument()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse([
                 'content-type' => 'text/plain',
             ]),
@@ -124,7 +124,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 
     public function testGetSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => 1,
             ]),
@@ -139,6 +139,6 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $remoteTest = $this->remoteTestService->get();
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
-        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/', $this->getLastRequest()->getUrl());
+        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/', $this->httpHistory->getLastRequestUrl());
     }
 }

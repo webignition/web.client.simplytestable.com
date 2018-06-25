@@ -38,7 +38,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $expectedTestCount,
         $expectedRequestUrl
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $finishedList = $this->remoteTestService->getFinished($limit, $offset, $filter);
 
@@ -48,7 +48,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $this->assertEquals($expectedLimit, $finishedList->getLimit());
         $this->assertEquals($expectedOffset, $finishedList->getOffset());
         $this->assertEquals($expectedTestCount, $finishedList->getLength());
-        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -151,7 +151,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $expectedTestCount,
         $expectedRequestUrl
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $finishedList = $this->remoteTestService->getRecent($limit);
 
@@ -161,7 +161,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $this->assertEquals($expectedLimit, $finishedList->getLimit());
         $this->assertEquals($expectedOffset, $finishedList->getOffset());
         $this->assertEquals($expectedTestCount, $finishedList->getLength());
-        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**

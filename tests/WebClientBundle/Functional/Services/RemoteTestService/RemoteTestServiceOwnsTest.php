@@ -51,7 +51,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -86,7 +86,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
 
     public function testOwnsRemoteHttp403()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -95,7 +95,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
 
     public function testOwnsOwnersDoesNotContain()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => 1,
                 'owners' => [
@@ -110,7 +110,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
 
     public function testOwnsOwnersContains()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => 1,
                 'owners' => [

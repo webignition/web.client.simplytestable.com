@@ -35,7 +35,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -118,7 +118,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
      */
     public function testStartSuccess($url, TestOptions $testOptions, $expectedRequestUrl, array $expectedPostData)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => 1,
             ]),
@@ -131,13 +131,13 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
-        $this->assertEquals($expectedPostData, $requestBody->getFields());
+        $this->assertEquals($expectedRequestUrl, $lastRequest->getUri());
+        $this->assertEquals($expectedPostData, $postedData);
     }
 
     /**
