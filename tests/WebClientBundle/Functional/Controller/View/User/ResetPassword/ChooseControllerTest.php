@@ -27,7 +27,7 @@ class ChooseControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse(self::TOKEN),
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -69,7 +69,7 @@ class ChooseControllerTest extends AbstractViewControllerTest
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
@@ -219,7 +219,7 @@ class ChooseControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse(self::TOKEN),
         ]);
 

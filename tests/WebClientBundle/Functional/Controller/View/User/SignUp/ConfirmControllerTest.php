@@ -24,7 +24,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -61,7 +61,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
 
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
@@ -290,7 +290,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

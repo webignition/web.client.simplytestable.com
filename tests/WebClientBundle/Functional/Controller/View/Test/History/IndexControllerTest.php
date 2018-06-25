@@ -2,8 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\View\Test\History;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\View\Test\History\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
@@ -11,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\TestList;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -32,7 +29,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -52,7 +49,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 90,
@@ -94,16 +91,12 @@ class IndexControllerTest extends AbstractViewControllerTest
         $expectedRedirectUrl,
         $expectedRequestUrls
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
         $user = SystemUserService::getPublicUser();
         $userManager->setUser($user);
 
-        $httpHistory = new HttpHistorySubscriber();
-        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
-
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
         $indexController = $this->container->get(IndexController::class);
@@ -114,18 +107,9 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
         if (empty($expectedRequestUrls)) {
-            $this->assertEmpty($httpHistory->count());
+            $this->assertEmpty($this->httpHistory->count());
         } else {
-            $requestedUrls = [];
-
-            foreach ($httpHistory as $httpTransaction) {
-                /* @var RequestInterface $guzzleRequest */
-                $guzzleRequest = $httpTransaction['request'];
-
-                $requestedUrls[] = $guzzleRequest->getUrl();
-            }
-
-            $this->assertEquals($expectedRequestUrls, $requestedUrls);
+            $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
         }
     }
 
@@ -252,7 +236,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $userManager = $this->container->get(UserManager::class);
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
         $indexController = $this->container->get(IndexController::class);
@@ -438,7 +422,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 0,
                 'limit' => IndexController::TEST_LIST_LIMIT,

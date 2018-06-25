@@ -64,7 +64,7 @@ class IndexControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->client->request(
             'GET',
@@ -104,7 +104,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $userManager = $this->container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::create(200),
             HttpResponseFactory::createJsonResponse(array_merge($this->userData, [
                 'team_summary' => [
@@ -154,7 +154,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {

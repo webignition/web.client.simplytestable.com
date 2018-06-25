@@ -2,7 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\View\Test\Results\FailedNoUrlsDetected;
 
-use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\FailedNoUrlsDetected\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -41,7 +40,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse()
         ]);
 
@@ -64,7 +63,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
@@ -105,15 +104,10 @@ class IndexControllerTest extends AbstractViewControllerTest
         $expectedRedirectUrl,
         $expectedRequestUrl
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($user);
-
-        $httpHistory = new HttpHistorySubscriber();
-        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
-
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
         $indexController = $this->container->get(IndexController::class);
@@ -122,7 +116,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, $httpHistory->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -174,7 +168,7 @@ class IndexControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionRender(Twig_Environment $twig)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
@@ -213,7 +207,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 

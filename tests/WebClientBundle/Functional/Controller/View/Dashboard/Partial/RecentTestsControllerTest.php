@@ -26,7 +26,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -46,7 +46,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 0,
@@ -84,7 +84,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
         array $httpFixtures,
         Twig_Environment $twig
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var RecentTestsController $recentTestsController */
         $recentTestsController = $this->container->get(RecentTestsController::class);

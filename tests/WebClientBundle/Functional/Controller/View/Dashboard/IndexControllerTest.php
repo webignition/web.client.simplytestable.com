@@ -24,7 +24,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -44,7 +44,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -67,7 +67,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $user = new User(self::USER_EMAIL);
         $userSerializer = $this->container->get(UserSerializer::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -111,7 +111,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
