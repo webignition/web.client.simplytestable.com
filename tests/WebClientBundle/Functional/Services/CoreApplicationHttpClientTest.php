@@ -17,15 +17,23 @@ use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Tests\WebClientBundle\Services\TestHttpClientFactory;
 use webignition\SimplyTestableUserModel\User;
+use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 {
     const USER_EMAIL = 'user@example.com';
+    const PUBLIC_USER_AUTHORIZATION_HEADER = 'Basic cHVibGljOnB1YmxpYw==';
+    const ADMIN_USER_AUTHORIZATION_HEADER = 'Basic YWRtaW46YnR3cEF6bTI=';
 
     /**
      * @var CoreApplicationHttpClient
      */
     private $coreApplicationHttpClient;
+
+    /**
+     * @var HttpHistoryContainer
+     */
+    private $httpHistory;
 
     /**
      * {@inheritdoc}
@@ -35,6 +43,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
     }
 
     /**
@@ -157,12 +166,17 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param string $userName
      * @param array $options
+     * @param string $expectedAuthorizationHeader
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function testGetDoesNotThrowException(array $httpFixtures, $userName, array $options)
-    {
+    public function testGetDoesNotThrowException(
+        array $httpFixtures,
+        $userName,
+        array $options,
+        $expectedAuthorizationHeader
+    ) {
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->getUserFromUserName($userName));
@@ -170,6 +184,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
         $response = $this->coreApplicationHttpClient->get('team_get', [], $options);
         $this->assertNull($response);
+
+        $this->assertEquals(
+            $expectedAuthorizationHeader,
+            $this->httpHistory->getLastRequest()->getHeaderLine('authorization')
+        );
     }
 
     /**
@@ -178,13 +197,18 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param string $userName
      * @param array $options
+     * @param string $expectedAuthorizationHeader
      *
+     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
-     * @throws CoreApplicationReadOnlyException
      */
-    public function testPostDoesNotThrowException(array $httpFixtures, $userName, array $options)
-    {
+    public function testPostDoesNotThrowException(
+        array $httpFixtures,
+        $userName,
+        array $options,
+        $expectedAuthorizationHeader
+    ) {
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->getUserFromUserName($userName));
@@ -192,6 +216,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
         $response = $this->coreApplicationHttpClient->post('team_get', [], $options);
         $this->assertNull($response);
+
+        $this->assertEquals(
+            $expectedAuthorizationHeader,
+            $this->httpHistory->getLastRequest()->getHeaderLine('authorization')
+        );
     }
 
     /**
@@ -199,7 +228,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      *
      * @param array $httpFixtures
      * @param array $options
-     *
      * @param ResponseInterface|null $expectedResponse
      *
      * @throws CoreApplicationRequestException
@@ -383,6 +411,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'httpFixtures' => array_fill(0, 6, $serviceUnavailableResponse),
                 'user' => 'public',
                 'options' => [],
+                'expectedAuthorizationHeader' => self::PUBLIC_USER_AUTHORIZATION_HEADER,
             ],
         ], $this->postRequestDoesNotThrowExceptionDataProvider());
     }
@@ -399,6 +428,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'user' => 'admin',
                 'options' => [],
+                'expectedAuthorizationHeader' => self::ADMIN_USER_AUTHORIZATION_HEADER,
             ],
             'invalid admin credentials; 403' => [
                 'httpFixtures' => [
@@ -406,6 +436,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'user' => 'admin',
                 'options' => [],
+                'expectedAuthorizationHeader' => self::ADMIN_USER_AUTHORIZATION_HEADER,
             ],
         ];
     }

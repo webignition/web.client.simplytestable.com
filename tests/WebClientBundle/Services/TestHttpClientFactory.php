@@ -5,6 +5,7 @@ namespace Tests\WebClientBundle\Services;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Middleware;
 use SimplyTestable\WebClientBundle\Services\HttpClientFactory;
+use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class TestHttpClientFactory extends HttpClientFactory
@@ -21,10 +22,16 @@ class TestHttpClientFactory extends HttpClientFactory
      */
     private $historyContainer;
 
-    public function __construct()
-    {
-        parent::__construct();
-        $this->historyContainer = new HttpHistoryContainer();
+    /**
+     * @param HttpHistoryContainer $httpHistoryContainer
+     * @param HttpAuthenticationMiddleware $httpAuthenticationMiddleware
+     */
+    public function __construct(
+        HttpHistoryContainer $httpHistoryContainer,
+        HttpAuthenticationMiddleware $httpAuthenticationMiddleware
+    ) {
+        parent::__construct($httpAuthenticationMiddleware);
+        $this->historyContainer = $httpHistoryContainer;
         $this->handlerStack->push(Middleware::history($this->historyContainer), self::MIDDLEWARE_HISTORY_KEY);
     }
 

@@ -9,10 +9,12 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
 
 class HttpClientFactory
 {
     const MIDDLEWARE_RETRY_KEY = 'retry';
+    const MIDDLEWARE_HTTP_AUTH_KEY = 'http-auth';
     const MAX_RETRIES = 5;
 
     /**
@@ -25,8 +27,17 @@ class HttpClientFactory
      */
     protected $handlerStack;
 
-    public function __construct()
+    /**
+     * @var HttpAuthenticationMiddleware
+     */
+    private $httpAuthenticationMiddleware;
+
+    /**
+     * @param HttpAuthenticationMiddleware $httpAuthenticationMiddleware
+     */
+    public function __construct(HttpAuthenticationMiddleware $httpAuthenticationMiddleware)
     {
+        $this->httpAuthenticationMiddleware = $httpAuthenticationMiddleware;
         $this->handlerStack = HandlerStack::create($this->createInitialHandler());
         $this->httpClient = $this->create();
     }
@@ -44,6 +55,7 @@ class HttpClientFactory
      */
     private function create()
     {
+        $this->handlerStack->push($this->httpAuthenticationMiddleware, self::MIDDLEWARE_HTTP_AUTH_KEY);
         $this->handlerStack->push(Middleware::retry($this->createRetryDecider()), self::MIDDLEWARE_RETRY_KEY);
 
         return new HttpClient([

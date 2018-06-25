@@ -4,5 +4,11 @@ imports:
 
 services:
   SimplyTestable\WebClientBundle\Services\HttpClientFactory:
-    class:   Tests\WebClientBundle\Services\TestHttpClientFactory
     public: true
+    class:   Tests\WebClientBundle\Services\TestHttpClientFactory
+    arguments:
+      - '@webignition\HttpHistoryContainer\Container'
+      - '@webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware'
+
+  webignition\HttpHistoryContainer\Container:
+    public: true;
