@@ -7,11 +7,10 @@ use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ListMembers;
-use SimplyTestable\WebClientBundle\Services\HttpClientFactory;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client as MailChimpClient;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
-use Tests\WebClientBundle\Services\TestHttpClientFactory;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class ClientTest extends AbstractBaseTestCase
@@ -22,14 +21,14 @@ class ClientTest extends AbstractBaseTestCase
     private $mailChimpClient;
 
     /**
-     * @var TestHttpClientFactory
-     */
-    private $httpClientFactory;
-
-    /**
      * @var HttpHistoryContainer
      */
     private $httpHistory;
+
+    /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
 
     /**
      * {@inheritdoc}
@@ -39,8 +38,8 @@ class ClientTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->mailChimpClient = $this->container->get(MailChimpClient::class);
-        $this->httpClientFactory = $this->container->get(HttpClientFactory::class);
         $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
     }
 
     /**
@@ -51,7 +50,7 @@ class ClientTest extends AbstractBaseTestCase
      */
     public function testGetListMembers(array $httpFixtures, array $expectedMemberEmails)
     {
-        $this->httpClientFactory->appendFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $listMembers = $this->mailChimpClient->getListMembers(
             $this->container->getParameter('mailchimp_updates_list_id'),
@@ -60,14 +59,7 @@ class ClientTest extends AbstractBaseTestCase
         );
 
         $this->assertInstanceOf(ListMembers::class, $listMembers);
-
         $this->assertEquals($expectedMemberEmails, $listMembers->getMemberEmails());
-
-
-        $this->assertNotNull(
-            $this->httpClientFactory->getHistory()->getLastRequest()->getHeaderLine('authorization')
-        );
-
         $this->assertLastRequestAuthorizationHeader();
     }
 
@@ -111,7 +103,7 @@ class ClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->httpClientFactory->appendFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -158,7 +150,7 @@ class ClientTest extends AbstractBaseTestCase
 
     public function testAddListMemberSuccess()
     {
-        $this->httpClientFactory->appendFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([])
         ]);
 
@@ -187,7 +179,7 @@ class ClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->httpClientFactory->appendFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -234,7 +226,7 @@ class ClientTest extends AbstractBaseTestCase
 
     public function testRemoveListMemberSuccess()
     {
-        $this->httpClientFactory->appendFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

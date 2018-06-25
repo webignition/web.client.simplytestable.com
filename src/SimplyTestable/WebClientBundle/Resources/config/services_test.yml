@@ -9,6 +9,10 @@ services:
     arguments:
       - '@webignition\HttpHistoryContainer\Container'
       - '@webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware'
+      - '@Tests\WebClientBundle\Services\HttpMockHandler'
 
   webignition\HttpHistoryContainer\Container:
+    public: true;
+
+  Tests\WebClientBundle\Services\HttpMockHandler:
     public: true;

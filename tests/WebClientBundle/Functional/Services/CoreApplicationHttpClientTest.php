@@ -15,6 +15,7 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 use Tests\WebClientBundle\Services\TestHttpClientFactory;
 use webignition\SimplyTestableUserModel\User;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
@@ -31,6 +32,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     private $coreApplicationHttpClient;
 
     /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
      * @var HttpHistoryContainer
      */
     private $httpHistory;
@@ -43,6 +49,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
         $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
     }
 
@@ -65,7 +72,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -93,7 +100,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -122,7 +129,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -151,7 +158,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -180,7 +187,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->getUserFromUserName($userName));
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->coreApplicationHttpClient->get('team_get', [], $options);
         $this->assertNull($response);
@@ -213,7 +220,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->getUserFromUserName($userName));
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->coreApplicationHttpClient->post('team_get', [], $options);
         $this->assertNull($response);
@@ -237,7 +244,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function testGetSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response1 = $this->coreApplicationHttpClient->get('team_get', [], $options);
         $response2 = $this->coreApplicationHttpClient->get('team_get', [], $options);
@@ -264,7 +271,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function testGetAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response1 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
         $response2 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
@@ -299,7 +306,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             'foo' => 'bar',
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
         $response = $this->coreApplicationHttpClient->post('team_get', [], $postData, $options);
 
         if (empty($expectedResponse)) {
@@ -337,7 +344,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             'foo' => 'bar',
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->coreApplicationHttpClient->postAsAdmin('team_get', [], $postData, $options);
 
@@ -388,7 +395,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         /* @var TestHttpClientFactory $httpClientFactory */
         $httpClientFactory = $this->container->get(HttpClientFactory::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'foo' => 'bar',
             ]),

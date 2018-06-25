@@ -2,11 +2,9 @@
 
 namespace Tests\WebClientBundle\Functional;
 
-use SimplyTestable\WebClientBundle\Services\HttpClientFactory;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Tests\WebClientBundle\Services\TestHttpClientFactory;
 
 abstract class AbstractBaseTestCase extends WebTestCase
 {
@@ -29,18 +27,6 @@ abstract class AbstractBaseTestCase extends WebTestCase
         $this->container = $this->client->getKernel()->getContainer();
 
         $this->container->get('doctrine')->getConnection()->beginTransaction();
-    }
-
-    /**
-     * @param array $httpFixtures
-     */
-    protected function setCoreApplicationHttpClientHttpFixtures(array $httpFixtures = [])
-    {
-        if (!empty($httpFixtures)) {
-            /* @var TestHttpClientFactory $httpClientFactory */
-            $httpClientFactory = $this->container->get(HttpClientFactory::class);
-            $httpClientFactory->appendFixtures($httpFixtures);
-        }
     }
 
     /**
