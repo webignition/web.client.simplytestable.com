@@ -13,6 +13,7 @@ use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class TaskControllerTest extends AbstractBaseTestCase
 {
@@ -24,6 +25,11 @@ class TaskControllerTest extends AbstractBaseTestCase
      * @var TaskController
      */
     private $taskController;
+
+    /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
 
     /**
      * @var array
@@ -108,6 +114,7 @@ class TaskControllerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->taskController = $this->container->get(TaskController::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
     }
 
     /**
@@ -119,7 +126,7 @@ class TaskControllerTest extends AbstractBaseTestCase
      */
     public function testInvalidOwnerRequest($method, $routeName, array $routeParameters)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
@@ -179,7 +186,7 @@ class TaskControllerTest extends AbstractBaseTestCase
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
         ]);
@@ -207,7 +214,7 @@ class TaskControllerTest extends AbstractBaseTestCase
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse($taskIds),
         ]);
@@ -264,7 +271,7 @@ class TaskControllerTest extends AbstractBaseTestCase
 
         $this->assertNull($test);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var Response $response */
         $response = $this->taskController->retrieveAction($request, self::WEBSITE, self::TEST_ID);

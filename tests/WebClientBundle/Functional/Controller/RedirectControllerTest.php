@@ -2,7 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Controller;
 
-use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
@@ -12,6 +11,7 @@ use Tests\WebClientBundle\Factory\TestFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class RedirectControllerTest extends AbstractBaseTestCase
 {
@@ -23,6 +23,11 @@ class RedirectControllerTest extends AbstractBaseTestCase
     protected $redirectController;
 
     /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -30,6 +35,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->redirectController = $this->container->get(RedirectController::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
     }
 
     /**
@@ -50,7 +56,7 @@ class RedirectControllerTest extends AbstractBaseTestCase
         $testId,
         $expectedRedirectUrl
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
