@@ -13,7 +13,6 @@ use SimplyTestable\WebClientBundle\Services\MailChimp\Service as MailChimpServic
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Tests\WebClientBundle\Services\HttpMockHandler;
-use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class ServiceTest extends AbstractBaseTestCase
 {
@@ -36,11 +35,6 @@ class ServiceTest extends AbstractBaseTestCase
     private $httpMockHandler;
 
     /**
-     * @var HttpHistoryContainer
-     */
-    private $httpHistory;
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -50,7 +44,6 @@ class ServiceTest extends AbstractBaseTestCase
         $this->mailChimpService = $this->container->get(MailChimpService::class);
         $this->listRecipientsService = $this->container->get(ListRecipientsService::class);
         $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
-        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
     }
 
     public function testSubscribeAlreadySubscribedLocally()
