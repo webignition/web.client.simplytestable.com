@@ -2,7 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Services;
 
-use GuzzleHttp\Post\PostBody;
 use SimplyTestable\WebClientBundle\Model\Team\Team;
 use SimplyTestable\WebClientBundle\Services\TeamService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -28,20 +27,20 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testCreate()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->teamService->create(self::TEAM_NAME);
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
         $this->assertEquals('POST', $lastRequest->getMethod());
-        $this->assertEquals('http://null/team/create/', $lastRequest->getUrl());
-        $this->assertEquals(self::TEAM_NAME, $requestBody->getField('name'));
+        $this->assertEquals('http://null/team/create/', $lastRequest->getUri());
+        $this->assertEquals(self::TEAM_NAME, $postedData['name']);
     }
 
     public function testGetTeam()
@@ -54,7 +53,7 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
             'members' => [],
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($teamData),
         ]);
 
@@ -63,39 +62,39 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertInstanceOf(Team::class, $team);
         $this->assertEquals(new Team($teamData), $team);
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         $this->assertEquals('GET', $lastRequest->getMethod());
-        $this->assertEquals('http://null/team/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/team/', $lastRequest->getUri());
     }
 
     public function testRemoveFromTeam()
     {
         $memberEmail = 'member@example.com';
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->teamService->removeFromTeam($memberEmail);
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         $this->assertEquals('POST', $lastRequest->getMethod());
-        $this->assertEquals('http://null/team/remove/' . $memberEmail . '/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/team/remove/' . $memberEmail . '/', $lastRequest->getUri());
     }
 
     public function testLeave()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->teamService->leave();
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         $this->assertEquals('POST', $lastRequest->getMethod());
-        $this->assertEquals('http://null/team/leave/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/team/leave/', $lastRequest->getUri());
     }
 }
