@@ -10,6 +10,7 @@ use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class InviteControllerTest extends AbstractBaseTestCase
 {
@@ -23,6 +24,11 @@ class InviteControllerTest extends AbstractBaseTestCase
     private $inviteController;
 
     /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -30,11 +36,12 @@ class InviteControllerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->inviteController = $this->container->get(InviteController::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
     }
 
     public function testAcceptActionPostRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => 'Team Name',
                 'user' => self::USERNAME,
@@ -85,7 +92,7 @@ class InviteControllerTest extends AbstractBaseTestCase
     ) {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
         $response = $this->inviteController->acceptAction($request, $token);
@@ -213,7 +220,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         $session = $this->container->get('session');
         $resqueQueueService = $this->container->get(ResqueQueueService::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => 'Team Name',
                 'user' => self::USERNAME,

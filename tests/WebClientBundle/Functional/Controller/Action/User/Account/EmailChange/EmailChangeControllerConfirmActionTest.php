@@ -38,7 +38,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $userManager = $this->container->get(UserManager::class);
         $userManager->setUser(new User('user@example.com'));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'token' => 'token-value',
             ]),
@@ -80,7 +80,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'token' => 'token-value',
             ]),
@@ -105,7 +105,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([]),
         ]);
 
@@ -137,7 +137,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     ) {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures(array_merge([
+        $this->httpMockHandler->appendFixtures(array_merge([
             HttpResponseFactory::createJsonResponse([
                 'new_email' => 'new-email@example.com',
                 'token' => 'token-value',
@@ -200,7 +200,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $user = new User($userEmail, 'password');
         $serializerUser = $userSerializer->serializeToString($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'token' => 'token-value',
                 'new_email' => $userNewEmail,

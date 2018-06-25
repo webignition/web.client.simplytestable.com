@@ -3,11 +3,9 @@
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account;
 
 use Doctrine\ORM\EntityManagerInterface;
-use GuzzleHttp\Subscriber\Mock as MockSubscriber;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
-use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -48,7 +46,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
 
     public function testUpdateActionInvalidUserPostRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -87,14 +85,10 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
 
+        $this->httpMockHandler->appendFixtures($httpFixtures);
+
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get('doctrine.orm.entity_manager');
-
-        $mockSubscriber = new MockSubscriber($httpFixtures);
-
-        $mailChimpClient = $this->container->get(Client::class);
-        $mailChimpClient->getHttpClient()->getEmitter()->attach($mockSubscriber);
-
         $userManager->setUser($user);
 
         /* @var ListRecipients[] $listRecipientsCollection */

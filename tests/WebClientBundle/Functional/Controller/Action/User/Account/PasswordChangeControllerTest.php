@@ -52,7 +52,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
 
     public function testRequestActionInvalidUserPostRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -79,7 +79,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
             new Cookie(UserManager::USER_COOKIE_KEY, $userSerializer->serializeToString($user))
         );
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse('token-value'),
             HttpResponseFactory::createSuccessResponse(),
@@ -128,7 +128,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
         $response = $this->passwordChangeController->requestAction($request);

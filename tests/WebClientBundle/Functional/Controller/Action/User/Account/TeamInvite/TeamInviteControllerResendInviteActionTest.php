@@ -67,7 +67,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
             'token' => self::INVITE_TOKEN,
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($inviteData),
             HttpResponseFactory::createSuccessResponse(),
@@ -111,7 +111,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
     {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
         $response = $this->callResendInviteAction(new Request([], [
@@ -173,7 +173,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
             'token' => self::INVITE_TOKEN,
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($inviteData),
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
@@ -245,7 +245,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
             'token' => self::INVITE_TOKEN,
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures(array_merge(
+        $this->httpMockHandler->appendFixtures(array_merge(
             [
                 HttpResponseFactory::createJsonResponse($inviteData),
             ],

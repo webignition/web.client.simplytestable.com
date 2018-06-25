@@ -76,7 +76,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         $userManager = $this->container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->userData),
             HttpResponseFactory::createSuccessResponse(),
@@ -119,7 +119,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
         $response = $this->planController->subscribeAction($request);

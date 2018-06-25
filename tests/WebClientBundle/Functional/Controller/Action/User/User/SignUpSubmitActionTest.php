@@ -41,7 +41,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
@@ -124,7 +124,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $request = new Request([], [
             'plan' => 'basic',
@@ -210,7 +210,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
@@ -314,7 +314,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $postmarkSender = $this->container->get(PostmarkSender::class);
         $couponService = $this->container->get(CouponService::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);

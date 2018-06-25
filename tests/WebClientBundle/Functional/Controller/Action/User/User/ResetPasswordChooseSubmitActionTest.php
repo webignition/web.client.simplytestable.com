@@ -21,7 +21,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
 
     public function testResetPasswordChooseSubmitActionPostRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::TOKEN),
             HttpResponseFactory::createSuccessResponse(),
@@ -70,7 +70,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
         $response = $this->userController->resetPasswordChooseSubmitAction($request);

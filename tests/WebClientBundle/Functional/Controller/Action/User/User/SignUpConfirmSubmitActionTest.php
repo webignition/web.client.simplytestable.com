@@ -18,7 +18,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 
     public function testSignUpConfirmSubmitActionPostRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse('confirmation-token-here'),
         ]);
@@ -66,7 +66,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->callSignUpConfirmSubmitAction($request, $email);
 
@@ -165,7 +165,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
     {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);

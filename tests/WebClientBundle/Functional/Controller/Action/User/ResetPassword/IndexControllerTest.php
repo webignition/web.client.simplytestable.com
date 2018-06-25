@@ -17,6 +17,7 @@ use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as Mai
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class IndexControllerTest extends AbstractBaseTestCase
 {
@@ -30,6 +31,11 @@ class IndexControllerTest extends AbstractBaseTestCase
     private $indexController;
 
     /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -37,6 +43,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->indexController = $this->container->get(IndexController::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
     }
 
     public function testRequestActionPostRequest()
@@ -53,7 +60,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
@@ -147,7 +154,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             'email' => self::EMAIL,
         ]);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -182,7 +189,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             'email' => self::EMAIL,
         ]);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -231,7 +238,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
@@ -340,7 +347,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $mailService = $this->container->get(MailService::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
@@ -358,7 +365,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
