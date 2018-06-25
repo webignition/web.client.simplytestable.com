@@ -2,11 +2,11 @@
 
 namespace Tests\WebClientBundle\Functional;
 
-use GuzzleHttp\Subscriber\Mock as HttpMockSubscriber;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
+use SimplyTestable\WebClientBundle\Services\HttpClientFactory;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Tests\WebClientBundle\Services\TestHttpClientFactory;
 
 abstract class AbstractBaseTestCase extends WebTestCase
 {
@@ -37,10 +37,9 @@ abstract class AbstractBaseTestCase extends WebTestCase
     protected function setCoreApplicationHttpClientHttpFixtures(array $httpFixtures = [])
     {
         if (!empty($httpFixtures)) {
-            $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-            $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach(
-                new HttpMockSubscriber($httpFixtures)
-            );
+            /* @var TestHttpClientFactory $httpClientFactory */
+            $httpClientFactory = $this->container->get(HttpClientFactory::class);
+            $httpClientFactory->appendFixtures($httpFixtures);
         }
     }
 

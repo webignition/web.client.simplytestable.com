@@ -28,7 +28,6 @@ class HttpClientFactory
     public function __construct()
     {
         $this->handlerStack = HandlerStack::create($this->createInitialHandler());
-
         $this->httpClient = $this->create();
     }
 

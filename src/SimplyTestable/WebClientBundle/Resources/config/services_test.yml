@@ -5,3 +5,4 @@ imports:
 services:
   SimplyTestable\WebClientBundle\Services\HttpClientFactory:
     class:   Tests\WebClientBundle\Services\TestHttpClientFactory
+    public: true

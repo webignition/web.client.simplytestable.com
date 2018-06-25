@@ -8,13 +8,15 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use GuzzleHttp\Subscriber\Retry\RetrySubscriber as HttpRetrySubscriber;
+use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationCredentials;
+use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
 use webignition\GuzzleHttp\Exception\CurlException\Factory as CurlExceptionFactory;
 use webignition\SimplyTestableUserModel\User;
 
@@ -52,16 +54,25 @@ class CoreApplicationHttpClient
     private $userManager;
 
     /**
+     * @var HttpAuthenticationMiddleware
+     */
+    private $httpAuthenticationMiddleware;
+
+    /**
      * @param CoreApplicationRouter $coreApplicationRouter
      * @param CoreApplicationResponseCache $coreApplicationResponseCache
      * @param SystemUserService $systemUserService
      * @param UserManager $userManager
+     * @param HttpClient $httpClient
+     * @param HttpAuthenticationMiddleware $httpAuthenticationMiddleware
      */
     public function __construct(
         CoreApplicationRouter $coreApplicationRouter,
         CoreApplicationResponseCache $coreApplicationResponseCache,
         SystemUserService $systemUserService,
-        UserManager $userManager
+        UserManager $userManager,
+        HttpClient $httpClient,
+        HttpAuthenticationMiddleware $httpAuthenticationMiddleware
     ) {
         $this->router = $coreApplicationRouter;
         $this->responseCache = $coreApplicationResponseCache;
@@ -69,27 +80,8 @@ class CoreApplicationHttpClient
 
         $this->adminUser = $systemUserService->getAdminUser();
 
-        $this->httpClient = new HttpClient();
-
-        $filter = HttpRetrySubscriber::createChainFilter([
-            // Does early filter to force non-idempotent methods to NOT be retried.
-            HttpRetrySubscriber::createIdempotentFilter(),
-            // Retry curl-level errors
-            HttpRetrySubscriber::createCurlFilter(),
-            // Performs the last check, returning ``true`` or ``false`` based on
-            // if the response received a 500 or 503 status code.
-            HttpRetrySubscriber::createStatusFilter([500, 503])
-        ]);
-
-        $this->httpClient->getEmitter()->attach(new HttpRetrySubscriber(['filter' => $filter]));
-    }
-
-    /**
-     * @return HttpClientInterface
-     */
-    public function getHttpClient()
-    {
-        return $this->httpClient;
+        $this->httpClient = $httpClient;
+        $this->httpAuthenticationMiddleware = $httpAuthenticationMiddleware;
     }
 
     /**
@@ -159,10 +151,9 @@ class CoreApplicationHttpClient
     private function getAsUser(User $user, $routeName, array $routeParameters = [], array $options = [])
     {
         $requestUrl = $this->createRequestUrl($routeName, $routeParameters);
+        $request = new Request('GET', $requestUrl);
 
-        $request = $this->httpClient->createRequest('GET', $requestUrl, $this->createRequestOptions($options));
-
-        return $this->getResponse($request, $user);
+        return $this->getResponse($request, $user, $this->createRequestOptions($options));
     }
 
     /**
@@ -238,31 +229,27 @@ class CoreApplicationHttpClient
         array $options = []
     ) {
         $requestUrl = $this->createRequestUrl($routeName, $routeParameters);
-        $request = $this->httpClient->createRequest(
+        $request = new Request(
             'POST',
             $requestUrl,
-            $this->createRequestOptions($options, $postData)
+            ['content-type' => 'application/x-www-form-urlencoded'],
+            http_build_query($postData, '', '&')
         );
 
-        return $this->getResponse($request, $user);
+        return $this->getResponse($request, $user, $this->createRequestOptions($options));
     }
 
     /**
      * @param array $options
-     * @param array|null $requestBody
      *
      * @return array
      */
-    private function createRequestOptions(array $options, $requestBody = null)
+    private function createRequestOptions(array $options)
     {
         $requestOptions = [];
 
         if (in_array(self::OPT_DISABLE_REDIRECT, $options)) {
             $requestOptions['allow_redirects'] = false;
-        }
-
-        if (!empty($requestBody)) {
-            $requestOptions['body'] = $requestBody;
         }
 
         return $requestOptions;
@@ -271,22 +258,30 @@ class CoreApplicationHttpClient
     /**
      * @param RequestInterface $request
      * @param User $user
+     * @param array $requestOptions
+     *
      * @return ResponseInterface|null
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidCredentialsException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    private function getResponse(RequestInterface $request, User $user)
+    private function getResponse(RequestInterface $request, User $user, array $requestOptions)
     {
-        $this->addAuthorizationToRequest($request, $user);
+        $this->httpAuthenticationMiddleware->setHttpAuthenticationCredentials(new HttpAuthenticationCredentials(
+            $user->getUsername(),
+            $user->getPassword(),
+            $this->router->getHost()
+        ));
+        $this->httpAuthenticationMiddleware->setIsSingleUse(true);
 
         $response = $this->responseCache->get($request);
 
         if (empty($response)) {
             try {
-                $response = $this->getHttpClient()->send($request);
+                $response = $this->httpClient->send($request, $requestOptions);
                 $response = $this->responseCache->set($request, $response);
             } catch (TooManyRedirectsException $tooManyRedirectsException) {
                 // not sure if we really need to handle these
@@ -323,21 +318,6 @@ class CoreApplicationHttpClient
         }
 
         return $response;
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @param User $user
-     */
-    private function addAuthorizationToRequest(RequestInterface $request, User $user)
-    {
-        $request->addHeaders([
-            'Authorization' => 'Basic ' . base64_encode(sprintf(
-                '%s:%s',
-                $user->getUsername(),
-                $user->getPassword()
-            ))
-        ]);
     }
 
     /**

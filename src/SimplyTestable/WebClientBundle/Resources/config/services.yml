@@ -76,3 +76,5 @@ services:
 
   GuzzleHttp\Client:
     factory: 'SimplyTestable\WebClientBundle\Services\HttpClientFactory:getHttpClient'
+
+  webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware:
