@@ -198,7 +198,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param string $userName
      * @param array $options
-     * @param string $expectedAuthorizationHeader
+     * @param string $expectedAuthorizationHeaderUser
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
