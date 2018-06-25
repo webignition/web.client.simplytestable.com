@@ -9,14 +9,12 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
-use SimplyTestable\WebClientBundle\Services\HttpClientFactory;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Tests\WebClientBundle\Services\HttpMockHandler;
-use Tests\WebClientBundle\Services\TestHttpClientFactory;
 use webignition\SimplyTestableUserModel\User;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
@@ -299,9 +297,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function testPostSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
-        /* @var TestHttpClientFactory $httpClientFactory */
-        $httpClientFactory = $this->container->get(HttpClientFactory::class);
-
         $postData = [
             'foo' => 'bar',
         ];
@@ -315,7 +310,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             $this->assertEquals(Psr7\str($expectedResponse), Psr7\str($response));
         }
 
-        $lastRequest = $httpClientFactory->getHistory()->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         $postedData = [];
         parse_str($lastRequest->getBody()->getContents(), $postedData);
@@ -337,9 +332,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function testPostAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
-        /* @var TestHttpClientFactory $httpClientFactory */
-        $httpClientFactory = $this->container->get(HttpClientFactory::class);
-
         $postData = [
             'foo' => 'bar',
         ];
@@ -354,7 +346,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             $this->assertEquals(Psr7\str($expectedResponse), Psr7\str($response));
         }
 
-        $lastRequest = $httpClientFactory->getHistory()->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         $postedData = [];
         parse_str($lastRequest->getBody()->getContents(), $postedData);
@@ -392,9 +384,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     public function testPreProcessRouteParameters()
     {
-        /* @var TestHttpClientFactory $httpClientFactory */
-        $httpClientFactory = $this->container->get(HttpClientFactory::class);
-
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'foo' => 'bar',
@@ -405,7 +394,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
         ]);
 
-        $this->assertEquals('http://null/user/public/', $httpClientFactory->getHistory()->getLastRequest()->getUri());
+        $this->assertEquals('http://null/user/public/', $this->httpHistory->getLastRequest()->getUri());
     }
 
     /**
