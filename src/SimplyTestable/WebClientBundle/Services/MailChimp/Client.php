@@ -5,12 +5,17 @@ namespace SimplyTestable\WebClientBundle\Services\MailChimp;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Request;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ListMembers;
+use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationCredentials;
+use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
 
 class Client
 {
@@ -31,26 +36,43 @@ class Client
     private $httpClient;
 
     /**
-     * @param string $apiKey
+     * @var string
      */
-    public function __construct($apiKey)
-    {
+    private $baseUrl;
+
+    /**
+     * @var HttpAuthenticationMiddleware
+     */
+    private $httpAuthenticationMiddleware;
+
+    /**
+     * @var HttpAuthenticationCredentials
+     */
+    private $httpAuthenticationCredentials;
+
+    /**
+     * @param string $apiKey
+     * @param GuzzleClient $httpClient
+     * @param HttpAuthenticationMiddleware $httpAuthenticationMiddleware
+     */
+    public function __construct(
+        $apiKey,
+        GuzzleClient $httpClient,
+        HttpAuthenticationMiddleware $httpAuthenticationMiddleware
+    ) {
         $this->apiKey = $apiKey;
 
         $apiKeyParts = explode('-', $apiKey);
         $dataCenterName = $apiKeyParts[1];
 
-        $this->httpClient = new GuzzleClient([
-            'base_url' => sprintf(self::BASE_URL, $dataCenterName),
-        ]);
-    }
-
-    /**
-     * @return ClientInterface
-     */
-    public function getHttpClient()
-    {
-        return $this->httpClient;
+        $this->baseUrl = sprintf(self::BASE_URL, $dataCenterName);
+        $this->httpClient = $httpClient;
+        $this->httpAuthenticationMiddleware = $httpAuthenticationMiddleware;
+        $this->httpAuthenticationCredentials = new HttpAuthenticationCredentials(
+            'anystring',
+            $this->apiKey,
+            'api.mailchimp.com'
+        );
     }
 
     /**
@@ -71,11 +93,11 @@ class Client
         $endpointUrl = sprintf(self::PATH_LIST_MEMBERS, $listId);
         $endpointUrl .= '?' . http_build_query($queryStringParameters);
 
-        $request = $this->createRequest('GET', $endpointUrl);
+        $request = new Request('GET', $this->createRequestUrl($endpointUrl));
 
-        $response = $this->getHttpClient()->send($request);
+        $response = $this->sendRequest($request);
 
-        return new ListMembers($response->json());
+        return new ListMembers(json_decode($response->getBody()->getContents(), true));
     }
 
     /**
@@ -94,15 +116,18 @@ class Client
 
         $endpointUrl = sprintf(self::PATH_LIST_MEMBERS, $listId);
 
-        $request = $this->createRequest('POST', $endpointUrl, [
-            'content-type' => 'application/json',
-        ], json_encode($postData));
+        $request = new Request(
+            'POST',
+            $this->createRequestUrl($endpointUrl),
+            ['content-type' => 'application/json',],
+            json_encode($postData)
+        );
 
         try {
-            $this->getHttpClient()->send($request);
+            $this->sendRequest($request);
         } catch (ClientException $clientException) {
             $response = $clientException->getResponse();
-            $errorData = $response->json();
+            $errorData = json_decode($response->getBody()->getContents(), true);
 
             $error = new ApiError($errorData);
 
@@ -125,13 +150,13 @@ class Client
     {
         $endpointUrl = sprintf(self::PATH_LIST_MEMBER_DELETE, $listId, md5($email));
 
-        $request = $this->createRequest('DELETE', $endpointUrl);
+        $request = new Request('DELETE', $this->createRequestUrl($endpointUrl));
 
         try {
-            $this->getHttpClient()->send($request);
+            $this->sendRequest($request);
         } catch (ClientException $clientErrorResponseException) {
             $response = $clientErrorResponseException->getResponse();
-            $errorData = $response->json();
+            $errorData = json_decode($response->getBody()->getContents(), true);
 
             $error = new ApiError($errorData);
 
@@ -144,32 +169,17 @@ class Client
     }
 
     /**
-     * @param string $method
-     * @param string $endpointUrl
-     * @param array $headers
-     * @param mixed $body
+     * @param RequestInterface $request
+     * @return ResponseInterface
      *
-     * @return RequestInterface
+     * @throws GuzzleException
      */
-    private function createRequest($method, $endpointUrl, $headers = [], $body = null)
+    private function sendRequest(RequestInterface $request)
     {
-        $request = $this->httpClient->createRequest(
-            $method,
-            $this->createRequestUrl($endpointUrl),
-            [
-                'body' => $body,
-            ]
-        );
+        $this->httpAuthenticationMiddleware->setHttpAuthenticationCredentials($this->httpAuthenticationCredentials);
+        $this->httpAuthenticationMiddleware->setIsSingleUse(true);
 
-        $request->setHeaders(array_merge([
-            'Authorization' => 'Basic ' . base64_encode(sprintf(
-                '%s:%s',
-                'anystring',
-                $this->apiKey
-            )),
-        ], $headers));
-
-        return $request;
+        return $this->httpClient->send($request);
     }
 
     /**
@@ -179,6 +189,6 @@ class Client
      */
     private function createRequestUrl($endpointUrl)
     {
-        return self::BASE_URL_API_VERSION . $endpointUrl;
+        return $this->baseUrl . self::BASE_URL_API_VERSION . $endpointUrl;
     }
 }

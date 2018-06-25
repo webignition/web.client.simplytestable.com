@@ -2,15 +2,17 @@
 
 namespace Tests\WebClientBundle\Functional\Services\MailChimp;
 
-use GuzzleHttp\Subscriber\Mock as HttpMockSubscriber;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\MemberExistsException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\ResourceNotFoundException;
 use SimplyTestable\WebClientBundle\Exception\MailChimp\UnknownException;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ApiError;
 use SimplyTestable\WebClientBundle\Model\MailChimp\ListMembers;
+use SimplyTestable\WebClientBundle\Services\HttpClientFactory;
 use SimplyTestable\WebClientBundle\Services\MailChimp\Client as MailChimpClient;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
+use Tests\WebClientBundle\Services\TestHttpClientFactory;
+use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class ClientTest extends AbstractBaseTestCase
 {
@@ -20,6 +22,16 @@ class ClientTest extends AbstractBaseTestCase
     private $mailChimpClient;
 
     /**
+     * @var TestHttpClientFactory
+     */
+    private $httpClientFactory;
+
+    /**
+     * @var HttpHistoryContainer
+     */
+    private $httpHistory;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -27,6 +39,8 @@ class ClientTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->mailChimpClient = $this->container->get(MailChimpClient::class);
+        $this->httpClientFactory = $this->container->get(HttpClientFactory::class);
+        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
     }
 
     /**
@@ -37,7 +51,7 @@ class ClientTest extends AbstractBaseTestCase
      */
     public function testGetListMembers(array $httpFixtures, array $expectedMemberEmails)
     {
-        $this->setHttpFixtures($httpFixtures);
+        $this->httpClientFactory->appendFixtures($httpFixtures);
 
         $listMembers = $this->mailChimpClient->getListMembers(
             $this->container->getParameter('mailchimp_updates_list_id'),
@@ -48,6 +62,13 @@ class ClientTest extends AbstractBaseTestCase
         $this->assertInstanceOf(ListMembers::class, $listMembers);
 
         $this->assertEquals($expectedMemberEmails, $listMembers->getMemberEmails());
+
+
+        $this->assertNotNull(
+            $this->httpClientFactory->getHistory()->getLastRequest()->getHeaderLine('authorization')
+        );
+
+        $this->assertLastRequestAuthorizationHeader();
     }
 
     /**
@@ -90,7 +111,7 @@ class ClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $this->httpClientFactory->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -100,6 +121,8 @@ class ClientTest extends AbstractBaseTestCase
             $this->container->getParameter('mailchimp_updates_list_id'),
             'user@example.com'
         );
+
+        $this->assertLastRequestAuthorizationHeader();
     }
 
     /**
@@ -135,7 +158,7 @@ class ClientTest extends AbstractBaseTestCase
 
     public function testAddListMemberSuccess()
     {
-        $this->setHttpFixtures([
+        $this->httpClientFactory->appendFixtures([
             HttpResponseFactory::createJsonResponse([])
         ]);
 
@@ -143,6 +166,8 @@ class ClientTest extends AbstractBaseTestCase
             $this->container->getParameter('mailchimp_updates_list_id'),
             'user@example.com'
         );
+
+        $this->assertLastRequestAuthorizationHeader();
     }
 
     /**
@@ -162,7 +187,7 @@ class ClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setHttpFixtures($httpFixtures);
+        $this->httpClientFactory->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -172,6 +197,8 @@ class ClientTest extends AbstractBaseTestCase
             $this->container->getParameter('mailchimp_updates_list_id'),
             'user@example.com'
         );
+
+        $this->assertLastRequestAuthorizationHeader();
     }
 
     /**
@@ -207,7 +234,7 @@ class ClientTest extends AbstractBaseTestCase
 
     public function testRemoveListMemberSuccess()
     {
-        $this->setHttpFixtures([
+        $this->httpClientFactory->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -215,14 +242,16 @@ class ClientTest extends AbstractBaseTestCase
             $this->container->getParameter('mailchimp_updates_list_id'),
             'user@example.com'
         );
+
+        $this->assertLastRequestAuthorizationHeader();
     }
 
-    /**
-     * @param array $httpFixtures
-     */
-    private function setHttpFixtures($httpFixtures = [])
+    private function assertLastRequestAuthorizationHeader()
     {
-        $mockSubscriber = new HttpMockSubscriber($httpFixtures);
-        $this->mailChimpClient->getHttpClient()->getEmitter()->attach($mockSubscriber);
+        $authorizationHeader = $this->httpHistory->getLastRequest()->getHeaderLine('authorization');
+        $decodedAuthorizationHeader = base64_decode(str_replace('Basic ', '', $authorizationHeader));
+        $authorizationHeaderParts = explode(':', $decodedAuthorizationHeader);
+
+        $this->assertEquals($this->container->getParameter('mailchimp_api_key'), $authorizationHeaderParts[1]);
     }
 }
