@@ -42,7 +42,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testHas($httpFixtures, $testValues, $canonicalUrl, $testId, $expectedHas)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -110,7 +110,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testGet($httpFixtures, $testValues, $canonicalUrl, $testId, $expectedTestValues)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
