@@ -2,6 +2,7 @@ let formFieldFocuser = require('../../form-field-focuser');
 
 class CookieOptionsModal {
     constructor (element) {
+        this.isAccountRequiredModal = element.classList.contains('account-required-modal');
         this.element = element;
         this.closeButton = element.querySelector('[data-name=close]');
         this.addButton = element.querySelector('.js-add-button');

@@ -1,12 +1,8 @@
-{% if heading is not defined %}
-    {% set heading = 'Heading' %}
-{% endif %}
+{% set heading = heading is defined ? heading : 'Heading' %}
+{% set id = id is defined ? id : 'account-required-modal' %}
+{% set additional_classes = additional_classes is defined ? additional_classes : '' %}
 
-{% if id is not defined %}
-    {% set id = 'account-required-modal' %}
-{% endif %}
-
-<div class="modal" id="{{ id }}">
+<div class="modal {{ additional_classes }}" id="{{ id }}">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
