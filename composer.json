@@ -40,7 +40,8 @@
         "webignition/resque-job-factory": ">=0.1.1,<1.0",
         "webignition/php-ie-detector": ">=0.2,<1",
         "webignition/simplytestable-user-model": ">=0.1,<1",
-        "webignition/simplytestable-user-serializer": ">=1.1,<2"
+        "webignition/simplytestable-user-serializer": ">=1.1,<2",
+        "webignition/guzzle-http-authentication-middleware": ">=0.2,<1"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
