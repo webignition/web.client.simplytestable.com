@@ -4,8 +4,8 @@ namespace SimplyTestable\WebClientBundle\Exception;
 
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use webignition\GuzzleHttp\Exception\CurlException\Exception as CurlException;
 
 class CoreApplicationRequestException extends \Exception

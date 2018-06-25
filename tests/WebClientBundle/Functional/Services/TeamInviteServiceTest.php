@@ -2,7 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Services\TeamInvite;
 
-use GuzzleHttp\Post\PostBody;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -55,7 +54,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -123,7 +122,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testGetSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => self::TEAM_NAME,
                 'user' => self::USERNAME,
@@ -138,12 +137,15 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
         $this->assertEquals(self::TOKEN, $invite->getToken());
         $this->assertEquals(self::USERNAME, $invite->getUser());
-        $this->assertEquals('http://null/team/invite/user@example.com/', $this->getLastRequest()->getUrl());
+        $this->assertEquals(
+            'http://null/team/invite/user@example.com/',
+            $this->httpHistory->getLastRequestUrl()
+        );
     }
 
     public function testGetForUserSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 [
                     'team' => self::TEAM_NAME,
@@ -163,7 +165,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
         $this->assertEquals(self::TOKEN, $invite->getToken());
         $this->assertEquals(self::USERNAME, $invite->getUser());
-        $this->assertEquals('http://null/team/user/invites/', $this->getLastRequest()->getUrl());
+        $this->assertEquals('http://null/team/user/invites/', $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -177,7 +179,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testDeclineInvite(array $httpFixtures, $expectedReturnValue)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $invite = new Invite([
             'team' => self::TEAM_NAME,
@@ -187,13 +189,13 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($expectedReturnValue, $returnValue);
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals('http://null/team/invite/decline/', $lastRequest->getUrl());
-        $this->assertEquals(self::TEAM_NAME, $requestBody->getField('team'));
+        $this->assertEquals('http://null/team/invite/decline/', $lastRequest->getUri());
+        $this->assertEquals(self::TEAM_NAME, $postedData['team']);
     }
 
     /**
@@ -207,7 +209,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testAcceptInvite(array $httpFixtures, $expectedReturnValue)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $invite = new Invite([
             'team' => self::TEAM_NAME,
@@ -217,18 +219,18 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($expectedReturnValue, $returnValue);
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals('http://null/team/invite/accept/', $lastRequest->getUrl());
-        $this->assertEquals(self::TEAM_NAME, $requestBody->getField('team'));
+        $this->assertEquals('http://null/team/invite/accept/', $lastRequest->getUri());
+        $this->assertEquals(self::TEAM_NAME, $postedData['team']);
     }
 
     public function testGetForTeamSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 [
                     'team' => self::TEAM_NAME,
@@ -248,7 +250,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals(self::TEAM_NAME, $invite->getTeam());
         $this->assertEquals(self::TOKEN, $invite->getToken());
         $this->assertEquals(self::USERNAME, $invite->getUser());
-        $this->assertEquals('http://null/team/invites/', $this->getLastRequest()->getUrl());
+        $this->assertEquals('http://null/team/invites/', $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -262,7 +264,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testRemoveForUser(array $httpFixtures, $expectedReturnValue)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $invite = new Invite([
             'team' => self::TEAM_NAME,
@@ -272,7 +274,10 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $returnValue = $this->teamInviteService->removeForUser($invite);
 
         $this->assertEquals($expectedReturnValue, $returnValue);
-        $this->assertEquals('http://null/team/invite/user@example.com/remove/', $this->getLastRequest()->getUrl());
+        $this->assertEquals(
+            'http://null/team/invite/user@example.com/remove/',
+            $this->httpHistory->getLastRequestUrl()
+        );
     }
 
     /**
@@ -286,7 +291,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testGetForTokenSuccess(array $httpFixtures, $expectedReturnValue)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $invite = $this->teamInviteService->getForToken(self::TOKEN);
 
@@ -324,7 +329,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testGetForTokenInvalidAdminCredentials()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
