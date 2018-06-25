@@ -2,6 +2,7 @@ let formFieldFocuser = require('../../form-field-focuser');
 
 class HttpAuthenticationOptionsModal {
     constructor (element) {
+        this.isAccountRequiredModal = element.classList.contains('account-required-modal');
         this.element = element;
         this.usernameInput = element.querySelector('[name=http-auth-username]');
         this.passwordInput = element.querySelector('[name=http-auth-password]');

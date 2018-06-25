@@ -23,26 +23,28 @@ class CookieOptions {
     };
 
     init () {
-        let modalCloseEventListener = () => {
-            if (this.cookieOptionsModal.isEmpty()) {
-                this.statusElement.innerText = 'not enabled';
-                this.actionBadge.markNotEnabled();
-            } else {
-                this.statusElement.innerText = 'enabled';
-                this.actionBadge.markEnabled();
-            }
-        };
+        if (!this.cookieOptionsModal.isAccountRequiredModal) {
+            let modalCloseEventListener = () => {
+                if (this.cookieOptionsModal.isEmpty()) {
+                    this.statusElement.innerText = 'not enabled';
+                    this.actionBadge.markNotEnabled();
+                } else {
+                    this.statusElement.innerText = 'enabled';
+                    this.actionBadge.markEnabled();
+                }
+            };
 
-        this.cookieOptionsModal.init();
+            this.cookieOptionsModal.init();
 
-        this.cookieOptionsModal.element.addEventListener(CookieOptionsModal.getOpenedEventName(), () => {
-            this.document.dispatchEvent(new CustomEvent(CookieOptions.getModalOpenedEventName()));
-        });
+            this.cookieOptionsModal.element.addEventListener(CookieOptionsModal.getOpenedEventName(), () => {
+                this.document.dispatchEvent(new CustomEvent(CookieOptions.getModalOpenedEventName()));
+            });
 
-        this.cookieOptionsModal.element.addEventListener(CookieOptionsModal.getClosedEventName(), () => {
-            modalCloseEventListener();
-            this.document.dispatchEvent(new CustomEvent(CookieOptions.getModalClosedEventName()));
-        });
+            this.cookieOptionsModal.element.addEventListener(CookieOptionsModal.getClosedEventName(), () => {
+                modalCloseEventListener();
+                this.document.dispatchEvent(new CustomEvent(CookieOptions.getModalClosedEventName()));
+            });
+        }
     };
 }
 
