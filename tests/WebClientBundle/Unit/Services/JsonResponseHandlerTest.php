@@ -2,7 +2,7 @@
 
 namespace Tests\WebClientBundle\Unit\Services;
 
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Services\JsonResponseHandler;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;

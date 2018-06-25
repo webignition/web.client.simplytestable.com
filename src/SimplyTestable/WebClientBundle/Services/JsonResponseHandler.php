@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 
 class JsonResponseHandler
@@ -18,7 +18,7 @@ class JsonResponseHandler
      */
     public function handle(ResponseInterface $response)
     {
-        $responseContentType = $response->getHeader('content-type');
+        $responseContentType = $response->getHeaderLine('content-type');
 
         if (self::APPLICATION_JSON_CONTENT_TYPE !== $responseContentType) {
             throw new InvalidContentTypeException($responseContentType);
