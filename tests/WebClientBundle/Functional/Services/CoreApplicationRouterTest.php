@@ -147,6 +147,11 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
         ];
     }
 
+    public function testGetHost()
+    {
+        $this->assertEquals('null', $this->coreApplicationRouter->getHost());
+    }
+
     /**
      * @param array $parameters
      *
