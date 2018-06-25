@@ -166,7 +166,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param string $userName
      * @param array $options
-     * @param string $expectedAuthorizationHeader
+     * @param string $expectedAuthorizationHeaderUser
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
@@ -175,7 +175,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         array $httpFixtures,
         $userName,
         array $options,
-        $expectedAuthorizationHeader
+        $expectedAuthorizationHeaderUser
     ) {
         $userManager = $this->container->get(UserManager::class);
 
@@ -185,10 +185,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $response = $this->coreApplicationHttpClient->get('team_get', [], $options);
         $this->assertNull($response);
 
-        $this->assertEquals(
-            $expectedAuthorizationHeader,
-            $this->httpHistory->getLastRequest()->getHeaderLine('authorization')
-        );
+        $authorizationHeader = $this->httpHistory->getLastRequest()->getHeaderLine('authorization');
+        $decodedAuthorizationHeader = base64_decode(str_replace('Basic ', '', $authorizationHeader));
+        $authorizationHeaderParts = explode(':', $decodedAuthorizationHeader);
+
+        $this->assertEquals($expectedAuthorizationHeaderUser, $authorizationHeaderParts[0]);
     }
 
     /**
@@ -207,7 +208,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         array $httpFixtures,
         $userName,
         array $options,
-        $expectedAuthorizationHeader
+        $expectedAuthorizationHeaderUser
     ) {
         $userManager = $this->container->get(UserManager::class);
 
@@ -217,10 +218,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $response = $this->coreApplicationHttpClient->post('team_get', [], $options);
         $this->assertNull($response);
 
-        $this->assertEquals(
-            $expectedAuthorizationHeader,
-            $this->httpHistory->getLastRequest()->getHeaderLine('authorization')
-        );
+        $authorizationHeader = $this->httpHistory->getLastRequest()->getHeaderLine('authorization');
+        $decodedAuthorizationHeader = base64_decode(str_replace('Basic ', '', $authorizationHeader));
+        $authorizationHeaderParts = explode(':', $decodedAuthorizationHeader);
+
+        $this->assertEquals($expectedAuthorizationHeaderUser, $authorizationHeaderParts[0]);
     }
 
     /**
@@ -411,7 +413,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'httpFixtures' => array_fill(0, 6, $serviceUnavailableResponse),
                 'user' => 'public',
                 'options' => [],
-                'expectedAuthorizationHeader' => self::PUBLIC_USER_AUTHORIZATION_HEADER,
+                'expectedAuthorizationHeaderUser' => 'public',
             ],
         ], $this->postRequestDoesNotThrowExceptionDataProvider());
     }
@@ -428,7 +430,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'user' => 'admin',
                 'options' => [],
-                'expectedAuthorizationHeader' => self::ADMIN_USER_AUTHORIZATION_HEADER,
+                'expectedAuthorizationHeaderUser' => 'admin',
             ],
             'invalid admin credentials; 403' => [
                 'httpFixtures' => [
@@ -436,7 +438,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'user' => 'admin',
                 'options' => [],
-                'expectedAuthorizationHeader' => self::ADMIN_USER_AUTHORIZATION_HEADER,
+                'expectedAuthorizationHeaderUser' => 'admin',
             ],
         ];
     }
