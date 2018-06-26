@@ -275,7 +275,6 @@ class CoreApplicationHttpClient
             $user->getPassword(),
             $this->router->getHost()
         ));
-        $this->httpAuthenticationMiddleware->setIsSingleUse(true);
 
         $response = $this->responseCache->get($request);
 
