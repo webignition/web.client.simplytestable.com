@@ -53,7 +53,7 @@ class CardControllerTest extends AbstractUserAccountControllerTest
         $userManager = $this->container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
         $this->client->request(
             'POST',
             $this->createRequestUrl(self::ROUTE_NAME, [

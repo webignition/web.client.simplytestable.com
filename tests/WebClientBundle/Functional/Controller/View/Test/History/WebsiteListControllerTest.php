@@ -10,14 +10,30 @@ use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class WebsiteListControllerTest extends AbstractBaseTestCase
 {
     const ROUTE_NAME = 'view_test_history_websitelist_index';
 
+    /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+    }
+
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -37,7 +53,7 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([]),
         ]);
@@ -71,7 +87,7 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
         $user = SystemUserService::getPublicUser();
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $websiteListController = $this->container->get(WebsiteListController::class);
 

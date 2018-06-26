@@ -11,6 +11,7 @@ use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 use webignition\SimplyTestableUserModel\User;
 
 class UrlLimitControllerTest extends AbstractBaseTestCase
@@ -23,9 +24,24 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
+    /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+    }
+
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -48,7 +64,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidOwnerGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
@@ -89,7 +105,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
 
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($remoteTestData),
         ]);
@@ -228,7 +244,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
             ],
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($remoteTestData),
         ]);
 

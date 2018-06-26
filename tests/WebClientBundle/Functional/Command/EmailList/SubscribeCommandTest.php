@@ -2,13 +2,12 @@
 
 namespace Tests\WebClientBundle\Functional\Command\EmailList;
 
-use GuzzleHttp\Subscriber\Mock as MockSubscriber;
 use SimplyTestable\WebClientBundle\Command\EmailList\SubscribeCommand;
-use SimplyTestable\WebClientBundle\Services\MailChimp\Client;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class SubscribeCommandTest extends AbstractBaseTestCase
 {
@@ -29,12 +28,10 @@ class SubscribeCommandTest extends AbstractBaseTestCase
 
     public function testRun()
     {
-        $mailChimpClient = $this->container->get(Client::class);
-
-        $mockSubscriber = new MockSubscriber([
+        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
-        $mailChimpClient->getHttpClient()->getEmitter()->attach($mockSubscriber);
 
         $input = new ArrayInput([
             SubscribeCommand::ARG_LIST_ID => 'announcements',

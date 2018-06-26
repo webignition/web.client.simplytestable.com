@@ -13,6 +13,7 @@ use Tests\WebClientBundle\Factory\TestFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class PreparingStatsControllerTest extends AbstractBaseTestCase
 {
@@ -21,6 +22,11 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
+
+    /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
 
     /**
      * @var array
@@ -35,9 +41,19 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
         'task_count' => 12,
     ];
 
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+    }
+
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -60,7 +76,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionInvalidOwnerGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
@@ -96,7 +112,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionPublicUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
@@ -128,7 +144,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
      */
     public function testIndexActionRender(array $httpFixtures, array $testValues, array $expectedResponseData)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);

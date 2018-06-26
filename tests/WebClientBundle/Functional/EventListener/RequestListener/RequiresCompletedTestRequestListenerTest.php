@@ -42,7 +42,7 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
         $expectedHasResponse,
         $expectedRedirectUrl = null
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);

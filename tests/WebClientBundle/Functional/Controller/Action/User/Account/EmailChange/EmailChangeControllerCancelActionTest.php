@@ -29,7 +29,7 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
         $userManager = $this->container->get(UserManager::class);
         $userManager->setUser(new User('user@example.com'));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -52,7 +52,7 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
     {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

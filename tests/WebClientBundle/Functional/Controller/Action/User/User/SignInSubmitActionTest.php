@@ -28,7 +28,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
 
     public function testSignInSubmitActionPostRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
@@ -107,7 +107,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     ) {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -172,7 +172,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -260,7 +260,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $expectedResponseHasUserCookie,
         $expectedRedirectUrl
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),

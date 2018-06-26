@@ -2,8 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\View\Test\Results;
 
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
@@ -11,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -116,7 +113,7 @@ class IndexControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
@@ -203,7 +200,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $userManager->setUser(new User(self::USER_EMAIL));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
@@ -236,7 +233,7 @@ class IndexControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionPublicUserGetRequest($website, $testId, $filter, array $httpFixtures)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $router = $this->container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
@@ -311,15 +308,10 @@ class IndexControllerTest extends AbstractViewControllerTest
         $expectedRedirectUrl,
         $expectedRequestUrls
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($user);
-
-        $httpHistory = new HttpHistorySubscriber();
-        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
-
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
         $indexController = $this->container->get(IndexController::class);
@@ -335,17 +327,9 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
         if (empty($expectedRequestUrls)) {
-            $this->assertEquals(0, $httpHistory->count());
+            $this->assertEquals(0, $this->httpHistory->count());
         } else {
-            $requestedUrls = [];
-
-            foreach ($httpHistory as $httpTransaction) {
-                /* @var RequestInterface $guzzleRequest */
-                $guzzleRequest = $httpTransaction['request'];
-                $requestedUrls[] = $guzzleRequest->getUrl();
-            }
-
-            $this->assertEquals($expectedRequestUrls, $requestedUrls);
+            $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
         }
     }
 
@@ -476,7 +460,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
             $testFactory = new TestFactory($this->container);
@@ -825,7 +809,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
             HttpResponseFactory::createJsonResponse($this->remoteTasksData),

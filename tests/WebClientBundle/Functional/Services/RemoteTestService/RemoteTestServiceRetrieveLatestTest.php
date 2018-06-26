@@ -22,7 +22,7 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
         $expectedRequestUrl,
         $expectedLatestTest
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $remoteTest = $this->remoteTestService->retrieveLatest(self::WEBSITE_URL);
 
@@ -31,7 +31,7 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
         if (!is_null($expectedRequestUrl)) {
             $this->assertEquals(
                 $expectedRequestUrl,
-                $this->getLastRequest()->getUrl()
+                $this->httpHistory->getLastRequestUrl()
             );
         }
     }

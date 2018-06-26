@@ -2,8 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\Action\Test;
 
-use GuzzleHttp\Post\PostBody;
-use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use Mockery\Mock;
 use SimplyTestable\WebClientBundle\Controller\Action\Test\StartController;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
@@ -11,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityTestConfiguration;
 use SimplyTestable\WebClientBundle\Services\Configuration\TestOptionsConfiguration;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
@@ -22,7 +19,9 @@ use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 use webignition\SimplyTestableUserModel\User;
+use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class StartControllerTest extends AbstractBaseTestCase
 {
@@ -36,6 +35,16 @@ class StartControllerTest extends AbstractBaseTestCase
     private $testStartController;
 
     /**
+     * @var HttpHistoryContainer
+     */
+    private $httpHistory;
+
+    /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -43,6 +52,8 @@ class StartControllerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->testStartController = $this->container->get(StartController::class);
+        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
     }
 
     /**
@@ -68,15 +79,10 @@ class StartControllerTest extends AbstractBaseTestCase
         $expectedRequestUrl,
         array $expectedPostData = []
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($user);
-
-        $httpHistory = new HttpHistorySubscriber();
-        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
-
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $session = $this->container->get('session');
         $flashBag = $session->getFlashBag();
@@ -91,17 +97,17 @@ class StartControllerTest extends AbstractBaseTestCase
             $this->assertEquals($value, $flashBag->get($key));
         }
 
-        $lastRequest = $httpHistory->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
         if (empty($expectedRequestUrl)) {
             $this->assertNull($lastRequest);
         } else {
-            $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
+            $this->assertEquals($expectedRequestUrl, $lastRequest->getUri());
 
-            /* @var PostBody $requestBody */
-            $requestBody = $lastRequest->getBody();
+            $postedData = [];
+            parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-            $this->assertEquals($expectedPostData, $requestBody->getFields());
+            $this->assertEquals($expectedPostData, $postedData);
         }
     }
 
@@ -219,11 +225,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
-                    ],
-                    'parameters' => [],
                 ],
             ],
             'HTTP 500' => [
@@ -256,11 +257,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
-                    ],
-                    'parameters' => [],
                 ],
             ],
             'HTTP 500; with http auth' => [
@@ -296,10 +292,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
-                    ],
                     'parameters' => [
                         'http-auth-username' => 'user',
                         'http-auth-password' => 'pass',
@@ -326,11 +318,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
-                    ],
-                    'parameters' => [],
                 ],
             ],
             'success; type=single' => [
@@ -354,11 +341,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
-                    ],
-                    'parameters' => [],
                 ],
             ],
             'success; private user' => [
@@ -382,8 +364,6 @@ class StartControllerTest extends AbstractBaseTestCase
                         'HTML validation',
                     ],
                     'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
                         'JS static analysis' => [
                             'jslint-option-bitwise' => 1,
                             'jslint-option-continue' => 1,
@@ -403,9 +383,7 @@ class StartControllerTest extends AbstractBaseTestCase
                             'jslint-option-white' => 1,
                             'jslint-option-anon' => 1,
                         ],
-                        'Link integrity' => [],
                     ],
-                    'parameters' => [],
                 ],
             ],
             'success; private user; link integrity' => [
@@ -429,8 +407,6 @@ class StartControllerTest extends AbstractBaseTestCase
                         'Link integrity',
                     ],
                     'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
                         'JS static analysis' => [
                             'jslint-option-bitwise' => 1,
                             'jslint-option-continue' => 1,
@@ -456,7 +432,6 @@ class StartControllerTest extends AbstractBaseTestCase
                             ],
                         ],
                     ],
-                    'parameters' => [],
                 ],
             ],
             'success; public user' => [
@@ -479,11 +454,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
-                    ],
-                    'parameters' => [],
                 ],
             ],
             'success; public user; schemeless website' => [
@@ -506,11 +476,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
-                    ],
-                    'parameters' => [],
                 ],
             ],
             'success; public user; http auth' => [
@@ -534,10 +499,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'type' => 'full site',
                     'test-types' => [
                         'HTML validation',
-                    ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
                     ],
                     'parameters' => [
                         'http-auth-username' => 'user',
@@ -567,11 +528,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
-                    ],
-                    'parameters' => [],
                 ],
             ],
             'success; public user; cookies' => [
@@ -599,10 +555,6 @@ class StartControllerTest extends AbstractBaseTestCase
                     'type' => 'full site',
                     'test-types' => [
                         'HTML validation',
-                    ],
-                    'test-type-options' => [
-                        'HTML validation' => [],
-                        'CSS validation' => [],
                     ],
                     'parameters' => [
                         'cookies' => [

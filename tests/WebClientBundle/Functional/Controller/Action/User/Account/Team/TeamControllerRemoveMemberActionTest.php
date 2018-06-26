@@ -30,7 +30,7 @@ class TeamControllerRemoveMemberActionTest extends AbstractTeamControllerTest
 
         $userManager->setUser(new User('user@example.com'));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);

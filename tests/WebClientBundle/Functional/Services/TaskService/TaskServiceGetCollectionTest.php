@@ -35,7 +35,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
         array $expectedTaskDataCollection,
         array $expectedRequestUrls
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $testFactory = new TestFactory($this->container);
 
@@ -91,7 +91,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
             }
         }
 
-        $this->assertEquals($expectedRequestUrls, $this->getRequestedUrls());
+        $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
     }
 
     /**

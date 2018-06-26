@@ -23,7 +23,7 @@ class InviteControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => 'Team Name',
                 'user' => self::INVITE_USERNAME,
@@ -69,7 +69,7 @@ class InviteControllerTest extends AbstractViewControllerTest
         array $flashBagValues,
         Twig_Environment $twig
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $session = $this->container->get('session');
 
@@ -223,7 +223,7 @@ class InviteControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'team' => self::TEAM_NAME,
                 'user' => self::INVITE_USERNAME,

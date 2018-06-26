@@ -53,7 +53,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionParam,
         $expectedExceptionStripeCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         try {
             $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
@@ -103,7 +103,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -154,7 +154,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testAssociateSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -162,7 +162,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals(
             'http://null/user/user@example.com/card/tok_Bb4A2szGLfgwJe/associate/',
-            $this->getLastRequest()->getUrl()
+            $this->httpHistory->getLastRequestUrl()
         );
     }
 }

@@ -22,6 +22,7 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
 {
@@ -29,6 +30,21 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
      * @var IEFilteredRequestListener|RequiresCompletedTestRequestListener|RequiresPrivateUserRequestListener|RequiresValidTestOwnerRequestListener|RequiresValidUserRequestListener
      */
     protected $requestListener;
+
+    /**
+     * @var HttpMockHandler
+     */
+    protected $httpMockHandler;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+    }
 
     /**
      * @param Request $request

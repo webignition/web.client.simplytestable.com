@@ -67,7 +67,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             ]
         ));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'token' => self::CONFIRMATION_TOKEN,
                 'new_email' => self::NEW_EMAIL,
@@ -174,7 +174,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $userManager->setUser($this->user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $request = new Request([], [
             'email' => self::NEW_EMAIL,
@@ -245,7 +245,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $userManager->setUser($this->user);
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
                 'token' => self::CONFIRMATION_TOKEN,
@@ -369,7 +369,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
                 'token' => self::CONFIRMATION_TOKEN,

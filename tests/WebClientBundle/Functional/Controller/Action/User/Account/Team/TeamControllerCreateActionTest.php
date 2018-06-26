@@ -33,7 +33,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 
         $userManager->setUser(new User('user@example.com'));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -78,7 +78,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
     {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

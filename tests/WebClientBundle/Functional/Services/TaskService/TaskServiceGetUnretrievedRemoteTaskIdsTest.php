@@ -28,7 +28,7 @@ class TaskServiceGetUnretrievedRemoteTaskIdsTest extends AbstractTaskServiceTest
         $limit,
         array $expectedUnretrievedRemoteTaskIds
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $testFactory = new TestFactory($this->container);
 

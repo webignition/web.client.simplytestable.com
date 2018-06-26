@@ -31,7 +31,7 @@ class TaskServiceGetTest extends AbstractTaskServiceTest
         $remoteTaskId,
         $expectedTaskData
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $testFactory = new TestFactory($this->container);
 

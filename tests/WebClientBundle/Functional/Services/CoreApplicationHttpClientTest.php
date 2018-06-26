@@ -2,9 +2,8 @@
 
 namespace Tests\WebClientBundle\Functional\Services;
 
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Post\PostBody;
-use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
+use GuzzleHttp\Psr7;
+use Psr\Http\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -15,16 +14,30 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 use webignition\SimplyTestableUserModel\User;
+use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 {
     const USER_EMAIL = 'user@example.com';
+    const PUBLIC_USER_AUTHORIZATION_HEADER = 'Basic cHVibGljOnB1YmxpYw==';
+    const ADMIN_USER_AUTHORIZATION_HEADER = 'Basic YWRtaW46YnR3cEF6bTI=';
 
     /**
      * @var CoreApplicationHttpClient
      */
     private $coreApplicationHttpClient;
+
+    /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
+     * @var HttpHistoryContainer
+     */
+    private $httpHistory;
 
     /**
      * {@inheritdoc}
@@ -34,6 +47,8 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
     }
 
     /**
@@ -55,7 +70,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -83,7 +98,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -112,7 +127,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -141,7 +156,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -156,19 +171,30 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param string $userName
      * @param array $options
+     * @param string $expectedAuthorizationHeaderUser
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function testGetDoesNotThrowException(array $httpFixtures, $userName, array $options)
-    {
+    public function testGetDoesNotThrowException(
+        array $httpFixtures,
+        $userName,
+        array $options,
+        $expectedAuthorizationHeaderUser
+    ) {
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->getUserFromUserName($userName));
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->coreApplicationHttpClient->get('team_get', [], $options);
         $this->assertNull($response);
+
+        $authorizationHeader = $this->httpHistory->getLastRequest()->getHeaderLine('authorization');
+        $decodedAuthorizationHeader = base64_decode(str_replace('Basic ', '', $authorizationHeader));
+        $authorizationHeaderParts = explode(':', $decodedAuthorizationHeader);
+
+        $this->assertEquals($expectedAuthorizationHeaderUser, $authorizationHeaderParts[0]);
     }
 
     /**
@@ -177,20 +203,31 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      * @param array $httpFixtures
      * @param string $userName
      * @param array $options
+     * @param string $expectedAuthorizationHeaderUser
      *
+     * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
-     * @throws CoreApplicationReadOnlyException
      */
-    public function testPostDoesNotThrowException(array $httpFixtures, $userName, array $options)
-    {
+    public function testPostDoesNotThrowException(
+        array $httpFixtures,
+        $userName,
+        array $options,
+        $expectedAuthorizationHeaderUser
+    ) {
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser($this->getUserFromUserName($userName));
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->coreApplicationHttpClient->post('team_get', [], $options);
         $this->assertNull($response);
+
+        $authorizationHeader = $this->httpHistory->getLastRequest()->getHeaderLine('authorization');
+        $decodedAuthorizationHeader = base64_decode(str_replace('Basic ', '', $authorizationHeader));
+        $authorizationHeaderParts = explode(':', $decodedAuthorizationHeader);
+
+        $this->assertEquals($expectedAuthorizationHeaderUser, $authorizationHeaderParts[0]);
     }
 
     /**
@@ -198,7 +235,6 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      *
      * @param array $httpFixtures
      * @param array $options
-     *
      * @param ResponseInterface|null $expectedResponse
      *
      * @throws CoreApplicationRequestException
@@ -206,7 +242,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function testGetSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response1 = $this->coreApplicationHttpClient->get('team_get', [], $options);
         $response2 = $this->coreApplicationHttpClient->get('team_get', [], $options);
@@ -215,8 +251,8 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             $this->assertNull($response1);
             $this->assertNull($response2);
         } else {
-            $this->assertEquals((string)$expectedResponse, (string)$response1);
-            $this->assertEquals((string)$expectedResponse, (string)$response2);
+            $this->assertEquals(Psr7\str($expectedResponse), Psr7\str($response1));
+            $this->assertEquals(Psr7\str($expectedResponse), Psr7\str($response2));
         }
     }
 
@@ -233,7 +269,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function testGetAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response1 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
         $response2 = $this->coreApplicationHttpClient->getAsAdmin('team_get', [], $options);
@@ -242,8 +278,8 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             $this->assertNull($response1);
             $this->assertNull($response2);
         } else {
-            $this->assertEquals((string)$expectedResponse, (string)$response1);
-            $this->assertEquals((string)$expectedResponse, (string)$response2);
+            $this->assertEquals(Psr7\str($expectedResponse), Psr7\str($response1));
+            $this->assertEquals(Psr7\str($expectedResponse), Psr7\str($response2));
         }
     }
 
@@ -265,25 +301,21 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             'foo' => 'bar',
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
-
-        $httpHistory = new HttpHistorySubscriber();
-
-        $this->coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
         $response = $this->coreApplicationHttpClient->post('team_get', [], $postData, $options);
 
         if (empty($expectedResponse)) {
             $this->assertNull($response);
         } else {
-            $this->assertEquals((string)$expectedResponse, (string)$response);
+            $this->assertEquals(Psr7\str($expectedResponse), Psr7\str($response));
         }
 
-        $lastRequest = $httpHistory->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals($postData, $requestBody->getFields());
+        $this->assertEquals($postData, $postedData);
     }
 
     /**
@@ -304,25 +336,22 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             'foo' => 'bar',
         ];
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $httpHistory = new HttpHistorySubscriber();
-
-        $this->coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
         $response = $this->coreApplicationHttpClient->postAsAdmin('team_get', [], $postData, $options);
 
         if (empty($expectedResponse)) {
             $this->assertNull($response);
         } else {
-            $this->assertEquals((string)$expectedResponse, (string)$response);
+            $this->assertEquals(Psr7\str($expectedResponse), Psr7\str($response));
         }
 
-        $lastRequest = $httpHistory->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals($postData, $requestBody->getFields());
+        $this->assertEquals($postData, $postedData);
     }
 
     /**
@@ -330,33 +359,32 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function requestSuccessDataProvider()
     {
+        $successResponse = HttpResponseFactory::createSuccessResponse([], 'foo');
+        $redirectResponse = HttpResponseFactory::createRedirectResponse();
+
         return [
             '200; empty body' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse([], 'foo'),
+                    $successResponse,
                 ],
                 'options' => [],
-                'expectedResponse' => HttpResponseFactory::createSuccessResponse([], 'foo'),
+                'expectedResponse' => $successResponse,
             ],
             '302 with redirects disallowed' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createRedirectResponse(),
+                    $redirectResponse,
                 ],
                 'options' => [
                     CoreApplicationHttpClient::OPT_DISABLE_REDIRECT,
                 ],
-                'expectedResponse' => HttpResponseFactory::createRedirectResponse(),
+                'expectedResponse' => $redirectResponse,
             ],
         ];
     }
 
     public function testPreProcessRouteParameters()
     {
-        $httpHistory = new HttpHistorySubscriber();
-
-        $this->coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
-
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'foo' => 'bar',
             ]),
@@ -366,7 +394,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
             'email' => CoreApplicationHttpClient::ROUTE_PARAMETER_USER_PLACEHOLDER,
         ]);
 
-        $this->assertEquals('http://null/user/public/', $httpHistory->getLastRequest()->getUrl());
+        $this->assertEquals('http://null/user/public/', $this->httpHistory->getLastRequest()->getUri());
     }
 
     /**
@@ -374,18 +402,14 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function getRequestDoesNotThrowExceptionDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+
         return array_merge([
             'read only' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                ],
+                'httpFixtures' => array_fill(0, 6, $serviceUnavailableResponse),
                 'user' => 'public',
                 'options' => [],
+                'expectedAuthorizationHeaderUser' => 'public',
             ],
         ], $this->postRequestDoesNotThrowExceptionDataProvider());
     }
@@ -402,6 +426,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'user' => 'admin',
                 'options' => [],
+                'expectedAuthorizationHeaderUser' => 'admin',
             ],
             'invalid admin credentials; 403' => [
                 'httpFixtures' => [
@@ -409,6 +434,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 ],
                 'user' => 'admin',
                 'options' => [],
+                'expectedAuthorizationHeaderUser' => 'admin',
             ],
         ];
     }
@@ -472,14 +498,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function postAsAdminRequestThrowsExceptionDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+
         return array_merge([
             'read only' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                ],
+                'httpFixtures' => array_fill(0, 4, $serviceUnavailableResponse),
                 'options' => [],
                 'expectedException' => CoreApplicationReadOnlyException::class,
                 'expectedExceptionMessage' => '',
@@ -493,14 +516,11 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function postRequestThrowsExceptionDataProvider()
     {
+        $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
+
         return array_merge([
             'read only' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                    HttpResponseFactory::createServiceUnavailableResponse(),
-                ],
+                'httpFixtures' => array_fill(0, 4, $serviceUnavailableResponse),
                 'options' => [],
                 'expectedException' => CoreApplicationReadOnlyException::class,
                 'expectedExceptionMessage' => '',
@@ -514,6 +534,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     public function requestThrowsExceptionDataProvider()
     {
+        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
+        $curl28Exception = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+
         return [
             '404' => [
                 'httpFixtures' => [
@@ -525,28 +548,14 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
                 'expectedExceptionCode' => 404,
             ],
             '500' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                    HttpResponseFactory::createInternalServerErrorResponse(),
-                ],
+                'httpFixtures' => array_fill(0, 6, $internalServerErrorResponse),
                 'options' => [],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
                 'expectedExceptionCode' => 500,
             ],
             'curl exception' => [
-                'httpFixtures' => [
-                    ConnectExceptionFactory::create('CURL/28 Operation timed out'),
-                    ConnectExceptionFactory::create('CURL/28 Operation timed out'),
-                    ConnectExceptionFactory::create('CURL/28 Operation timed out'),
-                    ConnectExceptionFactory::create('CURL/28 Operation timed out'),
-                    ConnectExceptionFactory::create('CURL/28 Operation timed out'),
-                    ConnectExceptionFactory::create('CURL/28 Operation timed out'),
-                ],
+                'httpFixtures' => array_fill(0, 6, $curl28Exception),
                 'options' => [],
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',

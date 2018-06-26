@@ -33,7 +33,7 @@ class TeamInviteControllerRespondInviteActionTest extends AbstractTeamInviteCont
 
         $userManager->setUser(new User('user@example.com'));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -74,7 +74,7 @@ class TeamInviteControllerRespondInviteActionTest extends AbstractTeamInviteCont
      */
     public function testRespondInviteActionSuccess(Request $request)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 

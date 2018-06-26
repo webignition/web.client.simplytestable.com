@@ -28,7 +28,7 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -88,13 +88,12 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
      */
     public function testGetFinishedWebsitesSuccess(array $httpFixtures, $expectedResponse, $expectedRequestUrl)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->remoteTestService->getFinishedWebsites();
 
         $this->assertEquals($expectedResponse, $response);
-
-        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**

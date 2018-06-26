@@ -1,4 +1,5 @@
 <?php
+
 namespace SimplyTestable\WebClientBundle\Services;
 
 use Symfony\Component\Config\FileLocator;
@@ -18,6 +19,11 @@ class CoreApplicationRouter
      * @var RouterInterface
      */
     private $router;
+
+    /**
+     * @var string
+     */
+    private $host;
 
     /**
      * @param $baseUrl
@@ -41,6 +47,9 @@ class CoreApplicationRouter
         );
 
         $this->router->getContext()->setBaseUrl($baseUrl);
+
+        $baseUrlParts = parse_url($baseUrl);
+        $this->host = $baseUrlParts['host'];
     }
 
     /**
@@ -71,6 +80,14 @@ class CoreApplicationRouter
         }
 
         return $url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHost()
+    {
+        return $this->host;
     }
 
     /**

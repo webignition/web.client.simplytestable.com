@@ -73,3 +73,8 @@ services:
       - '%mailchimp_api_key%'
 
   Egulias\EmailValidator\EmailValidator:
+
+  GuzzleHttp\Client:
+    factory: 'SimplyTestable\WebClientBundle\Services\HttpClientFactory:getHttpClient'
+
+  webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware:

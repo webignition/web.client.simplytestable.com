@@ -2,9 +2,8 @@
 
 namespace Tests\WebClientBundle\Factory;
 
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Stream\Stream;
+use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class HttpResponseFactory
 {
@@ -17,23 +16,7 @@ class HttpResponseFactory
      */
     public static function create($statusCode, $headers = [], $body = '')
     {
-        return new Response($statusCode, $headers, Stream::factory($body));
-//
-//        $headersStringParts = [];
-//        foreach ($headers as $key => $value) {
-//            $headersStringParts[] = $key . ':' . $value;
-//        }
-//
-//        $headersString = implode("\n", $headersStringParts);
-//
-//        $message = trim(sprintf(
-//            "HTTP/1.1 %s\n%s\n\n%s",
-//            $statusCode,
-//            $headersString,
-//            $body
-//        ));
-//
-//        return Response::fromMessage($message);
+        return new Response($statusCode, $headers, $body);
     }
 
     /**

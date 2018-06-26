@@ -2,7 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\View\Test\Results\Rejected;
 
-use GuzzleHttp\Subscriber\History as HttpHistorySubscriber;
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\Rejected\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -10,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use SimplyTestable\WebClientBundle\Model\User\Summary as UserSummary;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -82,7 +80,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionInvalidUserGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -99,7 +97,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionInvalidOwnerGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
@@ -125,7 +123,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $userManager->setUser(new User(self::USER_EMAIL));
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createForbiddenResponse(),
         ]);
@@ -154,7 +152,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         array $userData,
         array $expectedLeadContentContains
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($remoteTestData),
             HttpResponseFactory::createJsonResponse($userData),
@@ -302,12 +300,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $expectedRedirectUrl,
         $expectedRequestUrl
     ) {
-        $coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-
-        $httpHistory = new HttpHistorySubscriber();
-        $coreApplicationHttpClient->getHttpClient()->getEmitter()->attach($httpHistory);
-
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
         $indexController = $this->container->get(IndexController::class);
@@ -317,7 +310,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, $httpHistory->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -366,7 +359,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
         $indexController = $this->container->get(IndexController::class);
@@ -493,7 +486,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 

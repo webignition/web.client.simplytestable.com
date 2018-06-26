@@ -2,7 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Model\StripeError;
 
 class StripeErrorFactory
@@ -31,7 +31,7 @@ class StripeErrorFactory
             $errorValue = '';
 
             if ($response->hasHeader($headerKey)) {
-                $headerValue = $response->getHeader($headerKey);
+                $headerValue = $response->getHeaderLine($headerKey);
 
                 if (!empty($headerValue)) {
                     $errorValue = $headerValue;

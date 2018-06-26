@@ -2,7 +2,6 @@
 
 namespace Tests\WebClientBundle\Functional\Services;
 
-use GuzzleHttp\Post\PostBody;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
@@ -60,7 +59,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -126,24 +125,19 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testResetPasswordSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->userService->resetPassword('token', 'password value');
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals('http://null/user/reset-password/token/', $lastRequest->getUrl());
-        $this->assertEquals(
-            [
-                'password' => 'password%20value',
-            ],
-            $requestBody->getFields()
-        );
+        $this->assertEquals('http://null/user/reset-password/token/', $lastRequest->getUri());
+        $this->assertEquals(['password' => 'password%20value'], $postedData);
     }
 
     /**
@@ -155,10 +149,10 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     public function testAuthenticate(array $httpFixtures, $expectedAuthenticateReturnValue)
     {
         $this->userManager->setUser($this->user);
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->assertEquals($expectedAuthenticateReturnValue, $this->userService->authenticate());
-        $this->assertEquals('http://null/user/user@example.com/authenticate/', $this->getLastRequest()->getUrl());
+        $this->assertEquals('http://null/user/user@example.com/authenticate/', $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -207,7 +201,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -287,7 +281,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $coupon,
         array $expectedPostFields
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -298,13 +292,13 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
             $coupon
         );
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals('http://null/user/create/', $lastRequest->getUrl());
-        $this->assertEquals($expectedPostFields, $requestBody->getFields());
+        $this->assertEquals('http://null/user/create/', (string)$lastRequest->getUri());
+        $this->assertEquals($expectedPostFields, $postedData);
     }
 
     /**
@@ -360,7 +354,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -425,15 +419,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testActivateSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->userService->activate('token-value');
-
-        $lastRequest = $this->getLastRequest();
-
-        $this->assertEquals('http://null/user/activate/token-value/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/user/activate/token-value/', $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -454,7 +445,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $invite = new Invite([
             'token' => 'token-value',
@@ -518,7 +509,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testActivateAndAcceptSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -528,24 +519,24 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->userService->activateAndAccept($invite, 'password-value');
 
-        $lastRequest = $this->getLastRequest();
+        $lastRequest = $this->httpHistory->getLastRequest();
 
-        /* @var PostBody $requestBody */
-        $requestBody = $lastRequest->getBody();
+        $postedData = [];
+        parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals('http://null/team/invite/activate/accept/', $lastRequest->getUrl());
+        $this->assertEquals('http://null/team/invite/activate/accept/', (string)$lastRequest->getUri());
         $this->assertEquals(
             [
                 'token' => 'token-value',
                 'password' => 'password-value',
             ],
-            $requestBody->getFields()
+            $postedData
         );
     }
 
     public function testExistsInvalidAdminCredentials()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -572,7 +563,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedReturnValue,
         $expectedRequestUrl
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($user)) {
             $this->userManager->setUser($user);
@@ -580,10 +571,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
         $this->assertEquals($expectedReturnValue, $this->userService->exists($email));
-
-        $lastRequest = $this->getLastRequest();
-
-        $this->assertEquals($expectedRequestUrl, $lastRequest->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -633,10 +621,10 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testIsEnabled(array $httpFixtures, $expectedIsEnabled, $expectedLastRequestUrl)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->assertEquals($expectedIsEnabled, $this->userService->isEnabled('user@example.com'));
-        $this->assertEquals($expectedLastRequestUrl, $this->getLastRequest()->getUrl());
+        $this->assertEquals($expectedLastRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -678,14 +666,14 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     {
         $token = 'token-value';
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($token),
         ]);
 
         $retrievedToken = $this->userService->getConfirmationToken('user@example.com');
 
         $this->assertEquals($token, $retrievedToken);
-        $this->assertEquals('http://null/user/user@example.com/token/', $this->getLastRequest()->getUrl());
+        $this->assertEquals('http://null/user/user@example.com/token/', $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -706,7 +694,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -767,7 +755,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     {
         $this->userManager->setUser($user);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'email' => 'basic-not-in-team@example.com',
                 'user_plan' => [
@@ -794,7 +782,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $userSummary = $this->userService->getSummary();
 
         $this->assertInstanceOf(Summary::class, $userSummary);
-        $this->assertEquals($expectedRequestUrl, $this->getLastRequest()->getUrl());
+        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
     /**

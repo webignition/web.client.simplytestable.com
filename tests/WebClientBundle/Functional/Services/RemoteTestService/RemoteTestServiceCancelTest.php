@@ -26,7 +26,7 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 
         $this->setRemoteTestServiceTest($this->test);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
     }
@@ -35,7 +35,10 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
     {
         $this->remoteTestService->cancel();
 
-        $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/cancel/', $this->getLastRequest()->getUrl());
+        $this->assertEquals(
+            'http://null/job/http%3A%2F%2Fexample.com%2F/1/cancel/',
+            $this->httpHistory->getLastRequestUrl()
+        );
     }
 
     public function testCancelByTestProperties()
@@ -44,7 +47,7 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Ffoo.example.com/2/cancel/',
-            $this->getLastRequest()->getUrl()
+            $this->httpHistory->getLastRequestUrl()
         );
     }
 }

@@ -53,7 +53,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionParam,
         $expectedExceptionStripeCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         try {
             $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
@@ -103,7 +103,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
         $expectedExceptionMessage,
         $expectedExceptionCode
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->expectException($expectedException);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -154,7 +154,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
 
     public function testSubscribeSuccess()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -162,7 +162,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
 
         $this->assertEquals(
             'http://null/user/user@example.com/personal/subscribe/',
-            $this->getLastRequest()->getUrl()
+            $this->httpHistory->getLastRequestUrl()
         );
     }
 }

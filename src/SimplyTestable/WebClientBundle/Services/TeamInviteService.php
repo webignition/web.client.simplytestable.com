@@ -55,8 +55,8 @@ class TeamInviteService
 
                 if ($response->getStatusCode() == 400 && $response->hasHeader('X-TeamInviteGet-Error-Code')) {
                     throw new TeamServiceException(
-                        (string)$response->getHeader('X-TeamInviteGet-Error-Message'),
-                        (int)(string)$response->getHeader('X-TeamInviteGet-Error-Code')
+                        $response->getHeaderLine('X-TeamInviteGet-Error-Message'),
+                        (int)$response->getHeaderLine('X-TeamInviteGet-Error-Code')
                     );
                 }
             }

@@ -17,6 +17,7 @@ use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as Mai
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class ConfirmControllerTest extends AbstractBaseTestCase
 {
@@ -30,6 +31,11 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     private $confirmController;
 
     /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -37,6 +43,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->confirmController = $this->container->get(ConfirmController::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
     }
 
     public function testResendActionPostRequest()
@@ -53,7 +60,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
         $mailService->setPostmarkMessage($postmarkMessage);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
@@ -81,7 +88,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     {
         $session = $this->container->get('session');
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
@@ -105,7 +112,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         $session = $this->container->get('session');
         $mailService = $this->container->get(MailService::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
@@ -161,7 +168,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);
@@ -236,7 +243,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         $mailService = $this->container->get(MailService::class);
         $postmarkSender = $this->container->get(PostmarkSender::class);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
         ]);

@@ -10,6 +10,7 @@ use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class TestControllerTest extends AbstractBaseTestCase
 {
@@ -21,6 +22,11 @@ class TestControllerTest extends AbstractBaseTestCase
      * @var TestController
      */
     private $testController;
+
+    /**
+     * @var HttpMockHandler
+     */
+    private $httpMockHandler;
 
     /**
      * @var array
@@ -47,6 +53,7 @@ class TestControllerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->testController = $this->container->get(TestController::class);
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
     }
 
     /**
@@ -58,7 +65,7 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     public function testLockUnlockActionGetRequest(array $httpFixtures, $routeName, array $routeParameters)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->client->request(
             'GET',
@@ -133,7 +140,7 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     public function testCancelActionGetRequest(array $httpFixtures, $expectedRedirectUrl)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->client->request(
             'GET',
@@ -206,7 +213,7 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     public function testCancelCrawlActionGetRequest(array $httpFixtures)
     {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->client->request(
             'GET',
@@ -274,7 +281,7 @@ class TestControllerTest extends AbstractBaseTestCase
 
     public function testRetestActionGetRequest()
     {
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                 'id' => 2,
             ])),

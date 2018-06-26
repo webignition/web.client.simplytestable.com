@@ -29,7 +29,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
         array $expectedRemoteTaskIds,
         array $expectedRequestUrls
     ) {
-        $this->setCoreApplicationHttpClientHttpFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $testFactory = new TestFactory($this->container);
 
@@ -38,7 +38,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
         $remoteTaskIds = $this->taskService->getRemoteTaskIds($test);
 
         $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
-        $this->assertEquals($expectedRequestUrls, $this->getRequestedUrls());
+        $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
     }
 
     /**

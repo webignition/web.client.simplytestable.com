@@ -7,9 +7,25 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
 {
+    /**
+     * @var HttpMockHandler
+     */
+    protected $httpMockHandler;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+    }
+
     /**
      * @return array
      */
@@ -26,7 +42,7 @@ abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
         $userManager->setUser(SystemUserService::getPublicUser());
         $requestUrl = $router->generate($routeName);
 
-        $this->setCoreApplicationHttpClientHttpFixtures([
+        $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
