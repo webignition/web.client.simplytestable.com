@@ -16,7 +16,6 @@ services:
     arguments:
       - '@resque'
       - '@logger'
-      - '@webignition\ResqueJobFactory\ResqueJobFactory'
       - '%kernel.environment%'
 
   webignition\SimplyTestableUserSerializer\UserSerializer:
