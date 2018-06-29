@@ -12,7 +12,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use webignition\ResqueJobFactory\ResqueJobFactory;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
@@ -266,7 +265,6 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     {
         return $this->emailChangeController->confirmAction(
             $this->container->get(ResqueQueueService::class),
-            $this->container->get(ResqueJobFactory::class),
             $request
         );
     }

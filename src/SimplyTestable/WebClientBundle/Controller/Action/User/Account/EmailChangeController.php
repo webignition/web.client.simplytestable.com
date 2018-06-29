@@ -9,6 +9,8 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Exception\UserEmailChangeException;
+use SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob;
+use SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -19,7 +21,6 @@ use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as Mai
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
-use webignition\ResqueJobFactory\ResqueJobFactory;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class EmailChangeController extends AbstractUserAccountController
@@ -235,7 +236,6 @@ class EmailChangeController extends AbstractUserAccountController
 
     /**
      * @param ResqueQueueService $resqueQueueService
-     * @param ResqueJobFactory $resqueJobFactory
      * @param Request $request
      * @return RedirectResponse
      *
@@ -247,7 +247,6 @@ class EmailChangeController extends AbstractUserAccountController
      */
     public function confirmAction(
         ResqueQueueService $resqueQueueService,
-        ResqueJobFactory $resqueJobFactory,
         Request $request
     ) {
         if ($this->hasResponse()) {
@@ -311,25 +310,15 @@ class EmailChangeController extends AbstractUserAccountController
         $oldEmail = $username;
         $newEmail = $emailChangeRequest['new_email'];
 
-        $resqueQueueService->enqueue(
-            $resqueJobFactory->create(
-                'email-list-subscribe',
-                [
-                    'listId' => 'announcements',
-                    'email' => $newEmail,
-                ]
-            )
-        );
+        $resqueQueueService->enqueue(new EmailListSubscribeJob([
+            'listId' => 'announcements',
+            'email' => $newEmail,
+        ]));
 
-        $resqueQueueService->enqueue(
-            $resqueJobFactory->create(
-                'email-list-unsubscribe',
-                [
-                    'listId' => 'announcements',
-                    'email' => $oldEmail,
-                ]
-            )
-        );
+        $resqueQueueService->enqueue(new EmailListUnsubscribeJob([
+            'listId' => 'announcements',
+            'email' => $oldEmail,
+        ]));
 
         $user->setUsername($emailChangeRequest['new_email']);
         $this->userManager->setUser($user);
