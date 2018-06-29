@@ -8,7 +8,6 @@ use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use webignition\ResqueJobFactory\ResqueJobFactory;
 
 class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 {
@@ -221,7 +220,6 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
     {
         return $this->userController->signUpConfirmSubmitAction(
             $this->container->get(ResqueQueueService::class),
-            $this->container->get(ResqueJobFactory::class),
             $request,
             $email
         );
