@@ -2,7 +2,6 @@ imports:
     - { resource: services/event-listeners.yml }
     - { resource: services/commands.yml }
     - { resource: services/controllers.yml }
-    - { resource: services/resque-job-factory.yml }
     - { resource: services/redefinitions.yml }
     - { resource: services/configuration.yml }
 
