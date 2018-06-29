@@ -11,6 +11,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
 use SimplyTestable\WebClientBundle\Request\User\SignInRequest;
 use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
+use SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob;
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\RedirectResponseFactory;
 use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFactory;
@@ -30,7 +31,6 @@ use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as Mai
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
-use webignition\ResqueJobFactory\ResqueJobFactory;
 use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use webignition\SimplyTestableUserModel\User;
 
@@ -479,7 +479,6 @@ class UserController extends AbstractController
 
     /**
      * @param ResqueQueueService $resqueQueueService
-     * @param ResqueJobFactory $resqueJobFactory
      * @param Request $request
      * @param string $email
      *
@@ -491,7 +490,6 @@ class UserController extends AbstractController
      */
     public function signUpConfirmSubmitAction(
         ResqueQueueService $resqueQueueService,
-        ResqueJobFactory $resqueJobFactory,
         Request $request,
         $email
     ) {
@@ -543,25 +541,15 @@ class UserController extends AbstractController
             return $failureRedirect;
         }
 
-        $resqueQueueService->enqueue(
-            $resqueJobFactory->create(
-                'email-list-subscribe',
-                [
-                    'listId' => 'announcements',
-                    'email' => $email,
-                ]
-            )
-        );
+        $resqueQueueService->enqueue(new EmailListSubscribeJob([
+            'listId' => 'announcements',
+            'email' => $email,
+        ]));
 
-        $resqueQueueService->enqueue(
-            $resqueJobFactory->create(
-                'email-list-subscribe',
-                [
-                    'listId' => 'introduction',
-                    'email' => $email,
-                ]
-            )
-        );
+        $resqueQueueService->enqueue(new EmailListSubscribeJob([
+            'listId' => 'introduction',
+            'email' => $email,
+        ]));
 
         $flashBag->set('user_signin_confirmation', 'user-activated');
 
