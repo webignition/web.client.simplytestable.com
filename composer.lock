@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6a61cc82606e88a5e4f532f94ecb7a77",
+    "content-hash": "56f9b020d9d5ab373a3da8ec48f857ce",
     "packages": [
         {
             "name": "chrisboulton/php-resque",
@@ -3288,26 +3288,31 @@
         },
         {
             "name": "webignition/html-validation-error-linkifier",
-            "version": "dev-master",
+            "version": "0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/html-validation-error-linkifier.git",
-                "reference": "30abf1b4d5e6d75fbc58259323f2c5150c6ed619"
+                "reference": "598092a34947aebd496a8e18470deb9346a862ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/html-validation-error-linkifier/zipball/30abf1b4d5e6d75fbc58259323f2c5150c6ed619",
-                "reference": "30abf1b4d5e6d75fbc58259323f2c5150c6ed619",
+                "url": "https://api.github.com/repos/webignition/html-validation-error-linkifier/zipball/598092a34947aebd496a8e18470deb9346a862ba",
+                "reference": "598092a34947aebd496a8e18470deb9346a862ba",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0",
-                "webignition/html-validation-error-normaliser": "dev-master"
+                "php": ">=5.6.0",
+                "webignition/html-validation-error-normaliser": "^1"
+            },
+            "require-dev": {
+                "mockery/mockery": "~1",
+                "phpunit/phpunit": "^5",
+                "squizlabs/php_codesniffer": "3.*"
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "": "src/"
+                "psr-4": {
+                    "webignition\\HtmlValidationErrorLinkifier\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3328,29 +3333,33 @@
                 "linkifier",
                 "validation"
             ],
-            "time": "2013-07-31T14:06:18+00:00"
+            "time": "2018-06-29T16:57:52+00:00"
         },
         {
             "name": "webignition/html-validation-error-normaliser",
-            "version": "dev-master",
+            "version": "1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/html-validation-error-normaliser.git",
-                "reference": "28a3459b43a4145cb3a84c6eeca835d0d25e1b35"
+                "reference": "78e03cb9dab2de501d0be3650bc95eefea969373"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/html-validation-error-normaliser/zipball/28a3459b43a4145cb3a84c6eeca835d0d25e1b35",
-                "reference": "28a3459b43a4145cb3a84c6eeca835d0d25e1b35",
+                "url": "https://api.github.com/repos/webignition/html-validation-error-normaliser/zipball/78e03cb9dab2de501d0be3650bc95eefea969373",
+                "reference": "78e03cb9dab2de501d0be3650bc95eefea969373",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.6.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5",
+                "squizlabs/php_codesniffer": "3.*"
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "": "src/"
+                "psr-4": {
+                    "webignition\\HtmlValidationErrorNormaliser\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -3372,7 +3381,7 @@
                 "normalizer",
                 "validation"
             ],
-            "time": "2013-07-24T16:44:57+00:00"
+            "time": "2018-06-29T13:27:26+00:00"
         },
         {
             "name": "webignition/php-ie-detector",
@@ -5352,8 +5361,6 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "webignition/html-validation-error-normaliser": 20,
-        "webignition/html-validation-error-linkifier": 20,
         "stephenfarrell/postmark-bundle": 20,
         "chrisboulton/php-resque": 20,
         "chrisboulton/php-resque-scheduler": 20
