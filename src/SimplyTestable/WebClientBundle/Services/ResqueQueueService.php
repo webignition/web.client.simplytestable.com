@@ -4,7 +4,6 @@ namespace SimplyTestable\WebClientBundle\Services;
 use ResqueBundle\Resque\Resque;
 use Psr\Log\LoggerInterface;
 use ResqueBundle\Resque\Job;
-use webignition\ResqueJobFactory\ResqueJobFactory;
 
 /**
  * Wrapper for \ResqueBundle\Resque that handles exceptions
@@ -35,112 +34,35 @@ class ResqueQueueService
     private $logger;
 
     /**
-     * @var ResqueJobFactory
-     */
-    private $jobFactory;
-
-    /**
      * @param Resque $resque
      * @param string $environment
      * @param LoggerInterface $logger
-     * @param ResqueJobFactory $jobFactoryService
      */
     public function __construct(
         Resque $resque,
         LoggerInterface $logger,
-        ResqueJobFactory $jobFactoryService,
         $environment = 'prod'
     ) {
         $this->resque = $resque;
         $this->logger = $logger;
-        $this->jobFactory = $jobFactoryService;
         $this->environment = $environment;
     }
 
     /**
-     * @param string $queue_name
+     * @param string $queue
      * @param array $args
      *
      * @return bool
      */
-    public function contains($queue_name, $args = null)
+    public function contains($queue, $args = [])
     {
         try {
-            return !is_null($this->findRedisValue($queue_name, $args));
+            return !is_null($this->findJobInQueue($queue, $args));
         } catch (\CredisException $credisException) {
-            $this->logger->warn('ResqueQueueService::enqueue: Redis error ['.$credisException->getMessage().']');
+            $this->logger->warning('ResqueQueueService::contains: Redis error ['.$credisException->getMessage().']');
         }
 
         return false;
-    }
-
-    /**
-     * @param string $queue
-     * @param array $args
-     *
-     * @return string
-     */
-    private function findRedisValue($queue, $args)
-    {
-        $queueLength = $this->getQueueLength($queue);
-
-        for ($queueIndex = 0; $queueIndex < $queueLength; $queueIndex++) {
-            $jobDetails = json_decode(\Resque::redis()->lindex(self::QUEUE_KEY . ':' . $queue, $queueIndex));
-
-            if ($this->match($jobDetails, $queue, $args)) {
-                return json_encode($jobDetails);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $jobDetails
-     * @param string $queue
-     * @param array $args
-     *
-     * @return bool
-     */
-    private function match($jobDetails, $queue, $args)
-    {
-        if (!isset($jobDetails->class)) {
-            return false;
-        }
-
-        if ($jobDetails->class != $this->jobFactory->getJobClassName($queue)) {
-            return false;
-        }
-
-        if (!isset($jobDetails->args)) {
-            return false;
-        }
-
-        if (!isset($jobDetails->args[0])) {
-            return false;
-        }
-
-        foreach ($args as $key => $value) {
-            if (!isset($jobDetails->args[0]->$key)) {
-                return false;
-            }
-
-            if ($jobDetails->args[0]->$key != $value) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * @param string $queue
-     *
-     * @return int
-     */
-    private function getQueueLength($queue)
-    {
-        return \Resque::redis()->llen(self::QUEUE_KEY . ':' . $queue);
     }
 
     /**
@@ -157,7 +79,49 @@ class ResqueQueueService
         try {
             return $this->resque->enqueue($job, $trackStatus);
         } catch (\CredisException $credisException) {
-            $this->logger->warn('ResqueQueueService::enqueue: Redis error ['.$credisException->getMessage().']');
+            $this->logger->warning('ResqueQueueService::enqueue: Redis error ['.$credisException->getMessage().']');
         }
+    }
+
+    /**
+     * @param string $queue
+     * @param array $args
+     *
+     * @return Job|null
+     */
+    private function findJobInQueue($queue, $args)
+    {
+        $jobs = $this->resque->getQueue($queue)->getJobs();
+
+        foreach ($jobs as $job) {
+            /* @var $job Job */
+
+            if ($this->match($job, $args)) {
+                return $job;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Job $job
+     * @param array $args
+     *
+     * @return bool
+     */
+    private function match(Job $job, $args)
+    {
+        foreach ($args as $key => $value) {
+            if (!isset($job->args[$key])) {
+                return false;
+            }
+
+            if ($job->args[$key] != $value) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
