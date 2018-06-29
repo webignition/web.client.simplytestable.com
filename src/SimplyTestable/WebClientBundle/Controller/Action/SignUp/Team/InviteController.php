@@ -7,6 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
+use SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\TeamInviteService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -16,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
-use webignition\ResqueJobFactory\ResqueJobFactory;
 use webignition\SimplyTestableUserModel\User;
 
 class InviteController extends AbstractController
@@ -50,11 +50,6 @@ class InviteController extends AbstractController
     private $resqueQueueService;
 
     /**
-     * @var ResqueJobFactory
-     */
-    private $resqueJobFactory;
-
-    /**
      * @var Session
      */
     private $session;
@@ -65,7 +60,6 @@ class InviteController extends AbstractController
      * @param UserService $userService
      * @param UserManager $userManager
      * @param ResqueQueueService $resqueQueueService
-     * @param ResqueJobFactory $resqueJobFactory
      * @param SessionInterface $session
      */
     public function __construct(
@@ -74,7 +68,6 @@ class InviteController extends AbstractController
         UserService $userService,
         UserManager $userManager,
         ResqueQueueService $resqueQueueService,
-        ResqueJobFactory $resqueJobFactory,
         SessionInterface $session
     ) {
         parent::__construct($router);
@@ -83,7 +76,6 @@ class InviteController extends AbstractController
         $this->userService = $userService;
         $this->userManager = $userManager;
         $this->resqueQueueService = $resqueQueueService;
-        $this->resqueJobFactory = $resqueJobFactory;
         $this->session = $session;
         $this->router = $router;
     }
@@ -159,25 +151,15 @@ class InviteController extends AbstractController
             ));
         }
 
-        $this->resqueQueueService->enqueue(
-            $this->resqueJobFactory->create(
-                'email-list-subscribe',
-                [
-                    'listId' => 'announcements',
-                    'email' => $invite->getUser(),
-                ]
-            )
-        );
+        $this->resqueQueueService->enqueue(new EmailListSubscribeJob([
+            'listId' => 'announcements',
+            'email' => $invite->getUser(),
+        ]));
 
-        $this->resqueQueueService->enqueue(
-            $this->resqueJobFactory->create(
-                'email-list-subscribe',
-                [
-                    'listId' => 'introduction',
-                    'email' => $invite->getUser(),
-                ]
-            )
-        );
+        $this->resqueQueueService->enqueue(new EmailListSubscribeJob([
+            'listId' => 'introduction',
+            'email' => $invite->getUser(),
+        ]));
 
         $user = new User($invite->getUser(), $password);
         $this->userManager->setUser($user);
