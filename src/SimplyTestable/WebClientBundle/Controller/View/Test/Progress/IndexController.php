@@ -2,7 +2,6 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\View\Test\Progress;
 
-use Negotiation\FormatNegotiator;
 use SimplyTestable\WebClientBundle\Controller\View\Test\AbstractRequiresValidOwnerController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
@@ -20,6 +19,7 @@ use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapterFactory as
 use SimplyTestable\WebClientBundle\Services\TestService;
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
+use Symfony\Component\HttpFoundation\AcceptHeader;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -351,10 +351,8 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             return false;
         }
 
-        $negotiator = new FormatNegotiator();
-        $priorities = array('*/*');
-        $format = $negotiator->getBest($request->headers->get('accept'), $priorities);
+        $acceptHeaders = AcceptHeader::fromString($request->headers->get('Accept'))->all();
 
-        return $format->getValue() == 'application/json';
+        return key($acceptHeaders) === 'application/json';
     }
 }
