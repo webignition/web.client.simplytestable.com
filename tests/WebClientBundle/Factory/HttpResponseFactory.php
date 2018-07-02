@@ -21,12 +21,14 @@ class HttpResponseFactory
 
     /**
      * @param mixed $data
+     * @param int $statusCode
      *
      * @return ResponseInterface
      */
-    public static function createJsonResponse($data)
+    public static function createJsonResponse($data, $statusCode = 200)
     {
-        return self::createSuccessResponse(
+        return self::create(
+            $statusCode,
             [
                 'Content-Type' => 'application/json',
             ],
@@ -136,5 +138,20 @@ class HttpResponseFactory
     public static function createRedirectResponse()
     {
         return self::create(302);
+    }
+
+    /**
+     * @param int $statusCode
+     * @param array $responseData
+     *
+     * @return Response
+     */
+    public static function createPostmarkResponse($statusCode, array $responseData)
+    {
+        return new Response(
+            $statusCode,
+            ['Content-Type' => 'application/json'],
+            json_encode($responseData)
+        );
     }
 }
