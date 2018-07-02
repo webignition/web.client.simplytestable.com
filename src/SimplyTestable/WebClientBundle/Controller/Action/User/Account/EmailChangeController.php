@@ -3,14 +3,16 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
 use Egulias\EmailValidator\EmailValidator;
+use Postmark\Models\PostmarkException;
+use Postmark\PostmarkClient;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
-use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Exception\UserEmailChangeException;
 use SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob;
 use SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob;
+use SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration;
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use SimplyTestable\WebClientBundle\Services\UserEmailChangeRequestService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
@@ -21,7 +23,6 @@ use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as Mai
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 
 class EmailChangeController extends AbstractUserAccountController
 {
@@ -74,7 +75,8 @@ class EmailChangeController extends AbstractUserAccountController
     }
 
     /**
-     * @param MailService $mailService
+     * @param MailConfiguration $mailConfiguration
+     * @param PostmarkClient $postmarkClient
      * @param Twig_Environment $twig
      * @param Request $request
      *
@@ -86,8 +88,12 @@ class EmailChangeController extends AbstractUserAccountController
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
-    public function requestAction(MailService $mailService, Twig_Environment $twig, Request $request)
-    {
+    public function requestAction(
+        MailConfiguration $mailConfiguration,
+        PostmarkClient $postmarkClient,
+        Twig_Environment $twig,
+        Request $request
+    ) {
         if ($this->hasResponse()) {
             return $this->response;
         }
@@ -138,7 +144,7 @@ class EmailChangeController extends AbstractUserAccountController
 
         try {
             $this->emailChangeRequestService->createEmailChangeRequest($newEmail);
-            $this->sendEmailChangeConfirmationToken($mailService, $twig);
+            $this->sendEmailChangeConfirmationToken($mailConfiguration, $postmarkClient, $twig);
 
             $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_KEY,
@@ -160,14 +166,14 @@ class EmailChangeController extends AbstractUserAccountController
                 self::FLASH_BAG_EMAIL_VALUE_KEY,
                 $newEmail
             );
-        } catch (PostmarkResponseException $postmarkResponseException) {
+        } catch (PostmarkException $postmarkException) {
             $this->emailChangeRequestService->cancelEmailChangeRequest();
 
-            if ($postmarkResponseException->isNotAllowedToSendException()) {
+            if (405 === $postmarkException->postmarkApiErrorCode) {
                 $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND;
-            } elseif ($postmarkResponseException->isInactiveRecipientException()) {
+            } elseif (406 === $postmarkException->postmarkApiErrorCode) {
                 $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT;
-            } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
+            } elseif (300 === $postmarkException->postmarkApiErrorCode) {
                 $flashMessage = self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID;
             } else {
                 $flashMessage = self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN;
@@ -185,7 +191,8 @@ class EmailChangeController extends AbstractUserAccountController
     }
 
     /**
-     * @param MailService $mailService
+     * @param MailConfiguration $mailConfiguration
+     * @param PostmarkClient $postmarkClient
      * @param Twig_Environment $twig
      *
      * @return RedirectResponse
@@ -195,30 +202,33 @@ class EmailChangeController extends AbstractUserAccountController
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
-    public function resendAction(MailService $mailService, Twig_Environment $twig)
-    {
+    public function resendAction(
+        MailConfiguration $mailConfiguration,
+        PostmarkClient $postmarkClient,
+        Twig_Environment $twig
+    ) {
         if ($this->hasResponse()) {
             return $this->response;
         }
 
         try {
-            $this->sendEmailChangeConfirmationToken($mailService, $twig);
+            $this->sendEmailChangeConfirmationToken($mailConfiguration, $postmarkClient, $twig);
             $this->session->getFlashBag()->set(
                 self::FLASH_BAG_RESEND_SUCCESS_KEY,
                 self::FLASH_BAG_RESEND_MESSAGE_SUCCESS
             );
-        } catch (PostmarkResponseException $postmarkResponseException) {
-            if ($postmarkResponseException->isNotAllowedToSendException()) {
+        } catch (PostmarkException $postmarkException) {
+            if (405 === $postmarkException->postmarkApiErrorCode) {
                 $this->session->getFlashBag()->set(
                     self::FLASH_BAG_RESEND_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
-            } elseif ($postmarkResponseException->isInactiveRecipientException()) {
+            } elseif (406 === $postmarkException->postmarkApiErrorCode) {
                 $this->session->getFlashBag()->set(
                     self::FLASH_BAG_RESEND_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                 );
-            } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
+            } elseif (300 === $postmarkException->postmarkApiErrorCode) {
                 $this->session->getFlashBag()->set(
                     self::FLASH_BAG_RESEND_ERROR_KEY,
                     self::FLASH_BAG_RESEND_ERROR_MESSAGE_EMAIL_INVALID
@@ -354,25 +364,28 @@ class EmailChangeController extends AbstractUserAccountController
     }
 
     /**
-     * @param MailService $mailService
-     *
+     * @param MailConfiguration $mailConfiguration
+     * @param PostmarkClient $postmarkClient
      * @param Twig_Environment $twig
+     *
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
+     * @throws PostmarkException
      */
-    private function sendEmailChangeConfirmationToken(MailService $mailService, Twig_Environment $twig)
-    {
-        $mailServiceConfiguration = $mailService->getConfiguration();
+    private function sendEmailChangeConfirmationToken(
+        MailConfiguration $mailConfiguration,
+        PostmarkClient $postmarkClient,
+        Twig_Environment $twig
+    ) {
         $user = $this->userManager->getUser();
         $userName = $user->getUsername();
 
         $emailChangeRequest = $this->emailChangeRequestService->getEmailChangeRequest($userName);
 
-        $sender = $mailServiceConfiguration->getSender('default');
-        $messageProperties = $mailServiceConfiguration->getMessageProperties('user_email_change_request_confirmation');
+        $sender = $mailConfiguration->getSender('default');
+        $messageProperties = $mailConfiguration->getMessageProperties('user_email_change_request_confirmation');
 
         $confirmationUrl = $this->generateUrl(
             'view_user_account_index_index',
@@ -382,20 +395,20 @@ class EmailChangeController extends AbstractUserAccountController
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $message = $mailService->getNewMessage();
-        $message->setFrom($sender['email'], $sender['name']);
-        $message->addTo($emailChangeRequest['new_email']);
-        $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($twig->render(
-            'SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig',
-            [
-                'current_email' => $userName,
-                'new_email' => $emailChangeRequest['new_email'],
-                'confirmation_url' => $confirmationUrl,
-                'confirmation_code' => $emailChangeRequest['token']
-            ]
-        ));
-
-        $mailService->getSender()->send($message);
+        $postmarkClient->sendEmail(
+            $sender['email'],
+            $emailChangeRequest['new_email'],
+            $messageProperties['subject'],
+            null,
+            $twig->render(
+                'SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig',
+                [
+                    'current_email' => $userName,
+                    'new_email' => $emailChangeRequest['new_email'],
+                    'confirmation_url' => $confirmationUrl,
+                    'confirmation_code' => $emailChangeRequest['token']
+                ]
+            )
+        );
     }
 }
