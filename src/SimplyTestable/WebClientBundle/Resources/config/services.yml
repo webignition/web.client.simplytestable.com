@@ -76,3 +76,7 @@ services:
     factory: 'SimplyTestable\WebClientBundle\Services\HttpClientFactory:getHttpClient'
 
   webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware:
+
+  Postmark\PostmarkClient:
+    arguments:
+      - '%postmark_api_key%'
