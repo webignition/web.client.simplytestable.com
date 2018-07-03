@@ -3,12 +3,9 @@
 namespace Tests\WebClientBundle\Functional\EventListener\Stripe;
 
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
-use SimplyTestable\WebClientBundle\Services\PostmarkSender;
-use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
-use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class OnCustomerSubscriptionTrialWillEndTest extends AbstractListenerTest
 {
@@ -26,20 +23,20 @@ class OnCustomerSubscriptionTrialWillEndTest extends AbstractListenerTest
      * @dataProvider onCustomerSubscriptionTrialWillEndDataProvider
      *
      * @param StripeEvent $event
-     * @param PostmarkMessage $postmarkMessage
+     * @param string[] $expectedEmailProperties
+     *
      * @throws \Twig_Error
      */
-    public function testOnCustomerSubscriptionTrialWillEnd(StripeEvent $event, PostmarkMessage $postmarkMessage)
+    public function testOnCustomerSubscriptionTrialWillEnd(StripeEvent $event, array $expectedEmailProperties)
     {
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
-
-        $mailService->setPostmarkMessage($postmarkMessage);
+        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([
+            PostmarkHttpResponseFactory::createSuccessResponse(),
+        ]);
 
         $this->listener->onCustomerSubscriptionTrialWillEnd($event);
 
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
+        $this->assertPostmarkEmail($expectedEmailProperties);
     }
 
     /**
@@ -57,22 +54,15 @@ class OnCustomerSubscriptionTrialWillEndTest extends AbstractListenerTest
                         'plan_amount' => 900,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Your personal account trial ends in 3 days, payment details needed',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Your personal account trial ends in 3 days, payment details needed',
+                    'TextBody' => [
+                        'trial period for your personal account subscription',
+                        '£9.00 per month',
+                        'add a credit or debit card to your account',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'trial period for your personal account subscription',
-                            '£9.00 per month',
-                            'add a credit or debit card to your account',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'has_card:0, currency:usd' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -84,22 +74,15 @@ class OnCustomerSubscriptionTrialWillEndTest extends AbstractListenerTest
                         'plan_currency' => 'usd',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Your personal account trial ends in 3 days, payment details needed',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Your personal account trial ends in 3 days, payment details needed',
+                    'TextBody' => [
+                        'trial period for your personal account subscription',
+                        '$9.00 per month',
+                        'add a credit or debit card to your account',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'trial period for your personal account subscription',
-                            '$9.00 per month',
-                            'add a credit or debit card to your account',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'has_card:1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -110,20 +93,13 @@ class OnCustomerSubscriptionTrialWillEndTest extends AbstractListenerTest
                         'plan_amount' => 900,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Your personal account trial ends in 3 days',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Your personal account trial ends in 3 days',
+                    'TextBody' => [
+                        'trial period for your personal account subscription',
+                        '£9.00 per month',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'trial period for your personal account subscription',
-                            '£9.00 per month',
-                        ])),
-                    ]
-                ),
+                ],
             ],
         ];
     }

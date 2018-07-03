@@ -5,10 +5,10 @@ namespace Tests\WebClientBundle\Functional\EventListener\Stripe;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
 use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
 {
@@ -26,20 +26,20 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
      * @dataProvider onCustomerSubscriptionUpdatedDataProvider
      *
      * @param StripeEvent $event
-     * @param PostmarkMessage $postmarkMessage
+     * @param string[] $expectedEmailProperties
+     *
      * @throws \Twig_Error
      */
-    public function testOnCustomerSubscriptionUpdated(StripeEvent $event, PostmarkMessage $postmarkMessage)
+    public function testOnCustomerSubscriptionUpdated(StripeEvent $event, array $expectedEmailProperties)
     {
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
-
-        $mailService->setPostmarkMessage($postmarkMessage);
+        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([
+            PostmarkHttpResponseFactory::createSuccessResponse(),
+        ]);
 
         $this->listener->onCustomerSubscriptionUpdated($event);
 
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
+        $this->assertPostmarkEmail($expectedEmailProperties);
     }
 
     /**
@@ -60,21 +60,14 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
                         'trial_end' => (new \DateTime('2018-09-01'))->format('U'),
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] You\'ve changed to the agency plan',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] You\'ve changed to the agency plan',
+                    'TextBody' => [
+                        'switched to our agency plan at £12.00 per month',
+                        'personal subscription will be pro-rata',
+                        'agency subscription will be pro-rata',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'switched to our agency plan at £12.00 per month',
-                            'personal subscription will be pro-rata',
-                            'agency subscription will be pro-rata',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'plan_change:1, subscription_status:active, currency:usd' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -89,21 +82,14 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
                         'currency' => 'usd',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] You\'ve changed to the agency plan',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] You\'ve changed to the agency plan',
+                    'TextBody' => [
+                        'switched to our agency plan at $12.00 per month',
+                        'personal subscription will be pro-rata',
+                        'agency subscription will be pro-rata',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'switched to our agency plan at $12.00 per month',
-                            'personal subscription will be pro-rata',
-                            'agency subscription will be pro-rata',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'plan_change:1, subscription_status:trialing' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -117,20 +103,13 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
                         'trial_end' => (new \DateTime('2018-09-01'))->format('U'),
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] You\'ve changed to the agency plan',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] You\'ve changed to the agency plan',
+                    'TextBody' => [
+                        'switched to our agency plan',
+                        ' free until 1 September 2018',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'switched to our agency plan',
-                            ' free until 1 September 2018',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'transition:trialing_to_active; has_card:0' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -143,20 +122,14 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
                         'plan_name' => 'Personal',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Premium trial has ended, you\'ve been dropped down to our free plan',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Premium trial has ended, you\'ve been dropped down to our '
+                        .'free plan',
+                    'TextBody' => [
+                        'trial of our personal plan has come to an end',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'trial of our personal plan has come to an end',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'transition:trialing_to_active; has_card:1, currency:default' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -170,21 +143,15 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
                         'plan_amount' => 900,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Premium trial has ended, payment for the next month will be taken soon',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Premium trial has ended, payment for the next month '
+                        .'will be taken soon',
+                    'TextBody' => [
+                        'trial of our personal plan has come to an end',
+                        'will be charged £9.00 per month',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'trial of our personal plan has come to an end',
-                            'will be charged £9.00 per month',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'transition:trialing_to_active; has_card:1, currency:usd' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -199,21 +166,15 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
                         'currency' => 'usd',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Premium trial has ended, payment for the next month will be taken soon',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Premium trial has ended, payment for the next month '
+                        .'will be taken soon',
+                    'TextBody' => [
+                        'trial of our personal plan has come to an end',
+                        'will be charged $9.00 per month',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'trial of our personal plan has come to an end',
-                            'will be charged $9.00 per month',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
         ];
     }
