@@ -30,5 +30,3 @@ services:
 
   Tests\WebClientBundle\Services\PostmarkMessageVerifier:
     public: true
-    arguments:
-      - '@webignition\HttpHistoryContainer\Container'

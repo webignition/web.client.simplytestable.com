@@ -3,23 +3,9 @@
 namespace Tests\WebClientBundle\Services;
 
 use Psr\Http\Message\RequestInterface;
-use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class PostmarkMessageVerifier
 {
-    /**
-     * @var HttpHistoryContainer
-     */
-    private $httpHistoryContainer;
-
-    /**
-     * @param HttpHistoryContainer $httpHistoryContainer
-     */
-    public function __construct(HttpHistoryContainer $httpHistoryContainer)
-    {
-        $this->httpHistoryContainer = $httpHistoryContainer;
-    }
-
     public function verify(array $emailProperties, RequestInterface $emailHttpRequest)
     {
         $messageData = json_decode($emailHttpRequest->getBody()->getContents(), true);
