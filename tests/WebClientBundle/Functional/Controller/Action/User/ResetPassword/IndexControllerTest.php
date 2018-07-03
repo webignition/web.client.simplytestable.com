@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Tests\WebClientBundle\Services\HttpMockHandler;
+use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class IndexControllerTest extends AbstractBaseTestCase
@@ -208,6 +209,8 @@ class IndexControllerTest extends AbstractBaseTestCase
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -225,6 +228,11 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+
+        $postmarkRequest = $httpHistoryContainer->getLastRequest();
+
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
     }
 
     /**
@@ -270,6 +278,9 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionMessageConfirmationUrl()
     {
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
@@ -280,17 +291,28 @@ class IndexControllerTest extends AbstractBaseTestCase
             'email' => self::EMAIL,
         ]));
 
-        $httpHistory = $this->container->get(HttpHistoryContainer::class);
-        $lastMessageBody = json_decode($httpHistory->getLastRequest()->getBody()->getContents(), true);
+        $postmarkRequest = $httpHistoryContainer->getLastRequest();
 
-        $this->assertContains(
-            sprintf(
-                'http://localhost/reset-password/%s/%s/',
-                self::EMAIL,
-                self::CONFIRMATION_TOKEN
-            ),
-            $lastMessageBody['TextBody']
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
+
+        $verificationResult = $postmarkMessageVerifier->verify(
+            [
+                'From' => 'robot@simplytestable.com',
+                'To' => self::EMAIL,
+                'Subject' => '[Simply Testable] Reset your password',
+                'TextBody' => [
+                    sprintf(
+                        'http://localhost/reset-password/%s/%s/',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    ),
+                ],
+            ],
+            $postmarkRequest
         );
+
+        $this->assertTrue($verificationResult, $verificationResult);
     }
 
     public function testResendActionSuccess()

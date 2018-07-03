@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use webignition\SimplyTestableUserModel\User;
+use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class EmailChangeControllerResendActionTest extends AbstractEmailChangeControllerTest
@@ -97,6 +98,8 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     ) {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
 
@@ -113,6 +116,11 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+
+        $postmarkRequest = $httpHistoryContainer->getLastRequest();
+
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
     }
 
     /**
@@ -160,6 +168,8 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     {
         $session = $this->container->get('session');
         $userManager = $this->container->get(UserManager::class);
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
 
@@ -181,16 +191,27 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
             ],
         ], $session->getFlashBag()->peekAll());
 
-        $httpHistory = $this->container->get(HttpHistoryContainer::class);
-        $lastMessageBody = json_decode($httpHistory->getLastRequest()->getBody()->getContents(), true);
+        $postmarkRequest = $httpHistoryContainer->getLastRequest();
 
-        $this->assertContains(
-            sprintf(
-                'http://localhost/account/?token=%s',
-                self::CONFIRMATION_TOKEN
-            ),
-            $lastMessageBody['TextBody']
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
+
+        $verificationResult = $postmarkMessageVerifier->verify(
+            [
+                'From' => 'robot@simplytestable.com',
+                'To' => self::NEW_EMAIL,
+                'Subject' => '[Simply Testable] Confirm your email address change',
+                'TextBody' => [
+                    sprintf(
+                        'http://localhost/account/?token=%s',
+                        self::CONFIRMATION_TOKEN
+                    ),
+                ],
+            ],
+            $postmarkRequest
         );
+
+        $this->assertTrue($verificationResult, $verificationResult);
     }
 
     /**

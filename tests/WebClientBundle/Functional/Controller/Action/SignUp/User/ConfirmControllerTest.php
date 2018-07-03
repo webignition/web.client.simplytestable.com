@@ -13,6 +13,7 @@ use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Tests\WebClientBundle\Services\HttpMockHandler;
+use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class ConfirmControllerTest extends AbstractBaseTestCase
@@ -133,6 +134,8 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -146,6 +149,11 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+
+        $lastRequest = $httpHistoryContainer->getLastRequest();
+
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($lastRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
     }
 
     /**
@@ -184,6 +192,8 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     public function testResendActionSuccess()
     {
         $session = $this->container->get('session');
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -205,16 +215,27 @@ class ConfirmControllerTest extends AbstractBaseTestCase
             $session->getFlashBag()->peekAll()
         );
 
-        $httpHistory = $this->container->get(HttpHistoryContainer::class);
-        $lastMessageBody = json_decode($httpHistory->getLastRequest()->getBody()->getContents(), true);
+        $lastRequest = $httpHistoryContainer->getLastRequest();
 
-        $this->assertContains(
-            sprintf(
-                'http://localhost/signup/confirm/%s/?token=%s',
-                self::EMAIL,
-                self::CONFIRMATION_TOKEN
-            ),
-            $lastMessageBody['TextBody']
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($lastRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
+
+        $verificationResult = $postmarkMessageVerifier->verify(
+            [
+                'From' => 'robot@simplytestable.com',
+                'To' => self::EMAIL,
+                'Subject' => '[Simply Testable] Activate your account',
+                'TextBody' => [
+                    sprintf(
+                        'http://localhost/signup/confirm/%s/?token=%s',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    ),
+                ],
+            ],
+            $httpHistoryContainer->getLastRequest()
         );
+
+        $this->assertTrue($verificationResult, $verificationResult);
     }
 }

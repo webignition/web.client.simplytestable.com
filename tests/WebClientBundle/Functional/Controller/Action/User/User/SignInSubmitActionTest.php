@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
+use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class SignInSubmitActionTest extends AbstractUserControllerTest
@@ -168,6 +169,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     public function testSignInSubmitActionResendConfirmationToken(array $httpFixtures)
     {
         $session = $this->container->get('session');
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures(array_merge($httpFixtures, [
             PostmarkHttpResponseFactory::createSuccessResponse(),
@@ -193,17 +196,28 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             $session->getFlashBag()->peekAll()
         );
 
-        $httpHistory = $this->container->get(HttpHistoryContainer::class);
-        $lastMessageBody = json_decode($httpHistory->getLastRequest()->getBody()->getContents(), true);
+        $lastRequest = $httpHistoryContainer->getLastRequest();
 
-        $this->assertContains(
-            sprintf(
-                'http://localhost/signup/confirm/%s/?token=%s',
-                self::EMAIL,
-                self::CONFIRMATION_TOKEN
-            ),
-            $lastMessageBody['TextBody']
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($lastRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
+
+        $verificationResult = $postmarkMessageVerifier->verify(
+            [
+                'From' => 'robot@simplytestable.com',
+                'To' => self::EMAIL,
+                'Subject' => '[Simply Testable] Activate your account',
+                'TextBody' => [
+                    sprintf(
+                        'http://localhost/signup/confirm/%s/?token=%s',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    ),
+                ],
+            ],
+            $httpHistoryContainer->getLastRequest()
         );
+
+        $this->assertTrue($verificationResult, $verificationResult);
     }
 
     /**
