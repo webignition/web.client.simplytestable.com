@@ -57,13 +57,6 @@ doctrine:
         auto_generate_proxy_classes: '%kernel.debug%'
         auto_mapping: true
 
-mz_postmark:
-    api_key:    '%postmark_api_key%'
-    from_email: '%postmark_from_email%'
-    from_name:  '%postmark_from_name%'
-    use_ssl:    '%postmark_use_ssl%'
-    timeout:    '%postmark_timeout%'
-
 # BCCResqueBundle Configuration
 resque:
     prefix: '%bcc_resque_prefix%'             # optional prefix to separate Resque data per site/app

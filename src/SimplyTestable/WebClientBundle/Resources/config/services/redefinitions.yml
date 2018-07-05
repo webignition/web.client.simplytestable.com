@@ -1,8 +1,4 @@
 services:
-# Fix for MZ\PostmarkBundle uses of postmark.message
-  MZ\PostmarkBundle\Postmark\Message:
-    alias: postmark.message
-
 # Fix for ResqueBundle\Resque\Resque uses of resque
   ResqueBundle\Resque\Resque:
     alias: resque
