@@ -4,6 +4,7 @@ namespace Tests\WebClientBundle\Functional\Services\TestOptions;
 
 use SimplyTestable\WebClientBundle\Services\TaskTypeService;
 use SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use webignition\SimplyTestableUserModel\User;
@@ -274,12 +275,18 @@ class RequestAdapterTest extends AbstractBaseTestCase
 
         $features = $testOptions->getFeatures();
 
-        foreach ($features as $feature) {
-            $expectedFeatureOptions = $expectedFeatureOptionsCollection[$feature];
+        if (count($expectedFeatureOptionsCollection)) {
+            $this->assertCount(count($expectedFeatureOptionsCollection), $features);
 
-            $featureOptions = $testOptions->getFeatureOptions($feature);
+            foreach ($features as $feature) {
+                $expectedFeatureOptions = $expectedFeatureOptionsCollection[$feature];
 
-            $this->assertEquals($expectedFeatureOptions, $featureOptions);
+                $featureOptions = $testOptions->getFeatureOptions($feature);
+
+                $this->assertEquals($expectedFeatureOptions, $featureOptions);
+            }
+        } else {
+            $this->assertSame([], $features);
         }
     }
 
@@ -379,10 +386,20 @@ class RequestAdapterTest extends AbstractBaseTestCase
 
         $testOptions = $this->requestAdapter->getTestOptions();
 
-        foreach ($expectedTestTypeOptionsCollection as $testTypeKey => $expectedTestTypeOptions) {
-            $testTypeOptions = $testOptions->getTestTypeOptions($testTypeKey);
+        if (count($expectedTestTypeOptionsCollection)) {
+            foreach ($expectedTestTypeOptionsCollection as $testTypeKey => $expectedTestTypeOptions) {
+                $testTypeOptions = $testOptions->getTestTypeOptions($testTypeKey);
 
-            $this->assertEquals($expectedTestTypeOptions, $testTypeOptions);
+                $this->assertEquals($expectedTestTypeOptions, $testTypeOptions);
+            }
+        } else {
+            $this->assertSame(
+                [
+                    'http-authentication' => 1,
+                    'cookies' => 1,
+                ],
+                $testOptions->__toKeyArray()
+            );
         }
     }
 
@@ -471,7 +488,30 @@ class RequestAdapterTest extends AbstractBaseTestCase
         return [
             'empty request' => [
                 'requestData' =>  [],
-                'expectedTestTypeOptionsCollection' => [],
+                'expectedTestTypeOptionsCollection' => [
+                    'html-validation' => [],
+                    'css-validation' => [],
+                    'js-static-analysis' => [
+                        'js-static-analysis-jslint-option-bitwise' => 1,
+                        'js-static-analysis-jslint-option-continue' => 1,
+                        'js-static-analysis-jslint-option-debug' => 1,
+                        'js-static-analysis-jslint-option-evil' => 1,
+                        'js-static-analysis-jslint-option-eqeq' => 1,
+                        'js-static-analysis-jslint-option-forin' => 1,
+                        'js-static-analysis-jslint-option-newcap' => 1,
+                        'js-static-analysis-jslint-option-nomen' => 1,
+                        'js-static-analysis-jslint-option-plusplus' => 1,
+                        'js-static-analysis-jslint-option-regexp' => 1,
+                        'js-static-analysis-jslint-option-unparam' => 1,
+                        'js-static-analysis-jslint-option-sloppy' => 1,
+                        'js-static-analysis-jslint-option-stupid' => 1,
+                        'js-static-analysis-jslint-option-sub' => 1,
+                        'js-static-analysis-jslint-option-vars' => 1,
+                        'js-static-analysis-jslint-option-white' => 1,
+                        'js-static-analysis-jslint-option-anon' => 1,
+                    ],
+                    'link-integrity' => [],
+                ],
             ],
             'no test type options' => [
                 'requestData' =>  [
