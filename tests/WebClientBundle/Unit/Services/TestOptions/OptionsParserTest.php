@@ -5,7 +5,7 @@ namespace Tests\WebClientBundle\Unit\Services\TestOptions;
 use SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class OptionsParserTest extends \PHPUnit_Framework_TestCase
+class OptionsParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var OptionsParser

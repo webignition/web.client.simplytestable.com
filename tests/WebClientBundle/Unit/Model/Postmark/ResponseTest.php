@@ -4,7 +4,7 @@ namespace Tests\WebClientBundle\Unit\Model\Postmark;
 
 use SimplyTestable\WebClientBundle\Model\Postmark\Response;
 
-class ResponseTest extends \PHPUnit_Framework_TestCase
+class ResponseTest extends \PHPUnit\Framework\TestCase
 {
     public function testErrorResponse()
     {

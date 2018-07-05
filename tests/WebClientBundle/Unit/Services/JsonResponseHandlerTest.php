@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Services\JsonResponseHandler;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 
-class JsonResponseHandlerTest extends \PHPUnit_Framework_TestCase
+class JsonResponseHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var JsonResponseHandler

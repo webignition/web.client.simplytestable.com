@@ -10,7 +10,7 @@ use SimplyTestable\WebClientBundle\Repository\TaskOutputRepository;
 use SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 
-class TaskOutputFactoryTest extends \PHPUnit_Framework_TestCase
+class TaskOutputFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createDataProvider

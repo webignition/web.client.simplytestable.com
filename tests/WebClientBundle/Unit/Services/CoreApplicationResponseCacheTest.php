@@ -8,7 +8,7 @@ use Psr\Http\Message\RequestInterface;
 use SimplyTestable\WebClientBundle\Services\CoreApplicationResponseCache;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 
-class CoreApplicationResponseCacheTest extends \PHPUnit_Framework_TestCase
+class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var CoreApplicationResponseCache

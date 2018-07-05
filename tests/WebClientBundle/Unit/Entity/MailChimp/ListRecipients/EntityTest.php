@@ -4,7 +4,7 @@ namespace Tests\WebClientBundle\Unit\Entity\MailChimp\ListRecipients;
 
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 
-abstract class EntityTest extends \PHPUnit_Framework_TestCase
+abstract class EntityTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ListRecipients

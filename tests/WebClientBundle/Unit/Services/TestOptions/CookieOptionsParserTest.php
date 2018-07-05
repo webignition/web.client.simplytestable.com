@@ -5,7 +5,7 @@ namespace Tests\WebClientBundle\Unit\Services\TestOptions;
 use SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class CookieOptionsParserTest extends \PHPUnit_Framework_TestCase
+class CookieOptionsParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var CookieOptionsParser

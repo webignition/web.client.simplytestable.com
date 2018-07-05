@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
 use SimplyTestable\WebClientBundle\Services\RedirectResponseFactory;
 use Symfony\Component\Routing\RouterInterface;
 
-class RedirectResponseFactoryTest extends \PHPUnit_Framework_TestCase
+class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createSignInRedirectResponseDataProvider

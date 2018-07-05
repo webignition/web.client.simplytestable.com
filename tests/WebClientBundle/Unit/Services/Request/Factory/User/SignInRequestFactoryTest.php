@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFa
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class SignInRequestFactoryTest extends \PHPUnit_Framework_TestCase
+class SignInRequestFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createDataProvider

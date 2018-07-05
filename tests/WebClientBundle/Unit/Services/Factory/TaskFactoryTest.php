@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Services\Factory\TaskFactory;
 use SimplyTestable\WebClientBundle\Services\Factory\TaskOutputFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
 
-class TaskFactoryTest extends \PHPUnit_Framework_TestCase
+class TaskFactoryTest extends \PHPUnit\Framework\TestCase
 {
     public function testCreate()
     {

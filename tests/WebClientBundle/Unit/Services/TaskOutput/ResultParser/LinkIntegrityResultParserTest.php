@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser;
 use Tests\WebClientBundle\Factory\ModelFactory;
 
-class LinkIntegrityResultParserTest extends \PHPUnit_Framework_TestCase
+class LinkIntegrityResultParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var LinkIntegrityResultParser

@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Model\RemoteTest\Rejection;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class RemoteTestTest extends \PHPUnit_Framework_TestCase
+class RemoteTestTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getStateDataProvider

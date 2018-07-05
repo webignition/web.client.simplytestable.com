@@ -4,7 +4,7 @@ namespace Tests\WebClientBundle\Unit\Services;
 
 use SimplyTestable\WebClientBundle\Services\UrlViewValuesService;
 
-class UrlViewValuesServiceTest extends \PHPUnit_Framework_TestCase
+class UrlViewValuesServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var UrlViewValuesService

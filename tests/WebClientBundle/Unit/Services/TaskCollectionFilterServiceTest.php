@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 
-class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
+class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var string[]

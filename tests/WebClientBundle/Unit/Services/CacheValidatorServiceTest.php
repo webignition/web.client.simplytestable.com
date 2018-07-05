@@ -12,7 +12,7 @@ use Tests\WebClientBundle\Factory\ModelFactory;
 use Symfony\Component\HttpFoundation\Request;
 use webignition\SimplyTestableUserModel\User;
 
-class CacheValidatorServiceTest extends \PHPUnit_Framework_TestCase
+class CacheValidatorServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createResponseDataProvider

@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser;
 use Tests\WebClientBundle\Factory\ModelFactory;
 
-class HtmlValidationResultParserTest extends \PHPUnit_Framework_TestCase
+class HtmlValidationResultParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var HtmlValidationResultParser
