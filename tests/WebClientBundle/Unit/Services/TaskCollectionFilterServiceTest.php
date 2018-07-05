@@ -26,8 +26,8 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
      *
      * @param EntityManagerInterface $entityManager
      * @param Test $test
-     * @param $typeFilter
-     * @param $outcomeFilter
+     * @param string $typeFilter
+     * @param string $outcomeFilter
      */
     public function testGetRemoteIdCount(
         EntityManagerInterface $entityManager,
@@ -41,7 +41,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $taskCollectionFilterService->setTypeFilter($typeFilter);
         $taskCollectionFilterService->setOutcomeFilter($outcomeFilter);
 
-        $taskCollectionFilterService->getRemoteIdCount();
+        $this->assertEquals(0, $taskCollectionFilterService->getRemoteIdCount());
     }
 
     /**
@@ -271,7 +271,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $taskRepository
             ->shouldReceive('getRemoteIdCountByTestAndTaskTypeIncludingStates')
             ->with($test, $taskType, $states)
-            ->andReturn([]);
+            ->andReturn(0);
 
         return $taskRepository;
     }
@@ -377,6 +377,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     protected function tearDown()
     {
         parent::tearDown();
+
+        $this->addToAssertionCount(
+            \Mockery::getContainer()->mockery_getExpectationCount()
+        );
 
         \Mockery::close();
     }
