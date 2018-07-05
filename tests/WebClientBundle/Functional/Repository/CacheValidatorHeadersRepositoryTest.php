@@ -113,18 +113,4 @@ class CacheValidatorHeadersRepositoryTest extends AbstractBaseTestCase
             ],
         ];
     }
-
-    public function testCount()
-    {
-        $this->assertEquals(0, $this->cacheValidatorHeadersRepository->count());
-
-        $this->cacheValidatorHeadersService->get(0);
-        $this->assertEquals(1, $this->cacheValidatorHeadersRepository->count());
-
-        $this->cacheValidatorHeadersService->get(1);
-        $this->assertEquals(2, $this->cacheValidatorHeadersRepository->count());
-
-        $this->cacheValidatorHeadersService->get(2);
-        $this->assertEquals(3, $this->cacheValidatorHeadersRepository->count());
-    }
 }
