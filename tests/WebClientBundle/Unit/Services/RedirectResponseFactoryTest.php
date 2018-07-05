@@ -121,6 +121,10 @@ class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
     {
         parent::tearDown();
 
+        $this->addToAssertionCount(
+            \Mockery::getContainer()->mockery_getExpectationCount()
+        );
+
         \Mockery::close();
     }
 }
