@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword;
 
 use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
 use Postmark\Models\PostmarkException;
 use Postmark\PostmarkClient;
 use SimplyTestable\WebClientBundle\Controller\AbstractController;
@@ -119,7 +120,7 @@ class IndexController extends AbstractController
         ));
 
         $emailValidator = new EmailValidator;
-        if (!$emailValidator->isValid($email)) {
+        if (!$emailValidator->isValid($email, new RFCValidation())) {
             $this->session->getFlashBag()->set(
                 self::FLASH_BAG_REQUEST_ERROR_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID

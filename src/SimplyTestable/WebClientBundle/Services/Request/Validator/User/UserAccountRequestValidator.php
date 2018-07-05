@@ -3,6 +3,7 @@
 namespace SimplyTestable\WebClientBundle\Services\Request\Validator\User;
 
 use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
 use SimplyTestable\WebClientBundle\Request\User\AbstractUserAccountRequest;
 
 class UserAccountRequestValidator
@@ -52,7 +53,7 @@ class UserAccountRequestValidator
             return;
         }
 
-        if (!$this->emailValidator->isValid($email)) {
+        if (!$this->emailValidator->isValid($email, new RFCValidation())) {
             $this->invalidate(AbstractUserAccountRequest::PARAMETER_EMAIL, self::STATE_INVALID);
 
             return;

@@ -2,6 +2,7 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\Account;
 
+use Egulias\EmailValidator\Validation\RFCValidation;
 use Postmark\Models\PostmarkException;
 use Postmark\PostmarkClient;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
@@ -114,7 +115,7 @@ class TeamInviteController extends AbstractUserAccountController
         $username = $user->getUsername();
 
         $emailValidator = new EmailValidator;
-        if (!$emailValidator->isValid($invitee)) {
+        if (!$emailValidator->isValid($invitee, new RFCValidation())) {
             $flashData = [
                 self::FLASH_BAG_KEY_STATUS => self::FLASH_BAG_STATUS_ERROR,
                 self::FLASH_BAG_KEY_ERROR => self::FLASH_BAG_TEAM_INVITE_GET_ERROR_INVITEE_INVALID,

@@ -2,6 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User;
 
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
 use Postmark\Models\PostmarkException;
 use Postmark\PostmarkClient;
 use SimplyTestable\WebClientBundle\Controller\AbstractController;
@@ -26,7 +28,6 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Egulias\EmailValidator\EmailValidator;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
@@ -579,7 +580,7 @@ class UserController extends AbstractController
     {
         $validator = new EmailValidator();
 
-        return $validator->isValid($email);
+        return $validator->isValid($email, new RFCValidation());
     }
 
     /**
