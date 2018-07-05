@@ -59,6 +59,8 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
                 $this->container->getParameter('marketing_site'),
                 $response->getTargetUrl()
             );
+        } else {
+            $this->assertTrue(true);
         }
     }
 

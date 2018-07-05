@@ -106,7 +106,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
 
         $event = $this->createFilterControllerEvent($request, $controller, 'signOutSubmitAction', $requestType);
 
-        $this->requestListener->onKernelController($event);
+        $this->assertNull($this->requestListener->onKernelController($event));
     }
 
     /**
@@ -134,6 +134,6 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
 
         $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 
-        $this->requestListener->onKernelController($event);
+        $this->assertNull($this->requestListener->onKernelController($event));
     }
 }
