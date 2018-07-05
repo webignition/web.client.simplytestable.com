@@ -23,17 +23,4 @@ class CacheValidatorHeadersRepository extends EntityRepository
 
         return $queryBuilder->getQuery()->getResult();
     }
-
-    /**
-     * @return int
-     */
-    public function count()
-    {
-        $queryBuilder = $this->createQueryBuilder('CacheValidatorHeaders');
-        $queryBuilder->select('COUNT(CacheValidatorHeaders.id)');
-
-        $result = $queryBuilder->getQuery()->getResult();
-
-        return $result[0][1];
-    }
 }

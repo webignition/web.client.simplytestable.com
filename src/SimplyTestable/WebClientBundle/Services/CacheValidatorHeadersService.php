@@ -60,7 +60,7 @@ class CacheValidatorHeadersService
      */
     public function count()
     {
-        return $this->entityRepository->count();
+        return $this->entityRepository->count([]);
     }
 
     /**
