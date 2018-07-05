@@ -182,6 +182,6 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
             $this->eventData
         ));
 
-        $this->listener->onCustomerSubscriptionUpdated($event);
+        $this->assertNull($this->listener->onCustomerSubscriptionUpdated($event));
     }
 }
