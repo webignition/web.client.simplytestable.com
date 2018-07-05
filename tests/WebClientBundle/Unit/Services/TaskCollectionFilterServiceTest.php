@@ -41,7 +41,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $taskCollectionFilterService->setTypeFilter($typeFilter);
         $taskCollectionFilterService->setOutcomeFilter($outcomeFilter);
 
-        $this->assertEquals(0, $taskCollectionFilterService->getRemoteIdCount());
+        $this->assertSame(0, $taskCollectionFilterService->getRemoteIdCount());
     }
 
     /**
@@ -153,7 +153,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $taskCollectionFilterService->setTypeFilter($typeFilter);
         $taskCollectionFilterService->setOutcomeFilter($outcomeFilter);
 
-        $taskCollectionFilterService->getRemoteIds();
+        $this->assertSame([], $taskCollectionFilterService->getRemoteIds());
     }
 
     /**
@@ -317,7 +317,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $taskRepository
             ->shouldReceive('getRemoteIdByTestAndTaskTypeIncludingStates')
             ->with($test, $taskType, $states)
-            ->andReturn(0);
+            ->andReturn([]);
 
         return $taskRepository;
     }
