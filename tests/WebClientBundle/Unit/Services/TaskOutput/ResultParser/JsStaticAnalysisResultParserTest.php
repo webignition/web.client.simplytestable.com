@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser;
 use Tests\WebClientBundle\Factory\ModelFactory;
 
-class JsStaticAnalysisResultParserTest extends \PHPUnit_Framework_TestCase
+class JsStaticAnalysisResultParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var JsStaticAnalysisResultParser

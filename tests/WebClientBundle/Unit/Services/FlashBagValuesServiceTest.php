@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
-class FlashBagValuesServiceTest extends \PHPUnit_Framework_TestCase
+class FlashBagValuesServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var FlashBagValues

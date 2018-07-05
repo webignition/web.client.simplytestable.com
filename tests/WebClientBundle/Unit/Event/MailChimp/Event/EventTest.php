@@ -6,7 +6,7 @@ use Tests\WebClientBundle\Unit\BaseTestCase;
 use SimplyTestable\WebClientBundle\Event\MailChimp\Event as MailChimpEvent;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-abstract class EventTest extends \PHPUnit_Framework_TestCase {
+abstract class EventTest extends \PHPUnit\Framework\TestCase {
 
     /**
      *

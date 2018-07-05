@@ -7,7 +7,7 @@ use SimplyTestable\WebClientBundle\Model\TaskOutput\Result;
 use SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser;
 use Tests\WebClientBundle\Factory\ModelFactory;
 
-class CssValidationResultParserTest extends \PHPUnit_Framework_TestCase
+class CssValidationResultParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var CssValidationResultParser

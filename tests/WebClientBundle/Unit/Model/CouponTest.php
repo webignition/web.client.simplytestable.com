@@ -4,7 +4,7 @@ namespace Tests\WebClientBundle\Unit\Model;
 
 use SimplyTestable\WebClientBundle\Model\Coupon;
 
-class CouponTest extends \PHPUnit_Framework_TestCase
+class CouponTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Coupon

@@ -9,7 +9,7 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Repository\TaskRepository;
 use SimplyTestable\WebClientBundle\Services\TaskCollectionFilterService;
 
-class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
+class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var string[]
@@ -26,8 +26,8 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @param EntityManagerInterface $entityManager
      * @param Test $test
-     * @param $typeFilter
-     * @param $outcomeFilter
+     * @param string $typeFilter
+     * @param string $outcomeFilter
      */
     public function testGetRemoteIdCount(
         EntityManagerInterface $entityManager,
@@ -41,7 +41,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
         $taskCollectionFilterService->setTypeFilter($typeFilter);
         $taskCollectionFilterService->setOutcomeFilter($outcomeFilter);
 
-        $taskCollectionFilterService->getRemoteIdCount();
+        $this->assertSame(0, $taskCollectionFilterService->getRemoteIdCount());
     }
 
     /**
@@ -153,7 +153,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
         $taskCollectionFilterService->setTypeFilter($typeFilter);
         $taskCollectionFilterService->setOutcomeFilter($outcomeFilter);
 
-        $taskCollectionFilterService->getRemoteIds();
+        $this->assertSame([], $taskCollectionFilterService->getRemoteIds());
     }
 
     /**
@@ -271,7 +271,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
         $taskRepository
             ->shouldReceive('getRemoteIdCountByTestAndTaskTypeIncludingStates')
             ->with($test, $taskType, $states)
-            ->andReturn([]);
+            ->andReturn(0);
 
         return $taskRepository;
     }
@@ -317,7 +317,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
         $taskRepository
             ->shouldReceive('getRemoteIdByTestAndTaskTypeIncludingStates')
             ->with($test, $taskType, $states)
-            ->andReturn(0);
+            ->andReturn([]);
 
         return $taskRepository;
     }
@@ -377,6 +377,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         parent::tearDown();
+
+        $this->addToAssertionCount(
+            \Mockery::getContainer()->mockery_getExpectationCount()
+        );
 
         \Mockery::close();
     }

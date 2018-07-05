@@ -4,7 +4,7 @@ namespace Tests\WebClientBundle\Unit\Model;
 
 use SimplyTestable\WebClientBundle\Model\TestOptions;
 
-class TestOptionsTest extends \PHPUnit_Framework_TestCase
+class TestOptionsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var array

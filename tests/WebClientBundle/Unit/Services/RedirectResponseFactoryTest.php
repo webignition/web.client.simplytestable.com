@@ -8,7 +8,7 @@ use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
 use SimplyTestable\WebClientBundle\Services\RedirectResponseFactory;
 use Symfony\Component\Routing\RouterInterface;
 
-class RedirectResponseFactoryTest extends \PHPUnit_Framework_TestCase
+class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createSignInRedirectResponseDataProvider
@@ -120,6 +120,10 @@ class RedirectResponseFactoryTest extends \PHPUnit_Framework_TestCase
     protected function tearDown()
     {
         parent::tearDown();
+
+        $this->addToAssertionCount(
+            \Mockery::getContainer()->mockery_getExpectationCount()
+        );
 
         \Mockery::close();
     }

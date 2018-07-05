@@ -4,7 +4,7 @@ namespace Tests\WebClientBundle\Unit\Model\RemoteTest;
 
 use SimplyTestable\WebClientBundle\Model\RemoteTest\Rejection;
 
-class RejectionTest extends \PHPUnit_Framework_TestCase
+class RejectionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getReasonGetConstraintDataProvider

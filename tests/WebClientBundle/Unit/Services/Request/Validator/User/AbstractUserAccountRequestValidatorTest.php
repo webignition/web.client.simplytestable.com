@@ -6,7 +6,7 @@ use Egulias\EmailValidator\EmailValidator;
 use Mockery\MockInterface;
 use SimplyTestable\WebClientBundle\Request\User\AbstractUserAccountRequest;
 
-abstract class AbstractUserAccountRequestValidatorTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractUserAccountRequestValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @param string $email

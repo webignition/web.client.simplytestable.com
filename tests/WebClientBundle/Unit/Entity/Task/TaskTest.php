@@ -4,7 +4,7 @@ namespace Tests\WebClientBundle\Unit\Entity\Task;
 
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 
-class TaskTest extends \PHPUnit_Framework_TestCase
+class TaskTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getStateLabelDataProvider

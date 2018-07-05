@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Model\Task\Collection;
 use Tests\WebClientBundle\Factory\ModelFactory;
 
-class CollectionTest extends \PHPUnit_Framework_TestCase
+class CollectionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getHashDataProvider

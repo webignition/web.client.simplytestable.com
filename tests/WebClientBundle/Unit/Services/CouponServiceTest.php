@@ -6,7 +6,7 @@ use SimplyTestable\WebClientBundle\Services\CouponService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CouponServiceTest extends \PHPUnit_Framework_TestCase
+class CouponServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var CouponService
