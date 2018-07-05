@@ -3,5 +3,4 @@ services:
     arguments:
       - '@Twig_Environment'
       - '%kernel.debug%'
-      - '@SimplyTestable\WebClientBundle\Services\PostmarkSender'
-      - '@MZ\PostmarkBundle\Postmark\Message'
+      - '@Postmark\PostmarkClient'

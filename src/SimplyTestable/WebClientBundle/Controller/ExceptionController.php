@@ -2,45 +2,36 @@
 
 namespace SimplyTestable\WebClientBundle\Controller;
 
+use Postmark\Models\PostmarkException;
+use Postmark\PostmarkClient;
 use Symfony\Bundle\TwigBundle\Controller\ExceptionController as BaseExceptionController;
-use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
-use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Twig\Environment as TwigEnvironment;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 
 class ExceptionController extends BaseExceptionController
 {
     const DEVELOPER_EMAIL_TEMPLATE = 'SimplyTestableWebClientBundle:Email:exception.txt.twig';
 
     /**
-     * @var PostmarkSender
+     * @var PostmarkClient
      */
-    private $postmarkSender;
-
-    /**
-     * @var PostmarkMessage
-     */
-    private $postmarkMessage;
+    private $postmarkClient;
 
     /**
      * @param TwigEnvironment $twig
      * @param $debug
-     * @param PostmarkSender $postmarkSender
-     * @param PostmarkMessage $postmarkMessage
+     * @param PostmarkClient $postmarkClient
      */
     public function __construct(
         TwigEnvironment $twig,
         $debug,
-        PostmarkSender $postmarkSender,
-        PostmarkMessage $postmarkMessage
+        PostmarkClient $postmarkClient
     ) {
         parent::__construct($twig, $debug);
 
-        $this->postmarkSender = $postmarkSender;
-        $this->postmarkMessage = $postmarkMessage;
+        $this->postmarkClient = $postmarkClient;
     }
 
     /**
@@ -80,20 +71,22 @@ class ExceptionController extends BaseExceptionController
      * @param Request $request
      * @param FlattenException $exception
      *
-     * @throws PostmarkResponseException
+     * @throws PostmarkException
      */
     private function sendDeveloperEmail(Request $request, FlattenException $exception)
     {
-        $this->postmarkMessage->addTo('jon@simplytestable.com');
-        $this->postmarkMessage->setSubject($this->getDeveloperEmailSubject($exception));
-        $this->postmarkMessage->setTextMessage($this->twig->render(self::DEVELOPER_EMAIL_TEMPLATE, [
-            'status_code' => $exception->getStatusCode(),
-            'status_text' => '"status text"',
-            'exception' => $exception,
-            'request' => (string)$request,
-        ]));
-
-        $this->postmarkSender->send($this->postmarkMessage);
+        $this->postmarkClient->sendEmail(
+            'robot@simplytestable.com',
+            'jon@simplytestable.com',
+            $this->getDeveloperEmailSubject($exception),
+            null,
+            $this->twig->render(self::DEVELOPER_EMAIL_TEMPLATE, [
+                'status_code' => $exception->getStatusCode(),
+                'status_text' => '"status text"',
+                'exception' => $exception,
+                'request' => (string)$request,
+            ])
+        );
     }
 
     /**
