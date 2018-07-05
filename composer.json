@@ -27,7 +27,7 @@
         "webignition/html-validation-error-normaliser":"^1",
         "webignition/html-validation-error-linkifier":"^0.1",
         "egulias/email-validator":"~2.1",
-        "doctrine/collections":"~1.2",
+        "doctrine/collections":"~1.5",
         "webignition/php-stripe-models":">=0.2.6,<1.0",
         "jeremykendall/php-domain-parser": "1.2.1",
         "chrisboulton/php-resque": "dev-master#e393d5672cdbe1e94e856a6cb2b2ec97042a4f24",
