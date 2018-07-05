@@ -29,13 +29,31 @@ class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
      * @dataProvider setDataProvider
      *
      * @param RequestInterface $request
+     * @param bool $expectedIsSet
      */
-    public function testSet(RequestInterface $request)
+    public function testSet(RequestInterface $request, $expectedIsSet)
     {
+        $cachedResponseTestHeaderKey = 'X-Test';
+        $cachedResponseTestHeaderValue = 'Foo';
+        $response = new Response(200, [$cachedResponseTestHeaderKey => $cachedResponseTestHeaderValue]);
+
+        $this->assertNull($this->coreApplicationResponseCache->get($request));
+
         $this->coreApplicationResponseCache->set(
             $request,
-            new Response()
+            $response
         );
+
+        $cachedResponse = $this->coreApplicationResponseCache->get($request);
+
+        if ($expectedIsSet) {
+            $this->assertEquals(
+                $cachedResponseTestHeaderValue,
+                $cachedResponse->getHeaderLine($cachedResponseTestHeaderKey)
+            );
+        } else {
+            $this->assertNull($this->coreApplicationResponseCache->get($request));
+        }
     }
 
     /**
@@ -46,9 +64,11 @@ class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
         return [
             'GET request' => [
                 'request' => new Request('GET', 'http://example.com'),
+                'expectedIsSet' => true,
             ],
             'POST request' => [
                 'request' => new Request('POST', 'http://example.com'),
+                'expectedIsSet' => false,
             ],
         ];
     }
