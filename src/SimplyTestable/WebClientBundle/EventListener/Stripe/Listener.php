@@ -2,11 +2,14 @@
 
 namespace SimplyTestable\WebClientBundle\EventListener\Stripe;
 
+use Postmark\Models\PostmarkException;
+use Postmark\PostmarkClient;
 use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
+use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use Twig_Environment;
 
 class Listener
@@ -30,11 +33,6 @@ class Listener
     private $router;
 
     /**
-     * @var MailService
-     */
-    private $mailService;
-
-    /**
      * @var StripeEvent
      */
     private $event;
@@ -48,21 +46,34 @@ class Listener
     ];
 
     /**
+     * @var MailConfiguration
+     */
+    private $mailConfiguration;
+
+    /**
+     * @var PostmarkClient
+     */
+    private $postmarkClient;
+
+    /**
      * @param LoggerInterface $logger
      * @param Twig_Environment $twig
      * @param RouterInterface $router
-     * @param MailService $mailService
+     * @param MailConfiguration $mailConfiguration
+     * @param PostmarkClient $postmarkClient
      */
     public function __construct(
         LoggerInterface $logger,
         Twig_Environment $twig,
         RouterInterface $router,
-        MailService $mailService
+        MailConfiguration $mailConfiguration,
+        PostmarkClient $postmarkClient
     ) {
         $this->logger = $logger;
         $this->twig = $twig;
         $this->router = $router;
-        $this->mailService = $mailService;
+        $this->mailConfiguration = $mailConfiguration;
+        $this->postmarkClient = $postmarkClient;
     }
 
     /**
@@ -98,7 +109,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      * @throws \Twig_Error
      */
     public function onCustomerSubscriptionCreated(StripeEvent $event)
@@ -139,7 +150,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      * @throws \Twig_Error
      */
     public function onCustomerSubscriptionTrialWillEnd(StripeEvent $event)
@@ -171,7 +182,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      * @throws \Twig_Error
      */
     public function onCustomerSubscriptionUpdated(StripeEvent $event)
@@ -252,7 +263,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      * @throws \Twig_Error
      */
     public function onInvoicePaymentFailed(StripeEvent $event)
@@ -280,7 +291,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      * @throws \Twig_Error
      */
     public function onInvoicePaymentSucceeded(StripeEvent $event)
@@ -320,7 +331,7 @@ class Listener
     /**
      * @param StripeEvent $event
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      * @throws \Twig_Error
      */
     public function onCustomerSubscriptionDeleted(StripeEvent $event)
@@ -373,7 +384,7 @@ class Listener
      *
      * @return string
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
+     * @throws MailConfigurationException
      */
     private function createSubject(StripeEvent $event, $valueParameters = null, $keyParameterNames = null)
     {
@@ -392,7 +403,7 @@ class Listener
             $key .= '-' . implode('-', $keyNameParameterisedParts);
         }
 
-        $messageProperties = $this->mailService->getConfiguration()->getMessageProperties($key);
+        $messageProperties = $this->mailConfiguration->getMessageProperties($key);
 
         foreach ($valueParameters as $key => $value) {
             $valueParameters['{{'.$key.'}}'] = $value;
@@ -432,20 +443,20 @@ class Listener
      * @param string $subject
      * @param string $messageBody
      *
-     * @throws \SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception
-     * @throws \SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception
+     * @throws MailConfigurationException
+     * @throws PostmarkException
      */
     private function issueNotification($subject, $messageBody)
     {
-        $sender = $this->mailService->getConfiguration()->getSender('notifications');
+        $sender = $this->mailConfiguration->getSender('notifications');
 
-        $message = $this->mailService->getNewMessage();
-        $message->setFrom($sender['email'], $sender['name']);
-        $message->addTo($this->event->getUser());
-        $message->setSubject($subject);
-        $message->setTextMessage($messageBody);
-
-        $this->mailService->getSender()->send($message);
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            $this->event->getUser(),
+            $subject,
+            null,
+            $messageBody
+        );
     }
 
     /**

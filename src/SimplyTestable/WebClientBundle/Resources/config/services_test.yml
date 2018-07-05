@@ -12,7 +12,21 @@ services:
       - '@Tests\WebClientBundle\Services\HttpMockHandler'
 
   webignition\HttpHistoryContainer\Container:
-    public: true;
+    public: true
 
   Tests\WebClientBundle\Services\HttpMockHandler:
-    public: true;
+    public: true
+
+  # Need to inject our guzzle client into the postmark client to enable regular HTTP mocking in tests
+  # We don't to this for the dev/prod service as Postmark\PostmarkClient depends on the client constructor being
+  # passed the base url for correct behaviour.
+  Postmark\PostmarkClient:
+    public: true
+    arguments:
+      - '%postmark_api_key%'
+    calls:
+      - [setClient, ['@GuzzleHttp\Client']]
+
+
+  Tests\WebClientBundle\Services\PostmarkMessageVerifier:
+    public: true

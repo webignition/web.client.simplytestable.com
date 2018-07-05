@@ -2,22 +2,20 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\ResetPassword;
 
+use Psr\Http\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
-use SimplyTestable\WebClientBundle\Services\PostmarkSender;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
-use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
 use Tests\WebClientBundle\Services\HttpMockHandler;
+use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
+use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class IndexControllerTest extends AbstractBaseTestCase
 {
@@ -48,21 +46,10 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionPostRequest()
     {
-        $mailService = $this->container->get(MailService::class);
-
-        $postmarkMessage = MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(
-            self::EMAIL,
-            [
-                'ErrorCode' => 0,
-                'Message' => 'OK',
-            ]
-        );
-
-        $mailService->setPostmarkMessage($postmarkMessage);
-
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
         $router = $this->container->get('router');
@@ -93,7 +80,6 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @param string $expectedRedirectUrl
      *
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
@@ -144,7 +130,6 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
      */
     public function testRequestActionUserDoesNotExist()
     {
@@ -178,12 +163,10 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
      */
     public function testRequestActionInvalidAdminCredentials()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get(MailService::class);
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -191,16 +174,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
+            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
-
-        $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockPostmarkMessage(
-            'jon@simplytestable.com',
-            'Invalid admin user credentials',
-            [
-                'ErrorCode' => 0,
-                'Message' => 'OK',
-            ]
-        ));
 
         /* @var RedirectResponse $response */
         $response = $this->indexController->requestAction($request);
@@ -221,29 +196,27 @@ class IndexControllerTest extends AbstractBaseTestCase
     /**
      * @dataProvider requestActionSendConfirmationTokenFailureDataProvider
      *
-     * @param PostmarkMessage $postmarkMessage
+     * @param ResponseInterface $postmarkHttpResponse
      * @param array $expectedFlashBagValues
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
      */
     public function testRequestActionSendConfirmationTokenFailure(
-        PostmarkMessage $postmarkMessage,
+        ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+            $postmarkHttpResponse,
         ]);
-
-        $mailService->setPostmarkMessage($postmarkMessage);
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -256,8 +229,10 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
 
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
+        $postmarkRequest = $httpHistoryContainer->getLastRequest();
+
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
     }
 
     /**
@@ -267,13 +242,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         return [
             'postmark not allowed to send to user email' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(
-                    self::EMAIL,
-                    [
-                        'ErrorCode' => 405,
-                        'Message' => 'foo',
-                    ]
-                ),
+                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(405),
                 'expectedFlashBagValues' => [
                     IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         IndexController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
@@ -281,13 +250,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
             ],
             'postmark inactive recipient' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(
-                    self::EMAIL,
-                    [
-                        'ErrorCode' => 406,
-                        'Message' => 'foo',
-                    ]
-                ),
+                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(406),
                 'expectedFlashBagValues' => [
                     IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         IndexController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
@@ -295,13 +258,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
             ],
             'postmark invalid email' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(
-                    self::EMAIL,
-                    [
-                        'ErrorCode' => 300,
-                        'Message' => 'foo',
-                    ]
-                ),
+                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(300),
                 'expectedFlashBagValues' => [
                     IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         IndexController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL,
@@ -309,13 +266,7 @@ class IndexControllerTest extends AbstractBaseTestCase
                 ],
             ],
             'postmark unknown error' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(
-                    self::EMAIL,
-                    [
-                        'ErrorCode' => 303,
-                        'Message' => 'foo',
-                    ]
-                ),
+                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(303),
                 'expectedFlashBagValues' => [
                     IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         IndexController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
@@ -327,56 +278,52 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionMessageConfirmationUrl()
     {
-        $postmarkMessage = MockPostmarkMessageFactory::createMockPostmarkMessage(
-            self::EMAIL,
-            MockPostmarkMessageFactory::SUBJECT_RESET_YOUR_PASSWORD,
-            [
-                'ErrorCode' => 0,
-                'Message' => 'OK',
-            ],
-            [
-                'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                    sprintf(
-                        'http://localhost/reset-password/%s/%s/',
-                        self::EMAIL,
-                        self::CONFIRMATION_TOKEN
-                    )
-                ])),
-            ]
-        );
-
-        $mailService = $this->container->get(MailService::class);
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
-
-        $mailService->setPostmarkMessage($postmarkMessage);
 
         $this->indexController->requestAction(new Request([], [
             'email' => self::EMAIL,
         ]));
+
+        $postmarkRequest = $httpHistoryContainer->getLastRequest();
+
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
+
+        $verificationResult = $postmarkMessageVerifier->verify(
+            [
+                'From' => 'robot@simplytestable.com',
+                'To' => self::EMAIL,
+                'Subject' => '[Simply Testable] Reset your password',
+                'TextBody' => [
+                    sprintf(
+                        'http://localhost/reset-password/%s/%s/',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    ),
+                ],
+            ],
+            $postmarkRequest
+        );
+
+        $this->assertTrue($verificationResult, $verificationResult);
     }
 
     public function testResendActionSuccess()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
-
-        $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockResetPasswordPostmarkMessage(
-            self::EMAIL,
-            [
-                'ErrorCode' => 0,
-                'Message' => 'OK',
-            ]
-        ));
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -395,8 +342,5 @@ class IndexControllerTest extends AbstractBaseTestCase
             ],
             $session->getFlashBag()->peekAll()
         );
-
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
     }
 }

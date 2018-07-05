@@ -2,6 +2,8 @@
 
 namespace SimplyTestable\WebClientBundle\Controller\Action\User;
 
+use Postmark\Models\PostmarkException;
+use Postmark\PostmarkClient;
 use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationReadOnlyException;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
@@ -12,6 +14,7 @@ use SimplyTestable\WebClientBundle\Exception\UserAlreadyExistsException;
 use SimplyTestable\WebClientBundle\Request\User\SignInRequest;
 use SimplyTestable\WebClientBundle\Request\User\SignUpRequest;
 use SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob;
+use SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration;
 use SimplyTestable\WebClientBundle\Services\CouponService;
 use SimplyTestable\WebClientBundle\Services\RedirectResponseFactory;
 use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFactory;
@@ -24,14 +27,12 @@ use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Egulias\EmailValidator\EmailValidator;
-use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use webignition\SimplyTestableUserModel\User;
 
 class UserController extends AbstractController
@@ -132,7 +133,8 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param MailService $mailService
+     * @param MailConfiguration $mailConfiguration
+     * @param PostmarkClient $postmarkClient
      * @param Twig_Environment $twig
      * @param SignInRequestFactory $signInRequestFactory
      * @param SignInRequestValidator $signInRequestValidator
@@ -143,10 +145,11 @@ class UserController extends AbstractController
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
+     * @throws PostmarkException
      */
     public function signInSubmitAction(
-        MailService $mailService,
+        MailConfiguration $mailConfiguration,
+        PostmarkClient $postmarkClient,
         Twig_Environment $twig,
         SignInRequestFactory $signInRequestFactory,
         SignInRequestValidator $signInRequestValidator
@@ -199,7 +202,7 @@ class UserController extends AbstractController
 
             $token = $this->userService->getConfirmationToken($email);
 
-            $this->sendConfirmationToken($mailService, $twig, $email, $token);
+            $this->sendConfirmationToken($mailConfiguration, $postmarkClient, $twig, $email, $token);
 
             $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
             $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED);
@@ -211,7 +214,7 @@ class UserController extends AbstractController
             $this->userManager->clearSessionUser();
 
             $token = $this->userService->getConfirmationToken($email);
-            $this->sendConfirmationToken($mailService, $twig, $email, $token);
+            $this->sendConfirmationToken($mailConfiguration, $postmarkClient, $twig, $email, $token);
 
             $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
             $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED);
@@ -328,7 +331,8 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param MailService $mailService
+     * @param MailConfiguration $mailConfiguration
+     * @param PostmarkClient $postmarkClient
      * @param CouponService $couponService
      * @param Twig_Environment $twig
      * @param SignUpRequestFactory $signUpRequestFactory
@@ -343,7 +347,8 @@ class UserController extends AbstractController
      * @throws MailConfigurationException
      */
     public function signUpSubmitAction(
-        MailService $mailService,
+        MailConfiguration $mailConfiguration,
+        PostmarkClient $postmarkClient,
         CouponService $couponService,
         Twig_Environment $twig,
         SignUpRequestFactory $signUpRequestFactory,
@@ -400,16 +405,16 @@ class UserController extends AbstractController
         $token = $this->userService->getConfirmationToken($email);
 
         try {
-            $this->sendConfirmationToken($mailService, $twig, $email, $token);
-        } catch (PostmarkResponseException $postmarkResponseException) {
+            $this->sendConfirmationToken($mailConfiguration, $postmarkClient, $twig, $email, $token);
+        } catch (PostmarkException $postmarkException) {
             $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, SignUpRequest::PARAMETER_EMAIL);
 
-            if ($postmarkResponseException->isNotAllowedToSendException()) {
+            if (405 === $postmarkException->postmarkApiErrorCode) {
                 $flashBag->set(
                     self::FLASH_SIGN_UP_ERROR_KEY,
                     self::FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
-            } elseif ($postmarkResponseException->isInactiveRecipientException()) {
+            } elseif (406 === $postmarkException->postmarkApiErrorCode) {
                 $flashBag->set(
                     self::FLASH_SIGN_UP_ERROR_KEY,
                     self::FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
@@ -434,22 +439,22 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param MailService $mailService
+     * @param MailConfiguration $mailConfiguration
+     * @param PostmarkClient $postmarkClient
      * @param Twig_Environment $twig
      * @param string $email
      * @param string $token
      *
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
+     * @throws PostmarkException
      */
     private function sendConfirmationToken(
-        MailService $mailService,
+        MailConfiguration $mailConfiguration,
+        PostmarkClient $postmarkClient,
         Twig_Environment $twig,
         $email,
         $token
     ) {
-        $mailConfiguration = $mailService->getConfiguration();
-
         $sender = $mailConfiguration->getSender('default');
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
@@ -462,19 +467,19 @@ class UserController extends AbstractController
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $message = $mailService->getNewMessage();
-        $message->setFrom($sender['email'], $sender['name']);
-        $message->addTo($email);
-        $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($twig->render(
-            'SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig',
-            [
-                'confirmation_url' => $confirmationUrl,
-                'confirmation_code' => $token
-            ]
-        ));
-
-        $mailService->getSender()->send($message);
+        $postmarkClient->sendEmail(
+            $sender['email'],
+            $email,
+            $messageProperties['subject'],
+            null,
+            $twig->render(
+                'SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig',
+                [
+                    'confirmation_url' => $confirmationUrl,
+                    'confirmation_code' => $token
+                ]
+            )
+        );
     }
 
     /**

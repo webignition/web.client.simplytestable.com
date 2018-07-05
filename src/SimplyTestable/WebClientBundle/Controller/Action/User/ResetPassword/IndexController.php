@@ -3,18 +3,19 @@
 namespace SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword;
 
 use Egulias\EmailValidator\EmailValidator;
+use Postmark\Models\PostmarkException;
+use Postmark\PostmarkClient;
 use SimplyTestable\WebClientBundle\Controller\AbstractController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
-use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
+use SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration;
 use SimplyTestable\WebClientBundle\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
@@ -41,11 +42,6 @@ class IndexController extends AbstractController
     private $userService;
 
     /**
-     * @var MailService
-     */
-    private $mailService;
-
-    /**
      * @var Twig_Environment
      */
     private $twig;
@@ -56,25 +52,38 @@ class IndexController extends AbstractController
     private $session;
 
     /**
-     * @param UserService $userService
-     * @param MailService $mailService
-     * @param Twig_Environment $twig
+     * @var MailConfiguration
+     */
+    private $mailConfiguration;
+
+    /**
+     * @var PostmarkClient
+     */
+    private $postmarkClient;
+
+    /**
      * @param RouterInterface $router
+     * @param UserService $userService
+     * @param Twig_Environment $twig
      * @param SessionInterface $session
+     * @param MailConfiguration $mailConfiguration
+     * @param PostmarkClient $postmarkClient
      */
     public function __construct(
         RouterInterface $router,
         UserService $userService,
-        MailService $mailService,
         Twig_Environment $twig,
-        SessionInterface $session
+        SessionInterface $session,
+        MailConfiguration $mailConfiguration,
+        PostmarkClient $postmarkClient
     ) {
         parent::__construct($router);
 
         $this->userService = $userService;
-        $this->mailService = $mailService;
         $this->twig = $twig;
         $this->session = $session;
+        $this->mailConfiguration = $mailConfiguration;
+        $this->postmarkClient = $postmarkClient;
     }
 
     /**
@@ -83,7 +92,6 @@ class IndexController extends AbstractController
      * @return RedirectResponse
      *
      * @throws InvalidAdminCredentialsException
-     * @throws PostmarkResponseException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
@@ -148,18 +156,18 @@ class IndexController extends AbstractController
                 self::FLASH_BAG_REQUEST_SUCCESS_KEY,
                 self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
             );
-        } catch (PostmarkResponseException $postmarkResponseException) {
-            if ($postmarkResponseException->isNotAllowedToSendException()) {
+        } catch (PostmarkException $postmarkException) {
+            if (405 === $postmarkException->postmarkApiErrorCode) {
                 $this->session->getFlashBag()->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
-            } elseif ($postmarkResponseException->isInactiveRecipientException()) {
+            } elseif (406 === $postmarkException->postmarkApiErrorCode) {
                 $this->session->getFlashBag()->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                 );
-            } elseif ($postmarkResponseException->isInvalidEmailAddressException()) {
+            } elseif (300 === $postmarkException->postmarkApiErrorCode) {
                 $this->session->getFlashBag()->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL
@@ -179,15 +187,13 @@ class IndexController extends AbstractController
      * @param string $email
      * @param string $token
      *
-     * @throws PostmarkResponseException
+     * @throws PostmarkException
      * @throws MailConfigurationException
      */
     private function sendPasswordResetConfirmationToken($email, $token)
     {
-        $mailServiceConfiguration = $this->mailService->getConfiguration();
-
-        $sender = $mailServiceConfiguration->getSender('default');
-        $messageProperties = $mailServiceConfiguration->getMessageProperties('user_reset_password');
+        $sender = $this->mailConfiguration->getSender('default');
+        $messageProperties = $this->mailConfiguration->getMessageProperties('user_reset_password');
 
         $confirmationUrl = $this->generateUrl(
             'view_user_resetpassword_choose_index',
@@ -198,37 +204,35 @@ class IndexController extends AbstractController
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
-        $message = $this->mailService->getNewMessage();
-        $message->setFrom($sender['email'], $sender['name']);
-        $message->addTo($email);
-        $message->setSubject($messageProperties['subject']);
-        $message->setTextMessage($this->twig->render(
-            'SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig',
-            [
-                'confirmation_url' => $confirmationUrl,
-                'email' => $email
-            ]
-        ));
-
-        $this->mailService->getSender()->send($message);
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            $email,
+            $messageProperties['subject'],
+            null,
+            $this->twig->render(
+                'SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig',
+                [
+                    'confirmation_url' => $confirmationUrl,
+                    'email' => $email
+                ]
+            )
+        );
     }
 
     /**
-     * @throws PostmarkResponseException
+     * @throws PostmarkException
      * @throws MailConfigurationException
      */
     private function sendInvalidAdminCredentialsNotification()
     {
-        $mailServiceConfiguration = $this->mailService->getConfiguration();
+        $sender = $this->mailConfiguration->getSender('default');
 
-        $sender = $mailServiceConfiguration->getSender('default');
-
-        $message = $this->mailService->getNewMessage();
-        $message->setFrom($sender['email'], $sender['name']);
-        $message->addTo('jon@simplytestable.com');
-        $message->setSubject('Invalid admin user credentials');
-        $message->setTextMessage('Invalid admin user credentials exception raised when calling UserService::exists()');
-
-        $this->mailService->getSender()->send($message);
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            'jon@simplytestable.com',
+            'Invalid admin user credentials',
+            null,
+            'Invalid admin user credentials exception raised when calling UserService::exists()'
+        );
     }
 }

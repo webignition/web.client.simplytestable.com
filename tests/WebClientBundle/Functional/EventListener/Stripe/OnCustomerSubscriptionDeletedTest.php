@@ -3,12 +3,9 @@
 namespace Tests\WebClientBundle\Functional\EventListener\Stripe;
 
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
-use SimplyTestable\WebClientBundle\Services\PostmarkSender;
-use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
-use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
 {
@@ -27,20 +24,20 @@ class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
      * @dataProvider onCustomerSubscriptionDeletedDataProvider
      *
      * @param StripeEvent $event
-     * @param PostmarkMessage $postmarkMessage
+     * @param string[] $expectedEmailProperties
+     *
      * @throws \Twig_Error
      */
-    public function testOnCustomerSubscriptionDeleted(StripeEvent $event, PostmarkMessage $postmarkMessage)
+    public function testOnCustomerSubscriptionDeleted(StripeEvent $event, array $expectedEmailProperties)
     {
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
-
-        $mailService->setPostmarkMessage($postmarkMessage);
+        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([
+            PostmarkHttpResponseFactory::createSuccessResponse(),
+        ]);
 
         $this->listener->onCustomerSubscriptionDeleted($event);
 
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
+        $this->assertPostmarkEmail($expectedEmailProperties);
     }
 
     /**
@@ -58,20 +55,13 @@ class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
                         'is_during_trial' => 1,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Premium subscription to personal cancelled',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Premium subscription to personal cancelled',
+                    'TextBody' => [
+                        'remaining 1 day of your trial',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'remaining 1 day of your trial',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'actioned by user during trial, plural trial_days_remaining' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -82,20 +72,13 @@ class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
                         'is_during_trial' => 1,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Premium subscription to personal cancelled',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Premium subscription to personal cancelled',
+                    'TextBody' => [
+                        'remaining 12 days of your trial',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'remaining 12 days of your trial',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'actioned by user outside trial' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -106,14 +89,12 @@ class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
                         'is_during_trial' => 0,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Premium subscription to personal cancelled',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
-                    ]
-                ),
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Premium subscription to personal cancelled',
+                    'TextBody' => [
+                        'drop back to our free basic plan during your premium' . "\n" . 'trial',
+                    ],
+                ],
             ],
             'actioned by system' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -124,23 +105,16 @@ class OnCustomerSubscriptionDeletedTest extends AbstractListenerTest
                         'is_during_trial' => 1,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    sprintf(
+                'expectedEmailProperties' => [
+                    'Subject' => sprintf(
                         '%s%s',
                         '[Simply Testable] Premium subscription to personal cancelled, ',
                         'you\'ve been dropped down to our free plan'
                     ),
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                    'TextBody' => [
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
         ];
     }

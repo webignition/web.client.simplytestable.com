@@ -3,12 +3,9 @@
 namespace Tests\WebClientBundle\Functional\EventListener\Stripe;
 
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
-use SimplyTestable\WebClientBundle\Services\PostmarkSender;
-use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
-use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class OnInvoicePaymentSucceededTest extends AbstractListenerTest
 {
@@ -26,20 +23,20 @@ class OnInvoicePaymentSucceededTest extends AbstractListenerTest
      * @dataProvider onInvoicePaymentSucceededDataProvider
      *
      * @param StripeEvent $event
-     * @param PostmarkMessage $postmarkMessage
+     * @param array $expectedEmailProperties
+     *
      * @throws \Twig_Error
      */
-    public function testOnInvoicePaymentSucceeded(StripeEvent $event, PostmarkMessage $postmarkMessage)
+    public function testOnInvoicePaymentSucceeded(StripeEvent $event, array $expectedEmailProperties)
     {
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
-
-        $mailService->setPostmarkMessage($postmarkMessage);
+        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([
+            PostmarkHttpResponseFactory::createSuccessResponse(),
+        ]);
 
         $this->listener->onInvoicePaymentSucceeded($event);
 
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
+        $this->assertPostmarkEmail($expectedEmailProperties);
     }
 
     /**
@@ -68,21 +65,14 @@ class OnInvoicePaymentSucceededTest extends AbstractListenerTest
                         'has_discount' => 0,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
+                    'TextBody' => [
+                        'taken payment for your account subscription',
+                        'Invoice #4abfD1nt0ael6N summary',
+                        'Personal plan subscription, 14 August 2014 to 14 September 2014 (£9.00)',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'taken payment for your account subscription',
-                            'Invoice #4abfD1nt0ael6N summary',
-                            'Personal plan subscription, 14 August 2014 to 14 September 2014 (£9.00)',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'has_discount:0; currency:usd' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -105,21 +95,14 @@ class OnInvoicePaymentSucceededTest extends AbstractListenerTest
                         'currency' => 'usd',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
+                    'TextBody' => [
+                        'taken payment for your account subscription',
+                        'Invoice #4abfD1nt0ael6N summary',
+                        'Personal plan subscription, 14 August 2014 to 14 September 2014 ($9.00)',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'taken payment for your account subscription',
-                            'Invoice #4abfD1nt0ael6N summary',
-                            'Personal plan subscription, 14 August 2014 to 14 September 2014 ($9.00)',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'has_discount:0; proration:1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -141,21 +124,14 @@ class OnInvoicePaymentSucceededTest extends AbstractListenerTest
                         'has_discount' => 0,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
+                    'TextBody' => [
+                        'taken payment for your account subscription',
+                        'Invoice #4abfD1nt0ael6N summary',
+                        'Personal plan subscription, 14 August 2014 to 14 September 2014 (£9.00, prorated)',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'taken payment for your account subscription',
-                            'Invoice #4abfD1nt0ael6N summary',
-                            'Personal plan subscription, 14 August 2014 to 14 September 2014 (£9.00, prorated)',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'has_discount:1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -182,23 +158,16 @@ class OnInvoicePaymentSucceededTest extends AbstractListenerTest
                         'has_discount' => 1,
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Invoice #4abfD1nt0ael6N paid, thanks!',
+                    'TextBody' => [
+                        'taken payment for your account subscription',
+                        'Invoice #4abfD1nt0ael6N summary',
+                        'Personal plan subscription, 14 August 2014 to 14 September 2014 (£9.00)',
+                        '20% off with coupon TMS (-£1.80)',
+                        'Total: £7.20',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'taken payment for your account subscription',
-                            'Invoice #4abfD1nt0ael6N summary',
-                            'Personal plan subscription, 14 August 2014 to 14 September 2014 (£9.00)',
-                            '20% off with coupon TMS (-£1.80)',
-                            'Total: £7.20',
-                        ])),
-                    ]
-                ),
+                ],
             ],
         ];
     }

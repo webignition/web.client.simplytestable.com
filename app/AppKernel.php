@@ -16,7 +16,6 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new SimplyTestable\WebClientBundle\SimplyTestableWebClientBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
-            new MZ\PostmarkBundle\MZPostmarkBundle(),
             new ResqueBundle\Resque\ResqueBundle,
         );
 

@@ -3,11 +3,13 @@
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\User;
 
 use Egulias\EmailValidator\EmailValidator;
+use Postmark\Models\PostmarkException;
+use Postmark\PostmarkClient;
 use SimplyTestable\WebClientBundle\Controller\Action\User\UserController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
-use SimplyTestable\WebClientBundle\Services\PostmarkSender;
+use SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration;
 use SimplyTestable\WebClientBundle\Services\Request\Factory\User\SignInRequestFactory;
 use SimplyTestable\WebClientBundle\Services\Request\Validator\User\SignInRequestValidator;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -15,11 +17,10 @@ use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use SimplyTestable\WebClientBundle\Exception\Postmark\Response\Exception as PostmarkResponseException;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
-use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
-use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
+use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
+use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class SignInSubmitActionTest extends AbstractUserControllerTest
 {
@@ -99,7 +100,6 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
      */
     public function testSignInSubmitActionAuthenticationFailure(
         array $httpFixtures,
@@ -164,40 +164,22 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
+     * @throws PostmarkException
      */
     public function testSignInSubmitActionResendConfirmationToken(array $httpFixtures)
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
-        $this->httpMockHandler->appendFixtures($httpFixtures);
+        $this->httpMockHandler->appendFixtures(array_merge($httpFixtures, [
+            PostmarkHttpResponseFactory::createSuccessResponse(),
+        ]));
 
         $request = new Request([], [
             'email' => self::EMAIL,
             'password' => 'foo',
         ]);
-
-        $postmarkMessage = MockPostmarkMessageFactory::createMockPostmarkMessage(
-            self::EMAIL,
-            MockPostmarkMessageFactory::SUBJECT_ACTIVATE_YOUR_ACCOUNT,
-            [
-                'ErrorCode' => 0,
-                'Message' => 'OK',
-            ],
-            [
-                'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                    sprintf(
-                        'http://localhost/signup/confirm/%s/?token=%s',
-                        self::EMAIL,
-                        self::CONFIRMATION_TOKEN
-                    )
-                ])),
-            ]
-        );
-
-        $mailService->setPostmarkMessage($postmarkMessage);
 
         $response = $this->callSignInSubmitAction($request);
 
@@ -214,8 +196,28 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             $session->getFlashBag()->peekAll()
         );
 
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
+        $lastRequest = $httpHistoryContainer->getLastRequest();
+
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($lastRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
+
+        $verificationResult = $postmarkMessageVerifier->verify(
+            [
+                'From' => 'robot@simplytestable.com',
+                'To' => self::EMAIL,
+                'Subject' => '[Simply Testable] Activate your account',
+                'TextBody' => [
+                    sprintf(
+                        'http://localhost/signup/confirm/%s/?token=%s',
+                        self::EMAIL,
+                        self::CONFIRMATION_TOKEN
+                    ),
+                ],
+            ],
+            $httpHistoryContainer->getLastRequest()
+        );
+
+        $this->assertTrue($verificationResult, $verificationResult);
     }
 
     /**
@@ -253,7 +255,6 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
      */
     public function testSignInSubmitActionSuccess(
         Request $request,
@@ -376,7 +377,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
-     * @throws PostmarkResponseException
+     * @throws PostmarkException
      */
     private function callSignInSubmitAction(Request $request, $signInRequestValidator = null)
     {
@@ -390,7 +391,8 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         }
 
         return $this->userController->signInSubmitAction(
-            $this->container->get(MailService::class),
+            $this->container->get(MailConfiguration::class),
+            $this->container->get(PostmarkClient::class),
             $this->container->get('twig'),
             $signInRequestFactory,
             $signInRequestValidator

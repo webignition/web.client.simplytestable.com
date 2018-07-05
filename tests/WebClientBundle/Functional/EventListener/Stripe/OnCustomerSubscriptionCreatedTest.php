@@ -3,12 +3,9 @@
 namespace Tests\WebClientBundle\Functional\EventListener\Stripe;
 
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
-use SimplyTestable\WebClientBundle\Services\PostmarkSender;
-use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
-use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
 {
@@ -20,27 +17,27 @@ class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
     private $eventData = [
         'event' => self::EVENT_NAME,
         'plan_name' => 'Personal',
-        'user' => 'user@example.com',
+        'user' => self::EVENT_USER,
     ];
 
     /**
      * @dataProvider onCustomerSubscriptionCreatedDataProvider
      *
      * @param StripeEvent $event
-     * @param PostmarkMessage $postmarkMessage
+     * @param string[] $expectedEmailProperties
+     *
      * @throws \Twig_Error
      */
-    public function testOnCustomerSubscriptionCreated(StripeEvent $event, PostmarkMessage $postmarkMessage)
+    public function testOnCustomerSubscriptionCreated(StripeEvent $event, array $expectedEmailProperties)
     {
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
-
-        $mailService->setPostmarkMessage($postmarkMessage);
+        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([
+            PostmarkHttpResponseFactory::createSuccessResponse(),
+        ]);
 
         $this->listener->onCustomerSubscriptionCreated($event);
 
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
+        $this->assertPostmarkEmail($expectedEmailProperties);
     }
 
     /**
@@ -57,21 +54,14 @@ class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
                         'amount' => '900',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] You\'ve signed up to the personal plan',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] You\'ve signed up to the personal plan',
+                    'TextBody' => [
+                        'personal plan',
+                        '£9.00',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'personal plan',
-                            '£9.00',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'status:active, currency:usd' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -82,21 +72,14 @@ class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
                         'currency' => 'usd',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] You\'ve signed up to the personal plan',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] You\'ve signed up to the personal plan',
+                    'TextBody' => [
+                        'personal plan',
+                        '$1.00',
+                        'http://localhost/account/',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'personal plan',
-                            '$1.00',
-                            'http://localhost/account/',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'status:trialing, has_card:0' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -109,22 +92,15 @@ class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
                         'trial_end' => (new \DateTime('2018-01-02'))->format('U'),
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] You\'ve signed up to the personal plan',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] You\'ve signed up to the personal plan',
+                    'TextBody' => [
+                        'personal plan',
+                        'for 22 days',
+                        'ending 2 January 2018',
+                        'add a credit or debit card to your account',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'personal plan',
-                            'for 22 days',
-                            'ending 2 January 2018',
-                            'add a credit or debit card to your account',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'status:trialing, has_card:1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -137,20 +113,13 @@ class OnCustomerSubscriptionCreatedTest extends AbstractListenerTest
                         'trial_end' => (new \DateTime('2018-01-03'))->format('U'),
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] You\'ve signed up to the personal plan',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] You\'ve signed up to the personal plan',
+                    'TextBody' => [
+                        'personal plan',
+                        'ending 3 January 2018',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'personal plan',
-                            'ending 3 January 2018',
-                        ])),
-                    ]
-                ),
+                ],
             ],
         ];
     }

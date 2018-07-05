@@ -3,12 +3,9 @@
 namespace Tests\WebClientBundle\Functional\EventListener\Stripe;
 
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
-use SimplyTestable\WebClientBundle\Services\PostmarkSender;
-use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
-use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
+use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class OnInvoicePaymentFailedTest extends AbstractListenerTest
 {
@@ -26,20 +23,19 @@ class OnInvoicePaymentFailedTest extends AbstractListenerTest
      * @dataProvider onInvoicePaymentFailedDataProvider
      *
      * @param StripeEvent $event
-     * @param PostmarkMessage $postmarkMessage
+     * @param string[] $expectedEmailProperties
      * @throws \Twig_Error
      */
-    public function testOnInvoicePaymentFailed(StripeEvent $event, PostmarkMessage $postmarkMessage)
+    public function testOnInvoicePaymentFailed(StripeEvent $event, array $expectedEmailProperties)
     {
-        $mailService = $this->container->get(MailService::class);
-        $postmarkSender = $this->container->get(PostmarkSender::class);
-
-        $mailService->setPostmarkMessage($postmarkMessage);
+        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([
+            PostmarkHttpResponseFactory::createSuccessResponse(),
+        ]);
 
         $this->listener->onInvoicePaymentFailed($event);
 
-        $this->assertNotNull($postmarkSender->getLastMessage());
-        $this->assertNotNull($postmarkSender->getLastResponse());
+        $this->assertPostmarkEmail($expectedEmailProperties);
     }
 
     /**
@@ -66,21 +62,14 @@ class OnInvoicePaymentFailedTest extends AbstractListenerTest
                         'invoice_id' => 'in_2nL671LyaO5mbg',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Invoice #2nL671LyaO5mbg payment failed',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Invoice #2nL671LyaO5mbg payment failed',
+                    'TextBody' => [
+                        'unable to take payment',
+                        'Invoice #2nL671LyaO5mbg summary',
+                        'Personal plan subscription, 21 September 2013 to 28 September 2013 (£1.00)',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'unable to take payment',
-                            'Invoice #2nL671LyaO5mbg summary',
-                            'Personal plan subscription, 21 September 2013 to 28 September 2013 (£1.00)',
-                        ])),
-                    ]
-                ),
+                ],
             ],
             'currency:usd' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -101,21 +90,14 @@ class OnInvoicePaymentFailedTest extends AbstractListenerTest
                         'currency' => 'usd',
                     ]
                 ))),
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockPostmarkMessage(
-                    'user@example.com',
-                    '[Simply Testable] Invoice #2nL671LyaO5mbg payment failed',
-                    [
-                        'ErrorCode' => 0,
-                        'Message' => 'OK',
+                'expectedEmailProperties' => [
+                    'Subject' => '[Simply Testable] Invoice #2nL671LyaO5mbg payment failed',
+                    'TextBody' => [
+                        'unable to take payment',
+                        'Invoice #2nL671LyaO5mbg summary',
+                        'Personal plan subscription, 21 September 2013 to 28 September 2013 ($1.00)',
                     ],
-                    [
-                        'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                            'unable to take payment',
-                            'Invoice #2nL671LyaO5mbg summary',
-                            'Personal plan subscription, 21 September 2013 to 28 September 2013 ($1.00)',
-                        ])),
-                    ]
-                ),
+                ],
             ],
         ];
     }

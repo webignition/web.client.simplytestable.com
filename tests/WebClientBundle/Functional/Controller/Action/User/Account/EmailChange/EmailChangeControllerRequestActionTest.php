@@ -2,21 +2,23 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\Action\User\Account\EmailChange;
 
+use Postmark\PostmarkClient;
+use Psr\Http\Message\ResponseInterface;
 use SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
+use SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Factory\MockPostmarkMessageFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use SimplyTestable\WebClientBundle\Services\Mail\Service as MailService;
-use Tests\WebClientBundle\Helper\MockeryArgumentValidator;
+use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
 use webignition\SimplyTestableUserModel\User;
+use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
+use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControllerTest
 {
@@ -54,18 +56,9 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
     public function testRequestActionPostRequestPrivateUser()
     {
-        $mailService = $this->container->get(MailService::class);
         $userManager = $this->container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
-
-        $mailService->setPostmarkMessage(MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
-            self::NEW_EMAIL,
-            [
-                'ErrorCode' => 0,
-                'Message' => 'OK',
-            ]
-        ));
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -73,6 +66,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 'new_email' => self::NEW_EMAIL,
             ]),
             HttpResponseFactory::createSuccessResponse(),
+            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->client->request(
@@ -225,7 +219,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     /**
      * @dataProvider requestActionSendConfirmationTokenFailureDataProvider
      *
-     * @param PostmarkMessage $postmarkMessage
+     * @param ResponseInterface $postmarkHttpResponse
      * @param array $expectedFlashBagValues
      *
      * @throws CoreApplicationRequestException
@@ -235,15 +229,15 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      * @throws MailConfigurationException
      */
     public function testRequestActionSendConfirmationTokenFailure(
-        PostmarkMessage $postmarkMessage,
+        ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
         $session = $this->container->get('session');
-        $mailService = $this->container->get(MailService::class);
         $userManager = $this->container->get(UserManager::class);
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
-        $mailService->setPostmarkMessage($postmarkMessage);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -251,6 +245,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 'token' => self::CONFIRMATION_TOKEN,
                 'new_email' => self::NEW_EMAIL,
             ]),
+            $postmarkHttpResponse,
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
@@ -263,6 +258,12 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+
+        $httpHistory = $httpHistoryContainer->getRequests();
+        $postmarkRequest = $httpHistory[2];
+
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
     }
 
     /**
@@ -272,13 +273,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     {
         return [
             'postmark not allowed to send to user email' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
-                    self::NEW_EMAIL,
-                    [
-                        'ErrorCode' => 405,
-                        'Message' => 'foo',
-                    ]
-                ),
+                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(405),
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_REQUEST_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
@@ -289,13 +284,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 ],
             ],
             'postmark inactive recipient' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
-                    self::NEW_EMAIL,
-                    [
-                        'ErrorCode' => 406,
-                        'Message' => 'foo',
-                    ]
-                ),
+                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(406),
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_REQUEST_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
@@ -305,14 +294,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                     ],
                 ],
             ],
-            'postmark invaild email address' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
-                    self::NEW_EMAIL,
-                    [
-                        'ErrorCode' => 300,
-                        'Message' => 'foo',
-                    ]
-                ),
+            'postmark invalid email address' => [
+                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(300),
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_REQUEST_KEY => [
                         EmailChangeController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID,
@@ -323,13 +306,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 ],
             ],
             'postmark unknown error' => [
-                'postmarkMessage' => MockPostmarkMessageFactory::createMockConfirmEmailAddressPostmarkMessage(
-                    self::NEW_EMAIL,
-                    [
-                        'ErrorCode' => 206,
-                        'Message' => 'foo',
-                    ]
-                ),
+                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(206),
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_REQUEST_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
@@ -345,29 +322,11 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     public function testRequestActionSuccess()
     {
         $session = $this->container->get('session');
-        $mailService = $this->container->get(MailService::class);
         $userManager = $this->container->get(UserManager::class);
+        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
-
-        $postmarkMessage = MockPostmarkMessageFactory::createMockPostmarkMessage(
-            self::NEW_EMAIL,
-            MockPostmarkMessageFactory::SUBJECT_CONFIRM_EMAIL_ADDRESS_CHANGE,
-            [
-                'ErrorCode' => 0,
-                'Message' => 'OK',
-            ],
-            [
-                'with' => \Mockery::on(MockeryArgumentValidator::stringContains([
-                    sprintf(
-                        'http://localhost/account/?token=%s',
-                        self::CONFIRMATION_TOKEN
-                    )
-                ])),
-            ]
-        );
-
-        $mailService->setPostmarkMessage($postmarkMessage);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -375,6 +334,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 'token' => self::CONFIRMATION_TOKEN,
                 'new_email' => self::NEW_EMAIL,
             ]),
+            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
         $request = new Request([], [
@@ -390,6 +350,29 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
                 EmailChangeController::FLASH_BAG_REQUEST_MESSAGE_SUCCESS,
             ],
         ], $session->getFlashBag()->peekAll());
+
+        $httpHistory = $httpHistoryContainer->getRequests();
+        $postmarkRequest = $httpHistory[2];
+
+        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
+        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
+
+        $verificationResult = $postmarkMessageVerifier->verify(
+            [
+                'From' => 'robot@simplytestable.com',
+                'To' => self::NEW_EMAIL,
+                'Subject' => '[Simply Testable] Confirm your email address change',
+                'TextBody' => [
+                    sprintf(
+                        'http://localhost/account/?token=%s',
+                        self::CONFIRMATION_TOKEN
+                    ),
+                ],
+            ],
+            $postmarkRequest
+        );
+
+        $this->assertTrue($verificationResult, $verificationResult);
     }
 
     /**
@@ -406,7 +389,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     private function callRequestAction(Request $request)
     {
         return $this->emailChangeController->requestAction(
-            $this->container->get(MailService::class),
+            $this->container->get(MailConfiguration::class),
+            $this->container->get(PostmarkClient::class),
             $this->container->get('twig'),
             $request
         );
