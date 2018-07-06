@@ -1,0 +1,41 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+// Please pull this list from, and only from https://publicsuffix.org/list/public_suffix_list.dat,
+// rather than any other VCS sites. Pulling from any other URL is not guaranteed to be supported.
+
+// Instructions on pulling and using this list can be found at https://publicsuffix.org/list/.
+
+// ===BEGIN ICANN DOMAINS===
+
+// ac : https://en.wikipedia.org/wiki/.ac
+ac
+com.ac
+edu.ac
+gov.ac
+net.ac
+mil.ac
+org.ac
+
+// xn--w4r85el8fhu5dnra : 2015-04-30 Kerry Trading Co. Limited
+嘉里大酒店
+
+// zuerich : 2014-11-07 Kanton Zürich (Canton of Zurich)
+zuerich
+
+// ===END ICANN DOMAINS===
+// ===BEGIN PRIVATE DOMAINS===
+// (Note: these are in alphabetical order by company name)
+
+// 1GB LLC : https://www.1gb.ua/
+// Submitted by 1GB LLC <noc@1gb.com.ua>
+cc.ua
+inf.ua
+ltd.ua
+
+// Zone.id : https://zone.id/
+// Submitted by Su Hendro <admin@zone.id>
+zone.id
+
+// ===END PRIVATE DOMAINS===
