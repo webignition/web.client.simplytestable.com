@@ -29,6 +29,9 @@ class RulesRetriever
         $this->httpClient = $httpClient;
     }
 
+    /**
+     * @return bool|int
+     */
     public function retrieve()
     {
         $response = null;
@@ -49,8 +52,6 @@ class RulesRetriever
 
         $cachedRules = json_encode($rulesArray);
 
-        file_put_contents($this->pspPslDataPath, $cachedRules);
-
-        return true;
+        return file_put_contents($this->pspPslDataPath, $cachedRules);
     }
 }
