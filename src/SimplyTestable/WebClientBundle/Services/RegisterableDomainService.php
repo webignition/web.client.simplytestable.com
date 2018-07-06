@@ -2,12 +2,21 @@
 
 namespace SimplyTestable\WebClientBundle\Services;
 
-use Pdp\PublicSuffixListManager as PdpPublicSuffixListManager;
-use Pdp\Parser as PdpParser;
+use Pdp\Rules as PdpRules;
 use webignition\Url\Url;
 
 class RegisterableDomainService
 {
+    /**
+     * @var PdpRules
+     */
+    private $pdpRules;
+
+    public function __construct($pdpRules)
+    {
+        $this->pdpRules = $pdpRules;
+    }
+
     /**
      * @param string $canonicalUrl
      *
@@ -21,9 +30,8 @@ class RegisterableDomainService
             return null;
         }
 
-        $pslManager = new PdpPublicSuffixListManager();
-        $parser = new PdpParser($pslManager->getList());
+        $pdpDomain = $this->pdpRules->resolve((string)$url->getHost());
 
-        return $parser->parseUrl($canonicalUrl)->host->registerableDomain;
+        return $pdpDomain->getRegistrableDomain();
     }
 }

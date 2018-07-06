@@ -90,3 +90,7 @@ services:
     arguments:
       - '@Pdp\Cache'
       - '@Pdp\CurlHttpClient'
+
+  SimplyTestable\WebClientBundle\Services\RegisterableDomainService:
+    arguments:
+      - '@=service("SimplyTestable\\WebClientBundle\\Services\\Pdp\\RulesFactory").create()'

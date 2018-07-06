@@ -110,3 +110,7 @@ services:
 
   test.logger:
     alias: Psr\Log\LoggerInterface
+
+  SimplyTestable\WebClientBundle\Services\RegisterableDomainService:
+    arguments:
+      - '@=service("SimplyTestable\\WebClientBundle\\Services\\Pdp\\RulesFactory").create()'
