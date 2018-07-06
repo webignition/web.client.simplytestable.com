@@ -74,6 +74,9 @@ class RulesRetrieverTest extends AbstractBaseTestCase
         $this->assertSame(100, $this->rulesRetriever->retrieve());
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function tearDown()
     {
         parent::tearDown();
