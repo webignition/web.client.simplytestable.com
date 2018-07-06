@@ -27,6 +27,5 @@ services:
     calls:
       - [setClient, ['@GuzzleHttp\Client']]
 
-
   Tests\WebClientBundle\Services\PostmarkMessageVerifier:
     public: true

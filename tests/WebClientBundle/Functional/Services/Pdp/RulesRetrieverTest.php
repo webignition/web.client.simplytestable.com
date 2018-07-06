@@ -64,14 +64,14 @@ class RulesRetrieverTest extends AbstractBaseTestCase
 
                 return true;
             })
-            ->andReturn(1);
+            ->andReturn(100);
 
         $httpMockHandler = $this->container->get(HttpMockHandler::class);
         $httpMockHandler->appendFixtures([
             new Response(200, ['content-type' => 'text/plain'], FixtureLoader::load('/public_suffix_list.dat')),
         ]);
 
-        $this->assertTrue($this->rulesRetriever->retrieve());
+        $this->assertSame(100, $this->rulesRetriever->retrieve());
     }
 
     protected function tearDown()
