@@ -81,15 +81,14 @@ services:
     arguments:
       - '%postmark_api_key%'
 
-  Pdp\Cache:
-    factory: 'SimplyTestable\WebClientBundle\Services\Pdp\CacheFactory:create'
-
-  Pdp\CurlHttpClient:
-
-  Pdp\Manager:
+  SimplyTestable\WebClientBundle\Services\Pdp\RulesFactory:
     arguments:
-      - '@Pdp\Cache'
-      - '@Pdp\CurlHttpClient'
+      - '%pdp_psl_data_path%'
+
+  SimplyTestable\WebClientBundle\Services\Pdp\RulesRetriever:
+    arguments:
+      - '%pdp_psl_data_path%'
+      - '@GuzzleHttp\Client'
 
   SimplyTestable\WebClientBundle\Services\RegisterableDomainService:
     arguments:

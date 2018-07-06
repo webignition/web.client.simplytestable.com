@@ -111,6 +111,15 @@ services:
   test.logger:
     alias: Psr\Log\LoggerInterface
 
+  SimplyTestable\WebClientBundle\Services\Pdp\RulesFactory:
+    arguments:
+      - '%pdp_psl_data_path%'
+
+  SimplyTestable\WebClientBundle\Services\Pdp\RulesRetriever:
+    arguments:
+      - '%pdp_psl_data_path%'
+      - '@GuzzleHttp\Client'
+
   SimplyTestable\WebClientBundle\Services\RegisterableDomainService:
     arguments:
       - '@=service("SimplyTestable\\WebClientBundle\\Services\\Pdp\\RulesFactory").create()'

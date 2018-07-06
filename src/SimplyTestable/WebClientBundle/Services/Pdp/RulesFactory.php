@@ -2,19 +2,21 @@
 
 namespace SimplyTestable\WebClientBundle\Services\Pdp;
 
-use Pdp\Manager;
 use Pdp\Rules;
 
 class RulesFactory
 {
     /**
-     * @var Manager
+     * @var string
      */
-    private $manager;
+    private $pspPslDataPath;
 
-    public function __construct(Manager $manager)
+    /**
+     * @param string $pspPslDataPath
+     */
+    public function __construct($pspPslDataPath)
     {
-        $this->manager = $manager;
+        $this->pspPslDataPath = $pspPslDataPath;
     }
 
     /**
@@ -22,6 +24,8 @@ class RulesFactory
      */
     public function create()
     {
-        return $this->manager->getRules();
+        $rulesArray = json_decode(file_get_contents($this->pspPslDataPath), true);
+
+        return new Rules($rulesArray);
     }
 }
