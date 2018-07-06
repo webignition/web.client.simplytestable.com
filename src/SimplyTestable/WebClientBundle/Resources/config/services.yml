@@ -80,3 +80,13 @@ services:
   Postmark\PostmarkClient:
     arguments:
       - '%postmark_api_key%'
+
+  Pdp\Cache:
+    factory: 'SimplyTestable\WebClientBundle\Services\Pdp\CacheFactory:create'
+
+  Pdp\CurlHttpClient:
+
+  Pdp\Manager:
+    arguments:
+      - '@Pdp\Cache'
+      - '@Pdp\CurlHttpClient'
