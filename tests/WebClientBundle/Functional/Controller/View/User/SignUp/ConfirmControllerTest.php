@@ -54,8 +54,8 @@ class ConfirmControllerTest extends AbstractViewControllerTest
         Request $request,
         Twig_Environment $twig
     ) {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
 
@@ -70,7 +70,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
         }
 
         /* @var ConfirmController $confirmController */
-        $confirmController = $this->container->get(ConfirmController::class);
+        $confirmController = self::$container->get(ConfirmController::class);
         $this->setTwigOnController($twig, $confirmController);
 
         $response = $confirmController->indexAction($request, self::USER_EMAIL);
@@ -296,10 +296,10 @@ class ConfirmControllerTest extends AbstractViewControllerTest
 
         $request = new Request();
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var ConfirmController $confirmController */
-        $confirmController = $this->container->get(ConfirmController::class);
+        $confirmController = self::$container->get(ConfirmController::class);
 
         $response = $confirmController->indexAction(
             $request,
@@ -358,7 +358,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
      */
     private function createRequestUrl()
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
 
         return $router->generate(self::ROUTE_NAME, [
             'email' => self::USER_EMAIL,

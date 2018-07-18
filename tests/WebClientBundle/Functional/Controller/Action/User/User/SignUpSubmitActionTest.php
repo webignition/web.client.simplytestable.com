@@ -36,7 +36,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('sign_up_submit');
 
         $this->client->request(
@@ -81,7 +81,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             ->shouldReceive('getInvalidFieldState')
             ->andReturn('empty');
 
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $response = $this->callSignUpSubmitAction($request, $userAccountRequestValidator);
 
@@ -112,7 +112,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $expectedRedirectLocation,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -196,9 +196,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -282,10 +282,10 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
      */
     public function testSignUpSubmitActionSuccess(Request $request, array $couponData)
     {
-        $session = $this->container->get('session');
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
-        $couponService = $this->container->get(CouponService::class);
+        $session = self::$container->get('session');
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
+        $couponService = self::$container->get(CouponService::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -418,10 +418,10 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         }
 
         return $this->userController->signUpSubmitAction(
-            $this->container->get(MailConfiguration::class),
-            $this->container->get(PostmarkClient::class),
-            $this->container->get(CouponService::class),
-            $this->container->get('twig'),
+            self::$container->get(MailConfiguration::class),
+            self::$container->get(PostmarkClient::class),
+            self::$container->get(CouponService::class),
+            self::$container->get('twig'),
             $signInRequestFactory,
             $userAccountRequestValidator,
             $request

@@ -31,8 +31,8 @@ abstract class AbstractCoreApplicationServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->userManager = $this->container->get(UserManager::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
-        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
+        $this->userManager = self::$container->get(UserManager::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
+        $this->httpHistory = self::$container->get(HttpHistoryContainer::class);
     }
 }

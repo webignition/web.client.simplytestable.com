@@ -23,7 +23,7 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
     {
         parent::setUp();
 
-        $this->requestListener = $this->container->get(RequiresValidTestOwnerRequestListener::class);
+        $this->requestListener = self::$container->get(RequiresValidTestOwnerRequestListener::class);
     }
 
     /**
@@ -40,12 +40,12 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
         /* @var UrlLimitController $controller */
-        $controller = $this->container->get(UrlLimitController::class);
+        $controller = self::$container->get(UrlLimitController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,
@@ -115,14 +115,14 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
         $testFactory->create([
             TestFactory::KEY_WEBSITE => self::WEBSITE,
             TestFactory::KEY_TEST_ID => self::TEST_ID,
         ]);
 
         /* @var UrlLimitController $controller */
-        $controller = $this->container->get(UrlLimitController::class);
+        $controller = self::$container->get(UrlLimitController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,

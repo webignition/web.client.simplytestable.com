@@ -63,8 +63,8 @@ class ChooseControllerTest extends AbstractViewControllerTest
         $token,
         Twig_Environment $twig
     ) {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
@@ -78,7 +78,7 @@ class ChooseControllerTest extends AbstractViewControllerTest
         }
 
         /* @var ChooseController $chooseController */
-        $chooseController = $this->container->get(ChooseController::class);
+        $chooseController = self::$container->get(ChooseController::class);
         $this->setTwigOnController($twig, $chooseController);
 
         $response = $chooseController->indexAction($request, self::USER_EMAIL, $token);
@@ -225,10 +225,10 @@ class ChooseControllerTest extends AbstractViewControllerTest
 
         $request = new Request();
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var ChooseController $chooseController */
-        $chooseController = $this->container->get(ChooseController::class);
+        $chooseController = self::$container->get(ChooseController::class);
 
         $response = $chooseController->indexAction(
             $request,
@@ -288,7 +288,7 @@ class ChooseControllerTest extends AbstractViewControllerTest
      */
     private function createRequestUrl()
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
 
         return $router->generate(self::ROUTE_NAME, [
             'email' => self::USER_EMAIL,

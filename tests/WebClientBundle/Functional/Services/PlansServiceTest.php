@@ -19,7 +19,7 @@ class PlansServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->plansService = $this->container->get(PlansService::class);
+        $this->plansService = self::$container->get(PlansService::class);
     }
 
     /**

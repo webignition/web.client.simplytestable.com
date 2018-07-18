@@ -27,7 +27,7 @@ class CardControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->userAccountCardController = $this->container->get(CardController::class);
+        $this->userAccountCardController = self::$container->get(CardController::class);
     }
 
     /**
@@ -50,7 +50,7 @@ class CardControllerTest extends AbstractUserAccountControllerTest
      */
     public function testIndexActionPrivateUserPostRequest(array $httpFixtures, array $expectedResponseData)
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
 
         $this->httpMockHandler->appendFixtures($httpFixtures);

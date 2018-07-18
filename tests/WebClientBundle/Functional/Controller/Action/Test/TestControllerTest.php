@@ -52,8 +52,8 @@ class TestControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->testController = $this->container->get(TestController::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->testController = self::$container->get(TestController::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**
@@ -310,7 +310,7 @@ class TestControllerTest extends AbstractBaseTestCase
      */
     private function createRequestUrl($routeName, array $routeParameters = [])
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
 
         return $router->generate($routeName, $routeParameters);
     }

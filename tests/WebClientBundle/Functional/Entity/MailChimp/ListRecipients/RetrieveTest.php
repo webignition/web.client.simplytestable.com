@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Entity\MailChimp\ListRecipients;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 
 class RetrieveTest extends EntityTest
@@ -32,14 +33,14 @@ class RetrieveTest extends EntityTest
         $this->listRecipients->setListId($this->listId);
         $this->listRecipients->setRecipients($this->recipients);
 
-        $this->container->get('doctrine')->getManager()->persist($this->listRecipients);
-        $this->container->get('doctrine')->getManager()->flush();
+        self::$container->get('doctrine')->getManager()->persist($this->listRecipients);
+        self::$container->get('doctrine')->getManager()->flush();
 
         $this->entityId = $this->listRecipients->getId();
 
-        $this->container->get('doctrine')->getManager()->clear();
+        self::$container->get('doctrine')->getManager()->clear();
 
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $this->listRecipients = $entityManager->getRepository(ListRecipients::class)->find($this->entityId);
     }

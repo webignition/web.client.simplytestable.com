@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Controller\TaskController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
@@ -113,8 +114,8 @@ class TaskControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->taskController = $this->container->get(TaskController::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->taskController = self::$container->get(TaskController::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**
@@ -131,7 +132,7 @@ class TaskControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate($routeName, $routeParameters);
 
         $this->client->request(
@@ -260,7 +261,7 @@ class TaskControllerTest extends AbstractBaseTestCase
      */
     public function testRetrieveActionRender(array $httpFixtures, Request $request)
     {
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $testRepository = $entityManager->getRepository(Test::class);
 

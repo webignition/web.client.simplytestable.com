@@ -51,9 +51,9 @@ class StartControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->testStartController = $this->container->get(StartController::class);
-        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->testStartController = self::$container->get(StartController::class);
+        $this->httpHistory = self::$container->get(HttpHistoryContainer::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**
@@ -79,12 +79,12 @@ class StartControllerTest extends AbstractBaseTestCase
         $expectedRequestUrl,
         array $expectedPostData = []
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
         $flashBag = $session->getFlashBag();
 
         /* @var RedirectResponse $response */
@@ -582,13 +582,13 @@ class StartControllerTest extends AbstractBaseTestCase
      */
     public function testStartNewActionVerifyUrlToTest($url, $expectedUrlToTest)
     {
-        $router = $this->container->get('router');
-        $testOptionsRequestAdapterFactory = $this->container->get(TestOptionsRequestAdapterFactory::class);
-        $taskTypeService = $this->container->get(TaskTypeService::class);
-        $userManager = $this->container->get(UserManager::class);
-        $linkIntegrityTestConfiguration = $this->container->get(LinkIntegrityTestConfiguration::class);
-        $testOptionsConfiguration = $this->container->get(TestOptionsConfiguration::class);
-        $session = $this->container->get('session');
+        $router = self::$container->get('router');
+        $testOptionsRequestAdapterFactory = self::$container->get(TestOptionsRequestAdapterFactory::class);
+        $taskTypeService = self::$container->get(TaskTypeService::class);
+        $userManager = self::$container->get(UserManager::class);
+        $linkIntegrityTestConfiguration = self::$container->get(LinkIntegrityTestConfiguration::class);
+        $testOptionsConfiguration = self::$container->get(TestOptionsConfiguration::class);
+        $session = self::$container->get('session');
 
         /* @var RemoteTestService|Mock $remoteTestService */
         $remoteTestService = \Mockery::mock(RemoteTestService::class);

@@ -22,7 +22,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
             HttpResponseFactory::createJsonResponse('confirmation-token-here'),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('sign_up_confirm_submit', [
             'email' => self::USER_EMAIL,
         ]);
@@ -63,7 +63,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
         $expectedRedirectLocation,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -162,7 +162,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
      */
     public function testSignUpConfirmSubmitActionSuccess(array $requestCookies, $expectedRedirectUrl)
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -219,7 +219,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
     private function callSignUpConfirmSubmitAction(Request $request, $email)
     {
         return $this->userController->signUpConfirmSubmitAction(
-            $this->container->get(ResqueQueueService::class),
+            self::$container->get(ResqueQueueService::class),
             $request,
             $email
         );

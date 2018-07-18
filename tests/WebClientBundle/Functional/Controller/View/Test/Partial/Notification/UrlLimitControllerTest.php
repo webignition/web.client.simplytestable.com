@@ -36,7 +36,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     public function testIndexActionInvalidUserGetRequest()
@@ -45,7 +45,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -69,7 +69,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -101,7 +101,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
         $expectedResponseHasContent,
         array $expectedContentContains = []
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
 
@@ -110,7 +110,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createJsonResponse($remoteTestData),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -250,7 +250,7 @@ class UrlLimitControllerTest extends AbstractBaseTestCase
 
         $request = new Request();
 
-        $urlLimitController = $this->container->get(UrlLimitController::class);
+        $urlLimitController = self::$container->get(UrlLimitController::class);
 
         $response = $urlLimitController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);

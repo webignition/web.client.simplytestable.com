@@ -13,7 +13,7 @@ class SignOutSubmitActionTest extends AbstractUserControllerTest
 
     public function testSignOutSubmitActionPostRequest()
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('sign_out_submit');
 
         $this->client->request(
@@ -29,7 +29,7 @@ class SignOutSubmitActionTest extends AbstractUserControllerTest
 
     public function testSignOutSubmitAction()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);

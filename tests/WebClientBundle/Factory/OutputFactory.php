@@ -47,7 +47,7 @@ class OutputFactory
     public function create(array $outputValues)
     {
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = $this->container->get(EntityManagerInterface::class);
 
         foreach ($this->defaultOutputValues as $key => $value) {
             if (!isset($outputValues[$key])) {

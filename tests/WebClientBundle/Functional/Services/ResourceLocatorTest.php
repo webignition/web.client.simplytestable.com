@@ -21,7 +21,7 @@ class ResourceLocatorTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->resourceLocator = $this->container->get(ResourceLocator::class);
+        $this->resourceLocator = self::$container->get(ResourceLocator::class);
     }
 
     public function testLocateSuccess()

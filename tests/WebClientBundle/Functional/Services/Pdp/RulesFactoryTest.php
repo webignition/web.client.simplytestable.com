@@ -20,7 +20,7 @@ class RulesFactoryTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->rulesFactory = $this->container->get(RulesFactory::class);
+        $this->rulesFactory = self::$container->get(RulesFactory::class);
     }
 
     public function testCreate()

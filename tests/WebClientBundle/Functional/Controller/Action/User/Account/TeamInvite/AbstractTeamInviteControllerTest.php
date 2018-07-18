@@ -20,6 +20,6 @@ abstract class AbstractTeamInviteControllerTest extends AbstractUserAccountContr
     {
         parent::setUp();
 
-        $this->teamInviteController = $this->container->get(TeamInviteController::class);
+        $this->teamInviteController = self::$container->get(TeamInviteController::class);
     }
 }

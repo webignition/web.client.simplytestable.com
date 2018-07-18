@@ -29,7 +29,7 @@ class TeamInviteControllerRespondInviteActionTest extends AbstractTeamInviteCont
 
     public function testRespondInviteActionPostRequestPrivateUser()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
 

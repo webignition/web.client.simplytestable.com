@@ -32,7 +32,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
     {
         parent::setUp();
 
-        $this->userPlanSubscriptionService = $this->container->get(UserPlanSubscriptionService::class);
+        $this->userPlanSubscriptionService = self::$container->get(UserPlanSubscriptionService::class);
 
         $this->user = new User('user@example.com');
     }

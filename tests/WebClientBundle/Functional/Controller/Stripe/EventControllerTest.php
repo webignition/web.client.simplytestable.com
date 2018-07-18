@@ -16,7 +16,7 @@ class EventControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionEventHasNoUser()
     {
-        $eventController = $this->container->get(EventController::class);
+        $eventController = self::$container->get(EventController::class);
 
         $response = $eventController->indexAction(new Request());
 

@@ -42,7 +42,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         Request $request,
         Twig_Environment $twig
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
@@ -51,7 +51,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         }
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction($request);
@@ -161,10 +161,10 @@ class IndexControllerTest extends AbstractViewControllerTest
     {
         $request = new Request();
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
@@ -213,7 +213,7 @@ class IndexControllerTest extends AbstractViewControllerTest
      */
     private function createRequestUrl()
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
 
         return $router->generate(self::ROUTE_NAME);
     }

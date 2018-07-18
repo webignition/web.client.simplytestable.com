@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Command\Migrate;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Command\Migrate\CanonicaliseTaskOutputCommand;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use Tests\WebClientBundle\Factory\OutputFactory;
@@ -25,7 +26,7 @@ class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->canonicaliseTaskOutputCommand = $this->container->get(CanonicaliseTaskOutputCommand::class);
+        $this->canonicaliseTaskOutputCommand = self::$container->get(CanonicaliseTaskOutputCommand::class);
     }
 
     /**
@@ -46,13 +47,13 @@ class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
         $dryRun,
         array $expectedOutputHashes
     ) {
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
         $taskOutputRepository = $entityManager->getRepository(Output::class);
 
         $taskOutputs = [];
 
         if (!empty($outputValuesCollection)) {
-            $outputFactory = new OutputFactory($this->container);
+            $outputFactory = new OutputFactory(self::$container);
 
             foreach ($outputValuesCollection as $outputValues) {
                 $taskOutputs[] = $outputFactory->create($outputValues);
@@ -60,12 +61,12 @@ class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
         }
 
         if (!empty($taskValuesCollection)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $test = $testFactory->create([
                 TestFactory::KEY_TEST_ID => 1,
             ]);
 
-            $taskFactory = new TaskFactory($this->container);
+            $taskFactory = new TaskFactory(self::$container);
 
             foreach ($taskValuesCollection as $taskValues) {
                 $taskValues[TaskFactory::KEY_TEST] = $test;

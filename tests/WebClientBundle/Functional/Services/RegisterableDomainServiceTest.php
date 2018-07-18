@@ -19,7 +19,7 @@ class RegisterableDomainServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->registerableDomainService = $this->container->get(RegisterableDomainService::class);
+        $this->registerableDomainService = self::$container->get(RegisterableDomainService::class);
     }
 
     /**

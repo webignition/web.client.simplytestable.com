@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Command\Migrate;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Command\Migrate\AddHashToHashlessOutputCommand;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use Tests\WebClientBundle\Factory\OutputFactory;
@@ -23,7 +24,7 @@ class AddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->addHashToHashlessOutputCommand = $this->container->get(AddHashToHashlessOutputCommand::class);
+        $this->addHashToHashlessOutputCommand = self::$container->get(AddHashToHashlessOutputCommand::class);
     }
 
     /**
@@ -38,11 +39,11 @@ class AddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
      */
     public function testRun(array $outputValuesCollection, $limit, $dryRun, array $expectedOutputHashes)
     {
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
-        $taskOutputRespository = $entityManager->getRepository(Output::class);
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $taskOutputRepository = $entityManager->getRepository(Output::class);
 
         if (!empty($outputValuesCollection)) {
-            $outputFactory = new OutputFactory($this->container);
+            $outputFactory = new OutputFactory(self::$container);
 
             foreach ($outputValuesCollection as $outputValues) {
                 $outputFactory->create($outputValues);
@@ -64,7 +65,7 @@ class AddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
         $this->assertEquals(0, $returnValue);
 
         /* @var Output[] $outputs */
-        $outputs = $taskOutputRespository->findAll();
+        $outputs = $taskOutputRepository->findAll();
 
         $this->assertCount(count($expectedOutputHashes), $outputs);
 

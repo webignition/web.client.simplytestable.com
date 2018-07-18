@@ -29,7 +29,7 @@ class OnCustomerSubscriptionUpdatedTest extends AbstractListenerTest
      */
     public function testOnCustomerSubscriptionUpdated(StripeEvent $event, array $expectedEmailProperties)
     {
-        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
         $httpMockHandler->appendFixtures([
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);

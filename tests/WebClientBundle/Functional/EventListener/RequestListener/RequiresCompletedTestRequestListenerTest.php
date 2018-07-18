@@ -23,7 +23,7 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
     {
         parent::setUp();
 
-        $this->requestListener = $this->container->get(RequiresCompletedTestRequestListener::class);
+        $this->requestListener = self::$container->get(RequiresCompletedTestRequestListener::class);
     }
 
     /**
@@ -45,12 +45,12 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
         /* @var IndexController $controller */
-        $controller = $this->container->get(IndexController::class);
+        $controller = self::$container->get(IndexController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,

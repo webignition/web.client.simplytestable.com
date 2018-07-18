@@ -43,7 +43,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**
@@ -66,7 +66,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
         ];
 
         return new FilterControllerEvent(
-            $this->container->get('kernel'),
+            self::$container->get('kernel'),
             $callable,
             $request,
             $requestType
@@ -102,7 +102,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
     {
         $request = new Request();
 
-        $controller = $this->container->get(UserController::class);
+        $controller = self::$container->get(UserController::class);
 
         $event = $this->createFilterControllerEvent($request, $controller, 'signOutSubmitAction', $requestType);
 
@@ -129,7 +129,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         /* @var SettableResponse $controller */
-        $controller = $this->container->get(IndexController::class);
+        $controller = self::$container->get(IndexController::class);
         $controller->setResponse(new Response());
 
         $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');

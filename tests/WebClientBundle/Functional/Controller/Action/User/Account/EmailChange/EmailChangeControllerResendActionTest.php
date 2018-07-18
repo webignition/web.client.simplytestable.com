@@ -54,7 +54,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
 
     public function testResendActionPostRequestPrivateUser()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
 
@@ -96,10 +96,10 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
 
@@ -166,10 +166,10 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
 
     public function testRequestActionSuccess()
     {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
 
@@ -225,9 +225,9 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     private function callResendAction()
     {
         return $this->emailChangeController->resendAction(
-            $this->container->get(MailConfiguration::class),
-            $this->container->get(PostmarkClient::class),
-            $this->container->get('twig')
+            self::$container->get(MailConfiguration::class),
+            self::$container->get(PostmarkClient::class),
+            self::$container->get('twig')
         );
     }
 }

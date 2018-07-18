@@ -27,7 +27,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
     {
         parent::setUp();
 
-        $this->requestListener = $this->container->get(IEFilteredRequestListener::class);
+        $this->requestListener = self::$container->get(IEFilteredRequestListener::class);
     }
 
     /**
@@ -43,7 +43,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
         $request = new Request();
         $request->headers->set('user-agent', $userAgent);
 
-        $controller = $this->container->get(IndexController::class);
+        $controller = self::$container->get(IndexController::class);
 
         $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 
@@ -56,7 +56,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals(
-                $this->container->getParameter('marketing_site'),
+                self::$container->getParameter('marketing_site'),
                 $response->getTargetUrl()
             );
         } else {

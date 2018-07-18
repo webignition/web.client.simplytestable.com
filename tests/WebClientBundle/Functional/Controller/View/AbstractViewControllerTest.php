@@ -28,8 +28,8 @@ abstract class AbstractViewControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->httpHistory = self::$container->get(HttpHistoryContainer::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**

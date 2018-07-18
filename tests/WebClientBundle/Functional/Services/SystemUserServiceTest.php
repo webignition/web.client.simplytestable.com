@@ -20,7 +20,7 @@ class SystemUserServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->systemUserService = $this->container->get(SystemUserService::class);
+        $this->systemUserService = self::$container->get(SystemUserService::class);
     }
 
     public function testGetPublicUser()
@@ -36,8 +36,8 @@ class SystemUserServiceTest extends AbstractBaseTestCase
     public function testGetAdminUser()
     {
         $expectedAdminUser = new User(
-            $this->container->getParameter('admin_user_username'),
-            $this->container->getParameter('admin_user_password')
+            self::$container->getParameter('admin_user_username'),
+            self::$container->getParameter('admin_user_password')
         );
 
         $this->assertEquals($expectedAdminUser, $this->systemUserService->getAdminUser());

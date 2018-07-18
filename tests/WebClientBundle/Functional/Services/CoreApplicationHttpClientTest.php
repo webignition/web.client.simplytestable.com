@@ -46,9 +46,9 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->coreApplicationHttpClient = $this->container->get(CoreApplicationHttpClient::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
-        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
+        $this->coreApplicationHttpClient = self::$container->get(CoreApplicationHttpClient::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
+        $this->httpHistory = self::$container->get(HttpHistoryContainer::class);
     }
 
     /**
@@ -182,7 +182,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         array $options,
         $expectedAuthorizationHeaderUser
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($this->getUserFromUserName($userName));
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -215,7 +215,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         array $options,
         $expectedAuthorizationHeaderUser
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($this->getUserFromUserName($userName));
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -572,7 +572,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
      */
     private function getUserFromUserName($userName)
     {
-        $systemUserService = $this->container->get(SystemUserService::class);
+        $systemUserService = self::$container->get(SystemUserService::class);
 
         $user = SystemUserService::getPublicUser();
 

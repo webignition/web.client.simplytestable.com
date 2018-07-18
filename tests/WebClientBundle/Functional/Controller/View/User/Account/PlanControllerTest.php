@@ -99,7 +99,7 @@ class PlanControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionPrivateUserGetRequest()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
 
         $this->httpMockHandler->appendFixtures([
@@ -125,7 +125,7 @@ class PlanControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCustomPlan()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
@@ -143,7 +143,7 @@ class PlanControllerTest extends AbstractViewControllerTest
         ]);
 
         /* @var PlanController $planController */
-        $planController = $this->container->get(PlanController::class);
+        $planController = self::$container->get(PlanController::class);
 
         /* @var RedirectResponse $response */
         $response = $planController->indexAction();
@@ -168,8 +168,8 @@ class PlanControllerTest extends AbstractViewControllerTest
         array $flashBagValues,
         Twig_Environment $twig
     ) {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
 
@@ -184,7 +184,7 @@ class PlanControllerTest extends AbstractViewControllerTest
         }
 
         /* @var PlanController $planController */
-        $planController = $this->container->get(PlanController::class);
+        $planController = self::$container->get(PlanController::class);
         $this->setTwigOnController($twig, $planController);
 
         $response = $planController->indexAction();
@@ -374,7 +374,7 @@ class PlanControllerTest extends AbstractViewControllerTest
      */
     private function createRequestUrl()
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
 
         return $router->generate(self::ROUTE_NAME);
     }

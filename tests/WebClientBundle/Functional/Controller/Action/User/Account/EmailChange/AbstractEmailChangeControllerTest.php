@@ -19,6 +19,6 @@ abstract class AbstractEmailChangeControllerTest extends AbstractUserAccountCont
     {
         parent::setUp();
 
-        $this->emailChangeController = $this->container->get(EmailChangeController::class);
+        $this->emailChangeController = self::$container->get(EmailChangeController::class);
     }
 }

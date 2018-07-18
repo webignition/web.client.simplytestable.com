@@ -21,7 +21,7 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->listRecipientsService = $this->container->get(ListRecipientsService::class);
+        $this->listRecipientsService = self::$container->get(ListRecipientsService::class);
     }
 
     /**
@@ -195,7 +195,7 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
     public function testGetExisting($recipients, $name)
     {
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $listRecipients = new ListRecipients();
         $listRecipients->setListId($this->listRecipientsService->getListId($name));

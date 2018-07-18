@@ -32,7 +32,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
     {
         parent::setUp();
 
-        $this->teamInviteService = $this->container->get(TeamInviteService::class);
+        $this->teamInviteService = self::$container->get(TeamInviteService::class);
     }
 
     /**

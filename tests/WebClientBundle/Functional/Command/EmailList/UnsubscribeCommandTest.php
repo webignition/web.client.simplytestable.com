@@ -24,12 +24,12 @@ class UnsubscribeCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->unsubscribeCommand = $this->container->get(UnsubscribeCommand::class);
+        $this->unsubscribeCommand = self::$container->get(UnsubscribeCommand::class);
     }
 
     public function testRun()
     {
-        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
         $httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);

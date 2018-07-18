@@ -50,7 +50,7 @@ class TaskFactory
     public function create(array $taskValues)
     {
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = $this->container->get(EntityManagerInterface::class);
 
         foreach ($this->defaultTaskValues as $key => $value) {
             if (!isset($taskValues[$key])) {
@@ -85,7 +85,7 @@ class TaskFactory
     public function createCollection(Test $test, array $taskValuesCollection)
     {
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = $this->container->get(EntityManagerInterface::class);
 
         $tasks = [];
 

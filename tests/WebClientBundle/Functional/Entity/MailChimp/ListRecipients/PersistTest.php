@@ -9,8 +9,8 @@ class PersistTest extends EntityTest
     public function testPersistWithNoPropertiesSetThrowsIntegrityConstraintViolation()
     {
         try {
-            $this->container->get('doctrine')->getManager()->persist($this->listRecipients);
-            $this->container->get('doctrine')->getManager()->flush();
+            self::$container->get('doctrine')->getManager()->persist($this->listRecipients);
+            self::$container->get('doctrine')->getManager()->flush();
             $this->fail('\Doctrine\DBAL\DBALException not thrown');
         } catch (DBALException $dbalException) {
             $this->assertTrue(
@@ -42,8 +42,8 @@ class PersistTest extends EntityTest
     {
         $this->listRecipients->setListId('foo');
 
-        $this->container->get('doctrine')->getManager()->persist($this->listRecipients);
-        $this->container->get('doctrine')->getManager()->flush();
+        self::$container->get('doctrine')->getManager()->persist($this->listRecipients);
+        self::$container->get('doctrine')->getManager()->flush();
 
         $this->assertNotNull($this->listRecipients->getId());
     }
@@ -57,8 +57,8 @@ class PersistTest extends EntityTest
             'foobar3'
         ));
 
-        $this->container->get('doctrine')->getManager()->persist($this->listRecipients);
-        $this->container->get('doctrine')->getManager()->flush();
+        self::$container->get('doctrine')->getManager()->persist($this->listRecipients);
+        self::$container->get('doctrine')->getManager()->flush();
 
         $this->assertNotNull($this->listRecipients->getId());
     }

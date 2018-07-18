@@ -23,12 +23,12 @@ class RulesRetrieverTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->rulesRetriever = $this->container->get(RulesRetriever::class);
+        $this->rulesRetriever = self::$container->get(RulesRetriever::class);
     }
 
     public function testRetrieveHttpException()
     {
-        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
         $httpMockHandler->appendFixtures([
             new Response(404),
         ]);
@@ -38,7 +38,7 @@ class RulesRetrieverTest extends AbstractBaseTestCase
 
     public function testRetrieveSuccess()
     {
-        $expectedFilePutContentsArg0 = $this->container->getParameter('pdp_psl_data_path');
+        $expectedFilePutContentsArg0 = self::$container->getParameter('pdp_psl_data_path');
 
         $mockedNamespace = 'SimplyTestable\WebClientBundle\Services\Pdp';
 
@@ -66,7 +66,7 @@ class RulesRetrieverTest extends AbstractBaseTestCase
             })
             ->andReturn(100);
 
-        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
         $httpMockHandler->appendFixtures([
             new Response(200, ['content-type' => 'text/plain'], FixtureLoader::load('/public_suffix_list.dat')),
         ]);

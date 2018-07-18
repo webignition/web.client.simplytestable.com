@@ -31,7 +31,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         $test = $testFactory->create($testValues);
 

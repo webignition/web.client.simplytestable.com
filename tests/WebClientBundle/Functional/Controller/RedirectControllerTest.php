@@ -2,6 +2,8 @@
 
 namespace Tests\WebClientBundle\Functional\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
@@ -34,8 +36,8 @@ class RedirectControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->redirectController = $this->container->get(RedirectController::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->redirectController = self::$container->get(RedirectController::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**
@@ -59,16 +61,16 @@ class RedirectControllerTest extends AbstractBaseTestCase
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
         /* @var RedirectResponse $response */
         $response = $this->redirectController->testAction(
-            $this->container->get(TestService::class),
-            $this->container->get(RemoteTestService::class),
-            $this->container->get('doctrine.orm.entity_manager'),
-            $this->container->get('test.logger'),
+            self::$container->get(TestService::class),
+            self::$container->get(RemoteTestService::class),
+            self::$container->get(EntityManagerInterface::class),
+            self::$container->get(LoggerInterface::class),
             $request,
             $website,
             $testId

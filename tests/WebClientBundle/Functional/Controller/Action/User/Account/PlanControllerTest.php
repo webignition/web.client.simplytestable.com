@@ -56,7 +56,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->planController = $this->container->get(PlanController::class);
+        $this->planController = self::$container->get(PlanController::class);
     }
 
     /**
@@ -73,7 +73,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
 
     public function testIndexActionPrivateUserPostRequest()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
 
         $this->httpMockHandler->appendFixtures([
@@ -113,8 +113,8 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         Request $request,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);

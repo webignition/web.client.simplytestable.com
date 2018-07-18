@@ -37,9 +37,9 @@ class ClientTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->mailChimpClient = $this->container->get(MailChimpClient::class);
-        $this->httpHistory = $this->container->get(HttpHistoryContainer::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->mailChimpClient = self::$container->get(MailChimpClient::class);
+        $this->httpHistory = self::$container->get(HttpHistoryContainer::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**
@@ -53,7 +53,7 @@ class ClientTest extends AbstractBaseTestCase
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $listMembers = $this->mailChimpClient->getListMembers(
-            $this->container->getParameter('mailchimp_updates_list_id'),
+            self::$container->getParameter('mailchimp_updates_list_id'),
             100,
             0
         );
@@ -110,7 +110,7 @@ class ClientTest extends AbstractBaseTestCase
         $this->expectExceptionCode($expectedExceptionCode);
 
         $this->mailChimpClient->addListMember(
-            $this->container->getParameter('mailchimp_updates_list_id'),
+            self::$container->getParameter('mailchimp_updates_list_id'),
             'user@example.com'
         );
 
@@ -155,7 +155,7 @@ class ClientTest extends AbstractBaseTestCase
         ]);
 
         $this->mailChimpClient->addListMember(
-            $this->container->getParameter('mailchimp_updates_list_id'),
+            self::$container->getParameter('mailchimp_updates_list_id'),
             'user@example.com'
         );
 
@@ -186,7 +186,7 @@ class ClientTest extends AbstractBaseTestCase
         $this->expectExceptionCode($expectedExceptionCode);
 
         $this->mailChimpClient->removeListMember(
-            $this->container->getParameter('mailchimp_updates_list_id'),
+            self::$container->getParameter('mailchimp_updates_list_id'),
             'user@example.com'
         );
 
@@ -231,7 +231,7 @@ class ClientTest extends AbstractBaseTestCase
         ]);
 
         $this->mailChimpClient->removeListMember(
-            $this->container->getParameter('mailchimp_updates_list_id'),
+            self::$container->getParameter('mailchimp_updates_list_id'),
             'user@example.com'
         );
 
@@ -244,6 +244,6 @@ class ClientTest extends AbstractBaseTestCase
         $decodedAuthorizationHeader = base64_decode(str_replace('Basic ', '', $authorizationHeader));
         $authorizationHeaderParts = explode(':', $decodedAuthorizationHeader);
 
-        $this->assertEquals($this->container->getParameter('mailchimp_api_key'), $authorizationHeaderParts[1]);
+        $this->assertEquals(self::$container->getParameter('mailchimp_api_key'), $authorizationHeaderParts[1]);
     }
 }

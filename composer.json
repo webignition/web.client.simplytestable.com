@@ -13,11 +13,9 @@
         "php": ">=7.2.0",
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.6",
-        "incenteev/composer-parameter-handler": "^2.0",
-        "sensio/distribution-bundle": "^5.0.19",
         "sensio/framework-extra-bundle": "^5.0.0",
         "symfony/monolog-bundle": "^3.1.0",
-        "symfony/symfony": "3.4.*",
+        "symfony/symfony": "^4.1",
         "twig/twig": "^2.0",
         "doctrine/migrations": "^1.8",
         "doctrine/doctrine-migrations-bundle": "^1.3",
@@ -32,7 +30,7 @@
         "jeremykendall/php-domain-parser": "~5.3",
         "chrisboulton/php-resque": "dev-master#e393d5672cdbe1e94e856a6cb2b2ec97042a4f24",
         "chrisboulton/php-resque-scheduler": "dev-master#ab8bd52949cac1f815bbb97aa39f51c7b5766a86",
-        "resquebundle/resque": "1.2.0",
+        "resquebundle/resque": "^2",
         "webignition/php-ie-detector": ">=0.2,<1",
         "webignition/simplytestable-user-model": ">=0.1,<1",
         "webignition/simplytestable-user-serializer": ">=1.1,<2",
@@ -40,7 +38,7 @@
         "wildbit/postmark-php": "^2"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^3.0",
+        "symfony/phpunit-bridge": "^4.1",
         "phpunit/phpunit": "~7.0",
         "mockery/mockery": "1.0",
         "webignition/http-history-container": ">=0.5,<1",
@@ -48,11 +46,8 @@
     },
     "scripts": {
         "symfony-scripts": [
-            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
-            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile"
+            "php bin/console cache:clear",
+            "php bin/console cache:warmup"
         ],
         "post-install-cmd": [
             "@symfony-scripts"

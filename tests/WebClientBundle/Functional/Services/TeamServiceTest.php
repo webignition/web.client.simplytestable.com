@@ -22,7 +22,7 @@ class TeamServiceTest extends AbstractCoreApplicationServiceTest
     {
         parent::setUp();
 
-        $this->teamService = $this->container->get(TeamService::class);
+        $this->teamService = self::$container->get(TeamService::class);
     }
 
     public function testCreate()

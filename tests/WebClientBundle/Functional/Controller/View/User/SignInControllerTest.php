@@ -33,13 +33,13 @@ class SignInControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionIsLoggedIn()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
 
         /* @var SignInController $signInController */
-        $signInController = $this->container->get(SignInController::class);
+        $signInController = self::$container->get(SignInController::class);
 
         /* @var RedirectResponse $response */
         $response = $signInController->indexAction(new Request());
@@ -60,7 +60,7 @@ class SignInControllerTest extends AbstractViewControllerTest
         Request $request,
         Twig_Environment $twig
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         if (!empty($flashBagValues)) {
             foreach ($flashBagValues as $key => $value) {
@@ -69,7 +69,7 @@ class SignInControllerTest extends AbstractViewControllerTest
         }
 
         /* @var SignInController $signInController */
-        $signInController = $this->container->get(SignInController::class);
+        $signInController = self::$container->get(SignInController::class);
         $this->setTwigOnController($twig, $signInController);
 
         $response = $signInController->indexAction($request);
@@ -165,10 +165,10 @@ class SignInControllerTest extends AbstractViewControllerTest
     {
         $request = new Request();
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var SignInController $signInController */
-        $signInController = $this->container->get(SignInController::class);
+        $signInController = self::$container->get(SignInController::class);
 
         $response = $signInController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
@@ -223,7 +223,7 @@ class SignInControllerTest extends AbstractViewControllerTest
      */
     private function createRequestUrl()
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
 
         return $router->generate(self::ROUTE_NAME);
     }
