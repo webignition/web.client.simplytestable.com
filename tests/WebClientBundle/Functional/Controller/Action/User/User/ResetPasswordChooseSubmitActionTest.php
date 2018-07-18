@@ -27,7 +27,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('reset_password_choose_submit');
 
         $this->client->request(
@@ -68,7 +68,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues,
         $expectedResponseHasUserCookie
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 

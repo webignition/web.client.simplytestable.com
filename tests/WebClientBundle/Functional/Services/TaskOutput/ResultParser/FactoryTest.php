@@ -25,7 +25,7 @@ class FactoryTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->factory = $this->container->get(ResultParserFactory::class);
+        $this->factory = self::$container->get(ResultParserFactory::class);
     }
 
     /**

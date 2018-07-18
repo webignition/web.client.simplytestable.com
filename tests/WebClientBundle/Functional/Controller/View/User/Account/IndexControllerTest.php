@@ -101,7 +101,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionPrivateUserGetRequest()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
 
         $this->httpMockHandler->appendFixtures([
@@ -146,9 +146,9 @@ class IndexControllerTest extends AbstractViewControllerTest
         array $flashBagValues,
         Twig_Environment $twig
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $user = new User(self::USER_EMAIL);
 
@@ -163,7 +163,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         }
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(new Request());
@@ -759,7 +759,7 @@ class IndexControllerTest extends AbstractViewControllerTest
      */
     private function createRequestUrl()
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
 
         return $router->generate(self::ROUTE_NAME);
     }

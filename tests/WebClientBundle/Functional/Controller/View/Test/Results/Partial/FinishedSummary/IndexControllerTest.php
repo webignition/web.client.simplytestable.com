@@ -45,7 +45,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -69,7 +69,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -94,7 +94,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -122,7 +122,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         ]);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -183,7 +183,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $request = new Request();
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);

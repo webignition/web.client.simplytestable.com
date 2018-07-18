@@ -21,7 +21,7 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->coreApplicationRouter = $this->container->get(CoreApplicationRouter::class);
+        $this->coreApplicationRouter = self::$container->get(CoreApplicationRouter::class);
     }
 
     /**

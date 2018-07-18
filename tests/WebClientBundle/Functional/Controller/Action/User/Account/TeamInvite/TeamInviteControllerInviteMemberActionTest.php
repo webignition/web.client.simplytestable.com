@@ -43,7 +43,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
 
         $this->user = new User(self::USER_USERNAME);
 
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($this->user);
     }
@@ -105,7 +105,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
      */
     public function testInviteMemberActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $response = $this->callInviteMemberAction($request);
 
@@ -174,7 +174,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
      */
     public function testInviteMemberActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -277,7 +277,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -374,7 +374,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
         $expectedPostmarkMessageContains,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -400,7 +400,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
 
-        $httpHistory = $this->container->get(HttpHistoryContainer::class);
+        $httpHistory = self::$container->get(HttpHistoryContainer::class);
         $lastMessageBody = json_decode($httpHistory->getLastRequest()->getBody()->getContents(), true);
 
         $this->assertContains($expectedPostmarkMessageContains, $lastMessageBody['TextBody']);
@@ -458,9 +458,9 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
     private function callInviteMemberAction(Request $request)
     {
         return $this->teamInviteController->inviteMemberAction(
-            $this->container->get(MailConfiguration::class),
-            $this->container->get(PostmarkClient::class),
-            $this->container->get('twig'),
+            self::$container->get(MailConfiguration::class),
+            self::$container->get(PostmarkClient::class),
+            self::$container->get('twig'),
             $request
         );
     }

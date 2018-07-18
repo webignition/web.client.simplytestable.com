@@ -23,13 +23,13 @@ class ClearCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->clearCommand = $this->container->get(ClearCommand::class);
+        $this->clearCommand = self::$container->get(ClearCommand::class);
     }
 
     public function testRun()
     {
-        $cacheValidatorHeadersService = $this->container->get(CacheValidatorHeadersService::class);
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $cacheValidatorHeadersService = self::$container->get(CacheValidatorHeadersService::class);
+        $entityManager = self::$container->get('doctrine.orm.entity_manager');
         $cacheValidatorHeadersRepository = $entityManager->getRepository(CacheValidatorHeaders::class);
 
         $cacheValidatorHeadersService->get('foo');

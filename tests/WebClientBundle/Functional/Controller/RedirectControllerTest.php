@@ -34,8 +34,8 @@ class RedirectControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->redirectController = $this->container->get(RedirectController::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->redirectController = self::$container->get(RedirectController::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**
@@ -59,16 +59,16 @@ class RedirectControllerTest extends AbstractBaseTestCase
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
         /* @var RedirectResponse $response */
         $response = $this->redirectController->testAction(
-            $this->container->get(TestService::class),
-            $this->container->get(RemoteTestService::class),
-            $this->container->get('doctrine.orm.entity_manager'),
-            $this->container->get('test.logger'),
+            self::$container->get(TestService::class),
+            self::$container->get(RemoteTestService::class),
+            self::$container->get('doctrine.orm.entity_manager'),
+            self::$container->get('test.logger'),
             $request,
             $website,
             $testId

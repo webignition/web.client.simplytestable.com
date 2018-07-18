@@ -31,12 +31,12 @@ class InviteControllerTest extends AbstractViewControllerTest
             ]),
         ]);
 
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
         $flashBag = $session->getFlashBag();
 
         $flashBag->set(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY, 'foo');
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('view_user_signup_invite_index', [
             'token' => self::TOKEN,
         ]);
@@ -71,7 +71,7 @@ class InviteControllerTest extends AbstractViewControllerTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $flashBag = $session->getFlashBag();
 
@@ -80,7 +80,7 @@ class InviteControllerTest extends AbstractViewControllerTest
         }
 
         /* @var InviteController $inviteController */
-        $inviteController = $this->container->get(InviteController::class);
+        $inviteController = self::$container->get(InviteController::class);
         $this->setTwigOnController($twig, $inviteController);
 
         $inviteController->indexAction($request, self::TOKEN);
@@ -233,10 +233,10 @@ class InviteControllerTest extends AbstractViewControllerTest
 
         $request = new Request();
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var InviteController $inviteController */
-        $inviteController = $this->container->get(InviteController::class);
+        $inviteController = self::$container->get(InviteController::class);
 
         $response = $inviteController->indexAction($request, self::TOKEN);
         $this->assertInstanceOf(SymfonyResponse::class, $response);

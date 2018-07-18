@@ -29,7 +29,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->newsSubscriptionsController = $this->container->get(NewsSubscriptionsController::class);
+        $this->newsSubscriptionsController = self::$container->get(NewsSubscriptionsController::class);
     }
 
     /**
@@ -81,14 +81,14 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         $expectedAnnouncementsListRecipientsContains,
         $expectedUpdatesListRecipientsContains
     ) {
-        $mailChimpListRecipientsService = $this->container->get(ListRecipientsService::class);
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
+        $mailChimpListRecipientsService = self::$container->get(ListRecipientsService::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get('doctrine.orm.entity_manager');
         $userManager->setUser($user);
 
         /* @var ListRecipients[] $listRecipientsCollection */

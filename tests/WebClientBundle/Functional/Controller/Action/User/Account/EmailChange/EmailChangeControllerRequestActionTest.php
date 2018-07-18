@@ -56,7 +56,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
     public function testRequestActionPostRequestPrivateUser()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
 
@@ -97,8 +97,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($this->user);
 
@@ -163,8 +163,8 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      */
     public function testRequestActionCreateFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($this->user);
 
@@ -232,10 +232,10 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
 
@@ -321,10 +321,10 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
     public function testRequestActionSuccess()
     {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
 
@@ -389,9 +389,9 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
     private function callRequestAction(Request $request)
     {
         return $this->emailChangeController->requestAction(
-            $this->container->get(MailConfiguration::class),
-            $this->container->get(PostmarkClient::class),
-            $this->container->get('twig'),
+            self::$container->get(MailConfiguration::class),
+            self::$container->get(PostmarkClient::class),
+            self::$container->get('twig'),
             $request
         );
     }

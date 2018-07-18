@@ -32,7 +32,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
     {
         parent::setUp();
 
-        $this->userAccountCardService = $this->container->get(UserAccountCardService::class);
+        $this->userAccountCardService = self::$container->get(UserAccountCardService::class);
 
         $this->user = new User('user@example.com');
     }

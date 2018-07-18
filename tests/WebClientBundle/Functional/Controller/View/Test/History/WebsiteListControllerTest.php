@@ -28,7 +28,7 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     public function testIndexActionInvalidUserGetRequest()
@@ -37,7 +37,7 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->client->request(
@@ -58,7 +58,7 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createJsonResponse([]),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->client->request(
@@ -82,14 +82,14 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
         array $httpFixtures,
         array $expectedResponseData
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $user = SystemUserService::getPublicUser();
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $websiteListController = $this->container->get(WebsiteListController::class);
+        $websiteListController = self::$container->get(WebsiteListController::class);
 
         /* @var JsonResponse $response */
         $response = $websiteListController->indexAction();

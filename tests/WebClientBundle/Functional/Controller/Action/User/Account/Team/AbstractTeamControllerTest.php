@@ -19,6 +19,6 @@ abstract class AbstractTeamControllerTest extends AbstractUserAccountControllerT
     {
         parent::setUp();
 
-        $this->teamController = $this->container->get(TeamController::class);
+        $this->teamController = self::$container->get(TeamController::class);
     }
 }

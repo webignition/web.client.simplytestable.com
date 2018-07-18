@@ -26,7 +26,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
     {
         parent::setUp();
 
-        $this->testService = $this->container->get(TestService::class);
+        $this->testService = self::$container->get(TestService::class);
     }
 
     /**
@@ -45,7 +45,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
@@ -113,7 +113,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 

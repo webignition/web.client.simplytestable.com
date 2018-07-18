@@ -26,7 +26,7 @@ abstract class AbstractListenerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->listener = $this->container->get(StripeListener::class);
+        $this->listener = self::$container->get(StripeListener::class);
     }
 
     /**
@@ -34,8 +34,8 @@ abstract class AbstractListenerTest extends AbstractBaseTestCase
      */
     protected function assertPostmarkEmail(array $expectedEmailProperties)
     {
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $verificationResult = $postmarkMessageVerifier->verify(
             array_merge(

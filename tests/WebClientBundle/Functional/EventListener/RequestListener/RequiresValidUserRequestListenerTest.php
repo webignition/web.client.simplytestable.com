@@ -17,7 +17,7 @@ class OnKernelControllerRequiresValidUserTest extends AbstractKernelControllerTe
     {
         parent::setUp();
 
-        $this->requestListener = $this->container->get(RequiresValidUserRequestListener::class);
+        $this->requestListener = self::$container->get(RequiresValidUserRequestListener::class);
     }
 
     /**
@@ -36,7 +36,7 @@ class OnKernelControllerRequiresValidUserTest extends AbstractKernelControllerTe
         $request = new Request();
 
         /* @var RecentTestsController $controller */
-        $controller = $this->container->get(RecentTestsController::class);
+        $controller = self::$container->get(RecentTestsController::class);
 
         $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 

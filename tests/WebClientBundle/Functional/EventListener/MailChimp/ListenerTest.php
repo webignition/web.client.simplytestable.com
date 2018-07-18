@@ -33,8 +33,8 @@ class ListenerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->listener = $this->container->get(MailChimpListener::class);
-        $this->listRecipientsService = $this->container->get(ListRecipientsService::class);
+        $this->listener = self::$container->get(MailChimpListener::class);
+        $this->listRecipientsService = self::$container->get(ListRecipientsService::class);
     }
 
     /**
@@ -96,7 +96,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get(ListRecipientsService::class);
+        $listRecipientsService = self::$container->get(ListRecipientsService::class);
 
         $listName = $listRecipientsService->getListName($event->getListId());
 
@@ -166,7 +166,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get(ListRecipientsService::class);
+        $listRecipientsService = self::$container->get(ListRecipientsService::class);
 
         $listName = $listRecipientsService->getListName($event->getListId());
 
@@ -259,7 +259,7 @@ class ListenerTest extends AbstractBaseTestCase
     ) {
         $this->createExistingListRecipients($existingListRecipients);
 
-        $listRecipientsService = $this->container->get(ListRecipientsService::class);
+        $listRecipientsService = self::$container->get(ListRecipientsService::class);
 
         $listName = $listRecipientsService->getListName($event->getListId());
 
@@ -321,7 +321,7 @@ class ListenerTest extends AbstractBaseTestCase
     private function createExistingListRecipients(array $existingListRecipients)
     {
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get('doctrine.orm.entity_manager');
 
         $listRecipients = new ListRecipients();
         $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));

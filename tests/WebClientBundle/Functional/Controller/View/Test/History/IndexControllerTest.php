@@ -33,7 +33,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::VIEW_NAME);
 
         $this->client->request(
@@ -59,7 +59,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             ]),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::VIEW_NAME);
 
         $this->client->request(
@@ -91,7 +91,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $expectedRedirectUrl,
         $expectedRequestUrls
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $user = SystemUserService::getPublicUser();
         $userManager->setUser($user);
@@ -99,7 +99,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -233,13 +233,13 @@ class IndexControllerTest extends AbstractViewControllerTest
         Request $request,
         Twig_Environment $twig
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction($request);
@@ -435,10 +435,10 @@ class IndexControllerTest extends AbstractViewControllerTest
             'page_number' => 1,
         ]);
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);

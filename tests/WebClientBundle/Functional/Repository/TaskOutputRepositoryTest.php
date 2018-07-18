@@ -23,7 +23,7 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
         parent::setUp();
 
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get('doctrine.orm.entity_manager');
 
         $this->taskOutputRepository = $entityManager->getRepository(Output::class);
     }
@@ -448,7 +448,7 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
         $outputs = [];
 
         if (!empty($outputValuesCollection)) {
-            $outputFactory = new OutputFactory($this->container);
+            $outputFactory = new OutputFactory(self::$container);
 
             foreach ($outputValuesCollection as $outputValues) {
                 $outputs[] = $outputFactory->create($outputValues);

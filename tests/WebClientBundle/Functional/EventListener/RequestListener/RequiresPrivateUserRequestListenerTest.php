@@ -20,7 +20,7 @@ class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTes
     {
         parent::setUp();
 
-        $this->requestListener = $this->container->get(RequiresPrivateUserRequestListener::class);
+        $this->requestListener = self::$container->get(RequiresPrivateUserRequestListener::class);
     }
 
     /**
@@ -37,13 +37,13 @@ class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTes
         $expectedHasResponse,
         $expectedRedirectUrl = null
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var NewsSubscriptionsController $controller */
-        $controller = $this->container->get(NewsSubscriptionsController::class);
+        $controller = self::$container->get(NewsSubscriptionsController::class);
 
         $request = new Request();
 

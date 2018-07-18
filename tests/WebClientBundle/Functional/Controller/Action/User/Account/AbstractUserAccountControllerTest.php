@@ -23,7 +23,7 @@ abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     /**
@@ -36,8 +36,8 @@ abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
      */
     public function assertPublicUserPostRequest($routeName)
     {
-        $userManager = $this->container->get(UserManager::class);
-        $router = $this->container->get('router');
+        $userManager = self::$container->get(UserManager::class);
+        $router = self::$container->get('router');
 
         $userManager->setUser(SystemUserService::getPublicUser());
         $requestUrl = $router->generate($routeName);
@@ -67,7 +67,7 @@ abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
      */
     protected function createRequestUrl($routeName, array $routeParameters = [])
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
 
         return $router->generate($routeName, $routeParameters);
     }

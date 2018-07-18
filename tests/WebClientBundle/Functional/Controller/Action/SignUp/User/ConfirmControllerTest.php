@@ -39,8 +39,8 @@ class ConfirmControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->confirmController = $this->container->get(ConfirmController::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->confirmController = self::$container->get(ConfirmController::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     public function testResendActionPostRequest()
@@ -51,7 +51,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('action_signup_user_confirm_resend', [
             'email' => self::EMAIL,
         ]);
@@ -72,7 +72,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
     public function testResendActionUserDoesNotExist()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
@@ -95,7 +95,7 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
     public function testResendActionInvalidAdminCredentials()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
@@ -133,9 +133,9 @@ class ConfirmControllerTest extends AbstractBaseTestCase
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -191,9 +191,9 @@ class ConfirmControllerTest extends AbstractBaseTestCase
 
     public function testResendActionSuccess()
     {
-        $session = $this->container->get('session');
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),

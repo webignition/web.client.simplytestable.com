@@ -35,7 +35,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('sign_in_submit');
 
         $this->client->request(
@@ -76,7 +76,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ->shouldReceive('getInvalidFieldState')
             ->andReturn('empty');
 
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $response = $this->callSignInSubmitAction($request, $signInRequestValidator);
 
@@ -105,7 +105,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         array $httpFixtures,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -168,9 +168,9 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      */
     public function testSignInSubmitActionResendConfirmationToken(array $httpFixtures)
     {
-        $session = $this->container->get('session');
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures(array_merge($httpFixtures, [
             PostmarkHttpResponseFactory::createSuccessResponse(),
@@ -391,9 +391,9 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         }
 
         return $this->userController->signInSubmitAction(
-            $this->container->get(MailConfiguration::class),
-            $this->container->get(PostmarkClient::class),
-            $this->container->get('twig'),
+            self::$container->get(MailConfiguration::class),
+            self::$container->get(PostmarkClient::class),
+            self::$container->get('twig'),
             $signInRequestFactory,
             $signInRequestValidator
         );

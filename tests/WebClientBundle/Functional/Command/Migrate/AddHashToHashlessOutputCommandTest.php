@@ -23,7 +23,7 @@ class AddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->addHashToHashlessOutputCommand = $this->container->get(AddHashToHashlessOutputCommand::class);
+        $this->addHashToHashlessOutputCommand = self::$container->get(AddHashToHashlessOutputCommand::class);
     }
 
     /**
@@ -38,11 +38,11 @@ class AddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
      */
     public function testRun(array $outputValuesCollection, $limit, $dryRun, array $expectedOutputHashes)
     {
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get('doctrine.orm.entity_manager');
         $taskOutputRespository = $entityManager->getRepository(Output::class);
 
         if (!empty($outputValuesCollection)) {
-            $outputFactory = new OutputFactory($this->container);
+            $outputFactory = new OutputFactory(self::$container);
 
             foreach ($outputValuesCollection as $outputValues) {
                 $outputFactory->create($outputValues);

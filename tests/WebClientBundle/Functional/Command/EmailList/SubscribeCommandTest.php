@@ -23,12 +23,12 @@ class SubscribeCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->subscribeCommand = $this->container->get(SubscribeCommand::class);
+        $this->subscribeCommand = self::$container->get(SubscribeCommand::class);
     }
 
     public function testRun()
     {
-        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
         $httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);

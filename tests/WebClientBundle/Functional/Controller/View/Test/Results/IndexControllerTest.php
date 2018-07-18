@@ -115,7 +115,7 @@ class IndexControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -196,7 +196,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionInvalidTestOwnerIsLoggedIn()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser(new User(self::USER_EMAIL));
 
@@ -205,7 +205,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -235,7 +235,7 @@ class IndexControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => $website,
             'test_id' => $testId,
@@ -308,13 +308,13 @@ class IndexControllerTest extends AbstractViewControllerTest
         $expectedRedirectUrl,
         $expectedRequestUrls
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         /* @var RedirectResponse $response */
         $response = $indexController->indexAction(
@@ -456,19 +456,19 @@ class IndexControllerTest extends AbstractViewControllerTest
         $filter,
         Twig_Environment $twig
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(
@@ -820,10 +820,10 @@ class IndexControllerTest extends AbstractViewControllerTest
             'filter' => IndexController::FILTER_WITH_ERRORS,
         ]);
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction(
             $request,

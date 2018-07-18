@@ -28,9 +28,9 @@ class ByUrlControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->byUrlController = $this->container->get(ByUrlController::class);
+        $this->byUrlController = self::$container->get(ByUrlController::class);
 
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         $testValues = [
             TestFactory::KEY_TEST_ID => self::TEST_ID,
@@ -48,7 +48,7 @@ class ByUrlControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionGetRequest()
     {
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('action_test_task_results_byurl_index', [
             'website' => self::WEBSITE_URL,
             'test_id' => self::TEST_ID,

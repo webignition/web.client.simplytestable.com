@@ -35,8 +35,8 @@ class InviteControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->inviteController = $this->container->get(InviteController::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->inviteController = self::$container->get(InviteController::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     public function testAcceptActionPostRequest()
@@ -50,7 +50,7 @@ class InviteControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate('action_signup_team_invite_accept', [
             'token' => self::TOKEN,
         ]);
@@ -90,7 +90,7 @@ class InviteControllerTest extends AbstractBaseTestCase
         array $expectedErrorFlashBagValues,
         array $expectedFailureFlashBagValues
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -217,8 +217,8 @@ class InviteControllerTest extends AbstractBaseTestCase
         Request $request,
         $expectedHasUserCookie
     ) {
-        $session = $this->container->get('session');
-        $resqueQueueService = $this->container->get(ResqueQueueService::class);
+        $session = self::$container->get('session');
+        $resqueQueueService = self::$container->get(ResqueQueueService::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([

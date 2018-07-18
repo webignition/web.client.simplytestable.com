@@ -58,7 +58,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
 
     public function testResendInviteActionPostRequestPrivateUser()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
 
@@ -107,7 +107,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
      */
     public function testResendInviteActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -162,9 +162,9 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -234,9 +234,9 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         array $expectedEmailProperties,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -346,9 +346,9 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
     private function callResendInviteAction(Request $request)
     {
         return $this->teamInviteController->resendInviteAction(
-            $this->container->get(MailConfiguration::class),
-            $this->container->get(PostmarkClient::class),
-            $this->container->get('twig'),
+            self::$container->get(MailConfiguration::class),
+            self::$container->get(PostmarkClient::class),
+            self::$container->get('twig'),
             $request
         );
     }

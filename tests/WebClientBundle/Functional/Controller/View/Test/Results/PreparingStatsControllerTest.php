@@ -48,7 +48,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     public function testIndexActionInvalidUserGetRequest()
@@ -57,7 +57,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -81,7 +81,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -117,7 +117,7 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -147,12 +147,12 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
         /* @var PreparingStatsController $preparingStatsController */
-        $preparingStatsController = $this->container->get(PreparingStatsController::class);
+        $preparingStatsController = self::$container->get(PreparingStatsController::class);
 
         $response = $preparingStatsController->indexAction(self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(JsonResponse::class, $response);

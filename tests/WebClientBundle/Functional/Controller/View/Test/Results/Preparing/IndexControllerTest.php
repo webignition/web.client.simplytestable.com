@@ -49,7 +49,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -73,7 +73,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -99,7 +99,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse([1, 2, 3,]),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -124,7 +124,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         ]);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -153,13 +153,13 @@ class IndexControllerTest extends AbstractViewControllerTest
         $expectedRedirectUrl,
         $expectedRequestUrl
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -214,12 +214,12 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -330,10 +330,10 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $request = new Request();
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);

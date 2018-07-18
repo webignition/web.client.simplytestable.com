@@ -26,7 +26,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         parent::setUp();
 
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get('doctrine.orm.entity_manager');
 
         $this->taskRepository = $entityManager->getRepository(Task::class);
     }
@@ -45,7 +45,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         array $taskRemoteIds,
         array $expectedResult
     ) {
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         /* @var Test[] $tests */
         $tests = [];
@@ -172,7 +172,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         array $taskRemoteIds,
         array $expectedTaskRemoteIds
     ) {
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         /* @var Test[] $tests */
         $tests = [];
@@ -301,8 +301,8 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         array $testValuesCollection,
         array $expectedOutputIndices
     ) {
-        $outputFactory = new OutputFactory($this->container);
-        $testFactory = new TestFactory($this->container);
+        $outputFactory = new OutputFactory(self::$container);
+        $testFactory = new TestFactory(self::$container);
 
         $outputs = [];
         $outputIds = [];
@@ -443,7 +443,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
         ];
 
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         /* @var Test[] $tests */
         $tests = [];
@@ -529,7 +529,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
         ];
 
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         /* @var Test[] $tests */
         $tests = [];
@@ -686,7 +686,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
         ];
 
-        $outputFactory = new OutputFactory($this->container);
+        $outputFactory = new OutputFactory(self::$container);
 
         $outputs = [];
 
@@ -697,7 +697,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
         $testValuesCollection = $this->populateTestValuesCollectionWithTaskOutputs($testValuesCollection, $outputs);
 
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         /* @var Test[] $tests */
         $tests = [];
@@ -876,7 +876,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
         ];
 
-        $outputFactory = new OutputFactory($this->container);
+        $outputFactory = new OutputFactory(self::$container);
 
         $outputs = [];
 
@@ -887,7 +887,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
         $testValuesCollection = $this->populateTestValuesCollectionWithTaskOutputs($testValuesCollection, $outputs);
 
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         /* @var Test[] $tests */
         $tests = [];
@@ -1024,7 +1024,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
         ];
 
-        $testFactory = new TestFactory($this->container);
+        $testFactory = new TestFactory(self::$container);
 
         /* @var Test[] $tests */
         $tests = [];

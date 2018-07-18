@@ -28,7 +28,7 @@ abstract class AbstractRemoteTestServiceTest extends AbstractCoreApplicationServ
     {
         parent::setUp();
 
-        $this->remoteTestService = $this->container->get(RemoteTestService::class);
+        $this->remoteTestService = self::$container->get(RemoteTestService::class);
 
         $this->user = new User('user@example.com');
     }

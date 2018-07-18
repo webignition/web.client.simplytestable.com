@@ -34,7 +34,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
     public function testConfirmActionPostRequestPrivateUser()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(new User('user@example.com'));
 
         $this->httpMockHandler->appendFixtures([
@@ -60,7 +60,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
     public function testConfirmActionEmptyToken()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $request = new Request([], []);
 
@@ -77,7 +77,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
     public function testConfirmActionInvalidToken()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -102,7 +102,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
     public function testConfirmActionNoEmailChangeRequest()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([]),
@@ -134,7 +134,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         array $confirmEmailChangeRequestHttpFixtures,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures(array_merge([
             HttpResponseFactory::createJsonResponse([
@@ -188,10 +188,10 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
     public function testConfirmActionSuccess()
     {
-        $session = $this->container->get('session');
-        $resqueQueueService = $this->container->get(ResqueQueueService::class);
-        $userSerializer = $this->container->get(UserSerializer::class);
-        $userManager = $this->container->get(UserManager::class);
+        $session = self::$container->get('session');
+        $resqueQueueService = self::$container->get(ResqueQueueService::class);
+        $userSerializer = self::$container->get(UserSerializer::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userEmail = 'user@example.com';
         $userNewEmail = 'new-email@example.com';
@@ -264,7 +264,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
     private function callConfirmAction(Request $request)
     {
         return $this->emailChangeController->confirmAction(
-            $this->container->get(ResqueQueueService::class),
+            self::$container->get(ResqueQueueService::class),
             $request
         );
     }

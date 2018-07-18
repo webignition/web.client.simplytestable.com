@@ -25,7 +25,7 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->retrieveRecipientsCommand = $this->container->get(RetrieveRecipientsCommand::class);
+        $this->retrieveRecipientsCommand = self::$container->get(RetrieveRecipientsCommand::class);
     }
 
     /**
@@ -46,9 +46,9 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
         $expectedReturnValue,
         array $expectedRetrievedEmails
     ) {
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
-        $listRecipientsService = $this->container->get(ListRecipientsService::class);
-        $httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $listRecipientsService = self::$container->get(ListRecipientsService::class);
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
 
         $httpMockHandler->appendFixtures($httpFixtures);
 

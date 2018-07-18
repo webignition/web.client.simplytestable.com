@@ -25,16 +25,16 @@ class RequestAdapterTest extends AbstractBaseTestCase
 
         $user = new User('user@example.com');
 
-        $taskTypeService = $this->container->get(TaskTypeService::class);
+        $taskTypeService = self::$container->get(TaskTypeService::class);
         $taskTypeService->setEarlyAccessUsers([
             $user,
         ]);
         $taskTypeService->setUser($user);
         $taskTypeService->setUserIsAuthenticated();
 
-        $this->requestAdapter = $this->container->get(RequestAdapter::class);
+        $this->requestAdapter = self::$container->get(RequestAdapter::class);
 
-        $testOptionsParameters = $this->container->getParameter('test_options');
+        $testOptionsParameters = self::$container->getParameter('test_options');
 
         $this->requestAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
         $this->requestAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);

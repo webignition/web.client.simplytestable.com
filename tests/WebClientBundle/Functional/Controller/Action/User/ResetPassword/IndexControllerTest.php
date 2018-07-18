@@ -40,8 +40,8 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->indexController = $this->container->get(IndexController::class);
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->indexController = self::$container->get(IndexController::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     public function testRequestActionPostRequest()
@@ -52,7 +52,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->client->request(
@@ -86,7 +86,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues, $expectedRedirectUrl)
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         /* @var RedirectResponse $response */
         $response = $this->indexController->requestAction($request);
@@ -133,7 +133,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testRequestActionUserDoesNotExist()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -166,7 +166,7 @@ class IndexControllerTest extends AbstractBaseTestCase
      */
     public function testRequestActionInvalidAdminCredentials()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -208,9 +208,9 @@ class IndexControllerTest extends AbstractBaseTestCase
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = $this->container->get('session');
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $session = self::$container->get('session');
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -278,8 +278,8 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testRequestActionMessageConfirmationUrl()
     {
-        $httpHistoryContainer = $this->container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = $this->container->get(PostmarkMessageVerifier::class);
+        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
+        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -317,7 +317,7 @@ class IndexControllerTest extends AbstractBaseTestCase
 
     public function testResendActionSuccess()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),

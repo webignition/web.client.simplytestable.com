@@ -30,7 +30,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::VIEW_NAME);
 
         $this->client->request(
@@ -56,7 +56,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
             ]),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::VIEW_NAME);
 
         $this->client->request(
@@ -87,7 +87,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var RecentTestsController $recentTestsController */
-        $recentTestsController = $this->container->get(RecentTestsController::class);
+        $recentTestsController = self::$container->get(RecentTestsController::class);
         $this->setTwigOnController($twig, $recentTestsController);
 
         $response = $recentTestsController->indexAction();

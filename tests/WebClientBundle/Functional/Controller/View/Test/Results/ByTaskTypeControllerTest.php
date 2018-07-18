@@ -116,7 +116,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME_DEFAULT, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -180,7 +180,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionInvalidTestOwnerIsLoggedIn()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser(new User(self::USER_EMAIL));
 
@@ -189,7 +189,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME_DEFAULT, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -225,7 +225,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             ]),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME_FILTER, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -267,13 +267,13 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $expectedRedirectUrl,
         $expectedRequestUrl
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var ByTaskTypeController $byTaskTypeController */
-        $byTaskTypeController = $this->container->get(ByTaskTypeController::class);
+        $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
         /* @var RedirectResponse $response */
         $response = $byTaskTypeController->indexAction(
@@ -384,19 +384,19 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $filter,
         Twig_Environment $twig
     ) {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
-            $testFactory = new TestFactory($this->container);
+            $testFactory = new TestFactory(self::$container);
             $testFactory->create($testValues);
         }
 
         /* @var ByTaskTypeController $byTaskTypeController */
-        $byTaskTypeController = $this->container->get(ByTaskTypeController::class);
+        $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
         $this->setTwigOnController($twig, $byTaskTypeController);
 
         $response = $byTaskTypeController->indexAction(
@@ -638,10 +638,10 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
         $request = new Request();
 
-        $this->container->get('request_stack')->push($request);
+        self::$container->get('request_stack')->push($request);
 
         /* @var ByTaskTypeController $byTaskTypeController */
-        $byTaskTypeController = $this->container->get(ByTaskTypeController::class);
+        $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
         $response = $byTaskTypeController->indexAction(
             $request,

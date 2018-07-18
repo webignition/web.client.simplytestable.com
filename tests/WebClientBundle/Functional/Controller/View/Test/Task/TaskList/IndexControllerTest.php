@@ -67,7 +67,7 @@ class IndexControllerTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->httpMockHandler = $this->container->get(HttpMockHandler::class);
+        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
     public function testIndexActionInvalidUserGetRequest()
@@ -76,7 +76,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -100,7 +100,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -125,7 +125,7 @@ class IndexControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME, [
             'website' => self::WEBSITE,
             'test_id' => self::TEST_ID,
@@ -162,7 +162,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction(
             $request,
@@ -232,7 +232,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction(
             $request,
@@ -457,7 +457,7 @@ class IndexControllerTest extends AbstractBaseTestCase
         ]);
 
         /* @var IndexController $indexController */
-        $indexController = $this->container->get(IndexController::class);
+        $indexController = self::$container->get(IndexController::class);
 
         $response = $indexController->indexAction(
             $request,

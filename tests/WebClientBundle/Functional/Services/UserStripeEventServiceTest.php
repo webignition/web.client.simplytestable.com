@@ -53,7 +53,7 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
     {
         parent::setUp();
 
-        $this->userStripeEventService = $this->container->get(UserStripeEventService::class);
+        $this->userStripeEventService = self::$container->get(UserStripeEventService::class);
 
         $this->user = new User('user@example.com');
     }

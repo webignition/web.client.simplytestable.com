@@ -35,7 +35,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
     {
         parent::setUp();
 
-        $this->passwordChangeController = $this->container->get(PasswordChangeController::class);
+        $this->passwordChangeController = self::$container->get(PasswordChangeController::class);
     }
 
     /**
@@ -69,8 +69,8 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
 
     public function testRequestActionPostRequest()
     {
-        $userSerializer = $this->container->get(UserSerializer::class);
-        $userManager = $this->container->get(UserManager::class);
+        $userSerializer = self::$container->get(UserSerializer::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);
         $userManager->setUser($user);
@@ -85,7 +85,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = $this->container->get('router');
+        $router = self::$container->get('router');
         $requestUrl = $router->generate(self::ROUTE_NAME);
 
         $this->client->request(
@@ -122,8 +122,8 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
         array $expectedFlashBagValues,
         $expectedUserPassword
     ) {
-        $session = $this->container->get('session');
-        $userManager = $this->container->get(UserManager::class);
+        $session = self::$container->get('session');
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);
         $userManager->setUser($user);

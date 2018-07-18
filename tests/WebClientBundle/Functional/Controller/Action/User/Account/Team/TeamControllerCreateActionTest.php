@@ -29,7 +29,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 
     public function testCreateActionPostRequestPrivateUser()
     {
-        $userManager = $this->container->get(UserManager::class);
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser(new User('user@example.com'));
 
@@ -57,7 +57,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 
     public function testCreateActionEmptyName()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         /* @var RedirectResponse $response */
         $response = $this->teamController->createAction(new Request());
@@ -76,7 +76,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 
     public function testCreateActionSuccess()
     {
-        $session = $this->container->get('session');
+        $session = self::$container->get('session');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
