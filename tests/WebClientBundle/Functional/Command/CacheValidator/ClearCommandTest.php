@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Command\CacheValidator;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Command\CacheValidator\ClearCommand;
 use SimplyTestable\WebClientBundle\Entity\CacheValidatorHeaders;
 use SimplyTestable\WebClientBundle\Services\CacheValidatorHeadersService;
@@ -29,7 +30,7 @@ class ClearCommandTest extends AbstractBaseTestCase
     public function testRun()
     {
         $cacheValidatorHeadersService = self::$container->get(CacheValidatorHeadersService::class);
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
         $cacheValidatorHeadersRepository = $entityManager->getRepository(CacheValidatorHeaders::class);
 
         $cacheValidatorHeadersService->get('foo');

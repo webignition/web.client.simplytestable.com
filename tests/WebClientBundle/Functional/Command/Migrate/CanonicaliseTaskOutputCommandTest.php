@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Command\Migrate;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Command\Migrate\CanonicaliseTaskOutputCommand;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use Tests\WebClientBundle\Factory\OutputFactory;
@@ -46,7 +47,7 @@ class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
         $dryRun,
         array $expectedOutputHashes
     ) {
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
         $taskOutputRepository = $entityManager->getRepository(Output::class);
 
         $taskOutputs = [];

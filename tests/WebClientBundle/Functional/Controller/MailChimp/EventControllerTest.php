@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Controller\MailChimp;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Controller\MailChimp\EventController;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
@@ -118,7 +119,7 @@ class EventControllerTest extends AbstractBaseTestCase
         array $expectedListRecipients
     ) {
         $mailChimpListRecipientsService = self::$container->get(ListRecipientsService::class);
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $listName = $mailChimpListRecipientsService->getListName($listId);
         $list = $mailChimpListRecipientsService->get($listName);

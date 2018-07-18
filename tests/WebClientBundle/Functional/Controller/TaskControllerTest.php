@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Controller\TaskController;
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
@@ -260,7 +261,7 @@ class TaskControllerTest extends AbstractBaseTestCase
      */
     public function testRetrieveActionRender(array $httpFixtures, Request $request)
     {
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $testRepository = $entityManager->getRepository(Test::class);
 

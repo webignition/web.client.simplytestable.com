@@ -60,7 +60,7 @@ class TestFactory
     public function create(array $testValues)
     {
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = $this->container->get('doctrine.orm.entity_manager');
+        $entityManager = $this->container->get(EntityManagerInterface::class);
 
         foreach ($this->defaultTestValues as $key => $value) {
             if (!isset($testValues[$key])) {

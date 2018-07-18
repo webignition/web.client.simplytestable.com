@@ -49,7 +49,7 @@ class ServiceTest extends AbstractBaseTestCase
     public function testSubscribeAlreadySubscribedLocally()
     {
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $listRecipients = new ListRecipients();
         $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));
@@ -158,7 +158,7 @@ class ServiceTest extends AbstractBaseTestCase
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $listRecipients = new ListRecipients();
         $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));
@@ -212,7 +212,7 @@ class ServiceTest extends AbstractBaseTestCase
         ]);
 
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $listRecipients = new ListRecipients();
         $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));

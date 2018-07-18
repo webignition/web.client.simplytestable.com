@@ -88,7 +88,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
         $userManager->setUser($user);
 
         /* @var ListRecipients[] $listRecipientsCollection */

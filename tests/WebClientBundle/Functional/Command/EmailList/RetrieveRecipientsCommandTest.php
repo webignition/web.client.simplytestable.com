@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Command\EmailList;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Command\EmailList\RetrieveRecipientsCommand;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
@@ -46,7 +47,7 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
         $expectedReturnValue,
         array $expectedRetrievedEmails
     ) {
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
         $listRecipientsService = self::$container->get(ListRecipientsService::class);
         $httpMockHandler = self::$container->get(HttpMockHandler::class);
 

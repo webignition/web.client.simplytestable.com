@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Command\Migrate;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Command\Migrate\RemoveUnusedOutputCommand;
 use SimplyTestable\WebClientBundle\Entity\Task\Output;
 use Tests\WebClientBundle\Factory\OutputFactory;
@@ -44,7 +45,7 @@ class MigrateRemoteUnusedOutputCommandTest extends AbstractBaseTestCase
         $dryRun,
         array $expectedOutputIndices
     ) {
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
         $taskOutputRepository = $entityManager->getRepository(Output::class);
 
         /* @var Output[] $taskOutputs */

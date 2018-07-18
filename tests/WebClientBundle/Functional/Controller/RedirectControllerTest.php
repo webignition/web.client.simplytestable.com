@@ -2,6 +2,8 @@
 
 namespace Tests\WebClientBundle\Functional\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use SimplyTestable\WebClientBundle\Controller\RedirectController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
@@ -67,8 +69,8 @@ class RedirectControllerTest extends AbstractBaseTestCase
         $response = $this->redirectController->testAction(
             self::$container->get(TestService::class),
             self::$container->get(RemoteTestService::class),
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('test.logger'),
+            self::$container->get(EntityManagerInterface::class),
+            self::$container->get(LoggerInterface::class),
             $request,
             $website,
             $testId

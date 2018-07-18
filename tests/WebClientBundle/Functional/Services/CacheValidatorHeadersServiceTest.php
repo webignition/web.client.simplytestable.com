@@ -30,7 +30,7 @@ class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase
         $this->cacheValidatorHeadersService = self::$container->get(CacheValidatorHeadersService::class);
 
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
         $this->cacheValidatorHeadersRepository = $entityManager->getRepository(CacheValidatorHeaders::class);
     }
 

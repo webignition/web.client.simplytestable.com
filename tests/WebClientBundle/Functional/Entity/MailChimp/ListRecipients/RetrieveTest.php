@@ -2,6 +2,7 @@
 
 namespace Tests\WebClientBundle\Functional\Entity\MailChimp\ListRecipients;
 
+use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Entity\MailChimp\ListRecipients;
 
 class RetrieveTest extends EntityTest
@@ -39,7 +40,7 @@ class RetrieveTest extends EntityTest
 
         self::$container->get('doctrine')->getManager()->clear();
 
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $this->listRecipients = $entityManager->getRepository(ListRecipients::class)->find($this->entityId);
     }

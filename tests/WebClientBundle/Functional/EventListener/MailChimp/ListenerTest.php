@@ -321,7 +321,7 @@ class ListenerTest extends AbstractBaseTestCase
     private function createExistingListRecipients(array $existingListRecipients)
     {
         /* @var EntityManagerInterface $entityManager */
-        $entityManager = self::$container->get('doctrine.orm.entity_manager');
+        $entityManager = self::$container->get(EntityManagerInterface::class);
 
         $listRecipients = new ListRecipients();
         $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));
