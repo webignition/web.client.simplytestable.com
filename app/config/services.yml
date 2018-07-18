@@ -1,20 +1,11 @@
 services:
-    # default configuration for services in *this* file
     _defaults:
-        # automatically injects dependencies in your services
         autowire: true
-        # automatically registers your services as commands, event subscribers, etc.
         autoconfigure: true
-        # this means you cannot fetch services directly from the container via $container->get()
-        # if you need to do this, you can override this setting on individual services
         public: false
 
-    # makes classes in src/AppBundle available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
     SimplyTestable\WebClientBundle\:
         resource: '../../src/SimplyTestable/WebClientBundle/*'
-        # you can exclude directories or files
-        # but if a service is unused, it's removed anyway
         exclude: '../../src/SimplyTestable/WebClientBundle/{Entity,Exception,Repository}'
 
     SimplyTestable\WebClientBundle\Command\:
@@ -22,14 +13,161 @@ services:
         tags:
           - { name: console.command }
 
-    # controllers are imported separately to make sure they're public
-    # and have a tag that allows actions to type-hint services
     SimplyTestable\WebClientBundle\Controller\:
         resource: '../../src/SimplyTestable/WebClientBundle/Controller'
         public: true
         tags: ['controller.service_arguments']
 
-    # add more services, or override services that need manual wiring
-    # AppBundle\Service\ExampleService:
-    #     arguments:
-    #         $someArgument: 'some_value'
+    SimplyTestable\WebClientBundle\Controller\ExceptionController:
+      public: true
+      arguments:
+        $debug: '%kernel.debug%'
+
+    SimplyTestable\WebClientBundle\EventListener\Stripe\Listener:
+      tags:
+        - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
+        - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }
+        - { name: kernel.event_listener, event: stripe.customer.subscription.trial_will_end, method: onCustomerSubscriptionTrialWillEnd }
+        - { name: kernel.event_listener, event: stripe.customer.subscription.updated, method: onCustomerSubscriptionUpdated }
+        - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }
+        - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }
+
+    SimplyTestable\WebClientBundle\EventListener\MailChimp\Listener:
+      tags:
+        - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
+        - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
+        - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
+        - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
+
+    SimplyTestable\WebClientBundle\EventListener\IEFilteredRequestListener:
+      arguments:
+        $marketingSiteUrl: '%marketing_site%'
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 25 }
+
+    SimplyTestable\WebClientBundle\EventListener\RequiresValidUserRequestListener:
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 24 }
+
+    SimplyTestable\WebClientBundle\EventListener\RequiresPrivateUserRequestListener:
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 23 }
+
+    SimplyTestable\WebClientBundle\EventListener\RequiresValidTestOwnerRequestListener:
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 22 }
+
+    SimplyTestable\WebClientBundle\EventListener\RequiresCompletedTestRequestListener:
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 21 }
+
+    webignition\SimplyTestableUserSerializer\UserSerializer:
+      arguments:
+        $key: '%kernel.secret%'
+
+    SimplyTestable\WebClientBundle\Services\TestOptions\RequestAdapter:
+      calls:
+        - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\OptionsParser']]
+        - [addFeatureOptionsParser, ['@SimplyTestable\WebClientBundle\Services\TestOptions\CookieOptionsParser', 'cookies']]
+
+    SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService:
+      arguments:
+        $listIdentifiers:
+          announcements: '%mailchimp_announcements_list_id%'
+          updates: '%mailchimp_updates_list_id%'
+          introduction: '%mailchimp_introduction_list_id%'
+
+    SimplyTestable\WebClientBundle\Services\TaskTypeService:
+      calls:
+        - [setTaskTypes, ['%task_types%']]
+        - [setEarlyAccessUsers, ['%early_access_users%']]
+
+    SimplyTestable\WebClientBundle\Services\CouponService:
+      calls:
+        - [setCouponData, ['%coupons%']]
+
+    SimplyTestable\WebClientBundle\Services\PlansService:
+      calls:
+        - [setPlansData, ['%plans%']]
+
+    SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\Factory:
+      calls:
+        - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser']]
+        - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\CssValidationResultParser']]
+        - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
+        - [addResultParser, ['@SimplyTestable\WebClientBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
+
+    SimplyTestable\WebClientBundle\Services\CoreApplicationRouter:
+      arguments:
+        $baseUrl: '%core_url%'
+        $cacheDir: '%kernel.cache_dir%'
+
+    SimplyTestable\WebClientBundle\Services\SystemUserService:
+      arguments:
+        - '%admin_user_username%'
+        - '%admin_user_password%'
+
+    SimplyTestable\WebClientBundle\Services\MailChimp\Client:
+      arguments:
+        $apiKey: '%mailchimp_api_key%'
+
+    Egulias\EmailValidator\EmailValidator:
+
+    GuzzleHttp\Client:
+      factory: 'SimplyTestable\WebClientBundle\Services\HttpClientFactory:getHttpClient'
+
+    webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware:
+
+    Postmark\PostmarkClient:
+      arguments:
+        - '%postmark_api_key%'
+
+    SimplyTestable\WebClientBundle\Services\Pdp\RulesFactory:
+      arguments:
+        - '%pdp_psl_data_path%'
+
+    SimplyTestable\WebClientBundle\Services\Pdp\RulesRetriever:
+      arguments:
+        - '%pdp_psl_data_path%'
+        - '@GuzzleHttp\Client'
+
+    SimplyTestable\WebClientBundle\Services\RegisterableDomainService:
+      arguments:
+        - '@=service("SimplyTestable\\WebClientBundle\\Services\\Pdp\\RulesFactory").create()'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\CssValidationTestConfiguration:
+      arguments:
+        - '%css-validation-ignore-common-cdns%'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\JsStaticAnalysisTestConfiguration:
+      arguments:
+        - '%js-static-analysis-ignore-common-cdns%'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityTestConfiguration:
+      arguments:
+        - '%link-integrity-excluded-domains%'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\TestOptionsConfiguration:
+      arguments:
+        - '%test_options%'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\MailConfiguration:
+      public: false
+      arguments:
+        - '%mail%'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\StripeConfiguration:
+      arguments:
+        - '%stripe_publishable_key%'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\CurrencyMap:
+      arguments:
+        - '%currency_map%'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\DocumentationSiteUrls:
+      arguments:
+        - '%documentation_site_urls%'
+
+    SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityErrorCodeMap:
+      arguments:
+        - '%link_integrity_error_code_map%'
