@@ -26,13 +26,13 @@ abstract class AbstractBaseTestCase extends WebTestCase
      */
     protected function tearDown()
     {
-        parent::tearDown();
+        self::$container->get('doctrine')->getConnection()->close();
 
-//        self::$container->get('doctrine')->getConnection()->close();
+        parent::tearDown();
 
         $refl = new \ReflectionObject($this);
         foreach ($refl->getProperties() as $prop) {
-            if (!$prop->isStatic() && 0 !== strpos($prop->getDeclaringClass()->getName(), 'PHPUnit_')) {
+            if (!$prop->isStatic() && 0 !== strpos($prop->getDeclaringClass()->getName(), 'PHPUnit')) {
                 $prop->setAccessible(true);
                 $prop->setValue($this, null);
             }
