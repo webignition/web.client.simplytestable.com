@@ -24,28 +24,20 @@ class ResqueQueueService
     private $resque;
 
     /**
-     * @var string
-     */
-    private $environment = 'prod';
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
 
     /**
      * @param Resque $resque
-     * @param string $environment
      * @param LoggerInterface $logger
      */
     public function __construct(
         Resque $resque,
-        LoggerInterface $logger,
-        $environment = 'prod'
+        LoggerInterface $logger
     ) {
         $this->resque = $resque;
         $this->logger = $logger;
-        $this->environment = $environment;
     }
 
     /**

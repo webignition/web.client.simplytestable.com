@@ -1,4 +1,0 @@
-services:
-# Fix for ResqueBundle\Resque\Resque uses of resque
-  ResqueBundle\Resque\Resque:
-    alias: resque

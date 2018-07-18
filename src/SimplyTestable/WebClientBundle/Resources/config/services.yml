@@ -2,7 +2,6 @@ imports:
     - { resource: services/event-listeners.yml }
     - { resource: services/commands.yml }
     - { resource: services/controllers.yml }
-    - { resource: services/redefinitions.yml }
     - { resource: services/configuration.yml }
 
 services:
@@ -10,12 +9,6 @@ services:
     autowire: true
     autoconfigure: true
     public: false
-
-  SimplyTestable\WebClientBundle\Services\ResqueQueueService:
-    arguments:
-      - '@resque'
-      - '@logger'
-      - '%kernel.environment%'
 
   webignition\SimplyTestableUserSerializer\UserSerializer:
     arguments:
