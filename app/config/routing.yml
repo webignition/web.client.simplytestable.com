@@ -28,7 +28,7 @@ action_user_resetpassword_index_request:
 
 reset_password_choose_submit:
     path: /reset-password/choose/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:resetPasswordChooseSubmit }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\UserController::resetPasswordChooseSubmitAction }
 
 view_user_resetpassword_choose_index:
     path: /reset-password/{email}/{token}/

@@ -27,12 +27,9 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate('reset_password_choose_submit');
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->router->generate('reset_password_choose_submit'),
             [
                 'email' => self::USER_EMAIL,
                 'token' => self::TOKEN,
