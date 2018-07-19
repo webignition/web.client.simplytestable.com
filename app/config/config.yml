@@ -19,6 +19,10 @@ parameters:
   currency_map:
     gbp: "&#163;"
     usd: "&#36;"
+  documentation_site_urls:
+    home: http://help.simplytestable.com/
+    errors: errors/
+    html-validation: html-validation/
 
 framework:
     #esi:             ~

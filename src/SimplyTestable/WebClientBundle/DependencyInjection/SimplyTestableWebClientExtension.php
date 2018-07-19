@@ -22,7 +22,6 @@ class SimplyTestableWebClientExtension extends Extension
         'mail.yml',
         'js-static-analysis-ignore-common-cdns.yml',
         'plans.yml',
-        'documentation_site_urls.yml',
         'test_options.yml',
         'link-integrity-excluded-domains.yml',
         'link_integrity_error_code_map.yml',
