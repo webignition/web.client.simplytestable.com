@@ -18,8 +18,8 @@ parameters:
     database_name: myapp_test
     database_user: root
     database_password: null
-    core_url: http://travis.app.simplytestable.com
-    marketing_site: https://simplytestable.com/
+    core_url: http://null
+    marketing_site: http://test.simplytestable.com/
     bcc_resque_prefix: web.client.simplytestable.com
     early_access_users:
       - "jon@webignition.net"
