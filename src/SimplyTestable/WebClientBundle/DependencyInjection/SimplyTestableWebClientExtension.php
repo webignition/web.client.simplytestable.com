@@ -5,7 +5,6 @@ namespace SimplyTestable\WebClientBundle\DependencyInjection;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -44,9 +43,6 @@ class SimplyTestableWebClientExtension extends Extension
             __DIR__.'/../Resources/config',
             __DIR__.'/../Resources/config/parameters',
         ]);
-
-        $loader = new Loader\YamlFileLoader($container, $fileLocator);
-        $loader->load('services.yml');
 
         foreach ($this->parameterFiles as $parameterFile) {
             $parameterName = str_replace('.yml', '', $parameterFile);

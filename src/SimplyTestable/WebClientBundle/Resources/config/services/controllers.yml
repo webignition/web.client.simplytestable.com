@@ -1,7 +1,0 @@
-services:
-  SimplyTestable\WebClientBundle\Controller\ExceptionController:
-    public: true
-    arguments:
-      - '@Twig_Environment'
-      - '%kernel.debug%'
-      - '@Postmark\PostmarkClient'
