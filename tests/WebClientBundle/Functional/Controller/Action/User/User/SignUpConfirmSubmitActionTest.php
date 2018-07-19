@@ -22,14 +22,11 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
             HttpResponseFactory::createJsonResponse('confirmation-token-here'),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate('sign_up_confirm_submit', [
-            'email' => self::USER_EMAIL,
-        ]);
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->router->generate('sign_up_confirm_submit', [
+                'email' => self::USER_EMAIL,
+            ]),
             [
                 'token' => self::TOKEN,
                 'password' => self::PASSWORD,
