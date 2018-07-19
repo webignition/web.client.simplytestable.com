@@ -1,6 +1,5 @@
 imports:
     - { resource: config.yml }
-    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" }
 
 framework:
     router:   { resource: "%kernel.root_dir%/config/routing_dev.yml" }

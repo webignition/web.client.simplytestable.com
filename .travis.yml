@@ -19,7 +19,6 @@ before_install:
   - cp .travis.composer.config.json ~/.composer/config.json
   - mv app/config/parameters.yml.travis app/config/parameters.yml
   - mv --force app/config/config_travis.yml app/config/config_test.yml
-  - cp src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml.travis src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml
   - mysql -e 'CREATE DATABASE myapp_test;'
   - yarn install
 

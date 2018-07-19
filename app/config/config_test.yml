@@ -1,6 +1,5 @@
 imports:
     - { resource: config_dev.yml }
-    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters_test.yml" }
     - { resource: services_test.yml }
 
 framework:
@@ -19,10 +18,8 @@ parameters:
     database_name: test_web_client_simplytestable_com
     database_user: root
     database_password: root
-
-#doctrine:
-#  dbal:
-#    connections:
-#      default:
-#        driver: pdo_sqlite
-#        path: /run/shm/web.client.simplytestable.com.db
+    core_url: http://null
+    marketing_site: http://test.simplytestable.com/
+    bcc_resque_prefix: web.client.simplytestable.com
+    early_access_users:
+      - "jon@webignition.net"

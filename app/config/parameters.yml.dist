@@ -17,4 +17,8 @@ parameters:
     mailchimp_updates_list_id: 311aedc7f4
     mailchimp_introduction_list_id: e1b78ec47a
     postmark_api_key: postmark_api_key_value
-    pdp_psl_data_path: '%kernel.project_dir%/data/pdp-psldata/pdp_rules.json'
+    core_url: http://app.simplytestable.com
+    marketing_site: https://simplytestable.com/
+    bcc_resque_prefix: web.client.simplytestable.com
+    early_access_users:
+      - "user@example.com"
