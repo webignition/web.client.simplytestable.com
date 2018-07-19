@@ -18,7 +18,7 @@
             <form id="test-start-form" method="post" action="{{ path('test_start') }}">
                 <div class="row">
                     <div class="col-lg-12">
-                        {% include '@SimplyTestableWebClient/bs3/Partials/Dashboard/TestStart/Alert/alerts.html.twig' %}
+                        {% include 'Partials/Dashboard/TestStart/Alert/alerts.html.twig' %}
 
                         <label for="website" class="sr-only">
                             What website or page do you want to test?
@@ -37,7 +37,7 @@
                 <div class="row">
                     <div class="col-lg-8 col-md-8 col-sm-6">
                         <p class="sr-only">What tests do you want to carry out?</p>
-                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard/TaskTypes:task-types.html.twig' %}
+                        {% include 'Partials/Dashboard/TaskTypes/task-types.html.twig' %}
 
                         {% if 'js-static-analysis' not in available_task_types|keys %}
                             {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:js-static-analysis.html.twig' %}
