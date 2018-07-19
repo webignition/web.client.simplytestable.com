@@ -36,7 +36,7 @@ view_user_resetpassword_choose_index:
 
 view_user_signup_index_index:
     path: /signup/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\User\SignUp\IndexController:indexAction }
 
 sign_up_submit:
     path: /signup/submit/
