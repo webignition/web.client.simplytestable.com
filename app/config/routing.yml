@@ -221,7 +221,7 @@ view_test_results_index_index:
 
 action_test_task_results_byurl_index:
     path: /{website}/{test_id}/{task_url}/{task_type}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Task/Results/ByUrl:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\Test\Task\Results\ByUrlController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'

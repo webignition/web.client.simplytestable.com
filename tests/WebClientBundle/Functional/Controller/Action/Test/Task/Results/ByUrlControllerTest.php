@@ -6,10 +6,10 @@ use SimplyTestable\WebClientBundle\Controller\Action\Test\Task\Results\ByUrlCont
 use SimplyTestable\WebClientBundle\Entity\Task\Task;
 use Tests\WebClientBundle\Factory\TaskFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 
-class ByUrlControllerTest extends AbstractBaseTestCase
+class ByUrlControllerTest extends AbstractControllerTest
 {
     const WEBSITE_URL = 'http://example.com/';
     const TEST_ID = 1;
@@ -48,17 +48,14 @@ class ByUrlControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionGetRequest()
     {
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate('action_test_task_results_byurl_index', [
-            'website' => self::WEBSITE_URL,
-            'test_id' => self::TEST_ID,
-            'task_url' => self::TASK_URL,
-            'task_type' => Task::TYPE_HTML_VALIDATION,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate('action_test_task_results_byurl_index', [
+                'website' => self::WEBSITE_URL,
+                'test_id' => self::TEST_ID,
+                'task_url' => self::TASK_URL,
+                'task_type' => Task::TYPE_HTML_VALIDATION,
+            ])
         );
 
         /* @var RedirectResponse $response */
