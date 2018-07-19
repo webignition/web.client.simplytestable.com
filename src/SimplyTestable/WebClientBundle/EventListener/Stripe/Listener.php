@@ -14,7 +14,7 @@ use Twig_Environment;
 
 class Listener
 {
-    const VIEW_BASE_PATH = 'SimplyTestableWebClientBundle:Email/Stripe/Event/';
+    const VIEW_BASE_PATH = 'Email/Stripe/Event/';
     const DEFAULT_CURRENCY_SYMBOL = '£';
 
     /**
@@ -436,7 +436,7 @@ class Listener
             $filenamebody = 'notification';
         }
 
-        return self::VIEW_BASE_PATH . $eventData->get('event') . ':' . $filenamebody . '.txt.twig';
+        return self::VIEW_BASE_PATH . $eventData->get('event') . '/' . $filenamebody . '.txt.twig';
     }
 
     /**

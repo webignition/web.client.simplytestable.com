@@ -211,7 +211,7 @@ class IndexController extends AbstractController
             $messageProperties['subject'],
             null,
             $this->twig->render(
-                'SimplyTestableWebClientBundle:Email:reset-password-confirmation.txt.twig',
+                'Email/reset-password-confirmation.txt.twig',
                 [
                     'confirmation_url' => $confirmationUrl,
                     'email' => $email

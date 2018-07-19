@@ -12,7 +12,7 @@ use Twig\Environment as TwigEnvironment;
 
 class ExceptionController extends BaseExceptionController
 {
-    const DEVELOPER_EMAIL_TEMPLATE = 'SimplyTestableWebClientBundle:Email:exception.txt.twig';
+    const DEVELOPER_EMAIL_TEMPLATE = 'Email/exception.txt.twig';
 
     /**
      * @var PostmarkClient

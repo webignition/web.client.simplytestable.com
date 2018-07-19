@@ -400,7 +400,7 @@ class EmailChangeController extends AbstractUserAccountController
             $messageProperties['subject'],
             null,
             $twig->render(
-                'SimplyTestableWebClientBundle:Email:user-email-change-request-confirmation.txt.twig',
+                'Email/user-email-change-request-confirmation.txt.twig',
                 [
                     'current_email' => $userName,
                     'new_email' => $emailChangeRequest['new_email'],
