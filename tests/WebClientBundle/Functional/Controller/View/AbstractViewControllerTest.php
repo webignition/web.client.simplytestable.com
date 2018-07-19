@@ -5,11 +5,12 @@ namespace Tests\WebClientBundle\Functional\Controller\View;
 use ReflectionClass;
 use SimplyTestable\WebClientBundle\Controller\BaseViewController;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 use Twig_Environment;
 
-abstract class AbstractViewControllerTest extends AbstractBaseTestCase
+abstract class AbstractViewControllerTest extends AbstractControllerTest
 {
     /**
      * @var HttpHistoryContainer

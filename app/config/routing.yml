@@ -12,7 +12,7 @@ sign_out_submit:
 
 view_user_signin_index:
     path: /signin/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignIn:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\User\SignInController::indexAction }
 
 sign_in_submit:
     path: /signin/submit/
