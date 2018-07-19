@@ -33,12 +33,9 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::VIEW_NAME);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::VIEW_NAME)
         );
 
         /* @var RedirectResponse $response */
@@ -59,12 +56,9 @@ class IndexControllerTest extends AbstractViewControllerTest
             ]),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::VIEW_NAME);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::VIEW_NAME)
         );
 
         /* @var Response $response */

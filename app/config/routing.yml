@@ -148,17 +148,17 @@ view_dashboard_partial_recenttests_index:
 
 view_test_history_index_index:
     path: /history/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/Index:index, page_number: 1 }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\History\IndexController::indexAction, page_number: 1 }
 
 app_history:
     path: /history/{page_number}/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\History\IndexController::indexAction }
     requirements:
         page_number: '\d+'
 
 view_test_history_websitelist_index:
     path: /history/websites/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/History/WebsiteList:index, _format: json }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\History\WebsiteListController::indexAction, _format: json }
 
 view_test_results_partial_finishedsummary_index:
     path: /{website}/{test_id}/finished-summary/
