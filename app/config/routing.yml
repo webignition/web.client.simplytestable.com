@@ -40,7 +40,7 @@ view_user_signup_index_index:
 
 sign_up_submit:
     path: /signup/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:signUpSubmit }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\UserController::signUpSubmitAction }
 
 view_user_signup_confirm_index:
     path: /signup/confirm/{email}/
