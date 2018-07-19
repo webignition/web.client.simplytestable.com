@@ -51,7 +51,7 @@
 
             <form class="js-form-button-spinner" id="upgrade-downgrade-form" role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
 
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Plan:selection.html.twig' with {
+                {% include 'Partials/Plan/selection.html.twig' with {
                     selected_plan: user_summary.plan.accountplan.name,
                     current_plan: user_summary.plan.accountplan.name,
                     has_coupon: user_summary.stripecustomer.hasDiscount,

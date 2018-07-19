@@ -63,7 +63,7 @@
                     <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">Plans and pricing <i class="fa fa-caret-right"></i></a>
                 </p>
 
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Plan:selection.html.twig' with {
+                {% include 'Partials/Plan/selection.html.twig' with {
                     selected_plan: plan,
                     has_coupon: coupon is not null
                 } %}
