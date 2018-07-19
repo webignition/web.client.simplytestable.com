@@ -140,11 +140,11 @@ user_account_plan_subscribe:
 
 view_dashboard_index_index:
     path: /
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Dashboard/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Dashboard\IndexController::indexAction }
 
 view_dashboard_partial_recenttests_index:
     path: /recent-tests/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Dashboard/Partial/RecentTests:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Dashboard\Partial\RecentTestsController::indexAction }
 
 view_test_history_index_index:
     path: /history/
