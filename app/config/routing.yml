@@ -8,7 +8,7 @@ mailchimp_event:
 
 sign_out_submit:
     path: /signout/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:signOutSubmit }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\UserController::signOutSubmitAction }
 
 view_user_signin_index:
     path: /signin/
