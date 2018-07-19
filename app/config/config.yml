@@ -1,9 +1,11 @@
 imports:
     - { resource: parameters/*.yml }
     - { resource: parameters.yml }
-    - { resource: "@SimplyTestableWebClientBundle/Resources/config/parameters.yml" }
     - { resource: security.yml }
     - { resource: services.yml }
+
+parameters:
+  pdp_psl_data_path: '%kernel.project_dir%/data/pdp-psldata/pdp_rules.json'
 
 framework:
     #esi:             ~

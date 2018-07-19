@@ -1,9 +1,0 @@
-parameters:
-  core_url: http://app.simplytestable.com
-  marketing_site: https://simplytestable.com/
-  bcc_resque_prefix: web.client.simplytestable.com
-  resque-job-class-map:
-    "email-list-subscribe": SimplyTestable\WebClientBundle\Resque\Job\EmailListSubscribeJob
-    "email-list-unsubscribe": SimplyTestable\WebClientBundle\Resque\Job\EmailListUnsubscribeJob
-  early_access_users:
-    - "jon@webignition.net"
