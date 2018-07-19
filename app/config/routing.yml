@@ -162,7 +162,7 @@ view_test_history_websitelist_index:
 
 view_test_results_partial_finishedsummary_index:
     path: /{website}/{test_id}/finished-summary/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Partial/FinishedSummary/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\Partial\FinishedSummary\IndexController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'
@@ -207,14 +207,14 @@ view_test_progress_index_index:
 
 view_test_results_index_index_verbose:
     path: /website/{website}/test_id/{test_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\IndexController::indexAction }
     requirements:
        website: '.+'
        test_id: '\d+'
 
 view_test_results_index_index:
     path: /{website}/{test_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\IndexController::indexAction }
     requirements:
        website: '.+'
        test_id: '\d+'
@@ -247,25 +247,25 @@ app_test_retest:
 
 view_test_results_failednourlsdetected_index_index:
     path: /{website}/{test_id}/results/failed/no-urls-detected/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/FailedNoUrlsDetected/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\FailedNoUrlsDetected\IndexController::indexAction }
     requirements:
        website: '.+'
 
 view_test_results_rejected_index_index:
     path: /{website}/{test_id}/results/rejected/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Rejected/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\Rejected\IndexController::indexAction }
     requirements:
        website: '.+'
 
 view_test_results_preparing_index_index:
     path: /{website}/{test_id}/results/preparing/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/Preparing/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\Preparing\IndexController::indexAction }
     requirements:
        website: '.+'
 
 view_test_results_preparingstats_index:
     path: /{website}/{test_id}/results/preparing/stats/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/PreparingStats:index, _format: json }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\PreparingStatsController::indexAction, _format: json }
     requirements:
        website: '.+'
 
@@ -277,14 +277,14 @@ task_results_retrieve:
 
 view_test_results_bytasktype_index_default:
     path: /{website}/{test_id}/results/{task_type}/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\ByTaskTypeController::indexAction }
     requirements:
        website: '.+'
        test_id: '\d+'
 
 view_test_results_bytasktype_index:
     path: /{website}/{test_id}/results/{task_type}/{filter}/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Results/ByTaskType:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Results\ByTaskTypeController::indexAction }
     requirements:
        website: '.+'
        test_id: '\d+'

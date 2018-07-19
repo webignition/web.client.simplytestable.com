@@ -34,6 +34,15 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     /**
      * @var array
      */
+    private $routeParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+        'task_type' => Task::TYPE_HTML_VALIDATION,
+    ];
+
+    /**
+     * @var array
+     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -116,16 +125,9 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME_DEFAULT, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-            'task_type' => Task::TYPE_HTML_VALIDATION,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME_DEFAULT, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -189,16 +191,9 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME_DEFAULT, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-            'task_type' => Task::TYPE_HTML_VALIDATION,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME_DEFAULT, $this->routeParameters)
         );
 
         /* @var Response $response */
