@@ -60,7 +60,7 @@ action_signup_team_invite_accept:
 
 action_signup_user_confirm_resend:
     path: /signup/confirm/{email}/resend/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/SignUp/User/Confirm:resend }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\SignUp\User\ConfirmController::resendAction }
 
 action_user_account_newssubscriptions_update:
     path: /account/news-subscriptions/update/

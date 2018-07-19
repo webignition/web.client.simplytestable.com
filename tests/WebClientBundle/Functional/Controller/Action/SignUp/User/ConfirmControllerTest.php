@@ -9,14 +9,14 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
-class ConfirmControllerTest extends AbstractBaseTestCase
+class ConfirmControllerTest extends AbstractControllerTest
 {
     const EMAIL = 'user@example.com';
     const CONFIRMATION_TOKEN = 'confirmation-token-here';
@@ -51,14 +51,11 @@ class ConfirmControllerTest extends AbstractBaseTestCase
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate('action_signup_user_confirm_resend', [
-            'email' => self::EMAIL,
-        ]);
-
         $this->client->request(
             'POST',
-            $requestUrl
+            $this->router->generate('action_signup_user_confirm_resend', [
+                'email' => self::EMAIL,
+            ])
         );
 
         /* @var RedirectResponse $response */
