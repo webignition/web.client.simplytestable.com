@@ -88,15 +88,15 @@ action_user_account_passwordchange_request:
 
 view_user_account_index_index:
     path: /account/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\User\Account\IndexController::indexAction }
 
 view_user_account_card_index:
     path: /account/card/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Card:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\User\Account\CardController::indexAction }
 
 view_user_account_team_index_index:
     path: /account/team/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Team/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\User\Account\Team\IndexController::indexAction }
 
 action_user_account_team_create:
     path: /account/team/create/
@@ -128,7 +128,7 @@ action_user_account_team_leave:
 
 view_user_account_plan_index:
     path: /account/plan/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/User/Account/Plan:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\User\Account\PlanController::indexAction }
 
 user_account_card_associate:
     path: /account/card/{stripe_card_token}/associate/
