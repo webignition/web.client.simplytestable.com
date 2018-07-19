@@ -201,7 +201,7 @@ app_task_results_redirector:
 
 view_test_progress_index_index:
     path: /{website}/{test_id}/progress/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Progress/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Progress\IndexController::indexAction }
     requirements:
         website: '.+'
 
