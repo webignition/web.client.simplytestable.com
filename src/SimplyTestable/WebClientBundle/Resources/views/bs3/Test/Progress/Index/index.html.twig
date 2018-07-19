@@ -1,6 +1,6 @@
 {% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
 
-{% block title %}Testing {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}Testing {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
 {% set route_parameters = {website: website.raw, test_id: test.testId} %}
 

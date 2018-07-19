@@ -2,7 +2,7 @@
 
 {% set dialog_width = 8 %}
 
-{% block title %}No URLs detected for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} - {{ parent() }}{% endblock %}
+{% block title %}No URLs detected for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} - {{ parent() }}{% endblock %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
     <p class="lead">
         The demo finds pages to test by examining your XML sitemap or news feed. This didn't
         find any pages
-        for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %}.
+        for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %}.
     </p>
 
     <p class="lead">

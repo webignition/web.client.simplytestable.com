@@ -2,7 +2,7 @@
 
 {% set content %}
 <p id="reason">
-    <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> redirects to another URL which ultimately
+    <a href="{{ task.url }}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> redirects to another URL which ultimately
     redirects back to itself. Indefinitely. Forever.
 </p>
 

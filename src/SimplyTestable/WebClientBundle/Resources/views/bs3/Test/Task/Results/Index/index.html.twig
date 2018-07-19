@@ -10,7 +10,7 @@
 } %}
 {% set fix_count = distinct_fixes is defined ? distinct_fixes|length : 0 %}
 
-{% block title %}Results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website_url} %} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
+{% block title %}Results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website_url} %} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -35,7 +35,6 @@
                         {{ task.type }} report for
                         <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId }) }}">
                             {{ website_url.utf8.schemeless.raw }}
-                            {#{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website_url} %}#}
                             <span id="test-id">(#{{ test.testId }})</span>
                         </a>
                         task

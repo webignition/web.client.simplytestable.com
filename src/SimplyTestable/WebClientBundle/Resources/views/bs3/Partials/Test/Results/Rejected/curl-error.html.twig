@@ -19,13 +19,13 @@
 {% endif %}
 
 <p class="lead">
-    Were not able to talk to {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %} at the moment{% if intro is defined %}: {{ intro }}{% endif %}.
+    Were not able to talk to {% include 'Partials/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %} at the moment{% if intro is defined %}: {{ intro }}{% endif %}.
 </p>
 
 {% if advice is defined %}{{ advice }}{% endif %}
 
 <p class="lead">
-    Check that <a href="{{ website.raw }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</a> is working
+    Check that <a href="{{ website.raw }}">{% include 'Partials/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</a> is working
     as expected in a browser and that it can be accessed over the Internet.
 </p>
 

@@ -18,7 +18,7 @@ HTTP {{ statusCode }}
 {% set content %}
     {% if statusCode == '401' %}
         <p id="reason">
-            The page at <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> requires authorisation.
+            The page at <a href="{{task.url}}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> requires authorisation.
         </p>
 
         <p>
@@ -26,18 +26,18 @@ HTTP {{ statusCode }}
         </p>
     {% elseif statusCode == '403' %}
         <p id="reason">
-            Looks like we're not allowed to access <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>.
+            Looks like we're not allowed to access <a href="{{task.url}}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>.
         </p>
     {% elseif statusCode == '404' %}
         <p id="reason">
-            We can't test <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> because it doesn't exist.
+            We can't test <a href="{{task.url}}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> because it doesn't exist.
         </p>
         <p>
             Is the URL right?
         </p>
     {% elseif statusCode == '405' %}
         <p id="reason">
-            We tried to retrieve <a href="{{task.url}}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> using
+            We tried to retrieve <a href="{{task.url}}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> using
             a HTTP GET request.
         </p>
         <p>

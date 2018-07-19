@@ -2,7 +2,7 @@
 
 {% set dialog_width = 6 %}
 
-{% block title %}Preparing results for {% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+{% block title %}Preparing results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 {% block body_class %} {{ parent() }} test-results-preparing {% endblock %}
 {% set route_parameters = {website: website.raw, test_id: test.testId} %}
 
@@ -21,7 +21,7 @@
     <h1>Preparing results &hellip; <span class="completion-percent-value">{{ completion_percent }}</span>% done</h1>
 
     <p class="intro">
-        I'm gathering the results for test <strong><span title="{{website.utf8.raw}}" id="website">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</span> (#<span id="testId">{{test.testId}}</span>)</strong>
+        I'm gathering the results for test <strong><span title="{{website.utf8.raw}}" id="website">{% include 'Partials/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</span> (#<span id="testId">{{test.testId}}</span>)</strong>
     </p>
 
     <p class="summary">

@@ -2,7 +2,7 @@
 
 {% set content %}
 <p id="reason">
-    The page at <a href="{{ task.url }}">{% include 'SimplyTestableWebClientBundle:Partials:/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> contains an invalid doctype declaration:
+    The page at <a href="{{ task.url }}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> contains an invalid doctype declaration:
 </p>
 
 <pre>{{ task.output.result.firstError.message }}</pre>
