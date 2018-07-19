@@ -46,8 +46,7 @@
     },
     "scripts": {
         "symfony-scripts": [
-            "php bin/console cache:clear",
-            "php bin/console cache:warmup"
+            "php bin/console cache:clear"
         ],
         "post-install-cmd": [
             "@symfony-scripts"

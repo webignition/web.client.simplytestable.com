@@ -18,6 +18,10 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    SimplyTestable\WebClientBundle\Cache\CoreApplicationRouterCacheWarmer:
+      tags:
+        - { name: kernel.cache_warmer, priority: 0 }
+
     SimplyTestable\WebClientBundle\Controller\ExceptionController:
       public: true
       arguments:
