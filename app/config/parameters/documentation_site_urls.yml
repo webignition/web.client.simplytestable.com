@@ -1,0 +1,5 @@
+parameters:
+  documentation_site_urls:
+    home: http://help.simplytestable.com/
+    errors: errors/
+    html-validation: html-validation/

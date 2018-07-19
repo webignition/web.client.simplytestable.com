@@ -1,0 +1,3 @@
+parameters:
+  link-integrity-excluded-domains:
+    - instagram.com
