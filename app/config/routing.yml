@@ -271,7 +271,7 @@ view_test_results_preparingstats_index:
 
 task_results_retrieve:
     path: /{website}/{test_id}/results/retrieve/
-    defaults: { _controller: SimplyTestableWebClientBundle:Task:retrieve }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\TaskController::retrieveAction }
     requirements:
        website: '.+'
 
