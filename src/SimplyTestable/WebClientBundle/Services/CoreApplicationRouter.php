@@ -12,7 +12,6 @@ use Symfony\Component\Routing\RouterInterface;
 
 class CoreApplicationRouter
 {
-    const BUNDLE_CONFIG_PATH = '@SimplyTestableWebClientBundle/Resources/config';
     const ROUTING_RESOURCE = 'coreapplicationrouting.yml';
 
     /**
@@ -26,16 +25,16 @@ class CoreApplicationRouter
     private $host;
 
     /**
-     * @param $baseUrl
-     * @param ResourceLocator $resourceLocator
+     * @param string $baseUrl
+     * @param string $kernelProjectDirectory
      * @param string $cacheDir
      */
     public function __construct(
         $baseUrl,
-        ResourceLocator $resourceLocator,
+        $kernelProjectDirectory,
         $cacheDir
     ) {
-        $locator = new FileLocator($resourceLocator->locate(self::BUNDLE_CONFIG_PATH));
+        $locator = new FileLocator($kernelProjectDirectory . '/app/config/resources');
         $requestContext = new RequestContext();
         $requestContext->fromRequest(Request::createFromGlobals());
 
