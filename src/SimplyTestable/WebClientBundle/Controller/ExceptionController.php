@@ -58,7 +58,7 @@ class ExceptionController extends BaseExceptionController
 
         // For error pages, try to find a template for the specific HTTP status code and format
         if (!$showException) {
-            $template = sprintf('SimplyTestableWebClientBundle:Exception:%s%s.%s.twig', $name, $code, $format);
+            $template = sprintf('Exception/%s%s.%s.twig', $name, $code, $format);
             if ($this->templateExists($template)) {
                 return $template;
             }
