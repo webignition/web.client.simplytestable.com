@@ -186,7 +186,7 @@ view_test_task_results_index_index:
 
 view_test_partial_notification_urlimit_index:
     path: /{website}/{test_id}/url-limit-notification/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Partial/Notification/UrlLimit:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Partial\Notification\UrlLimitController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'
