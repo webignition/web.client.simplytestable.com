@@ -326,12 +326,12 @@ test_cancel_crawl:
 
 app_test_redirector:
     path: /{website}/{test_id}/
-    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\RedirectController::testAction }
     requirements:
         website: '.+'
 
 app_website:
     path: /{website}/
-    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:test }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\RedirectController::testAction }
     requirements:
         website: '.+'

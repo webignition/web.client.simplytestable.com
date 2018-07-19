@@ -58,6 +58,59 @@ class RedirectControllerTest extends AbstractControllerTest
         $this->assertEquals('/http://example.com/1/2/results/', $response->getTargetUrl());
     }
 
+    public function testTestActionGetRequestHasTestId()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'id' => 1,
+                'website' => 'http://example.com/',
+                'task_types' => [],
+                'user' => self::USERNAME,
+                'state' => Test::STATE_COMPLETED,
+            ]),
+        ]);
+
+        $this->client->request(
+            'GET',
+            $this->router->generate('app_test_redirector', [
+                'website' => 'http://example.com/',
+                'test_id' => 1,
+            ])
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('/http://example.com//1/results/', $response->getTargetUrl());
+    }
+
+    public function testTestActionGetRequestNoTestId()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'id' => 1,
+                'website' => 'http://example.com/',
+                'task_types' => [],
+                'user' => self::USERNAME,
+                'state' => Test::STATE_COMPLETED,
+            ]),
+        ]);
+
+        $this->client->request(
+            'GET',
+            $this->router->generate('app_website', [
+                'website' => 'http://example.com/',
+            ])
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('/http://example.com//1/', $response->getTargetUrl());
+    }
+
     /**
      * @dataProvider dataProviderForTestAction
      *
