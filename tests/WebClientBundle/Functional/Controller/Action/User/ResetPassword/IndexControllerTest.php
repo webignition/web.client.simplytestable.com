@@ -9,15 +9,15 @@ use SimplyTestable\WebClientBundle\Exception\InvalidAdminCredentialsException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\PostmarkHttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 use Tests\WebClientBundle\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'action_user_resetpassword_index_request';
     const EMAIL = 'user@example.com';
@@ -52,12 +52,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->router->generate(self::ROUTE_NAME),
             [
                 'email' => self::EMAIL
             ]

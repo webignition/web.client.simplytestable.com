@@ -24,7 +24,7 @@ view_user_resetpassword_index_index:
 
 action_user_resetpassword_index_request:
     path: /reset-password/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/ResetPassword/Index:request }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\ResetPassword\IndexController::requestAction }
 
 reset_password_choose_submit:
     path: /reset-password/choose/submit/
