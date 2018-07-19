@@ -169,7 +169,7 @@ view_test_results_partial_finishedsummary_index:
 
 view_test_task_results_index_index_verbose:
     path: /website/{website}/test_id/{test_id}/task_id/{task_id}/results/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Task\Results\IndexController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'
@@ -177,7 +177,7 @@ view_test_task_results_index_index_verbose:
 
 view_test_task_results_index_index:
     path: /{website}/{test_id}/{task_id}/results/{trailingSlash}
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/Results/Index:index, trailingSlash : "/" }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Task\Results\IndexController::indexAction, trailingSlash : "/" }
     requirements:
         website: '.+'
         test_id: '\d+'
