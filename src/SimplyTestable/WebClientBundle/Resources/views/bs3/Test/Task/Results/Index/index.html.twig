@@ -47,7 +47,7 @@
 
                     {% if task.state == 'completed' %}
                         <div class="summary-stats hidden-xs hidden-sm">
-                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                             with {
                                 count: task.output.errorCount,
                                 name:'error',
@@ -55,7 +55,7 @@
                                 issue_type: 'error'
                             } %}
 
-                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                             with {
                                 count: task.output.warningCount,
                                 negative:'primary',
@@ -65,7 +65,7 @@
                             } %}
 
                             {% if fix_count > 0 %}
-                                {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                                {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                                 with {
                                     count: fix_count,
                                     negative:'fixes',
@@ -78,7 +78,7 @@
                         </div>
 
                         <div class="summary-stats hidden-lg hidden-md">
-                        {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                        {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                             with {
                                 count: task.output.errorCount,
                                 name:'error',
@@ -87,7 +87,7 @@
                                 issue_type: 'error'
                             } %}
 
-                            {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                            {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                             with {
                                 count: task.output.warningCount,
                                 negative:'primary',
@@ -98,7 +98,7 @@
                             } %}
 
                             {% if fix_count > 0 %}
-                                {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+                                {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                                 with {
                                     count: fix_count,
                                     negative:'fixes',

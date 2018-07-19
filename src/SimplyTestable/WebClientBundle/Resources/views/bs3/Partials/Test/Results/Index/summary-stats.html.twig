@@ -1,5 +1,5 @@
 <div class="summary-stats">
-    {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+    {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
         with {
         count: test.errorCount,
         name: 'error',
@@ -8,7 +8,7 @@
     }
     %}
 
-    {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-positive.html.twig'
+    {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
         with {
         count: test.warningCount,
         negative:'primary',
@@ -18,7 +18,7 @@
     }
     %}
 
-    {% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results:issue-count-zero-negative.html.twig'
+    {% include 'Abstract/Partials/Test/Results/issue-count-zero-negative.html.twig'
         with {
         count: remote_test.errorfreetaskcount,
         name:'test',
