@@ -19,13 +19,7 @@ class DocumentationUrlCheckerServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->documentationUrlCheckerService = new DocumentationUrlCheckerService();
-
-        $this->documentationUrlCheckerService->setDocumentationSitemapPath(
-            self::$container->get('kernel')->locateResource(
-                '@SimplyTestableWebClientBundle/Resources/config/documentation_sitemap.xml'
-            )
-        );
+        $this->documentationUrlCheckerService = self::$container->get(DocumentationUrlCheckerService::class);
     }
 
     /**

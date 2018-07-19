@@ -27,11 +27,6 @@ services:
       arguments:
         $debug: '%kernel.debug%'
 
-    SimplyTestable\WebClientBundle\Controller\View\Test\Task\Results\IndexController:
-      public: true
-      arguments:
-        $documentationSitemapPath: '%kernel.project_dir%/app/config/resources/documentation_sitemap.xml'
-
     SimplyTestable\WebClientBundle\EventListener\Stripe\Listener:
       tags:
         - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
@@ -181,3 +176,7 @@ services:
     SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityErrorCodeMap:
       arguments:
         - '%link_integrity_error_code_map%'
+
+    SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService:
+      arguments:
+        $documentationSitemapPath: '%kernel.project_dir%/app/config/resources/documentation_sitemap.xml'

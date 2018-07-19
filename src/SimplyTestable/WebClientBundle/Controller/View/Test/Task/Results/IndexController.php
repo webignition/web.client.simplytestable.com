@@ -68,11 +68,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
     private $documentationSiteUrls;
 
     /**
-     * @var string
-     */
-    private $documentationSitemapPath;
-
-    /**
      * @param RouterInterface $router
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
@@ -86,7 +81,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
      * @param DocumentationUrlCheckerService $documentationUrlChecker
      * @param LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap
      * @param DocumentationSiteUrls $documentationSiteUrls
-     * @param string $documentationSitemapPath
      */
     public function __construct(
         RouterInterface $router,
@@ -101,8 +95,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         TaskService $taskService,
         DocumentationUrlCheckerService $documentationUrlChecker,
         LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap,
-        DocumentationSiteUrls $documentationSiteUrls,
-        $documentationSitemapPath
+        DocumentationSiteUrls $documentationSiteUrls
     ) {
         parent::__construct(
             $router,
@@ -120,7 +113,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $this->documentationUrlLinkChecker = $documentationUrlChecker;
         $this->linkIntegrityErrorCodeMap = $linkIntegrityErrorCodeMap;
         $this->documentationSiteUrls = $documentationSiteUrls;
-        $this->documentationSitemapPath = $documentationSitemapPath;
     }
 
     /**
@@ -261,7 +253,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $normaliser = new HtmlValidationErrorNormaliser();
         $linkifier = new HtmlValidationErrorLinkifier();
 
-        $this->documentationUrlLinkChecker->setDocumentationSitemapPath($this->documentationSitemapPath);
         foreach ($errors as $error) {
             /* @var HtmlValidationErrorNormalisationResult $normalisationResult */
             $normalisationResult = $normaliser->normalise($error->getMessage());
