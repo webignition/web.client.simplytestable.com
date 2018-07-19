@@ -193,7 +193,7 @@ view_test_partial_notification_urlimit_index:
 
 app_task_results_redirector:
     path: /{website}/{test_id}/{task_id}/
-    defaults: { _controller: SimplyTestableWebClientBundle:Redirect:task }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\RedirectController::taskAction }
     requirements:
         website: '.+'
         test_id: '\d+'
