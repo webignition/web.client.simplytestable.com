@@ -58,10 +58,10 @@
                 {% if filter == 'by-page' %}
                     <div class="by-page-container">
                         {% if tasks|length > 0 %}
-                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
+                            {% include 'Partials/Test/Results/ByTaskType/sort-row.html.twig' with {} only %}
                         {% endif %}
 
-                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:task-error-count-task-list.html.twig' with {
+                        {% include 'Partials/Test/Results/ByTaskType/task-error-count-task-list.html.twig' with {
                             tasks: tasks,
                             test_results_route_parameters: {
                                 website: website.raw, test_id: test.testId, trailingSlash:''
@@ -102,10 +102,10 @@
 
                                 <div class="by-page-container {% if is_collapsible %}collapse{% endif %}" id="collapse{{ error_index }}">
                                     {% if is_collapsible %}
-                                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:sort-row.html.twig' with {} only %}
+                                        {% include 'Partials/Test/Results/ByTaskType/sort-row.html.twig' with {} only %}
                                     {% endif %}
 
-                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/ByTaskType:occurrence-count-by-error-message-task-list.html.twig' with {
+                                    {% include 'Partials/Test/Results/ByTaskType/occurrence-count-by-error-message-task-list.html.twig' with {
                                         tasks: error_task_map.tasks,
                                         test_results_route_parameters: {
                                             website: website.raw, test_id: test.testId, trailingSlash:''
