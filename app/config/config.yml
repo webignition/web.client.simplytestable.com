@@ -16,6 +16,9 @@ parameters:
     - cdnjs.cloudflare.com
     - netdna.bootstrapcdn.com
     - static.nrelate.com
+  currency_map:
+    gbp: "&#163;"
+    usd: "&#36;"
 
 framework:
     #esi:             ~
