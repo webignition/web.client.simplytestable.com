@@ -19,7 +19,7 @@
                                 {% set singular = singular is defined ? singular : '' %}
 
                                 <span class="label label-danger">
-                                    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Generic:single-plural-item.html.twig' with {
+                                    {% include 'Partials/Generic/single-plural-item.html.twig' with {
                                         value: value,
                                         singular: singular
                                     } %} <i class="fa fa-caret-right"></i>
