@@ -30,6 +30,8 @@ parameters:
     - netdna.bootstrapcdn.com
     - static.nrelate.com
     - connect.facebook.net
+  link-integrity-excluded-domains:
+    - instagram.com
 
 framework:
     #esi:             ~
