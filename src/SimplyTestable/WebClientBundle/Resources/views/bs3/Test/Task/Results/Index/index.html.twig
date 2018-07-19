@@ -124,7 +124,7 @@
 
     <div class="container issue-content" {% if filter_selectors[task_type_key] is defined %}" {% endif %}>
         {% if is_failed %}
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Failed:failed.html.twig' %}
+            {% include 'Partials/Test/Results/Task/Failed/failed.html.twig' %}
         {% else %}
             {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded:succeeded.html.twig' %}
         {% endif %}
