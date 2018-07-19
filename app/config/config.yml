@@ -117,6 +117,32 @@ parameters:
         subject: "[Simply Testable] You have been invited to join the {{team_name}} team"
       user_team_invite_newuser_invitation:
         subject: "[Simply Testable] You have been invited to join the {{team_name}} team"
+  plans:
+    basic:
+      name: Basic
+      price: 0
+      description_brief: Free
+      urls_per_job: 10
+      credits_per_month: 500
+    personal:
+      name: Personal
+      price: 900
+      description_brief: For small scale projects
+      urls_per_job: 50
+      credits_per_month: 5000
+    agency:
+      name: Agency
+      price: 1900
+      description_brief: Great for small organisations
+      urls_per_job: 250
+      credits_per_month: 20000
+    business:
+      name: Business
+      price: 5900
+      description_brief: Best value for professionals
+      urls_per_job: 2500
+      credits_per_month: 100000
+
 
 framework:
     #esi:             ~
