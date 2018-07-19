@@ -291,7 +291,7 @@ view_test_results_bytasktype_index:
 
 view_test_task_tasklist_index_index:
     path: /{website}/{test_id}/tasklist/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/Test/Task/TaskList/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\Test\Task\TaskList\IndexController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'

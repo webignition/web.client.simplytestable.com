@@ -14,9 +14,10 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 
-class IndexControllerTest extends AbstractBaseTestCase
+class IndexControllerTest extends AbstractControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Task/TaskList/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_task_tasklist_index_index';
@@ -29,6 +30,14 @@ class IndexControllerTest extends AbstractBaseTestCase
      * @var HttpMockHandler
      */
     private $httpMockHandler;
+
+    /**
+     * @var array
+     */
+    private $routeParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+    ];
 
     /**
      * @var array
@@ -76,15 +85,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -100,15 +103,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var Response $response */
@@ -125,15 +122,9 @@ class IndexControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters),
             [
                 'taskIds' => [2],
             ]
