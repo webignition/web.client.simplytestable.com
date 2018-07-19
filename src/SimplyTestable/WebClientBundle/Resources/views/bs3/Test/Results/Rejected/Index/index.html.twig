@@ -17,31 +17,28 @@
 {% endset %}
 
 {% block title %}{{ title }} - {{ parent() }} {% endblock %}
-
 {% block body_class %} {{ parent() }} test-results-rejected {% endblock %}
 
 {% block content %}
-
     <h1>{{ title }}</h1>
 
     {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'credits_per_month' %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Rejected/CreditLimit:credit-limit.html.twig' %}
+        {% include 'Partials/Test/Results/Rejected/CreditLimit/credit-limit.html.twig' %}
     {% endif %}
 
     {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'full_site_jobs_per_site' %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Rejected:full-site.html.twig' %}
+        {% include 'Partials/Test/Results/Rejected/full-site.html.twig' %}
     {% endif %}
 
     {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'single_url_jobs_per_url' %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Rejected:single-page.html.twig' %}
+        {% include 'Partials/Test/Results/Rejected/single-page.html.twig' %}
     {% endif %}
 
     {% if remote_test.rejection.constraint is null and remote_test.rejection.reason == 'unroutable' %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Rejected:unroutable.html.twig' %}
+        {% include 'Partials/Test/Results/Rejected/unroutable.html.twig' %}
     {% endif %}
 
     {% if remote_test.rejection.constraint is null and remote_test.rejection.reason|slice(0, 4) == 'curl' %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Rejected:curl-error.html.twig' %}
+        {% include 'Partials/Test/Results/Rejected/curl-error.html.twig' %}
     {% endif %}
-
 {% endblock %}
