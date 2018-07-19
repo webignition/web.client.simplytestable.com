@@ -44,7 +44,7 @@ sign_up_submit:
 
 view_user_signup_confirm_index:
     path: /signup/confirm/{email}/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/User/SignUp/Confirm:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\User\SignUp\ConfirmController:indexAction }
 
 view_user_signup_invite_index:
     path: /signup/invite/{token}/

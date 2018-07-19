@@ -30,7 +30,9 @@ class ConfirmControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl()
+            $this->router->generate(self::ROUTE_NAME, [
+                'email' => self::USER_EMAIL,
+            ])
         );
 
         /* @var Response $response */
@@ -351,18 +353,6 @@ class ConfirmControllerTest extends AbstractViewControllerTest
         );
 
         $this->assertArrayHasKey('has_notification', $parameters);
-    }
-
-    /**
-     * @return string
-     */
-    private function createRequestUrl()
-    {
-        $router = self::$container->get('router');
-
-        return $router->generate(self::ROUTE_NAME, [
-            'email' => self::USER_EMAIL,
-        ]);
     }
 
     /**
