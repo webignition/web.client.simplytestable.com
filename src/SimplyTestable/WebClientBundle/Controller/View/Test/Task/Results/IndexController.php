@@ -17,7 +17,6 @@ use SimplyTestable\WebClientBundle\Services\Configuration\DocumentationSiteUrls;
 use SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService;
 use SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityErrorCodeMap;
 use SimplyTestable\WebClientBundle\Services\RemoteTestService;
-use SimplyTestable\WebClientBundle\Services\ResourceLocator;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\TaskService;
 use SimplyTestable\WebClientBundle\Services\TestService;
@@ -59,11 +58,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
     private $documentationUrlLinkChecker;
 
     /**
-     * @var ResourceLocator
-     */
-    private $resourceLocator;
-
-    /**
      * @var LinkIntegrityErrorCodeMap
      */
     private $linkIntegrityErrorCodeMap;
@@ -85,7 +79,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
      * @param RemoteTestService $remoteTestService
      * @param TaskService $taskService
      * @param DocumentationUrlCheckerService $documentationUrlChecker
-     * @param ResourceLocator $resourceLocator
      * @param LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap
      * @param DocumentationSiteUrls $documentationSiteUrls
      */
@@ -101,7 +94,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         RemoteTestService $remoteTestService,
         TaskService $taskService,
         DocumentationUrlCheckerService $documentationUrlChecker,
-        ResourceLocator $resourceLocator,
         LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap,
         DocumentationSiteUrls $documentationSiteUrls
     ) {
@@ -119,7 +111,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
         $this->documentationUrlLinkChecker = $documentationUrlChecker;
-        $this->resourceLocator = $resourceLocator;
         $this->linkIntegrityErrorCodeMap = $linkIntegrityErrorCodeMap;
         $this->documentationSiteUrls = $documentationSiteUrls;
     }
@@ -262,9 +253,6 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         $normaliser = new HtmlValidationErrorNormaliser();
         $linkifier = new HtmlValidationErrorLinkifier();
 
-        $sitemapPath = $this->resourceLocator->locate(self::DOCUMENTATION_SITEMAP_RESOURCE_PATH);
-
-        $this->documentationUrlLinkChecker->setDocumentationSitemapPath($sitemapPath);
         foreach ($errors as $error) {
             /* @var HtmlValidationErrorNormalisationResult $normalisationResult */
             $normalisationResult = $normaliser->normalise($error->getMessage());

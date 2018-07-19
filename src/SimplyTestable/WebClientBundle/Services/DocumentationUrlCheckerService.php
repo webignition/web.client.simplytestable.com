@@ -22,7 +22,7 @@ class DocumentationUrlCheckerService
     /**
      * @param string $documentationSitemapPath
      */
-    public function setDocumentationSitemapPath($documentationSitemapPath)
+    public function __construct($documentationSitemapPath)
     {
         $this->documentationSitemapPath = $documentationSitemapPath;
     }

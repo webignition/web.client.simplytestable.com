@@ -176,3 +176,7 @@ services:
     SimplyTestable\WebClientBundle\Services\Configuration\LinkIntegrityErrorCodeMap:
       arguments:
         - '%link_integrity_error_code_map%'
+
+    SimplyTestable\WebClientBundle\Services\DocumentationUrlCheckerService:
+      arguments:
+        $documentationSitemapPath: '%kernel.project_dir%/app/config/resources/documentation_sitemap.xml'
