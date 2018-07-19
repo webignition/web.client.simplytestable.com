@@ -10,6 +10,12 @@ parameters:
       percent_off: 20
       active: true
       intro: "<p><strong>Hey there TMS listener!</strong> You get 20% off the lifetime of your account.</p>"
+  css-validation-ignore-common-cdns:
+    - ajax.aspnetcdn.com
+    - ajax.googleapis.com
+    - cdnjs.cloudflare.com
+    - netdna.bootstrapcdn.com
+    - static.nrelate.com
 
 framework:
     #esi:             ~
