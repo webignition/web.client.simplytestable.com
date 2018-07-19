@@ -1,6 +1,6 @@
 stripe_event:
   path: /stripe/event/
-  defaults: { _controller: SimplyTestableWebClientBundle:Stripe\Event:index, _format: json }
+  defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Stripe\EventController::indexAction, _format: json }
 
 mailchimp_event:
   path: /mailchimp/event/
