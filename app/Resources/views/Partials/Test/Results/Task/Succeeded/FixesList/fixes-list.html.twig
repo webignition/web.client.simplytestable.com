@@ -16,7 +16,7 @@
             {% for fix in distinct_fixes %}
                 <li class="issue subtle">
                     {% include [
-                    'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/FixesList:',
+                    'Partials/Test/Results/Task/Succeeded/FixesList/',
                     task_type_key,
                     '-fix.html.twig'
                     ]|join('') %}

@@ -10,14 +10,14 @@
             </div>
         </div>
     {% else %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList:error-list.html.twig' %}
+        {% include 'Partials/Test/Results/Task/Succeeded/ErrorList/error-list.html.twig' %}
     {% endif %}
 {% endif %}
 
 {% if task.output.hasWarnings and task.output.result.hasWarnings %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/WarningList:warning-list.html.twig' %}
+    {% include 'Partials/Test/Results/Task/Succeeded/WarningList/warning-list.html.twig' %}
 {% endif %}
 
 {% if distinct_fixes is defined and distinct_fixes | length > 0 %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/FixesList:fixes-list.html.twig' %}
+    {% include 'Partials/Test/Results/Task/Succeeded/FixesList/fixes-list.html.twig' %}
 {% endif %}

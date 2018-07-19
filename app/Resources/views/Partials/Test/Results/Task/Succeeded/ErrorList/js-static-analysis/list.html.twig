@@ -11,7 +11,7 @@
                 {% for error in errors %}
                     {% if (not error.isLinterNotice) %}
                         <li class="issue">
-                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/ErrorList/js-static-analysis:error.html.twig' %}
+                            {% include 'Partials/Test/Results/Task/Succeeded/ErrorList/js-static-analysis/error.html.twig' %}
                         </li>
                     {% endif %}
                 {% endfor %}
