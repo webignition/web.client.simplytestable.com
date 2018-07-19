@@ -16,7 +16,7 @@ view_user_signin_index:
 
 sign_in_submit:
     path: /signin/submit/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/User:signInSubmit }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\UserController::signInSubmitAction }
 
 view_user_resetpassword_index_index:
     path: /reset-password/
