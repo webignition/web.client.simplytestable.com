@@ -20,7 +20,7 @@ sign_in_submit:
 
 view_user_resetpassword_index_index:
     path: /reset-password/
-    defaults: { _controller: SimplyTestableWebClientBundle:View/User/ResetPassword/Index:index }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\View\User\ResetPassword\IndexController:indexAction }
 
 action_user_resetpassword_index_request:
     path: /reset-password/submit/
