@@ -64,27 +64,27 @@ action_signup_user_confirm_resend:
 
 action_user_account_newssubscriptions_update:
     path: /account/news-subscriptions/update/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/NewsSubscriptions:update }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\NewsSubscriptionsController::updateAction }
 
 action_user_account_emailchange_request:
     path: /account/details/update/email/request/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/EmailChange:request }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController::requestAction }
 
 action_user_account_emailchange_resend:
     path: /account/details/update/email/resend/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/EmailChange:resend }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController::resendAction }
 
 action_user_account_emailchange_confirm:
     path: /account/details/update/email/confirm/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/EmailChange:confirm }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController::confirmAction }
 
 action_user_account_emailchange_cancel:
     path: /account/details/update/email/cancel/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/EmailChange:cancel }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\EmailChangeController::cancelAction }
 
 action_user_account_passwordchange_request:
     path: /account/details/update/password/request/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/PasswordChange:request }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\PasswordChangeController::requestAction }
 
 view_user_account_index_index:
     path: /account/
@@ -100,31 +100,31 @@ view_user_account_team_index_index:
 
 action_user_account_team_create:
     path: /account/team/create/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:create }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController::createAction }
 
 action_user_account_team_invitemember:
     path: /account/team/invite-member/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/TeamInvite:inviteMember }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamInviteController::inviteMemberAction }
 
 action_user_account_team_respondinvite:
     path: /account/team/invite/respond/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/TeamInvite:respondInvite }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamInviteController::respondInviteAction }
 
 action_user_account_team_removeinvite:
     path: /account/team/invite/remove/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/TeamInvite:removeInvite }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamInviteController::removeInviteAction }
 
 action_user_account_team_resendinvite:
     path: /account/team/invite/resend/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/TeamInvite:resendInvite }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamInviteController::resendInviteAction }
 
 action_user_account_team_removemember:
     path: /account/team/member/remove/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:removeMember }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController::removeMemberAction }
 
 action_user_account_team_leave:
     path: /account/team/leave/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Team:leave }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\TeamController::leaveAction }
 
 view_user_account_plan_index:
     path: /account/plan/
@@ -132,11 +132,11 @@ view_user_account_plan_index:
 
 user_account_card_associate:
     path: /account/card/{stripe_card_token}/associate/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Card:associate }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\CardController::associateAction }
 
 user_account_plan_subscribe:
     path: /account/plan/subscribe/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/User/Account/Plan:subscribe }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\User\Account\PlanController:subscribeAction }
 
 view_dashboard_index_index:
     path: /

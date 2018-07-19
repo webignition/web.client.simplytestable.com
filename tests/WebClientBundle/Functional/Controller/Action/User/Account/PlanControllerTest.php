@@ -71,7 +71,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         ];
     }
 
-    public function testIndexActionPrivateUserPostRequest()
+    public function testsubscribeActionPrivateUserPostRequest()
     {
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
@@ -84,7 +84,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
 
         $this->client->request(
             'POST',
-            $this->createRequestUrl(self::ROUTE_NAME),
+            $this->router->generate(self::ROUTE_NAME),
             [
                 'plan' => 'personal',
             ]

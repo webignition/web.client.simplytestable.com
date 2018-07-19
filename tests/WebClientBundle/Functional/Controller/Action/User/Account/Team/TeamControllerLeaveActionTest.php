@@ -37,7 +37,7 @@ class TeamControllerLeaveActionTest extends AbstractTeamControllerTest
 
         $this->client->request(
             'POST',
-            $this->createRequestUrl(self::ROUTE_NAME)
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         /* @var RedirectResponse $response */
