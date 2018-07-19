@@ -56,7 +56,7 @@ sign_up_confirm_submit:
 
 action_signup_team_invite_accept:
     path: /signup/invite/{token}/accept/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/SignUp/Team/Invite:accept }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteController::acceptAction }
 
 action_signup_user_confirm_resend:
     path: /signup/confirm/{email}/resend/

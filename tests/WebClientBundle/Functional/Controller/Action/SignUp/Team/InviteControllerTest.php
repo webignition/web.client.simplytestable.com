@@ -6,13 +6,13 @@ use SimplyTestable\WebClientBundle\Controller\Action\SignUp\Team\InviteControlle
 use SimplyTestable\WebClientBundle\Services\ResqueQueueService;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 
-class InviteControllerTest extends AbstractBaseTestCase
+class InviteControllerTest extends AbstractControllerTest
 {
     const USERNAME = 'user@example.com';
     const TOKEN = 'tokenValue';
@@ -50,14 +50,11 @@ class InviteControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate('action_signup_team_invite_accept', [
-            'token' => self::TOKEN,
-        ]);
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->router->generate('action_signup_team_invite_accept', [
+                'token' => self::TOKEN,
+            ]),
             [
                 'password' => self::PASSWORD,
             ]
