@@ -1,33 +1,16 @@
-{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Progress/Index:task-queue.html.twig'
-with {
-'name': 'Queued',
-'value': remote_test.taskcountbystate.queued,
-'label_type':'warning'
+{% set queue_label_types = {
+    queued: 'warning',
+    in_progress: 'primary',
+    completed: 'success',
+    skipped: 'default',
+    failed: 'danger'
 } %}
 
-{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Progress/Index:task-queue.html.twig'
-with {
-'name': 'In progress',
-'value': remote_test.taskcountbystate.in_progress,
-'label_type':'primary'
-} %}
-
-{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Progress/Index:task-queue.html.twig'
-with {
-'name': 'Completed',
-'value': remote_test.taskcountbystate.completed,
-'label_type':'success'
-} %}
-
-{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Progress/Index:task-queue.html.twig'
-with {
-'name': 'Skipped',
-'value': remote_test.taskcountbystate.skipped
-} %}
-
-{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Progress/Index:task-queue.html.twig'
-with {
-'name': 'Failed',
-'value': remote_test.taskcountbystate.failed,
-'label_type':'danger'
-} %}
+{% for queue_name, queue_label_type in queue_label_types %}
+    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Progress/Index:task-queue.html.twig'
+        with {
+        'name': queue_name|capitalize,
+        'value': remote_test.taskcountbystate[queue_name],
+        'label_type': queue_label_type
+    } %}
+{% endfor %}
