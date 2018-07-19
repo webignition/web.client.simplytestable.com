@@ -4,7 +4,7 @@ stripe_event:
 
 mailchimp_event:
   path: /mailchimp/event/
-  defaults: { _controller: SimplyTestableWebClientBundle:MailChimp\Event:index, _format: json }
+  defaults: { _controller: SimplyTestable\WebClientBundle\Controller\MailChimp\EventController::indexAction, _format: json }
 
 sign_out_submit:
     path: /signout/
