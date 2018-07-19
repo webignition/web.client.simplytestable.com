@@ -298,13 +298,13 @@ view_test_task_tasklist_index_index:
 
 app_task_ids:
     path: /{website}/{test_id}/tasks/ids/
-    defaults: { _controller: SimplyTestableWebClientBundle:Task:idCollection, _format: json }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\TaskController::idCollectionAction, _format: json }
     requirements:
         website: '.+'
 
 app_unretrieved_task_ids:
     path: /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
-    defaults: { _controller: SimplyTestableWebClientBundle:Task:unretrievedIdCollection, _format: json }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\TaskController::unretrievedIdCollectionAction, _format: json }
     requirements:
         website: '.+'
 
