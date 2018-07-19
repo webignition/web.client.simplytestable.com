@@ -43,12 +43,12 @@ class CardControllerTest extends AbstractUserAccountControllerTest
     }
 
     /**
-     * @dataProvider indexActionPrivateUserPostRequestDataProvider
+     * @dataProvider associateActionPrivateUserPostRequestDataProvider
      *
      * @param array $httpFixtures
      * @param array $expectedResponseData
      */
-    public function testIndexActionPrivateUserPostRequest(array $httpFixtures, array $expectedResponseData)
+    public function testAssociateActionPrivateUserPostRequest(array $httpFixtures, array $expectedResponseData)
     {
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
@@ -56,7 +56,7 @@ class CardControllerTest extends AbstractUserAccountControllerTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
         $this->client->request(
             'POST',
-            $this->createRequestUrl(self::ROUTE_NAME, [
+            $this->router->generate(self::ROUTE_NAME, [
                 'stripe_card_token' => self::STRIPE_CARD_TOKEN,
             ])
         );
@@ -75,7 +75,7 @@ class CardControllerTest extends AbstractUserAccountControllerTest
     /**
      * @return array
      */
-    public function indexActionPrivateUserPostRequestDataProvider()
+    public function associateActionPrivateUserPostRequestDataProvider()
     {
         return [
             'success' => [

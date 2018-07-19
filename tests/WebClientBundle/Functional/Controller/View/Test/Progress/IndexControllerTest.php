@@ -31,6 +31,14 @@ class IndexControllerTest extends AbstractViewControllerTest
     /**
      * @var array
      */
+    private $routeParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+    ];
+
+    /**
+     * @var array
+     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -52,7 +60,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl()
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -101,7 +109,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl()
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var Response $response */
@@ -120,7 +128,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl()
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var Response $response */
@@ -616,19 +624,6 @@ class IndexControllerTest extends AbstractViewControllerTest
     {
         $this->assertInternalType('array', $parameters['available_task_types']);
         $this->assertEquals($expectedTaskTypeKeys, array_keys($parameters['available_task_types']));
-    }
-
-    /**
-     * @return string
-     */
-    private function createRequestUrl()
-    {
-        $router = self::$container->get('router');
-
-        return $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
     }
 
     /**

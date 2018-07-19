@@ -5,13 +5,8 @@ namespace Tests\WebClientBundle\Functional\Controller\View\Test\Results\Partial\
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\Partial\FinishedSummary\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Model\RemoteTest\RemoteTest;
-use SimplyTestable\WebClientBundle\Services\CacheValidatorService;
-use SimplyTestable\WebClientBundle\Services\DefaultViewParameters;
-use SimplyTestable\WebClientBundle\Services\RemoteTestService;
-use SimplyTestable\WebClientBundle\Services\TestService;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\MockFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,6 +21,14 @@ class IndexControllerTest extends AbstractViewControllerTest
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
+
+    /**
+     * @var array
+     */
+    private $routeParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+    ];
 
     /**
      * @var array
@@ -45,15 +48,9 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -69,15 +66,9 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -94,15 +85,9 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var Response $response */

@@ -36,12 +36,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate('sign_up_submit');
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->router->generate('sign_up_submit'),
             [
                 'plan' => 'basic',
                 'email' => self::EMAIL,

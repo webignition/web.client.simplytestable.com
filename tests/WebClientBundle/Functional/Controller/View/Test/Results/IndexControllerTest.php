@@ -25,10 +25,19 @@ class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Results/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_results_index_index';
+    const ROUTE_NAME_VERBOSE = 'view_test_results_index_index_verbose';
 
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
+
+    /**
+     * @var array
+     */
+    private $routeParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+    ];
 
     /**
      * @var array
@@ -115,15 +124,9 @@ class IndexControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -205,15 +208,9 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var Response $response */
@@ -235,16 +232,13 @@ class IndexControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => $website,
-            'test_id' => $testId,
-            'filter' => $filter,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, [
+                'website' => $website,
+                'test_id' => $testId,
+                'filter' => $filter,
+            ])
         );
 
         /* @var Response $response */
@@ -286,6 +280,30 @@ class IndexControllerTest extends AbstractViewControllerTest
                 ],
             ],
         ];
+    }
+
+    public function testIndexActionVerboseRoutePublicUserGetRequest()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
+            HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
+            HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->client->request(
+            'GET',
+            $this->router->generate(
+                self::ROUTE_NAME_VERBOSE,
+                array_merge($this->routeParameters, ['filter' => 'with-errors'])
+            )
+        );
+
+        /* @var Response $response */
+        $response = $this->client->getResponse();
+
+        $this->assertTrue($response->isSuccessful());
     }
 
     /**

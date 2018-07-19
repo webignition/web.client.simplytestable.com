@@ -5,7 +5,6 @@ namespace Tests\WebClientBundle\Functional\Controller\View\Test\Results\FailedNo
 use SimplyTestable\WebClientBundle\Controller\View\Test\Results\FailedNoUrlsDetected\IndexController;
 use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
-use SimplyTestable\WebClientBundle\Services\CoreApplicationHttpClient;
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
@@ -29,6 +28,14 @@ class IndexControllerTest extends AbstractViewControllerTest
     /**
      * @var array
      */
+    private $routeParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+    ];
+
+    /**
+     * @var array
+     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -44,15 +51,9 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createNotFoundResponse()
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -68,15 +69,9 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var Response $response */

@@ -19,11 +19,12 @@ use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 use webignition\SimplyTestableUserModel\User;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
-class StartControllerTest extends AbstractBaseTestCase
+class StartControllerTest extends AbstractControllerTest
 {
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
@@ -54,6 +55,19 @@ class StartControllerTest extends AbstractBaseTestCase
         $this->testStartController = self::$container->get(StartController::class);
         $this->httpHistory = self::$container->get(HttpHistoryContainer::class);
         $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
+    }
+
+    public function testStartNewActionGetRequest()
+    {
+        $this->client->request(
+            'GET',
+            $this->router->generate('test_start')
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
     }
 
     /**

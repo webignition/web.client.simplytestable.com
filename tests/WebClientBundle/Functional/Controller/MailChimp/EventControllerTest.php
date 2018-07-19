@@ -5,10 +5,10 @@ namespace Tests\WebClientBundle\Functional\Controller\MailChimp;
 use Doctrine\ORM\EntityManagerInterface;
 use SimplyTestable\WebClientBundle\Controller\MailChimp\EventController;
 use SimplyTestable\WebClientBundle\Services\MailChimp\ListRecipientsService;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 
-class EventControllerTest extends AbstractBaseTestCase
+class EventControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'mailchimp_event';
 
@@ -29,12 +29,9 @@ class EventControllerTest extends AbstractBaseTestCase
 
     public function testIndexActionGetRequest()
     {
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         $response = $this->client->getResponse();

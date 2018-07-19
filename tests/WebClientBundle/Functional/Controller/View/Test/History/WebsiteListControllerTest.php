@@ -6,13 +6,13 @@ use SimplyTestable\WebClientBundle\Controller\View\Test\History\WebsiteListContr
 use SimplyTestable\WebClientBundle\Services\SystemUserService;
 use SimplyTestable\WebClientBundle\Services\UserManager;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 
-class WebsiteListControllerTest extends AbstractBaseTestCase
+class WebsiteListControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'view_test_history_websitelist_index';
 
@@ -37,12 +37,9 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         /* @var RedirectResponse $response */
@@ -58,12 +55,9 @@ class WebsiteListControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createJsonResponse([]),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         /* @var Response $response */

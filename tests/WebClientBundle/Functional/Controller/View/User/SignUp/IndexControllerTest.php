@@ -27,10 +27,9 @@ class IndexControllerTest extends AbstractViewControllerTest
     {
         $this->client->request(
             'GET',
-            $this->createRequestUrl()
+            $this->router->generate(self::ROUTE_NAME)
         );
 
-        /* @var Response $response */
         $response = $this->client->getResponse();
         $this->assertTrue($response->isSuccessful());
     }
@@ -342,16 +341,6 @@ class IndexControllerTest extends AbstractViewControllerTest
             ],
             array_keys($parameters)
         );
-    }
-
-    /**
-     * @return string
-     */
-    private function createRequestUrl()
-    {
-        $router = self::$container->get('router');
-
-        return $router->generate(self::ROUTE_NAME);
     }
 
     /**

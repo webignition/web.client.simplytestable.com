@@ -35,12 +35,9 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate('sign_in_submit');
-
         $this->client->request(
             'POST',
-            $requestUrl,
+            $this->router->generate('sign_in_submit'),
             [
                 'email' => self::EMAIL,
                 'password' => 'foo',

@@ -25,11 +25,21 @@ class IndexControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Task/Results/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_task_results_index_index';
+    const ROUTE_NAME_VERBOSE = 'view_test_task_results_index_index_verbose';
 
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const TASK_ID = 2;
     const USER_EMAIL = 'user@example.com';
+
+    /**
+     * @var array
+     */
+    private $routeParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+        'task_id' => self::TASK_ID,
+    ];
 
     /**
      * @var array
@@ -86,7 +96,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl()
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -134,7 +144,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl()
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var Response $response */
@@ -142,6 +152,24 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertContains('<title>Not authorised', $response->getContent());
+    }
+
+    public function testIndexActionVerboseRoutePublicUserGetRequest()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse($this->remoteTestData),
+            HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
+        ]);
+
+        $this->client->request(
+            'GET',
+            $this->router->generate(self::ROUTE_NAME_VERBOSE, $this->routeParameters)
+        );
+
+        /* @var Response $response */
+        $response = $this->client->getResponse();
+        $this->assertTrue($response->isSuccessful());
     }
 
     /**
@@ -159,7 +187,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl() . ($includeAdditionalTrailingSlash ? '/' : '')
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
+            . ($includeAdditionalTrailingSlash ? '/' : '')
         );
 
         /* @var Response $response */
@@ -1301,20 +1330,6 @@ class IndexControllerTest extends AbstractViewControllerTest
             ],
             array_keys($parameters)
         );
-    }
-
-    /**
-     * @return string
-     */
-    private function createRequestUrl()
-    {
-        $router = self::$container->get('router');
-
-        return $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-            'task_id' => self::TASK_ID,
-        ]);
     }
 
     /**

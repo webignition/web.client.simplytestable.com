@@ -7,9 +7,10 @@ use SimplyTestable\WebClientBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 
-abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
+abstract class AbstractUserAccountControllerTest extends AbstractControllerTest
 {
     /**
      * @var HttpMockHandler
@@ -57,18 +58,5 @@ abstract class AbstractUserAccountControllerTest extends AbstractBaseTestCase
         $this->assertTrue($response->isRedirect(
             '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D'
         ));
-    }
-
-    /**
-     * @param string $routeName
-     * @param array $routeParameters
-     *
-     * @return string
-     */
-    protected function createRequestUrl($routeName, array $routeParameters = [])
-    {
-        $router = self::$container->get('router');
-
-        return $router->generate($routeName, $routeParameters);
     }
 }

@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 
-class TaskControllerTest extends AbstractBaseTestCase
+class TaskControllerTest extends AbstractControllerTest
 {
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
@@ -132,12 +132,9 @@ class TaskControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate($routeName, $routeParameters);
-
         $this->client->request(
             $method,
-            $requestUrl
+            $this->router->generate($routeName, $routeParameters)
         );
 
         /* @var JsonResponse $response */

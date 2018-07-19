@@ -36,14 +36,11 @@ class InviteControllerTest extends AbstractViewControllerTest
 
         $flashBag->set(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY, 'foo');
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate('view_user_signup_invite_index', [
-            'token' => self::TOKEN,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate('view_user_signup_invite_index', [
+                'token' => self::TOKEN,
+            ])
         );
 
         /* @var SymfonyResponse $response */

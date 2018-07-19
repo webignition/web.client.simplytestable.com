@@ -4,40 +4,35 @@ namespace Tests\WebClientBundle\Functional\Controller\Stripe;
 
 use Mockery\Mock;
 use SimplyTestable\WebClientBundle\Controller\Stripe\EventController;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use SimplyTestable\WebClientBundle\Event\Stripe\Event as StripeEvent;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 
-class EventControllerTest extends AbstractBaseTestCase
+class EventControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'action_user_resetpassword_index_request';
     const EMAIL = 'user@example.com';
 
     public function testIndexActionEventHasNoUser()
     {
-        $eventController = self::$container->get(EventController::class);
-
-        $response = $eventController->indexAction(new Request());
+        $this->client->request('POST', $this->router->generate('stripe_event'));
+        $response = $this->client->getResponse();
 
         $this->assertTrue($response->isClientError());
     }
 
     public function testIndexActionNoListenerForEvent()
     {
-        /* @var EventDispatcherInterface|Mock $eventDispatcher */
-        $eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
-        $eventDispatcher
-            ->shouldReceive('getListeners')
-            ->with('stripe.customer.subscription.created')
-            ->andReturn([]);
-
-        $eventController = new EventController($eventDispatcher);
-
-        $response = $eventController->indexAction(new Request([], [
-            'event' => 'customer.subscription.created',
-            'user' => 'user@example.com',
-        ]));
+        $this->client->request(
+            'POST',
+            $this->router->generate('stripe_event'),
+            [
+                'event' => 'invalid-event-name',
+                'user' => 'user@example.com',
+            ]
+        );
+        $response = $this->client->getResponse();
 
         $this->assertTrue($response->isClientError());
     }
@@ -55,7 +50,7 @@ class EventControllerTest extends AbstractBaseTestCase
 
         $eventDispatcher
             ->shouldReceive('dispatch')
-            ->withArgs(function ($eventName, $stripeEvent) {
+            ->withArgs(function ($eventName, StripeEvent $stripeEvent) {
                 if ($eventName !== 'stripe.customer.subscription.created') {
                     return false;
                 }

@@ -10,18 +10,26 @@ use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
 use Tests\WebClientBundle\Factory\TaskFactory;
 use Tests\WebClientBundle\Factory\TestFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 
-class PreparingStatsControllerTest extends AbstractBaseTestCase
+class PreparingStatsControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'view_test_results_preparingstats_index';
 
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
+
+    /**
+     * @var array
+     */
+    private $routeParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+    ];
 
     /**
      * @var HttpMockHandler
@@ -57,15 +65,9 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createNotFoundResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -81,15 +83,9 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var JsonResponse $response */
@@ -117,15 +113,9 @@ class PreparingStatsControllerTest extends AbstractBaseTestCase
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        $router = self::$container->get('router');
-        $requestUrl = $router->generate(self::ROUTE_NAME, [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
         $this->client->request(
             'GET',
-            $requestUrl
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         $response = $this->client->getResponse();
