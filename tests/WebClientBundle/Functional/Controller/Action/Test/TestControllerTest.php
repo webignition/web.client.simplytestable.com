@@ -8,11 +8,11 @@ use SimplyTestable\WebClientBundle\Entity\Test\Test;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\WebClientBundle\Factory\ConnectExceptionFactory;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Tests\WebClientBundle\Functional\Controller\AbstractControllerTest;
 use Tests\WebClientBundle\Services\HttpMockHandler;
 
-class TestControllerTest extends AbstractBaseTestCase
+class TestControllerTest extends AbstractControllerTest
 {
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
@@ -69,7 +69,7 @@ class TestControllerTest extends AbstractBaseTestCase
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl($routeName, $routeParameters)
+            $this->router->generate($routeName, $routeParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -144,7 +144,7 @@ class TestControllerTest extends AbstractBaseTestCase
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl('test_cancel', [
+            $this->router->generate('test_cancel', [
                 'website' => self::WEBSITE,
                 'test_id' => self::TEST_ID,
             ])
@@ -217,7 +217,7 @@ class TestControllerTest extends AbstractBaseTestCase
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl('test_cancel_crawl', [
+            $this->router->generate('test_cancel_crawl', [
                 'website' => self::WEBSITE,
                 'test_id' => self::TEST_ID,
             ])
@@ -289,7 +289,7 @@ class TestControllerTest extends AbstractBaseTestCase
 
         $this->client->request(
             'GET',
-            $this->createRequestUrl('app_test_retest', [
+            $this->router->generate('app_test_retest', [
                 'website' => self::WEBSITE,
                 'test_id' => self::TEST_ID,
             ])
@@ -300,18 +300,5 @@ class TestControllerTest extends AbstractBaseTestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/http://example.com//2/progress/', $response->getTargetUrl());
-    }
-
-    /**
-     * @param string $routeName
-     * @param array $routeParameters
-     *
-     * @return string
-     */
-    private function createRequestUrl($routeName, array $routeParameters = [])
-    {
-        $router = self::$container->get('router');
-
-        return $router->generate($routeName, $routeParameters);
     }
 }

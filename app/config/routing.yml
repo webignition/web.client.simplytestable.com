@@ -229,19 +229,19 @@ action_test_task_results_byurl_index:
 
 app_test_lock:
     path: /{website}/{test_id}/lock/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:lock }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\Test\TestController::lockAction }
     requirements:
        website: '.+'
 
 app_test_unlock:
     path: /{website}/{test_id}/unlock/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:unlock }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\Test\TestController::unlockAction }
     requirements:
        website: '.+'
 
 app_test_retest:
     path: /{website}/{test_id}/re-test/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:retest }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\Test\TestController::retestAction }
     requirements:
        website: '.+'
 
@@ -314,13 +314,13 @@ test_start:
 
 test_cancel:
     path: /test/{website}/{test_id}/cancel/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:cancel }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\Test\TestController::cancelAction }
     requirements:
         website: '.+'
 
 test_cancel_crawl:
     path: /test/{website}/{test_id}/cancel-crawl/
-    defaults: { _controller: SimplyTestableWebClientBundle:Action/Test/Test:cancelCrawl }
+    defaults: { _controller: SimplyTestable\WebClientBundle\Controller\Action\Test\TestController::cancelCrawlAction }
     requirements:
         website: '.+'
 
