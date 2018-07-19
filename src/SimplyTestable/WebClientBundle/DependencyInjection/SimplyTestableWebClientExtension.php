@@ -19,7 +19,6 @@ class SimplyTestableWebClientExtension extends Extension
      */
     private $parameterFiles = [
         'task_types.yml',
-        'mail.yml',
         'plans.yml',
         'test_options.yml',
     ];
