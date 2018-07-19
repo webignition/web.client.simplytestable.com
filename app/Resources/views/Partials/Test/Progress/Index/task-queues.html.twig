@@ -7,7 +7,7 @@
 } %}
 
 {% for queue_name, queue_label_type in queue_label_types %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Progress/Index:task-queue.html.twig'
+    {% include 'Partials/Test/Progress/Index/task-queue.html.twig'
         with {
         'name': queue_name|capitalize,
         'value': remote_test.taskcountbystate[queue_name],
