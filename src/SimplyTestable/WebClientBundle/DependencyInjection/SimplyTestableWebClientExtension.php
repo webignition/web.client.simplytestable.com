@@ -20,7 +20,6 @@ class SimplyTestableWebClientExtension extends Extension
     private $parameterFiles = [
         'task_types.yml',
         'mail.yml',
-        'js-static-analysis-ignore-common-cdns.yml',
         'plans.yml',
         'test_options.yml',
         'link-integrity-excluded-domains.yml',

@@ -23,6 +23,13 @@ parameters:
     home: http://help.simplytestable.com/
     errors: errors/
     html-validation: html-validation/
+  js-static-analysis-ignore-common-cdns:
+    - ajax.aspnetcdn.com
+    - ajax.googleapis.com
+    - cdnjs.cloudflare.com
+    - netdna.bootstrapcdn.com
+    - static.nrelate.com
+    - connect.facebook.net
 
 framework:
     #esi:             ~
