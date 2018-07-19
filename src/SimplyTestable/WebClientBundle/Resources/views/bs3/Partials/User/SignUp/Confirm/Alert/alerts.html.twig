@@ -20,19 +20,19 @@
 
 {% if token_resend_error is defined and token_resend_error == 'postmark-not-allowed-to-send' %}
     {% set alert_type  = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
     {% set alert_view_parameters = {contact_email: external_links.contact_email} %}
 {% endif %}
 
 {% if token_resend_error is defined and token_resend_error == 'postmark-inactive-recipient' %}
     {% set alert_type  = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
 {% endif %}
 
 {% if token_resend_error is defined and token_resend_error == 'core-app-invalid-credentials' %}
     {% set alert_type  = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/core-app-invalid-credentials.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/core-app-invalid-credentials.html.twig' %}
 {% endif %}
 
 {% if token_resend_confirmation is defined and token_resend_confirmation is not empty %}
@@ -47,7 +47,7 @@
 {% endif %}
 
 {% if user_token_error is defined and user_token_error == 'failed-read-only' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/failed-read-only.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/failed-read-only.html.twig' %}
 {% endif %}
 
 {% if user_token_error is defined and user_token_error == 'invalid-token' %}

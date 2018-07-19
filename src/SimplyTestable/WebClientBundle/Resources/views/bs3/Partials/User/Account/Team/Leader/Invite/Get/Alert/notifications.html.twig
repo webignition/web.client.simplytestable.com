@@ -15,13 +15,13 @@
 {% endif %}
 
 {% if has_error_notice and team_invite_get.error in ['invalid-invitee', 'invalid-email'] %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/email-invalid.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/email-invalid.html.twig' %}
     {% set alert_view_parameters = {email: team_invite_get.invitee} %}
 {% endif %}
 
 {% if has_error_notice and team_invite_get.error == 'postmark-not-allowed-to-send' %}
     {% set alert_type  = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
     {% set alert_view_parameters = {contact_email: external_links.contact_email} %}
 {% endif %}
 

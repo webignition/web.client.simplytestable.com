@@ -22,7 +22,7 @@
 {% endif %}
 
 {% if has_request_notice and user_account_details_update_email_request_notice == 'invalid-email' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/email-invalid.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/email-invalid.html.twig' %}
     {% set alert_view_parameters = {email: user_account_details_update_email} %}
 {% endif %}
 
@@ -37,12 +37,12 @@
 
 {% if has_request_notice and user_account_details_update_email_request_notice == 'postmark-not-allowed-to-send' %}
     {% set alert_type  = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
     {% set alert_view_parameters = {contact_email: external_links.contact_email} %}
 {% endif %}
 
 {% if has_request_notice and user_account_details_update_email_request_notice == 'postmark-inactive-recipient' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
     {% set alert_view_parameters = {email: user_account_details_update_email} %}
 {% endif %}
 

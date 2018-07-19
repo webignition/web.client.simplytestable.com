@@ -13,7 +13,7 @@
 {% endif %}
 
 {% if has_request_notice and user_account_details_update_password_request_notice == 'password-failed-read-only' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/failed-read-only.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/failed-read-only.html.twig' %}
 {% endif %}
 
 {% if has_request_notice and user_account_details_update_password_request_notice == 'password-done' %}

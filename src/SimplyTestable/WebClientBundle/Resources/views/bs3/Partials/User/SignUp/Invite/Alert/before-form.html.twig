@@ -4,7 +4,7 @@
 {% set alert_view_parameters = {} %}
 
 {% if invite_accept_error is defined and invite_accept_error == 'blank-password' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/Alert/Content/signup-password-empty.html.twig' %}
+    {% set alert_view = 'Partials/Alert/Content/signup-password-empty.html.twig' %}
 {% endif %}
 
 {% if invite_accept_error is defined and invite_accept_error == 'failure' %}
