@@ -18,19 +18,19 @@
     {% if has_banned_email_address %}
         {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
             type: 'error',
-            view: '@SimplyTestableWebClient/bs3/Partials/User/Account/NewsSubscriptions/Alert/Content/email-banned.html.twig'
+            view: 'Partials/User/Account/NewsSubscriptions/Alert/Content/email-banned.html.twig'
         } only %}
     {% elseif has_unknown_error %}
         {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
             type: 'error',
-            view: '@SimplyTestableWebClient/bs3/Partials/User/Account/NewsSubscriptions/Alert/Content/failed-unknown.html.twig'
+            view: 'Partials/User/Account/NewsSubscriptions/Alert/Content/failed-unknown.html.twig'
         } only %}
     {% else %}
         {% for list_key, outcome in user_account_newssubscriptions_update %}
             {% if list_key in list_keys and user_account_newssubscriptions_update[list_key] in ['subscribed', 'unsubscribed'] %}
                 {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
                     type: 'success',
-                    view: '@SimplyTestableWebClient/bs3/Partials/User/Account/NewsSubscriptions/Alert/Content/subscribed-unsubscribed.html.twig',
+                    view: 'Partials/User/Account/NewsSubscriptions/Alert/Content/subscribed-unsubscribed.html.twig',
                     view_parameters: {
                         list_name: list_key_label_map[list_key],
                         list_status: user_account_newssubscriptions_update[list_key]
