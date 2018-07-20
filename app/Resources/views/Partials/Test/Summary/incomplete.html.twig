@@ -1,0 +1,34 @@
+{% extends 'Partials/Test/Summary/summary.html.twig' %}
+
+{% block container_class %}incomplete{% endblock %}
+
+{% block url_button_label %}Live progress{% endblock %}
+{% set url = path('view_test_progress_index_index', {'website': test.test.website, 'test_id':test.test.testId}) %}
+
+{% set container_attributes = ['data-completion-percent="', test.remote_test.completionPercent, '"']|join('') %}
+
+{% block stats %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" aria-valuenow="{{ test.remote_test.completionPercent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ test.remote_test.completionPercent }}%;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row summary-stats">
+        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 summary-col">
+            {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+            with { 'count': test.test.urlCount, 'name':'url', 'include_icon': false, 'split': true, 'negative': 'plain', 'positive': 'plain' }
+            %}
+        </div>
+        <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 summary-col">
+            {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+            with { 'count': test.remote_test.taskCount, 'name':'test', 'include_icon': false, 'split': true, 'negative': 'plain', 'positive': 'plain' }
+            %}
+        </div>
+    </div>
+
+{% endblock %}

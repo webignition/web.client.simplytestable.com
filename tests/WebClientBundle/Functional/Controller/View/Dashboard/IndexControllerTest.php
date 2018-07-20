@@ -18,8 +18,8 @@ use webignition\SimplyTestableUserSerializer\UserSerializer;
 
 class IndexControllerTest extends AbstractViewControllerTest
 {
-    const INDEX_ACTION_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Dashboard/Index:index.html.twig';
-    const VIEW_NAME = 'view_dashboard_index_index';
+    const VIEW_NAME = 'dashboard.html.twig';
+    const ROUTE_NAME = 'view_dashboard_index_index';
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionInvalidUserGetRequest()
@@ -30,7 +30,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::VIEW_NAME)
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         /* @var RedirectResponse $response */
@@ -47,7 +47,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::VIEW_NAME)
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         /* @var Response $response */
@@ -72,7 +72,7 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::VIEW_NAME)
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         /* @var Response $response */
@@ -132,7 +132,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
+                            $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertAvailableTaskTypeKeys($parameters, [
@@ -156,7 +156,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
+                            $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertAvailableTaskTypeKeys($parameters, [
@@ -184,7 +184,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
+                            $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
                             $this->assertAvailableTaskTypeKeys($parameters, [

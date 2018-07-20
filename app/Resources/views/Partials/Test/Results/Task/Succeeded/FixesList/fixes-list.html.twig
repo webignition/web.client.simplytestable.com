@@ -1,0 +1,27 @@
+{% set fix_count = distinct_fixes|length %}
+
+<div class="row issue-list {{ [task_type_key, 'issue-list']|join('-') }} fixes-list {{ [task_type_key, 'fixes-list']|join('-') }}"
+     id="fixes"
+     data-issue-type="fix"
+>
+    <div class="col-sm-12">
+        <h2 data-section="fixes-list">
+            Fixes <span class="badge alert-fixes issue-count">{{ fix_count }}</span>
+            {% if fix_count > 1 %}
+                <span  class="collapse-control link" data-toggle="collapse" data-target="#fixes-list-content"></span>
+            {% endif %}
+        </h2>
+
+        <ul class="issues collapse in" id="fixes-list-content">
+            {% for fix in distinct_fixes %}
+                <li class="issue subtle">
+                    {% include [
+                    'Partials/Test/Results/Task/Succeeded/FixesList/',
+                    task_type_key,
+                    '-fix.html.twig'
+                    ]|join('') %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

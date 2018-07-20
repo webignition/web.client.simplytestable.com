@@ -134,7 +134,7 @@ class IndexController extends BaseViewController implements RequiresValidUser
         $websitesSourceUrl = $this->generateUrl('view_test_history_websitelist_index');
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/History/Index:index.html.twig',
+            'test-history.html.twig',
             [
                 'test_list' => $testList,
                 'pagination_page_numbers' => $testList->getPageNumbers(),

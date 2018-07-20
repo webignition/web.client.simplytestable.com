@@ -189,7 +189,7 @@ class ByTaskTypeController extends AbstractResultsController
         $errorTaskMaps->sortByOccurrenceCount();
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Results/ByTaskType:index.html.twig',
+            'test-results-by-task-type.html.twig',
             [
                 'is_owner' => $this->remoteTestService->owns($user),
                 'is_public_user_test' => $test->getUser() === SystemUserService::getPublicUser()->getUsername(),

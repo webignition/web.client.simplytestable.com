@@ -12,7 +12,7 @@ use Twig\Environment as TwigEnvironment;
 
 class ExceptionController extends BaseExceptionController
 {
-    const DEVELOPER_EMAIL_TEMPLATE = 'SimplyTestableWebClientBundle:Email:exception.txt.twig';
+    const DEVELOPER_EMAIL_TEMPLATE = 'Email/exception.txt.twig';
 
     /**
      * @var PostmarkClient
@@ -58,7 +58,7 @@ class ExceptionController extends BaseExceptionController
 
         // For error pages, try to find a template for the specific HTTP status code and format
         if (!$showException) {
-            $template = sprintf('SimplyTestableWebClientBundle:Exception:%s%s.%s.twig', $name, $code, $format);
+            $template = sprintf('Exception/%s%s.%s.twig', $name, $code, $format);
             if ($this->templateExists($template)) {
                 return $template;
             }

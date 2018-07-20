@@ -95,7 +95,7 @@ class UrlLimitController extends BaseViewController implements RequiresValidUser
         $limit = $firstAmmendment['constraint']['limit'];
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Partials/Alert/Content:url-limit.html.twig',
+            'Partials/Alert/Content/url-limit.html.twig',
             [
                 'is_public_user_test' => $isPublicUserTest,
                 'total' => $total,

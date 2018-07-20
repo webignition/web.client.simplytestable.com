@@ -14,9 +14,8 @@ use webignition\SimplyTestableUserModel\User;
 
 class SignInControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/SignIn:index.html.twig';
+    const VIEW_NAME = 'user-sign-in.html.twig';
     const ROUTE_NAME = 'view_user_signin_index';
-
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionPublicUserGetRequest()

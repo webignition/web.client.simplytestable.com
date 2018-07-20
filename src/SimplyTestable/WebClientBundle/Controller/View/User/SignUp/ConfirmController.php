@@ -87,11 +87,7 @@ class ConfirmController extends AbstractUserController
 
         $viewData['has_notification'] = $this->hasNotification($notificationKeys, $viewData);
 
-        return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/SignUp/Confirm:index.html.twig',
-            $viewData,
-            $response
-        );
+        return $this->renderWithDefaultViewParameters('user-sign-up-confirm.html.twig', $viewData, $response);
     }
 
     /**

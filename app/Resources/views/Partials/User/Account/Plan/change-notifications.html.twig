@@ -1,0 +1,33 @@
+{% set alert_type = 'success' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
+
+{% set has_success_notification = plan_subscribe_success is defined and plan_subscribe_success is not empty %}
+{% set has_error_notification = plan_subscribe_error is defined and plan_subscribe_error is not empty %}
+
+{% if has_success_notification %}
+    {% if plan_subscribe_success == 'already-on-plan' %}
+        {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/plan-change-same.html.twig' %}
+        {% set alert_view_parameters = {
+            plan_name: user_summary.plan.accountplan.name
+        } %}
+    {% else %}
+        {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/plan-change-success.html.twig' %}
+        {% set alert_view_parameters = {
+            plan_name: user_summary.plan.accountplan.name
+        } %}
+    {% endif %}
+{% endif %}
+
+{% if has_error_notification and plan_subscribe_error == '403' %}
+    {% set alert_type = 'error' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/plan-change-failure.html.twig' %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include 'Partials/alert.html.twig' with {
+        type: alert_type,
+        view: alert_view,
+        view_parameters: alert_view_parameters
+    } only %}
+{% endif %}

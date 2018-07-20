@@ -1,0 +1,14 @@
+{% set heading = 'SSL Error!' %}
+
+{% set content %}
+<p id="reason">
+    We were unable to establish a secure connection to <a href="{{ task.url }}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>
+    to test it.
+</p>
+
+<p>
+    This can happen if the URL is using a self-signed, invalid or expired certificate.
+</p>
+{% endset %}
+
+{% include 'Abstract/Partials/Test/Results/Task/Failed/failure-message.html.twig' %}

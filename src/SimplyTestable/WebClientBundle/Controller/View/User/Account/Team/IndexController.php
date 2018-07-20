@@ -114,9 +114,6 @@ class IndexController extends AbstractUserAccountController
             $viewData['invites'] = $this->teamInviteService->getForUser();
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/Account/Team/Index:index.html.twig',
-            $viewData
-        );
+        return $this->renderWithDefaultViewParameters('user-account-team.html.twig', $viewData);
     }
 }

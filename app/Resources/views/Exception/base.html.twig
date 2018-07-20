@@ -1,0 +1,21 @@
+{% extends 'Abstract/single-page-dialog.html.twig' %}
+
+{% block navbar_content %}
+    {% include 'Partials/SinglePageDialog/exception-navbar.html.twig' %}
+{% endblock %}
+
+{% if heading is not defined %}
+    {% set heading = 'Heading' %}
+{% endif %}
+
+{% if lead_paragraphs is not defined %}
+    {% set lead_paragraphs = ['Foo', 'Bar'] %}
+{% endif %}
+
+{% block content %}
+    <h1>{{ heading }}</h1>
+
+   {% for paragraph in lead_paragraphs %}
+       <p class="lead">{{ paragraph|raw }}</p>
+   {% endfor %}
+{% endblock %}

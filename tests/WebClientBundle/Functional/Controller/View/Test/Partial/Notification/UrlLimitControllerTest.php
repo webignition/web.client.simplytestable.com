@@ -16,10 +16,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class UrlLimitControllerTest extends AbstractControllerTest
 {
-    const INDEX_ACTION_VIEW_NAME =
-        'SimplyTestableWebClientBundle:bs3/Test/Partial/Notification/UrlLimit:index.html.twig';
     const ROUTE_NAME = 'view_test_partial_notification_urlimit_index';
-
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';

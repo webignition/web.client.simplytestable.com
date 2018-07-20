@@ -161,11 +161,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             $viewData['userSummary'] = $this->userService->getSummary();
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Results/Rejected/Index:index.html.twig',
-            $viewData,
-            $response
-        );
+        return $this->renderWithDefaultViewParameters('test-results-rejected.html.twig', $viewData, $response);
     }
 
     /**

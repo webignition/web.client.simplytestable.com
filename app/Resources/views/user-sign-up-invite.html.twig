@@ -1,0 +1,45 @@
+{% extends 'Abstract/single-page-dialog.html.twig' %}
+
+{% block title %}Accept invitation to team {{ invite.team }} - {{ parent() }}{% endblock %}
+
+{% block body_class %} {{ parent() }} sign-up-invite{% endblock %}
+
+{% block content %}
+    <h1>Accept invitation to team {{ invite.team }}</h1>
+
+    <div class="intro">
+        <p>
+            Hello {{ invite.user }}, you've been invited to join the {{ invite.team }} testing team!
+        </p>
+    </div>
+
+    {% include 'Partials/User/SignUp/Invite/Alert/before-form.html.twig' %}
+
+    <form role="form" method="post" action="{{ path('action_signup_team_invite_accept', {'token': token}) }}" novalidate>
+        <div class="form-group-collection">
+            <div class="form-group">
+                <label for="password">Choose your password to activate your account and join the team.</label>
+                <input type="password"
+                       class="form-control input-larger"
+                       id="password"
+                       name="password"
+                       placeholder="Choose a password for your account"
+                       data-focused
+                >
+            </div>
+        </div>
+
+        <div class="form-group-collection form-group-submit-collection">
+            <input type="hidden" id="token" name="token" value="{{ token }}">
+            <button type="submit" class="btn btn-primary">Join team {{ invite.team }}!</button>
+
+            <label class="checkbox">
+                <input type="checkbox" {% if stay_signed_in != "0" %}checked="checked"{% endif %} name="stay-signed-in" value="1"><span>Stay signed in</span>
+            </label>
+
+            <p class="terms-notice additional">
+                By making use of this website you agree to the <a href="{{ external_links.terms }}">terms of service</a>.
+            </p>
+        </div>
+    </form>
+{% endblock %}

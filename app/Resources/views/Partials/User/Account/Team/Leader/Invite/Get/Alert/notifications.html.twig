@@ -1,0 +1,54 @@
+{% set alert_type = 'error' %}
+{% set alert_field_selector = 'email' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
+
+{% set has_success_notice = team_invite_get.status == 'success' %}
+{% set has_error_notice = team_invite_get.status == 'error' %}
+
+{% if has_success_notice %}
+    {% set alert_type = 'success' %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Get/Alert/Content/success.html.twig' %}
+    {% set alert_view_parameters = {
+        email: team_invite_get.invitee
+    } %}
+{% endif %}
+
+{% if has_error_notice and team_invite_get.error in ['invalid-invitee', 'invalid-email'] %}
+    {% set alert_view = 'Partials/Alert/Content/email-invalid.html.twig' %}
+    {% set alert_view_parameters = {email: team_invite_get.invitee} %}
+{% endif %}
+
+{% if has_error_notice and team_invite_get.error == 'postmark-not-allowed-to-send' %}
+    {% set alert_type  = 'info' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
+    {% set alert_view_parameters = {contact_email: external_links.contact_email} %}
+{% endif %}
+
+{% if has_error_notice and team_invite_get.error == 'postmark-inactive-recipient' %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Alert/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view_parameters = {email: team_invite_get.invitee} %}
+{% endif %}
+
+{% if has_error_notice and team_invite_get.error == 'invite-self' %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Alert/Content/invite-self.html.twig' %}
+{% endif %}
+
+{% if has_error_notice and team_invite_get.error in ['invitee-is-a-team-leader', 'invitee-is-already-on-a-team'] %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Alert/Content/invitee-already-on-team.html.twig' %}
+    {% set alert_view_parameters = {email: team_invite_get.invitee} %}
+{% endif %}
+
+{% if has_error_notice and team_invite_get.error == 'invitee-has-a-premium-plan' %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Get/Alert/Content/invitee-has-a-premium-plan.html.twig' %}
+    {% set alert_view_parameters = {email: team_invite_get.invitee} %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include 'Partials/alert.html.twig' with {
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters
+    } only %}
+{% endif %}

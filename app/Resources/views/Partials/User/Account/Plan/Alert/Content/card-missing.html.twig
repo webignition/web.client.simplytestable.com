@@ -1,0 +1,13 @@
+{% extends 'Partials/User/Account/Plan/Alert/Content/card-abstract.html.twig' %}
+{% block message %}
+    <p>
+        You need to add a credit or debit card so that we can take payment for
+        your premium subscription.
+    </p>
+{% endblock %}
+{% block update_payment_details %}
+    <p>
+        <a href="{{ path('view_user_account_card_index') }}">Add payment details <i class="fa fa-caret-right"></i></a>
+    </p>
+{% endblock %}
+

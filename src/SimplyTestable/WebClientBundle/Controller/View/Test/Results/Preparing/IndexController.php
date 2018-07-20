@@ -142,7 +142,7 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Results/Preparing/Index:index.html.twig',
+            'test-results-preparing.html.twig',
             [
                 'completion_percent' => $completionPercent,
                 'website' => $this->urlViewValues->create($website),

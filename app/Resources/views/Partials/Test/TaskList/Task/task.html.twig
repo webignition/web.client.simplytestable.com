@@ -1,0 +1,38 @@
+{% set state_to_icon_map = {
+    'completed':'fa-bar-chart-o',
+    'queued':'fa-circle-o',
+    'queued-for-assignment':'fa-circle-o',
+    'in-progress':'fa-spin fa-cog',
+    'skipped':'fa-random',
+    'cancelled':'fa-ban',
+    'failed':'fa-exclamation-triangle',
+    'failed-no-retry-available':'fa-exclamation-triangle',
+    'failed-retry-available':'fa-exclamation-triangle',
+    'failed-retry-limit-reached':'fa-exclamation-triangle',
+} %}
+
+{% set use_link = false %}
+
+{% if ignore_results_states is not defined %}
+    {% set ignore_results_states = ['skipped', 'cancelled'] %}
+{% endif %}
+
+{% if task.hasOutput %}
+    {% set use_link = task.state not in ignore_results_states and task.output.hasErrors or task.output.hasWarnings%}
+{% endif %}
+
+{% if use_link %}
+    <a class="meta"  href="{{ path('view_test_task_results_index_index', { 'website': test.website, 'test_id': test.testId, 'task_id':task.taskId, 'trailingSlash':'' }) }}">
+{% else %}
+    <span class="meta">
+{% endif %}
+
+        <span class="state"><i class="fa fa-fw {{ state_to_icon_map[task.state] }}"></i></span>
+        <span class="type">{{ task.type }}</span>
+        {% include 'Partials/Test/TaskList/Task/SummaryLabels/summary-labels.html.twig' %}
+
+{% if not use_link %}
+    </span>
+{% else %}
+    </a>
+{% endif %}

@@ -102,11 +102,7 @@ class IndexController extends AbstractUserController
 
         $viewData['plans'] = $plans;
 
-        $response = $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/SignUp/Index:index.html.twig',
-            $viewData,
-            $response
-        );
+        $response = $this->renderWithDefaultViewParameters('user-sign-up.html.twig', $viewData, $response);
 
         if (!empty($redirect)) {
             $cookie = new Cookie(

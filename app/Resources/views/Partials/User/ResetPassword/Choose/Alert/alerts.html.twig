@@ -1,0 +1,31 @@
+{% set alert_type = 'error' %}
+{% set alert_field_selector = 'password' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'failed-read-only' %}
+    {% set alert_view = 'Partials/Alert/Content/failed-read-only.html.twig' %}
+{% endif %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'blank-password' %}
+    {% set alert_view = 'Partials/User/ResetPassword/Choose/Alert/Content/password-empty.html.twig' %}
+{% endif %}
+
+{% if user_reset_password_error is defined and user_reset_password_error == 'unknown-error' %}
+    {% set alert_view = 'Partials/User/ResetPassword/Choose/Alert/Content/unknown-error.html.twig' %}
+{% endif %}
+
+{% if user_reset_password_confirmation is defined and user_reset_password_confirmation == 'token-sent' %}
+    {% set alert_type  = 'success' %}
+    {% set alert_view = 'Partials/Alert/Content/reset-password-token-sent.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include 'Partials/alert.html.twig' with {
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters
+    } only %}
+{% endif %}

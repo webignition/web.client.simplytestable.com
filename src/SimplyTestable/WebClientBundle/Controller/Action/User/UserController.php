@@ -474,7 +474,7 @@ class UserController extends AbstractController
             $messageProperties['subject'],
             null,
             $twig->render(
-                'SimplyTestableWebClientBundle:Email:user-creation-confirmation.txt.twig',
+                'Email/user-creation-confirmation.txt.twig',
                 [
                     'confirmation_url' => $confirmationUrl,
                     'confirmation_code' => $token

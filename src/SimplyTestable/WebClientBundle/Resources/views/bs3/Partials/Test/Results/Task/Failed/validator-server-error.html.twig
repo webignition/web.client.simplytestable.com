@@ -1,9 +1,0 @@
-{% set heading = 'Internal Error' %}
-
-{% set content %}
-<p id="reason">
-    Sorry, the HTML validator went bang trying to validate <a href="{{ task.url }}">{{ task.url }}</a>.
-</p>
-{% endset %}
-
-{% include 'SimplyTestableWebClientBundle:bs3/Abstract/Partials/Test/Results/Task/Failed:failure-message.html.twig' %}

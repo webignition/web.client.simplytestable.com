@@ -1,0 +1,51 @@
+{% set alert_type = 'error' %}
+{% set alert_view = null %}
+
+{% set has_notification = user_account_card_exception_code is defined and user_account_card_exception_code is not empty %}
+
+{% if has_notification and user_account_card_exception_code == 'incorrect_number' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-incorrect-number.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code == 'invalid_number' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-invalid-number.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code in ['invalid_expiry_month', 'invalid_expiry_year'] %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-invalid-expiry-date.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code == 'invalid_cvc' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-invalid-cvc.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code == 'expired_card' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-expired.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code == 'incorrect_cvc' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-incorrect-cvc.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code == 'incorrect_zip' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-incorrect-zip.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code == 'card_declined' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-declined.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code == 'missing' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-missing.html.twig' %}
+{% endif %}
+
+{% if has_notification and user_account_card_exception_code == 'processing_error' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/card-processing-error.html.twig' %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include 'Partials/alert.html.twig' with {
+        type: alert_type,
+        view: alert_view
+    } only %}
+{% endif %}

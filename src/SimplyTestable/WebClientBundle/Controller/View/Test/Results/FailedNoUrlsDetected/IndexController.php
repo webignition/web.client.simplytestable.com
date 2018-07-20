@@ -121,7 +121,7 @@ class IndexController extends BaseViewController implements RequiresValidUser
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Results/FailedNoUrlsDetected/Index:index.html.twig',
+            'test-results-failed-no-urls-detected.html.twig',
             [
                 'website' => $this->urlViewValues->create($website),
                 'redirect' => $redirectParametersAsString,

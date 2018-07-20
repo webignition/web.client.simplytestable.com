@@ -244,7 +244,7 @@ class IndexController extends AbstractResultsController
         $isOwner = $this->remoteTestService->owns($user);
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Results/Index:index.html.twig',
+            'test-results.html.twig',
             [
                 'website' => $this->urlViewValues->create($website),
                 'test' => $test,

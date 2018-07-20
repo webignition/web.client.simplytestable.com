@@ -18,8 +18,8 @@ use webignition\SimplyTestableUserModel\User;
 
 class ChooseControllerTest extends AbstractViewControllerTest
 {
-    const DEFAULT_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:index.html.twig';
-    const INVALID_TOKEN_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:invalid.html.twig';
+    const DEFAULT_VIEW_NAME = 'user-reset-password-choose.html.twig';
+    const INVALID_TOKEN_VIEW_NAME = 'user-reset-password-invalid-token.html.twig';
     const ROUTE_NAME = 'view_user_resetpassword_choose_index';
 
     const USER_EMAIL = 'user@example.com';

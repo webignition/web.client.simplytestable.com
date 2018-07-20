@@ -1,0 +1,82 @@
+{% extends 'user-account-base.html.twig' %}
+
+{% block title %}Plan: {{ plan_presentation_name }} ({{ user.username }}) - {{ parent() }}{% endblock %}
+{% block heading %}
+    <a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: plan: {{ plan_presentation_name|lower }}
+    {% if user_summary.getTeamSummary.isInTeam and team is defined %}
+        ({{ team.name }})
+    {% endif %}
+{% endblock %}
+
+{% block body_class %} {{ parent() }} user-account-plan {% endblock %}
+
+{% block account_content %}
+
+    <div class="plan-section">
+        <h2 id="plan-summary">Summary</h2>
+        {% include 'Partials/User/Account/Plan/summary.html.twig' with {with_id: false} %}
+    </div>
+
+    <div class="plan-section">
+        <h2 id="plan-allowances">Allowances</h2>
+        {% include 'Partials/User/Account/Plan/allowances.html.twig' %}
+    </div>
+
+    {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
+        <div class="plan-section plan-selection" id="plan-upgrade-downgrade">
+            <h2>Upgrade/downgrade</h2>
+
+            {% include 'Partials/User/Account/Plan/card-error-notifications.html.twig' %}
+            {% include 'Partials/User/Account/Plan/change-notifications.html.twig' %}
+
+            {% if user_summary.plan.accountplan.name == 'basic' %}
+                {% if user_summary.plan.startTrialPeriod > 0  %}
+                    <p>
+                        Try any premium plan free for <strong>{{ user_summary.plan.startTrialPeriod }}</strong> day{% if user_summary.plan.startTrialPeriod != 1%}s{% endif %}.
+                    </p>
+                {% endif %}
+            {% else %}
+            {% endif %}
+
+            {% if user_summary.plan.accountplan.name !='basic' %}
+                {% if plan.summary is defined %}
+                    {% set trial_days_remaining = plan.summary.trial_period_days - plan.summary.days_of_trial_period + 1 %}
+                    {% if trial_days_remaining > 0 %}
+                        <p>
+                            Switch between premium plans free for up to <strong>{{ trial_days_remaining }}</strong> day{% if trial_days_remaining != 1%}s{% endif %}.
+                        </p>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            <form class="js-form-button-spinner" id="upgrade-downgrade-form" role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
+
+                {% include 'Partials/Plan/selection.html.twig' with {
+                    selected_plan: user_summary.plan.accountplan.name,
+                    current_plan: user_summary.plan.accountplan.name,
+                    has_coupon: user_summary.stripecustomer.hasDiscount,
+                    has_active_discount: user_summary.stripecustomer.hasDiscount,
+                    disable_selected: true
+                } %}
+
+                <button type="submit" class="btn btn-default">Change plan <i class="fa fa-caret-right"></i></button>
+
+                <a class="plans-link" href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">View plan and pricing details <i class="fa fa-caret-right"></i></a>
+
+            </form>
+
+            {% if not (user_summary.plan.accountplan.name == 'basic') %}
+                <div class="secondary">
+                    <form role="form" method="post" action="{{ path('user_account_plan_subscribe') }}">
+                        <input type="hidden" name="plan" value="basic">
+                        <button type="submit" class="btn btn-default">Cancel subscription <i class="fa fa-times-circle"></i></button>
+                    </form>
+                </div>
+            {% endif %}
+
+
+
+        </div>
+    {% endif %}
+
+{% endblock %}

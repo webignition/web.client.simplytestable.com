@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Testing {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+
+{% set route_parameters = {website: website.raw, test_id: test.testId} %}
+
+{% block body_class %} {{ parent() }} full-width test-progress job-{{ remote_test.state }} {% endblock %}
+{% block body_attrs %}data-summary-url="{{ path('view_test_progress_index_index', route_parameters) }}"{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="alert-container"
+         data-url-limit-notification-url="{{ path('view_test_partial_notification_urlimit_index', route_parameters) }}"
+    >
+        {% include 'Partials/Generic/Notification/Conditional/url-limit.html.twig' with {'alert_classes':'alert-ammendment'} %}
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>
+                        Testing
+                        <span id="test-url" title="{{website.raw}}">
+                            {{ website.utf8.schemeless.raw }}
+                        </span>
+                        <span id="test-id">(#{{ test.testId }})</span>
+                    </h1>
+
+                    <div class="row details js-summary">
+                        <div class="col-lg-12 progress-summary">
+                            <div class="progress">
+                                <div class="progress-bar {% if remote_test.state == 'crawling' %}progress-bar-warning{% endif %}"
+                                     role="progressbar"
+                                     aria-valuenow="{{ remote_test.completionpercent }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100"
+                                     style="width: {{ remote_test.completionpercent }}%;"></div>
+                            </div>
+                            <p class="subtle js-state-label">
+                                <i class="fa fa-spin fa-spinner"></i>
+                            </p>
+                        </div>
+
+                        <div class="col-lg-9 col-md-9 col-sm-7 col-xs-12 test-summary">
+                            <div class="row">
+                                <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 task-queues">
+                                    <p>Test Summary:</p>
+                                    {% include 'Partials/Test/Progress/Index/task-queues.html.twig' %}
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12 task-types">
+                                    <p class="">Testing:</p>
+                                    {% include 'Partials/Test/Progress/Index/task-type-summary.html.twig' %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix visible-xs"></div>
+                        <div class="col-lg-3 col-md-3 col-sm-5 side-actions">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 buttons">
+                                    <form role="form" method="post" action="{{ path('test_cancel', route_parameters) }}">
+                                        <button type="submit" class="btn btn-danger btn-significant side-action cancel-action">
+                                            <i class="fa fa-fw fa-power-off"></i>
+                                            Stop test
+                                            <span>and go to the results</span>
+                                        </button>
+                                    </form>
+
+                                    <form role="form" method="post" action="{{ path('test_cancel_crawl', route_parameters) }}">
+                                        <button type="submit" class="btn btn-warning btn-significant side-action cancel-crawl-action">
+                                            <i class="fa fa-fw fa-power-off"></i>
+                                            Stop finding pages, start testing
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 test-options">
+                                    {% if test_options['http-authentication'] is defined %}
+                                        <div class="test-option">
+                                            {% include 'Partials/Test/Options/HttpAuthentication/http-authentication.html.twig' with {'read_only': true} %}
+                                        </div>
+                                    {% endif %}
+
+                                    {% if test_options['cookies'] is defined %}
+                                        <div class="test-option">
+                                            {% include 'Partials/Test/Options/Cookies/cookies.html.twig' with {'read_only': true} %}
+                                        </div>
+                                    {% endif %}
+
+                                    <span class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">
+                                        Show selected test options
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="test-options" class="collapse">
+                        {% include 'Partials/Test/Options/results-test-options.html.twig' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 test-progress-tasks hidden"
+                 data-task-ids-url="{{ path('app_task_ids', route_parameters) }}"
+                 data-tasklist-url="{{ path('view_test_task_tasklist_index_index', route_parameters) }}"
+            >
+                <h2>Live results</h2>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

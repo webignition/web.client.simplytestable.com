@@ -18,9 +18,8 @@ use Twig_Environment;
 
 class IndexControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/SignUp/Index:index.html.twig';
+    const VIEW_NAME = 'user-sign-up.html.twig';
     const ROUTE_NAME = 'view_user_signup_index_index';
-
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionPublicUserGetRequest()

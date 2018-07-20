@@ -1,0 +1,21 @@
+{% set list_key_label_map = {
+    announcements: 'Product and Service Announcements',
+    updates: 'Behind the Scenes Newsletter'}
+%}
+
+{% include 'Partials/User/Account/NewsSubscriptions/Alert/alerts.html.twig' %}
+
+<form role="form" method="post" action="{{ path('action_user_account_newssubscriptions_update') }}">
+    <label class="checkbox" id="news-subscriptions-product-announcements">
+        <input type="checkbox" name="announcements" {% if mailchimp_announcements_subscribed %}checked{% endif %}>
+        <strong class="title">{{ list_key_label_map.announcements }} (infrequent)</strong>
+        <span class="description">Service announcements and new feature releases as needed</span>
+    </label>
+    <label class="checkbox" id="news-subscriptions-weekly-updates">
+        <input type="checkbox" name="updates" {% if mailchimp_updates_subscribed %}checked{% endif %}>
+        <strong class="title">{{ list_key_label_map.updates }} (weekly)</strong>
+        <span class="description">On-going development, new feature plans and advance access to new features
+        as they happen</span>
+    </label>
+    <button name="confirm" value="1" type="submit" class="btn btn-default xs-full">Save news subscription options</button>
+</form>

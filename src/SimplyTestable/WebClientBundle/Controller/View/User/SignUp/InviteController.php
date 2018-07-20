@@ -85,8 +85,8 @@ class InviteController extends AbstractUserController
         );
 
         $view = !empty($invite)
-            ? 'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig'
-            : 'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:invalid.html.twig';
+            ? 'user-sign-up-invite.html.twig'
+            : 'user-sign-up-invite-invalid-token.html.twig';
 
         return $this->renderWithDefaultViewParameters($view, $viewData, $response);
     }

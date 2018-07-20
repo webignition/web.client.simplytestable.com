@@ -1,0 +1,52 @@
+{% set alert_type = 'error' %}
+{% set alert_field_selector = 'email' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
+
+{% if user_create_confirmation == 'user-exists' %}
+    {% set alert_type = 'success' %}
+    {% set alert_view = 'Partials/User/SignUp/Alert/Content/user-exists.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if error_field == 'email' and error_state == 'empty' %}
+    {% set alert_view = 'Partials/User/SignUp/Alert/Content/email-empty.html.twig' %}
+{% endif %}
+
+{% if error_field == 'email' and error_state == 'invalid' %}
+    {% set alert_view = 'Partials/Alert/Content/email-invalid.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if error_field == 'password' and error_state == 'empty' %}
+    {% set alert_field_selector = 'password' %}
+    {% set alert_view = 'Partials/Alert/Content/signup-password-empty.html.twig' %}
+{% endif %}
+
+{% if user_create_error == 'postmark-not-allowed-to-send' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
+    {% set alert_view_parameters = {contact_email: external_links.contact_email} %}
+{% endif %}
+
+{% if user_create_error == 'postmark-inactive-recipient' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if user_create_error == 'create-failed' %}
+    {% set alert_view = 'Partials/User/SignUp/Alert/Content/create-failed-unknown.html.twig' %}
+    {% set alert_view_parameters = {email: email} %}
+{% endif %}
+
+{% if user_create_error == 'create-failed-read-only' %}
+    {% set alert_view = 'Partials/Alert/Content/failed-read-only.html.twig' %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include 'Partials/alert.html.twig' with {
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters
+    } only %}
+{% endif %}

@@ -1,0 +1,18 @@
+{% set heading = 'Redirect Limit Reached!' %}
+
+{% set content %}
+<p id="reason">
+    <a href="{{ task.url }}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> redirects to another URL which
+    redirects to another URL which redirects to another URL &hellip; and so on.
+</p>
+
+<p>
+    10 redirects were followed at which point we gave up.
+</p>
+
+<p>
+    There's a very good chance this indicates a problem that you need to look into.
+</p>
+{% endset %}
+
+{% include 'Abstract/Partials/Test/Results/Task/Failed/failure-message.html.twig' %}

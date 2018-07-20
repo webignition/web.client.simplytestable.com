@@ -85,6 +85,7 @@ class CardController extends AbstractUserAccountController
 
         $user = $this->userManager->getUser();
         $userSummary = $this->userService->getSummary();
+
         $team = null;
 
         if ($userSummary->getTeamSummary()->isInTeam()) {
@@ -110,10 +111,7 @@ class CardController extends AbstractUserAccountController
             $viewData['team'] = $team;
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/Account/Card:index.html.twig',
-            $viewData
-        );
+        return $this->renderWithDefaultViewParameters('user-account-card.html.twig', $viewData);
     }
 
     /**

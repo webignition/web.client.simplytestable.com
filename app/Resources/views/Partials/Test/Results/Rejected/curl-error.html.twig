@@ -1,0 +1,42 @@
+{% set curl_error_number = remote_test.rejection.reason|slice(5, 2) %}
+
+{% if curl_error_number == 7 %}
+    {% set intro = 'there doesn\'t appear to be a web server there to talk to' %}
+{% elseif curl_error_number == 28 %}
+    {% set intro = 'the web server didn\'t respond within 10 seconds' %}
+    {% set advice %}
+    <p class="lead">
+        The web server for the site being tested is probably having
+        some issues if it doesn't respond within 10 seconds.
+    </p>
+    <p class="lead">
+        We won't run a test if a web server is responding slowly
+        as doing so is likely to make matters worse.
+    </p>
+    {% endset %}
+{% elseif curl_error_number == 52 %}
+    {% set intro = 'the web server returned no data whatsoever' %}
+{% endif %}
+
+<p class="lead">
+    Were not able to talk to {% include 'Partials/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %} at the moment{% if intro is defined %}: {{ intro }}{% endif %}.
+</p>
+
+{% if advice is defined %}{{ advice }}{% endif %}
+
+<p class="lead">
+    Check that <a href="{{ website.raw }}">{% include 'Partials/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</a> is working
+    as expected in a browser and that it can be accessed over the Internet.
+</p>
+
+<div class="cta">
+    <a href="{{ path('view_dashboard_index_index') }}" class="btn btn-primary btn-lg">
+        <i class="fa fa-caret-right"></i>
+        <span class="primary">Try testing a different site</span>
+    </a>
+</div>
+
+<p class="additional support-hint">
+    If you need to <a href="mailto:{% autoescape false %}{{ external_links.contact_email }}{% endautoescape %}">contact us</a>
+    about this, tell us you encountered curl error {{ curl_error_number }}. We'll know what this means.
+</p>

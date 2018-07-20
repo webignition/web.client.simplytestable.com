@@ -161,10 +161,7 @@ class IndexController extends AbstractUserAccountController
             $viewData['token'] = $request->query->get('token');
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/Account/Index:index.html.twig',
-            $viewData
-        );
+        return $this->renderWithDefaultViewParameters('user-account.html.twig', $viewData);
     }
 
     /**

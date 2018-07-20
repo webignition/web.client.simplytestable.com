@@ -1,0 +1,14 @@
+{% set heading = 'DNS Timeout!' %}
+
+{% set content %}
+<p id="reason">
+    We tried to retrieve the page at <a href="{{ task.url }}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>
+    to test it.
+</p>
+
+<p>
+    Resolving the domain name to an IP address took too long.
+</p>
+{% endset %}
+
+{% include 'Abstract/Partials/Test/Results/Task/Failed/failure-message.html.twig' %}

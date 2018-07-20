@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="failed col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        {% if task.output.result.isValidatorServerErrorFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/validator-server-error.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isHttpClientOrServerErrorFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/http-error.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isHttpRedirectLoopFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/http-redirect-loop.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isHttpRedirectLimitFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/http-redirect-limit.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isCharacterEncodingFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/character-encoding.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isCurlTimeoutFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/curl-timeout.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isCurlDnsResolutionFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/curl-dns-resolution.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isCurlUrlFormatFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/curl-url-format.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isCurlSslFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/curl-ssl.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isHtmlInvalidDocumentTypeFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/doctype-invalid.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isHtmlMissingDocumentTypeFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/doctype-missing.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isCssValidationSslExceptionError %}
+        {% include 'Partials/Test/Results/Task/Failed/css-validation-ssl-error.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isCssValidationUnknownExceptionError %}
+        {% include 'Partials/Test/Results/Task/Failed/css-validation-unknown-error.html.twig' %}
+        {% endif %}
+
+        {% if task.output.result.isMarkuplessTextHtmlFailure %}
+        {% include 'Partials/Test/Results/Task/Failed/markupless-texthtml-error.html.twig' %}
+        {% endif %}
+    </div>
+</div>

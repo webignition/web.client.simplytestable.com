@@ -1,0 +1,82 @@
+{% extends 'Abstract/single-page-dialog.html.twig' %}
+
+{% set field_email = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignUpRequest::PARAMETER_EMAIL') %}
+{% set field_password = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignUpRequest::PARAMETER_PASSWORD') %}
+
+{% block title %}Sign up - {{ parent() }}{% endblock %}
+
+{% block body_class %} {{ parent() }} sign-up {% endblock %}
+
+{% block content %}
+    <h1>Create your account</h1>
+
+    <p>
+        Private tests, all types of test, your own test history.
+        <a class="account-benefits-link" href="{{ [public_site.urls.home,public_site.urls.account_benefits]|join('') }}">Account benefits <i class="fa fa-caret-right"></i></a>
+    </p>
+
+    {% if coupon %}
+        {% set alert_content %}
+            <p>
+                {{ coupon.intro|raw }}
+            </p>
+        {% endset %}
+
+        {% include 'Partials/alert.html.twig' with {
+            'type': 'info',
+            'content': alert_content,
+            'dismissable': false
+        } only %}
+    {% endif %}
+
+    <form class="js-form-button-spinner" role="form" method="post" action="{{ path('sign_up_submit') }}" novalidate>
+        {% include 'Partials/User/SignUp/Alert/within-form.html.twig' %}
+
+        <div class="form-group-collection">
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input name="{{ field_email }}"
+                       type="email"
+                       class="form-control input-larger"
+                       id="email"
+                       placeholder="Enter your email address"
+                       value="{{ email }}"
+                       {{ selected_field == field_email ? 'data-focused' : '' }}
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input name="{{ field_password }}"
+                       type="password"
+                       class="form-control input-larger"
+                       id="password"
+                       placeholder="Choose a password"
+                       {{ selected_field == field_password ? 'data-focused' : '' }}
+                >
+            </div>
+        </div>
+        <div class="form-group-collection plan-selection">
+            <div class="form-group">
+                <p>
+                    <i class="fa fa-heart"></i> Free for 30 days, no credit card required.
+                    <a href="{{ public_site['urls']['home'] }}{{ public_site['urls']['plans_and_pricing'] }}">Plans and pricing <i class="fa fa-caret-right"></i></a>
+                </p>
+
+                {% include 'Partials/Plan/selection.html.twig' with {
+                    selected_plan: plan,
+                    has_coupon: coupon is not null
+                } %}
+            </div>
+        </div>
+
+        <div class="form-group-collection form-group-submit-collection">
+            <button id="submit" type="submit" class="btn btn btn-primary">Sign up! <i class="fa fa-fw fa-caret-right"></i></button>
+
+            <p class="terms-notice additional">
+                By making use of this website you agree to the <a href="{{ external_links.terms }}">terms of service</a>.
+            </p>
+        </div>
+    </form>
+
+{% endblock %}

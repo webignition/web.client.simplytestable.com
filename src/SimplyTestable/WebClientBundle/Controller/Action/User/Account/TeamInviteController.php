@@ -382,7 +382,7 @@ class TeamInviteController extends AbstractUserAccountController
             str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']),
             null,
             $twig->render(
-                'SimplyTestableWebClientBundle:Email:user-team-invite-invitation.txt.twig',
+                'Email/user-team-invite-invitation.txt.twig',
                 [
                     'team_name' => $invite->getTeam(),
                     'account_team_page_url' => $confirmationUrl
@@ -426,7 +426,7 @@ class TeamInviteController extends AbstractUserAccountController
             str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']),
             null,
             $twig->render(
-                'SimplyTestableWebClientBundle:Email:user-team-invite-newuser-invitation.txt.twig',
+                'Email/user-team-invite-newuser-invitation.txt.twig',
                 [
                     'team_name' => $invite->getTeam(),
                     'confirmation_url' => $confirmationUrl

@@ -112,7 +112,7 @@ class InviteControllerTest extends AbstractViewControllerTest
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) use ($invite) {
                             $this->assertEquals(
-                                'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
+                                'user-sign-up-invite.html.twig',
                                 $viewName
                             );
 
@@ -155,7 +155,7 @@ class InviteControllerTest extends AbstractViewControllerTest
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertEquals(
-                                'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:invalid.html.twig',
+                                'user-sign-up-invite-invalid-token.html.twig',
                                 $viewName
                             );
 
@@ -191,7 +191,7 @@ class InviteControllerTest extends AbstractViewControllerTest
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) use ($invite) {
                             $this->assertEquals(
-                                'SimplyTestableWebClientBundle:bs3/User/SignUp/Invite:index.html.twig',
+                                'user-sign-up-invite.html.twig',
                                 $viewName
                             );
 
