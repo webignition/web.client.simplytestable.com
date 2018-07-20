@@ -85,6 +85,7 @@ class CardController extends AbstractUserAccountController
 
         $user = $this->userManager->getUser();
         $userSummary = $this->userService->getSummary();
+
         $team = null;
 
         if ($userSummary->getTeamSummary()->isInTeam()) {

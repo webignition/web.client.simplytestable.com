@@ -23,7 +23,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class ByTaskTypeControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Results/ByTaskType:index.html.twig';
+    const VIEW_NAME = 'test-results-by-task-type.html.twig';
     const ROUTE_NAME_DEFAULT = 'view_test_results_bytasktype_index_default';
     const ROUTE_NAME_FILTER = 'view_test_results_bytasktype_index';
 

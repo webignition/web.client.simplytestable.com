@@ -9,7 +9,6 @@ use SimplyTestable\WebClientBundle\Exception\CoreApplicationRequestException;
 use SimplyTestable\WebClientBundle\Exception\InvalidContentTypeException;
 use SimplyTestable\WebClientBundle\Exception\InvalidCredentialsException;
 use Tests\WebClientBundle\Factory\HttpResponseFactory;
-use Tests\WebClientBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,9 +18,7 @@ use Tests\WebClientBundle\Services\HttpMockHandler;
 
 class IndexControllerTest extends AbstractControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Task/TaskList/Index:index.html.twig';
     const ROUTE_NAME = 'view_test_task_tasklist_index_index';
-
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
@@ -132,6 +129,7 @@ class IndexControllerTest extends AbstractControllerTest
 
         /* @var Response $response */
         $response = $this->client->getResponse();
+
         $this->assertTrue($response->isSuccessful());
         $this->assertNotEmpty($response->getContent());
     }

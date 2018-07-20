@@ -15,9 +15,8 @@ use Twig_Environment;
 
 class IndexControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Results/Partial/FinishedSummary/Index:index.html.twig';
+    const VIEW_NAME = 'Partials/Test/Summary/finished.html.twig';
     const ROUTE_NAME = 'view_test_results_partial_finishedsummary_index';
-
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';

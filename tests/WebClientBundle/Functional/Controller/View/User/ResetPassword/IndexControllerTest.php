@@ -13,7 +13,7 @@ use Twig_Environment;
 
 class IndexControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Index:index.html.twig';
+    const VIEW_NAME = 'user-reset-password.html.twig';
     const ROUTE_NAME = 'view_user_resetpassword_index_index';
 
     const USER_EMAIL = 'user@example.com';

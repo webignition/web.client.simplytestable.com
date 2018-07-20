@@ -22,7 +22,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class IndexControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/User/Account/Team/Index:index.html.twig';
+    const VIEW_NAME = 'user-account-team.html.twig';
     const ROUTE_NAME = 'view_user_account_team_index_index';
 
     const USER_EMAIL = 'user@example.com';

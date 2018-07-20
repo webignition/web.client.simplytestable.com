@@ -19,9 +19,8 @@ use Twig_Environment;
 
 class RecentTestsControllerTest extends AbstractViewControllerTest
 {
-    const INDEX_ACTION_VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Partials/Dashboard:recent-tests.html.twig';
-    const VIEW_NAME = 'view_dashboard_partial_recenttests_index';
-
+    const VIEW_NAME = 'Partials/Dashboard/recent-tests.html.twig';
+    const ROUTE_NAME = 'view_dashboard_partial_recenttests_index';
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionInvalidUserGetRequest()
@@ -32,7 +31,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::VIEW_NAME)
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         /* @var RedirectResponse $response */
@@ -55,7 +54,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::VIEW_NAME)
+            $this->router->generate(self::ROUTE_NAME)
         );
 
         /* @var Response $response */
@@ -106,7 +105,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
+                            $this->assertEquals(self::VIEW_NAME, $viewName);
 
                             $this->assertEquals(
                                 [
@@ -153,7 +152,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
+                            $this->assertEquals(self::VIEW_NAME, $viewName);
 
                             $this->assertEquals(
                                 [
@@ -213,7 +212,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
-                            $this->assertEquals(self::INDEX_ACTION_VIEW_NAME, $viewName);
+                            $this->assertEquals(self::VIEW_NAME, $viewName);
 
                             $this->assertEquals(
                                 [

@@ -5,7 +5,8 @@
     addressState: '',
     addressZip: '',
     addressCountry: 'GB',
-    isPassedAddressZipCheck: true
+    isPassedAddressZipCheck: true,
+    isPassedAddressLine1Check: true
 } %}
 
 {% set card = user_summary.stripeCustomer.hasActiveCard ? user_summary.stripeCustomer.activeCard : empty_card %}

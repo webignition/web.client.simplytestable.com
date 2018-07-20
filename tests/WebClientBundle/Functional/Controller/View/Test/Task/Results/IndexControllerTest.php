@@ -23,10 +23,9 @@ use webignition\SimplyTestableUserModel\User;
 
 class IndexControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'SimplyTestableWebClientBundle:bs3/Test/Task/Results/Index:index.html.twig';
+    const VIEW_NAME = 'task-results.html.twig';
     const ROUTE_NAME = 'view_test_task_results_index_index';
     const ROUTE_NAME_VERBOSE = 'view_test_task_results_index_index_verbose';
-
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const TASK_ID = 2;
