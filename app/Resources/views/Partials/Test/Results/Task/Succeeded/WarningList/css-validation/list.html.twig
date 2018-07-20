@@ -10,9 +10,7 @@
             <ul class="issues css-validation-issues">
                 {% for message in warnings %}
                     <li>
-                        {% include [
-                        'SimplyTestableWebClientBundle:bs3/Partials/Test/Results/Task/Succeeded/WarningList/css-validation:warning.html.twig'
-                        ]|join('') %}
+                        {% include 'Partials/Test/Results/Task/Succeeded/WarningList/css-validation/warning.html.twig' %}
                     </li>
                 {% endfor %}
             </ul>
