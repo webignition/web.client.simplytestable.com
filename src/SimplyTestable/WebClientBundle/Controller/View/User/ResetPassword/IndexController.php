@@ -28,10 +28,6 @@ class IndexController extends AbstractUserController
             return $response;
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'user-reset-password.html.twig',
-            $viewData,
-            $response
-        );
+        return $this->renderWithDefaultViewParameters('user-reset-password.html.twig', $viewData, $response);
     }
 }

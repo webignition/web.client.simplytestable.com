@@ -219,11 +219,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
             $viewData['link_state_descriptions'] = $this->linkIntegrityErrorCodeMap->getErrorCodeMap();
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'task-results.html.twig',
-            $viewData,
-            $response
-        );
+        return $this->renderWithDefaultViewParameters('task-results.html.twig', $viewData, $response);
     }
 
     /**

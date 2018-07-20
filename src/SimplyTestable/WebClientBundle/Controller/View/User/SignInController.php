@@ -88,10 +88,6 @@ class SignInController extends AbstractUserController
             return $response;
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'user-sign-in.html.twig',
-            $viewData,
-            $response
-        );
+        return $this->renderWithDefaultViewParameters('user-sign-in.html.twig', $viewData, $response);
     }
 }

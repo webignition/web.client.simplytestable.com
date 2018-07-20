@@ -121,9 +121,6 @@ class PlanController extends AbstractUserAccountController
             $viewData['team'] = $this->teamService->getTeam();
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'user-account-plan.html.twig',
-            $viewData
-        );
+        return $this->renderWithDefaultViewParameters('user-account-plan.html.twig', $viewData);
     }
 }

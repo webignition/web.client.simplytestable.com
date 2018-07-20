@@ -251,11 +251,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
                 ],
             ]);
 
-            $response = $this->renderWithDefaultViewParameters(
-                'test-progress.html.twig',
-                $viewData,
-                $response
-            );
+            $response = $this->renderWithDefaultViewParameters('test-progress.html.twig', $viewData, $response);
         }
 
         return $response;

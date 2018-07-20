@@ -111,10 +111,7 @@ class CardController extends AbstractUserAccountController
             $viewData['team'] = $team;
         }
 
-        return $this->renderWithDefaultViewParameters(
-            'user-account-card.html.twig',
-            $viewData
-        );
+        return $this->renderWithDefaultViewParameters('user-account-card.html.twig', $viewData);
     }
 
     /**
