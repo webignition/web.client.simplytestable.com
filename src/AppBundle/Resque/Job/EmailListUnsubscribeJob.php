@@ -1,0 +1,26 @@
+<?php
+
+namespace AppBundle\Resque\Job;
+
+use AppBundle\Command\EmailList\UnsubscribeCommand;
+
+class EmailListUnsubscribeJob extends AbstractEmailListJob
+{
+    const QUEUE_NAME = 'email-list-unsubscribe';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getQueueName()
+    {
+        return self::QUEUE_NAME;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getCommandName()
+    {
+        return UnsubscribeCommand::NAME;
+    }
+}

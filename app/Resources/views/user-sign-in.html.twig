@@ -1,9 +1,9 @@
 {% extends 'Abstract/single-page-dialog.html.twig' %}
 
-{% set field_email = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignInRequest::PARAMETER_EMAIL') %}
-{% set field_password = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignInRequest::PARAMETER_PASSWORD') %}
-{% set field_stay_signed_in = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignInRequest::PARAMETER_STAY_SIGNED_IN') %}
-{% set field_redirect = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignInRequest::PARAMETER_REDIRECT') %}
+{% set field_email = constant('AppBundle\\Request\\User\\SignInRequest::PARAMETER_EMAIL') %}
+{% set field_password = constant('AppBundle\\Request\\User\\SignInRequest::PARAMETER_PASSWORD') %}
+{% set field_stay_signed_in = constant('AppBundle\\Request\\User\\SignInRequest::PARAMETER_STAY_SIGNED_IN') %}
+{% set field_redirect = constant('AppBundle\\Request\\User\\SignInRequest::PARAMETER_REDIRECT') %}
 
 {% block title %}Sign in - {{ parent() }}{% endblock %}
 

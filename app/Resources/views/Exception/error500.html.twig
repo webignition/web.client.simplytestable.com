@@ -2,7 +2,7 @@
 
 {% set heading = 'HTTP 500: Simply Broken' %}
 
-{% if exception.class == 'SimplyTestable\\WebClientBundle\\Exception\\InvalidAdminCredentialsException' %}
+{% if exception.class == 'AppBundle\\Exception\\InvalidAdminCredentialsException' %}
     {% set lead_paragraphs = [
         'Something has gone wrong.',
         'My makers haven\'t configured me correctly. I\'ve sent an email off to let them know.',

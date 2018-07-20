@@ -34,7 +34,7 @@ sensio_framework_extra:
 twig:
     debug:            '%kernel.debug%'
     strict_variables: '%kernel.debug%'
-    exception_controller:  SimplyTestable\WebClientBundle\Controller\ExceptionController::showAction
+    exception_controller:  AppBundle\Controller\ExceptionController::showAction
     globals:
       public_site:
         urls:

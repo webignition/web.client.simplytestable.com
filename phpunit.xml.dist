@@ -17,12 +17,12 @@
             <directory>tests</directory>
         </testsuite>
         <testsuite name="Controllers">
-            <directory>Tests/WebClientBundle/Unit/Controller</directory>
-            <directory>Tests/WebClientBundle/Functional/Controller</directory>
+            <directory>Tests/AppBundle/Unit/Controller</directory>
+            <directory>Tests/AppBundle/Functional/Controller</directory>
         </testsuite>
         <testsuite name="Services">
-            <directory>Tests/WebClientBundle/Unit/Services</directory>
-            <directory>Tests/WebClientBundle/Functional/Services</directory>
+            <directory>Tests/AppBundle/Unit/Services</directory>
+            <directory>Tests/AppBundle/Functional/Services</directory>
         </testsuite>
     </testsuites>
 
