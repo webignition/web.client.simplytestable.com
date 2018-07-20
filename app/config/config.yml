@@ -4,9 +4,6 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
 
-parameters:
-  pdp_psl_data_path: '%kernel.project_dir%/data/pdp-psldata/pdp_rules.json'
-
 framework:
     #esi:             ~
     #translator:      { fallback: %locale% }
