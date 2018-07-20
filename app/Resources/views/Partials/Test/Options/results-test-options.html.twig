@@ -20,8 +20,21 @@
 {% for task_type_key, task_type_details in task_types %}
     {% if not (task_type_key|slice(0, 'test-'|length) == 'test-') %}
         {% set is_available = task_type_key in available_task_types|keys %}
-        {% set task_type_options_view = ['SimplyTestableWebClientBundle:bs3/Partials/Test/Options/', task_type_key, ':test-options.html.twig']|join('') %}
 
-        {% include task_type_options_view %}
+        {% if task_type_key == 'html-validation' %}
+            {% include 'Partials/Test/Options/html-validation/test-options.html.twig' %}
+        {% endif %}
+
+        {% if task_type_key == 'css-validation' %}
+            {% include 'Partials/Test/Options/css-validation/test-options.html.twig' %}
+        {% endif %}
+
+        {% if task_type_key == 'js-static-analysis' %}
+            {% include 'Partials/Test/Options/js-static-analysis/test-options.html.twig' %}
+        {% endif %}
+
+        {% if task_type_key == 'link-integrity' %}
+            {% include 'Partials/Test/Options/link-integrity/test-options.html.twig' %}
+        {% endif %}
     {% endif %}
 {% endfor %}

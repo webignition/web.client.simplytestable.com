@@ -78,13 +78,13 @@
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 test-options">
                                     {% if test_options['http-authentication'] is defined %}
                                         <div class="test-option">
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': true} %}
+                                            {% include 'Partials/Test/Options/HttpAuthentication/http-authentication.html.twig' with {'read_only': true} %}
                                         </div>
                                     {% endif %}
 
                                     {% if test_options['cookies'] is defined %}
                                         <div class="test-option">
-                                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': true} %}
+                                            {% include 'Partials/Test/Options/Cookies/cookies.html.twig' with {'read_only': true} %}
                                         </div>
                                     {% endif %}
 
@@ -97,7 +97,7 @@
                     </div>
 
                     <div id="test-options" class="collapse">
-                        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options:results-test-options.html.twig' %}
+                        {% include 'Partials/Test/Options/results-test-options.html.twig' %}
                     </div>
                 </div>
             </div>

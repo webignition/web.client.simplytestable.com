@@ -54,7 +54,7 @@
                     <input {% if (is_disabled) %}disabled{% endif %} type="checkbox" value="1" name="css-validation-ignore-common-cdns"  {% if (test_options['css-validation-ignore-common-cdns'] is defined and test_options['css-validation-ignore-common-cdns'] == 1) %} checked {% endif %} /> Ignore CSS from common CDNs:
 
                     {% if css_validation_ignore_common_cdns|length > 0 %}
-                        {% include '@SimplyTestableWebClient/bs3/Partials/Test/Options/domains-to-ignore.html.twig' with {
+                        {% include 'Partials/Test/Options/domains-to-ignore.html.twig' with {
                             'domains_to_ignore': css_validation_ignore_common_cdns
                         } only %}
                     {% endif %}

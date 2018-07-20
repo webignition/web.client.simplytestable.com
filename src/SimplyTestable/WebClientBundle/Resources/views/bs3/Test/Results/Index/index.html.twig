@@ -106,7 +106,7 @@
                                                     {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}
                                                 {% endif %}
 
-                                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/HttpAuthentication:http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}
+                                                {% include 'Partials/Test/Options/HttpAuthentication/http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}
                                             </div>
                                         {% endif %}
 
@@ -117,7 +117,7 @@
                                                     {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}
                                                 {% endif %}
 
-                                                {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options/Cookies:cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}
+                                                {% include 'Partials/Test/Options/Cookies/cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}
                                             </div>
                                         {% endif %}
 
@@ -137,7 +137,7 @@
                         <input type="hidden" name="website" value="{{ test.website }}" />
 
                         <div id="test-options" class="collapse">
-                            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Options:results-test-options.html.twig' %}
+                            {% include 'Partials/Test/Options/results-test-options.html.twig' %}
                         </div>
 
                         {% if 'js-static-analysis' not in available_task_types|keys %}
