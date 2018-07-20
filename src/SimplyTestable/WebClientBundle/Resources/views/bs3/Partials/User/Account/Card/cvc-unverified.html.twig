@@ -1,6 +1,6 @@
 {% if (has_card and not is_passed_cvc_check) or (has_card_cvc_error) %}
     {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
         type: 'error',
-        view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/Alert/Content/cvc-unverified.html.twig'
+        view: 'Partials/User/Account/Card/Alert/Content/cvc-unverified.html.twig'
     } only %}
 {% endif %}

@@ -1,6 +1,6 @@
 {% if (has_card and not is_passed_address_zip_check) or (has_card_zip_error) %}
     {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
         type: 'error',
-        view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/Alert/Content/address-zip-unverified.html.twig'
+        view: 'Partials/User/Account/Card/Alert/Content/address-zip-unverified.html.twig'
     } only %}
 {% endif %}
