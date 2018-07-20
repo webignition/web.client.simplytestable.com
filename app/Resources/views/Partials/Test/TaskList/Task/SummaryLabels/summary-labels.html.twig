@@ -1,0 +1,18 @@
+{% set is_failed = task.state in ['failed',  'failed-retry-available', 'failed-no-retry-available', 'failed-retry-limit-reached'] %}
+
+{% if task.state == 'completed' %}
+    {% include 'Partials/Test/TaskList/Task/SummaryLabels/completed.html.twig' %}
+{% endif %}
+
+{% if task.state == 'skipped' %}
+    {% include 'Partials/Test/TaskList/Task/SummaryLabels/skipped.html.twig' %}
+{% endif %}
+
+{% if task.state == 'cancelled' %}
+    {% include 'Partials/Test/TaskList/Task/SummaryLabels/cancelled.html.twig' %}
+{% endif %}
+
+{% if is_failed %}
+    {% include 'Partials/Test/TaskList/Task/SummaryLabels/failed.html.twig' %}
+{% endif %}
+

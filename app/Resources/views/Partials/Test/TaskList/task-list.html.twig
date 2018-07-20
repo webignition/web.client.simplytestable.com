@@ -15,7 +15,7 @@
     {% for url, tasks in tasks_by_url %}
         <li class="task-set">
             <span class="url">{{ url }}<span class="fade"></span></span>
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/TaskList/Task:collection.html.twig' %}
+            {% include 'Partials/Test/TaskList/Task/collection.html.twig' %}
         </li>
     {% endfor %}
 </ul>
