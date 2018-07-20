@@ -7,12 +7,12 @@
 
 {% if has_success_notification %}
     {% if plan_subscribe_success == 'already-on-plan' %}
-        {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Plan/Alert/Content/plan-change-same.html.twig' %}
+        {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/plan-change-same.html.twig' %}
         {% set alert_view_parameters = {
             plan_name: user_summary.plan.accountplan.name
         } %}
     {% else %}
-        {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Plan/Alert/Content/plan-change-success.html.twig' %}
+        {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/plan-change-success.html.twig' %}
         {% set alert_view_parameters = {
             plan_name: user_summary.plan.accountplan.name
         } %}
@@ -21,7 +21,7 @@
 
 {% if has_error_notification and plan_subscribe_error == '403' %}
     {% set alert_type = 'error' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Plan/Alert/Content/plan-change-failure.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Plan/Alert/Content/plan-change-failure.html.twig' %}
 {% endif %}
 
 {% if alert_view is not null %}

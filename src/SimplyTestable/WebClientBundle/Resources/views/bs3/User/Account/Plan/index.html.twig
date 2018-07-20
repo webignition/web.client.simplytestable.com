@@ -14,20 +14,20 @@
 
     <div class="plan-section">
         <h2 id="plan-summary">Summary</h2>
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:summary.html.twig' with {with_id: false} %}
+        {% include 'Partials/User/Account/Plan/summary.html.twig' with {with_id: false} %}
     </div>
 
     <div class="plan-section">
         <h2 id="plan-allowances">Allowances</h2>
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:allowances.html.twig' %}
+        {% include 'Partials/User/Account/Plan/allowances.html.twig' %}
     </div>
 
     {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
         <div class="plan-section plan-selection" id="plan-upgrade-downgrade">
             <h2>Upgrade/downgrade</h2>
 
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:card-error-notifications.html.twig' %}
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Plan:change-notifications.html.twig' %}
+            {% include 'Partials/User/Account/Plan/card-error-notifications.html.twig' %}
+            {% include 'Partials/User/Account/Plan/change-notifications.html.twig' %}
 
             {% if user_summary.plan.accountplan.name == 'basic' %}
                 {% if user_summary.plan.startTrialPeriod > 0  %}
