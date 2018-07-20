@@ -7,12 +7,12 @@
 
 {% for test in test_list.get %}
     {% if test.test.state in test_finished_states %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:finished.html.twig' %}
+        {% include 'Partials/Test/Summary/finished.html.twig' %}
     {% else %}
         {% if test.test.state == 'crawling' %}
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:crawling.html.twig' %}
+            {% include 'Partials/Test/Summary/crawling.html.twig' %}
         {% else %}
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:incomplete.html.twig' %}
+            {% include 'Partials/Test/Summary/incomplete.html.twig' %}
         {% endif %}
     {% endif %}
 {% endfor %}

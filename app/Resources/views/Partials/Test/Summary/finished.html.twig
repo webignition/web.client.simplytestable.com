@@ -1,4 +1,4 @@
-{% extends 'SimplyTestableWebClientBundle:bs3/Partials/Test/Summary:summary.html.twig' %}
+{% extends 'Partials/Test/Summary/summary.html.twig' %}
 
 {% set was_not_started = test.test.state == 'cancelled' and test.remote_test.taskcount == test.remote_test.taskcountbystate.cancelled %}
 {% set no_urls = test.test.state == 'failed-no-sitemap' and test.remote_test.crawl is null %}
