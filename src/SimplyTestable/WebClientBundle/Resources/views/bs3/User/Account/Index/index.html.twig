@@ -13,18 +13,18 @@
         <h2 id="email-address-and-password">Email address and password</h2>
 
         <div class="plan-section">
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:email.html.twig' %}
+            {% include 'Partials/User/Account/email.html.twig' %}
         </div>
 
         <div class="plan-section">
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:password.html.twig' %}
+            {% include 'Partials/User/Account/password.html.twig' %}
         </div>
 
     </div>
 
     <div class="plan-section">
         <h2 id="plan">Plan: {{ plan_presentation_name }}</h2>
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:plan-details.html.twig' %}
+        {% include 'Partials/User/Account/plan-details.html.twig' %}
     </div>
 
     <div class="plan-section">
@@ -34,18 +34,18 @@
 
     <div class="plan-section">
         <h2 id="payment-details">Payment details</h2>
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:payment-details.html.twig' %}
+        {% include 'Partials/User/Account/payment-details.html.twig' %}
 
         {% if stripe_event_data['invoice'] is defined %}
             <div class="latest-invoice">
                 <h3 id="payment-latest-invoice">Latest invoice</h3>
-                {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:latest-invoice.html.twig' %}
+                {% include 'Partials/User/Account/latest-invoice.html.twig' %}
             </div>
         {% endif %}
     </div>
 
     <div class="plan-section" id="news-subscriptions">
         <h2>News subscriptions</h2>
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account:news-subscriptions.html.twig' %}
+        {% include 'Partials/User/Account/news-subscriptions.html.twig' %}
     </div>
 {% endblock %}
