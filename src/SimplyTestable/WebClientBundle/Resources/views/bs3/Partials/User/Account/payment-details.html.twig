@@ -8,13 +8,13 @@
             {% if user_summary.stripeCustomer.activeCard.hasCheckFailures %}
                 {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
                     type: 'error',
-                    view: '@SimplyTestableWebClient/bs3/Partials/User/Account/PaymentDetails/Alert/Content/payment-summary-card-check-failures.html.twig'
+                    view: 'Partials/User/Account/PaymentDetails/Alert/Content/payment-summary-card-check-failures.html.twig'
                 } only %}
                 <br>
             {% endif %}
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/PaymentDetails:card-summary.html.twig' %}
+            {% include 'Partials/User/Account/PaymentDetails/card-summary.html.twig' %}
         {% else %}
-            {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/PaymentDetails:no-card.html.twig' %}
+            {% include 'Partials/User/Account/PaymentDetails/no-card.html.twig' %}
         {% endif %}
     {% else %}
         <p>
