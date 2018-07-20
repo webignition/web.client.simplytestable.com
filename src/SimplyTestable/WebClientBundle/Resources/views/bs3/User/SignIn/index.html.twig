@@ -12,10 +12,10 @@
 {% block content %}
     <h1>Sign in</h1>
 
-    {% include '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/before-form.html.twig' %}
+    {% include 'Partials/User/SignIn/Alert/before-form.html.twig' %}
 
     <form role="form" method="post" action="{{ path('sign_in_submit') }}" novalidate>
-        {% include '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/within-form.html.twig' %}
+        {% include 'Partials/User/SignIn/Alert/within-form.html.twig' %}
 
         <div class="form-group-collection">
             <div class="form-group">

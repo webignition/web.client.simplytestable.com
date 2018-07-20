@@ -4,7 +4,7 @@
 {% set alert_view_parameters = {} %}
 
 {% if 'email' == error_field and 'empty' == error_state %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-empty.html.twig' %}
+    {% set alert_view = 'Partials/User/SignIn/Alert/Content/email-empty.html.twig' %}
 {% endif %}
 
 {% if 'email' == error_field and 'invalid' == error_state %}
@@ -14,19 +14,19 @@
 
 {% if 'email' == error_field and 'public-user' == error_state %}
     {% set alert_type = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/email-public-user.html.twig' %}
+    {% set alert_view = 'Partials/User/SignIn/Alert/Content/email-public-user.html.twig' %}
 {% endif %}
 
 {% if 'password' == error_field and 'empty' == error_state %}
     {% set alert_field_selector = 'password' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/password-empty.html.twig' %}
+    {% set alert_view = 'Partials/User/SignIn/Alert/Content/password-empty.html.twig' %}
 {% endif %}
 
 {% if user_signin_error is not empty %}
     {% set alert_type = 'info' %}
     {% set alert_view = 'account-not-logged-in' == user_signin_error
-        ? '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/account-not-logged-in.html.twig'
-        : '@SimplyTestableWebClient/bs3/Partials/User/SignIn/Alert/Content/test-not-logged-in.html.twig'
+        ? 'Partials/User/SignIn/Alert/Content/account-not-logged-in.html.twig'
+        : 'Partials/User/SignIn/Alert/Content/test-not-logged-in.html.twig'
     %}
 {% endif %}
 
