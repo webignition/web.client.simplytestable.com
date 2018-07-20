@@ -14,14 +14,14 @@
 {% block account_content %}
 
 {% if not user_summary.getTeamSummary.isInTeam and not user_summary.getTeamSummary.hasInvite %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Team/Manage:no-team-no-invite.html.twig' %}
+    {% include 'Partials/User/Account/Team/Manage/no-team-no-invite.html.twig' %}
 {% elseif user_summary.getTeamSummary.hasInvite %}
-    {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Team/Manage:no-team-has-invite.html.twig' %}
+    {% include 'Partials/User/Account/Team/Manage/no-team-has-invite.html.twig' %}
 {% elseif user_summary.getTeamSummary.isInTeam %}
     {% if team.leader == user.username %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Team/Manage:leader.html.twig' %}
+        {% include 'Partials/User/Account/Team/Manage/leader.html.twig' %}
     {% else %}
-        {% include 'SimplyTestableWebClientBundle:bs3/Partials/User/Account/Team/Manage:member.html.twig' %}
+        {% include 'Partials/User/Account/Team/Manage/member.html.twig' %}
     {% endif %}
 {% endif %}
 
