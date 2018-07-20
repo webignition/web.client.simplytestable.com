@@ -10,7 +10,7 @@
 
 {% set card = user_summary.stripeCustomer.hasActiveCard ? user_summary.stripeCustomer.activeCard : empty_card %}
 
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
+{% include 'Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     field_id: 'inputNumber',
     label: 'Number',
     placeholder: '15 or 16 digits across the front',
@@ -18,7 +18,7 @@
     stripe_name: 'number'
 }) only %}
 
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
+{% include 'Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     form_group_class: 'expiry-date',
     field_id: 'inputExpiryMonth|inputExpiryYear',
     label: 'Expiry date',
@@ -32,7 +32,7 @@
     }
 }) only %}
 
-{% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
+{% include 'Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     form_group_class: 'cvc-form-group',
     field_id: 'inputCVC',
     label: 'CVC',
@@ -43,7 +43,7 @@
     field_width_class: 'col-lg-2 col-md-2 col-sm-2 col-xs-3',
     post_field_content: '<span class="help-block hidden-xs">Usually 3 digits on the back</span>',
     placeholder: null,
-    error_container_content_view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cvc-unverified.html.twig',
+    error_container_content_view: 'Partials/User/Account/Card/cvc-unverified.html.twig',
     error_container_content_parameters: {
         has_card: user_summary.stripeCustomer.hasActiveCard,
         is_passed_cvc_check: card.isPassedCvcCheck,
