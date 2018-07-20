@@ -1,5 +1,5 @@
 {% if is_owner == false and is_public_user_test == false %}
-    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+    {% include 'Partials/alert.html.twig' with {
         type: 'info',
         view: 'Partials/Alert/Content/read-only-test.html.twig',
         wrap_in_container: true,

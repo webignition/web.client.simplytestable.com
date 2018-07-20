@@ -6,7 +6,7 @@
     {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and user.username == team.leader) %}
         {% if user_summary.stripeCustomer.hasActiveCard %}
             {% if user_summary.stripeCustomer.activeCard.hasCheckFailures %}
-                {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+                {% include 'Partials/alert.html.twig' with {
                     type: 'error',
                     view: 'Partials/User/Account/PaymentDetails/Alert/Content/payment-summary-card-check-failures.html.twig'
                 } only %}

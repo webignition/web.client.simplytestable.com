@@ -1,7 +1,7 @@
 {% set alert_classes = alert_classes is defined ? alert_classes : '' %}
 
 {% if remote_test.ammendments is defined and remote_test.ammendments[0].constraint is defined %}
-    {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+    {% include 'Partials/alert.html.twig' with {
         type: 'info',
         wrap_in_container: true,
         dismissable: false,

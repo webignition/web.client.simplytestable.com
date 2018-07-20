@@ -27,7 +27,7 @@
     </div>
 
     {% if team_create_error is defined and team_create_error == 'blank-name' %}
-        {% include '@SimplyTestableWebClient/bs3/Partials/alert.html.twig' with {
+        {% include 'Partials/alert.html.twig' with {
             type: 'error',
             view: 'Partials/User/Account/Team/Manage/Alert/Content/create-name-empty.html.twig'
         } only %}
