@@ -1,3 +1,17 @@
+{% set user_account_card_exception_param = 'cvc' %}
+
+{% set empty_card = {
+    name: '',
+    addressLine1: '',
+    addressCity: '',
+    addressState: '',
+    addressZip: '',
+    addressCountry: 'GB',
+    isPassedAddressZipCheck: true
+} %}
+
+{% set card = user_summary.stripeCustomer.hasActiveCard ? user_summary.stripeCustomer.activeCard : empty_card %}
+
 {% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/form-group.html.twig' with default_form_group_parameters|merge({
     field_id: 'inputNumber',
     label: 'Number',
@@ -30,7 +44,13 @@
     field_attributes: 'maxlength="3"',
     field_width_class: 'col-lg-2 col-md-2 col-sm-2 col-xs-3',
     post_field_content: '<span class="help-block hidden-xs">Usually 3 digits on the back</span>',
-    placeholder: null
+    placeholder: null,
+    error_container_content_view: '@SimplyTestableWebClient/bs3/Partials/User/Account/Card/cvc-unverified.html.twig',
+    error_container_content_parameters: {
+        has_card: user_summary.stripeCustomer.hasActiveCard,
+        is_passed_cvc_check: card.isPassedCvcCheck,
+        has_card_cvc_error: user_account_card_exception_param is defined and user_account_card_exception_param  == 'cvc'
+    }
 }) only %}
 
 <div class="{{ intro_width_class }} intro">
