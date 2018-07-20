@@ -220,7 +220,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Task/Results/Index:index.html.twig',
+            'task-results.html.twig',
             $viewData,
             $response
         );

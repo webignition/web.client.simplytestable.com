@@ -29,7 +29,7 @@ class IndexController extends AbstractUserController
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Index:index.html.twig',
+            'user-reset-password.html.twig',
             $viewData,
             $response
         );

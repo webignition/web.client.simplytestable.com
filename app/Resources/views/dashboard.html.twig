@@ -1,4 +1,4 @@
-{% extends 'SimplyTestableWebClientBundle::bs3/base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}{% if is_logged_in == false %}Demo{% endif %} Dashboard (Start Test, Test History) - {{ parent() }}{% endblock %}
 
@@ -40,11 +40,11 @@
                         {% include 'Partials/Dashboard/TaskTypes/task-types.html.twig' %}
 
                         {% if 'js-static-analysis' not in available_task_types|keys %}
-                            {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:js-static-analysis.html.twig' %}
+                            {% include 'Modal/Notification/AccountRequired/js-static-analysis.html.twig' %}
                         {% endif %}
 
                         {% if 'link-integrity' not in available_task_types|keys %}
-                            {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:link-integrity.html.twig' %}
+                            {% include 'Modal/Notification/AccountRequired/link-integrity.html.twig' %}
                         {% endif %}
 
                     </div>
@@ -68,7 +68,7 @@
                                 <div class="test-option http-authentication-test-option">
                                     {% if not is_logged_in %}
                                         {% set data_target_id = 'http-authentication-account-required-modal' %}
-                                        {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:http-authentication.html.twig' %}
+                                        {% include 'Modal/Notification/AccountRequired/http-authentication.html.twig' %}
                                     {% endif %}
 
                                     {% include 'Partials/Test/Options/HttpAuthentication/http-authentication.html.twig' %}
@@ -79,7 +79,7 @@
                                 <div class="test-option cookies-test-option">
                                     {% if not is_logged_in %}
                                         {% set data_target_id = 'cookies-account-required-modal' %}
-                                        {% include 'SimplyTestableWebClientBundle:bs3/Modal/Notification/AccountRequired:cookies.html.twig' %}
+                                        {% include 'Modal/Notification/AccountRequired/cookies.html.twig' %}
                                     {% endif %}
 
                                     {% include 'Partials/Test/Options/Cookies/cookies.html.twig' %}

@@ -1,4 +1,4 @@
-{% extends 'SimplyTestableWebClientBundle::bs3/User/Account/base.html.twig' %}
+{% extends 'user-account-base.html.twig' %}
 
 {% block body_class %} {{ parent() }} user-account-team {% if user_summary.getTeamSummary.isInTeam %}{{ 'in-team' }}{% if true %} {{ (team.leader == user.username) ? 'team-leader' : 'team-member' }}{% endif %}{% elseif user_summary.getTeamSummary.hasInvite %}{{ 'has-invite' }}{% else %}{{ 'no-team-no-invite' }}{% endif %}
 {% endblock %}

@@ -111,7 +111,7 @@ class CardController extends AbstractUserAccountController
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/Account/Card:index.html.twig',
+            'user-account-card.html.twig',
             $viewData
         );
     }

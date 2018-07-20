@@ -162,7 +162,7 @@ class IndexController extends AbstractRequiresValidOwnerController implements Re
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Results/Rejected/Index:index.html.twig',
+            'test-results-rejected.html.twig',
             $viewData,
             $response
         );

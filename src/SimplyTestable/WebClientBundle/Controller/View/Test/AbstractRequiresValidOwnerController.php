@@ -64,7 +64,7 @@ abstract class AbstractRequiresValidOwnerController extends BaseViewController i
     {
         if ($this->userManager->isLoggedIn()) {
             return $this->renderWithDefaultViewParameters(
-                'SimplyTestableWebClientBundle:bs3/Test/Results:not-authorised.html.twig',
+                'test-results-not-authorised.html.twig',
                 [
                     'test_id' => $request->attributes->get('test_id'),
                     'website' => $this->urlViewValues->create($request->attributes->get('website')),

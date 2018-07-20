@@ -81,8 +81,8 @@ class ChooseController extends AbstractUserController
         }
 
         $view = $hasValidToken
-            ? 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:index.html.twig'
-            : 'SimplyTestableWebClientBundle:bs3/User/ResetPassword/Choose:invalid.html.twig';
+            ? 'user-reset-password-choose.html.twig'
+            : 'user-reset-password-invalid-token.html.twig';
 
 
         return $this->renderWithDefaultViewParameters($view, $viewData, $response);

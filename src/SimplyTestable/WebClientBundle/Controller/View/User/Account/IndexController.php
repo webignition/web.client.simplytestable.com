@@ -162,7 +162,7 @@ class IndexController extends AbstractUserAccountController
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/Account/Index:index.html.twig',
+            'user-account.html.twig',
             $viewData
         );
     }

@@ -86,7 +86,7 @@ class IndexController extends BaseViewController implements RequiresValidUser, R
         ];
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Test/Results/Partial/FinishedSummary/Index:index.html.twig',
+            'Partials/Test/Summary/finished.html.twig',
             $viewData,
             $response
         );

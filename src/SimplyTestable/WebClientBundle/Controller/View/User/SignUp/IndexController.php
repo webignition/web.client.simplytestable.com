@@ -103,7 +103,7 @@ class IndexController extends AbstractUserController
         $viewData['plans'] = $plans;
 
         $response = $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/SignUp/Index:index.html.twig',
+            'user-sign-up.html.twig',
             $viewData,
             $response
         );

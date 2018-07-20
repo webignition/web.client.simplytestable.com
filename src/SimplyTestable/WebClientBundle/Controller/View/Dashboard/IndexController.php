@@ -154,7 +154,7 @@ class IndexController extends BaseViewController implements RequiresValidUser
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/Dashboard/Index:index.html.twig',
+            'dashboard.html.twig',
             [
                 'available_task_types' => $availableTaskTypes,
                 'task_types' => $taskTypes,

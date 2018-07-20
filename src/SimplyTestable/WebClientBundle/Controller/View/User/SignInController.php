@@ -89,7 +89,7 @@ class SignInController extends AbstractUserController
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/SignIn:index.html.twig',
+            'user-sign-in.html.twig',
             $viewData,
             $response
         );

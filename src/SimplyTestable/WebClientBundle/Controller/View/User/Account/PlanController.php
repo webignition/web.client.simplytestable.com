@@ -122,7 +122,7 @@ class PlanController extends AbstractUserAccountController
         }
 
         return $this->renderWithDefaultViewParameters(
-            'SimplyTestableWebClientBundle:bs3/User/Account/Plan:index.html.twig',
+            'user-account-plan.html.twig',
             $viewData
         );
     }
