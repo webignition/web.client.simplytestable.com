@@ -8,19 +8,19 @@
 
 {% if has_success_notice %}
     {% set alert_type = 'success' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Team/Leader/Invite/Resend/Alert/Content/success.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Resend/Alert/Content/success.html.twig' %}
     {% set alert_view_parameters = {
         email: team_invite_resend.invitee
     } %}
 {% endif %}
 
 {% if has_error_notice and team_invite_resend.error == 'invite-self' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Team/Leader/Invite/Alert/Content/invite-self.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Alert/Content/invite-self.html.twig' %}
     {% set alert_view_parameters = {email: team_invite_resend.invitee} %}
 {% endif %}
 
 {% if has_error_notice and team_invite_resend.error in ['invitee-is-a-team-leader', 'invitee-is-already-on-a-team'] %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Team/Leader/Invite/Alert/Content/invitee-already-on-team.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Alert/Content/invitee-already-on-team.html.twig' %}
     {% set alert_view_parameters = {email: team_invite_resend.invitee} %}
 {% endif %}
 
@@ -31,7 +31,7 @@
 {% endif %}
 
 {% if has_error_notice and team_invite_resend.error == 'postmark-inactive-recipient' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Team/Leader/Invite/Alert/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Team/Leader/Invite/Alert/Content/postmark-inactive-recipient.html.twig' %}
     {% set alert_view_parameters = {email: team_invite_resend.invitee} %}
 {% endif %}
 
