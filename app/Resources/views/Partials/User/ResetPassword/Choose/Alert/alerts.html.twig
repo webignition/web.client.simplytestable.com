@@ -8,11 +8,11 @@
 {% endif %}
 
 {% if user_reset_password_error is defined and user_reset_password_error == 'blank-password' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Choose/Alert/Content/password-empty.html.twig' %}
+    {% set alert_view = 'Partials/User/ResetPassword/Choose/Alert/Content/password-empty.html.twig' %}
 {% endif %}
 
 {% if user_reset_password_error is defined and user_reset_password_error == 'unknown-error' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Choose/Alert/Content/unknown-error.html.twig' %}
+    {% set alert_view = 'Partials/User/ResetPassword/Choose/Alert/Content/unknown-error.html.twig' %}
 {% endif %}
 
 {% if user_reset_password_confirmation is defined and user_reset_password_confirmation == 'token-sent' %}

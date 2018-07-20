@@ -14,7 +14,7 @@
         Follow the instructions in the email to choose a new password.
     </p>
 
-    {% include '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Alert/alerts.html.twig' %}
+    {% include 'Partials/User/ResetPassword/Alert/alerts.html.twig' %}
 
     <form role="form" method="post" action="{{ path('action_user_resetpassword_index_request') }}">
         <div class="form-group-collection form-group-collection-single">

@@ -4,7 +4,7 @@
 {% set alert_view_parameters = {} %}
 
 {% if user_reset_password_error is defined and user_reset_password_error == 'blank-email' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Alert/Content/email-empty.html.twig' %}
+    {% set alert_view = 'Partials/User/ResetPassword/Alert/Content/email-empty.html.twig' %}
 {% endif %}
 
 {% if user_reset_password_error is defined and user_reset_password_error == 'invalid-email' %}
@@ -13,12 +13,12 @@
 {% endif %}
 
 {% if user_reset_password_error is defined and user_reset_password_error == 'invalid-user' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Alert/Content/user-invalid.html.twig' %}
+    {% set alert_view = 'Partials/User/ResetPassword/Alert/Content/user-invalid.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
 {% endif %}
 
 {% if user_reset_password_error is defined and user_reset_password_error == 'postmark-failure' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/ResetPassword/Alert/Content/postmark-failure.html.twig' %}
+    {% set alert_view = 'Partials/User/ResetPassword/Alert/Content/postmark-failure.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
 {% endif %}
 
