@@ -1,7 +1,7 @@
 {% extends 'Abstract/single-page-dialog.html.twig' %}
 
-{% set field_email = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignUpRequest::PARAMETER_EMAIL') %}
-{% set field_password = constant('SimplyTestable\\WebClientBundle\\Request\\User\\SignUpRequest::PARAMETER_PASSWORD') %}
+{% set field_email = constant('AppBundle\\Request\\User\\SignUpRequest::PARAMETER_EMAIL') %}
+{% set field_password = constant('AppBundle\\Request\\User\\SignUpRequest::PARAMETER_PASSWORD') %}
 
 {% block title %}Sign up - {{ parent() }}{% endblock %}
 
