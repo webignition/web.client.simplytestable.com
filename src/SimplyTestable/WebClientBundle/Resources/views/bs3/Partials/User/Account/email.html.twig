@@ -1,9 +1,9 @@
 {% if email_change_request is defined %}
-    {% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/HasEmailChangeRequest/alerts.html.twig' %}
+    {% include 'Partials/User/Account/Email/Alert/HasEmailChangeRequest/alerts.html.twig' %}
 {% endif %}
 
 <form class="form-horizontal" role="form" method="post" action="{{ path('action_user_account_emailchange_request') }}" novalidate>
-    {% include '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/CreateEmailChangeRequest/alerts.html.twig' %}
+    {% include 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/alerts.html.twig' %}
 
     <div class="form-group">
         {% if email_change_request is defined %}

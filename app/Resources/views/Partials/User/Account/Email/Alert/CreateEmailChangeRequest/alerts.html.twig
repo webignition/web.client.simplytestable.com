@@ -8,16 +8,16 @@
 
 {% if has_request_notice and user_account_details_update_email_request_notice == 'blank-email' %}
     {% set alert_type = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-empty.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-empty.html.twig' %}
 {% endif %}
 
 {% if has_request_notice and user_account_details_update_email_request_notice == 'same-email' %}
     {% set alert_type = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-same.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-same.html.twig' %}
 {% endif %}
 
 {% if has_request_notice and user_account_details_update_email_request_notice == 'email-taken' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-taken.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-taken.html.twig' %}
     {% set alert_view_parameters = {email: user_account_details_update_email} %}
 {% endif %}
 
@@ -27,11 +27,11 @@
 {% endif %}
 
 {% if has_request_notice and user_account_details_update_email_request_notice == 'unknown' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/Content/failure-unknown.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/Content/failure-unknown.html.twig' %}
 {% endif %}
 
 {% if has_request_notice and user_account_details_update_email_request_notice == 'postmark-failure' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/postmark-failure.html.twig' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/postmark-failure.html.twig' %}
     {% set alert_view_parameters = {email: user_account_details_update_email} %}
 {% endif %}
 
