@@ -5,12 +5,12 @@
 
 {% if user_create_confirmation == 'user-exists' %}
     {% set alert_type = 'success' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Alert/Content/user-exists.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Alert/Content/user-exists.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
 {% endif %}
 
 {% if error_field == 'email' and error_state == 'empty' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Alert/Content/email-empty.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Alert/Content/email-empty.html.twig' %}
 {% endif %}
 
 {% if error_field == 'email' and error_state == 'invalid' %}
@@ -34,7 +34,7 @@
 {% endif %}
 
 {% if user_create_error == 'create-failed' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Alert/Content/create-failed-unknown.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Alert/Content/create-failed-unknown.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
 {% endif %}
 

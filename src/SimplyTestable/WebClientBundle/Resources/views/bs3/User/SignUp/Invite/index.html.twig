@@ -13,7 +13,7 @@
         </p>
     </div>
 
-    {% include '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Invite/Alert/before-form.html.twig' %}
+    {% include 'Partials/User/SignUp/Invite/Alert/before-form.html.twig' %}
 
     <form role="form" method="post" action="{{ path('action_signup_team_invite_accept', {'token': token}) }}" novalidate>
         <div class="form-group-collection">

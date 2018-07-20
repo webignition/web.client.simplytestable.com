@@ -7,7 +7,7 @@
 {% block content %}
     <h1>Confirm sign up</h1>
 
-    {% include '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/alerts.html.twig' %}
+    {% include 'Partials/User/SignUp/Confirm/Alert/alerts.html.twig' %}
 
     <form role="form" method="post" action="{{ path('sign_up_confirm_submit', { 'email': email}) }}" novalidate>
         <div class="form-group-collection form-group-collection-single">

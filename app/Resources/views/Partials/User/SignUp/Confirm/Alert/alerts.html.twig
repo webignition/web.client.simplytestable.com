@@ -6,14 +6,14 @@
 
 {% if user_error is defined and user_error == 'invalid-user' %}
     {% set alert_type  = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/Content/user-invalid.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Confirm/Alert/Content/user-invalid.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
     {% set alert_dismissable = false %}
 {% endif %}
 
 {% if token_resend_error is defined and token_resend_error == 'postmark-failure' %}
     {% set alert_type  = 'info' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/Content/postmark-failure.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Confirm/Alert/Content/postmark-failure.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
     {% set alert_dismissable = false %}
 {% endif %}
@@ -37,13 +37,13 @@
 
 {% if token_resend_confirmation is defined and token_resend_confirmation is not empty %}
     {% set alert_type  = 'success' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/Content/token-resent.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Confirm/Alert/Content/token-resent.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
     {% set alert_dismissable = false %}
 {% endif %}
 
 {% if user_token_error is defined and user_token_error == 'blank-token' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/Content/token-empty.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Confirm/Alert/Content/token-empty.html.twig' %}
 {% endif %}
 
 {% if user_token_error is defined and user_token_error == 'failed-read-only' %}
@@ -51,12 +51,12 @@
 {% endif %}
 
 {% if user_token_error is defined and user_token_error == 'invalid-token' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/Content/token-invalid.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Confirm/Alert/Content/token-invalid.html.twig' %}
 {% endif %}
 
 {% if user_create_confirmation is defined and user_create_confirmation is not empty or has_notification == false %}
     {% set alert_type  = 'success' %}
-    {% set alert_view = '@SimplyTestableWebClient/bs3/Partials/User/SignUp/Confirm/Alert/Content/post-create.html.twig' %}
+    {% set alert_view = 'Partials/User/SignUp/Confirm/Alert/Content/post-create.html.twig' %}
     {% set alert_view_parameters = {email: email} %}
     {% set alert_dismissable = false %}
 {% endif %}
