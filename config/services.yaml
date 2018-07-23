@@ -1,0 +1,194 @@
+imports:
+    - { resource: parameters/*.yml }
+    - { resource: parameters/early_access_users/*.yml }
+
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+  pdp_psl_data_path: '%kernel.project_dir%/data/pdp-psldata/pdp_rules.json'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Cache\CoreApplicationRouterCacheWarmer:
+      tags:
+        - { name: kernel.cache_warmer, priority: 0 }
+
+    App\Controller\ExceptionController:
+      public: true
+      arguments:
+        $debug: '%kernel.debug%'
+
+    App\EventListener\Stripe\Listener:
+      tags:
+        - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
+        - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }
+        - { name: kernel.event_listener, event: stripe.customer.subscription.trial_will_end, method: onCustomerSubscriptionTrialWillEnd }
+        - { name: kernel.event_listener, event: stripe.customer.subscription.updated, method: onCustomerSubscriptionUpdated }
+        - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }
+        - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }
+
+    App\EventListener\MailChimp\Listener:
+      tags:
+        - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
+        - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
+        - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
+        - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
+
+    App\EventListener\IEFilteredRequestListener:
+      arguments:
+        $marketingSiteUrl: '%env(MARKETING_SITE)%'
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 25 }
+
+    App\EventListener\RequiresValidUserRequestListener:
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 24 }
+
+    App\EventListener\RequiresPrivateUserRequestListener:
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 23 }
+
+    App\EventListener\RequiresValidTestOwnerRequestListener:
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 22 }
+
+    App\EventListener\RequiresCompletedTestRequestListener:
+      tags:
+        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 21 }
+
+    webignition\SimplyTestableUserSerializer\UserSerializer:
+      arguments:
+        $key: '%kernel.secret%'
+
+    App\Services\TestOptions\RequestAdapter:
+      calls:
+        - [addFeatureOptionsParser, ['@App\Services\TestOptions\OptionsParser']]
+        - [addFeatureOptionsParser, ['@App\Services\TestOptions\CookieOptionsParser', 'cookies']]
+
+    App\Services\MailChimp\ListRecipientsService:
+      arguments:
+        $listIdentifiers:
+          announcements: '%mailchimp_announcements_list_id%'
+          updates: '%mailchimp_updates_list_id%'
+          introduction: '%mailchimp_introduction_list_id%'
+
+    App\Services\TaskTypeService:
+      calls:
+        - [setTaskTypes, ['%task_types%']]
+        - [setEarlyAccessUsers, ['%early_access_users%']]
+
+    App\Services\CouponService:
+      calls:
+        - [setCouponData, ['%coupons%']]
+
+    App\Services\PlansService:
+      calls:
+        - [setPlansData, ['%plans%']]
+
+    App\Services\TaskOutput\ResultParser\Factory:
+      calls:
+        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\HtmlValidationResultParser']]
+        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\CssValidationResultParser']]
+        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
+        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
+
+    App\Services\CoreApplicationRouter:
+      arguments:
+        $baseUrl: '%env(CORE_URL)%'
+        $kernelProjectDirectory: '%kernel.project_dir%'
+        $cacheDir: '%kernel.cache_dir%'
+
+    App\Services\SystemUserService:
+      arguments:
+        - '%env(ADMIN_USER_USERNAME)%'
+        - '%env(ADMIN_USER_PASSWORD)%'
+
+    App\Services\MailChimp\Client:
+      arguments:
+        $apiKey: '%env(MAILCHIMP_API_KEY)%'
+
+    Egulias\EmailValidator\EmailValidator:
+
+    GuzzleHttp\Client:
+      factory: 'App\Services\HttpClientFactory:getHttpClient'
+
+    webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware:
+
+    Postmark\PostmarkClient:
+      arguments:
+        - '%env(POSTMARK_API_KEY)%'
+
+    Pdp\Rules:
+      factory: 'App\Services\Pdp\RulesFactory:create'
+
+    App\Services\Pdp\RulesFactory:
+      arguments:
+        - '%pdp_psl_data_path%'
+
+    App\Services\Pdp\RulesRetriever:
+      arguments:
+        - '%pdp_psl_data_path%'
+        - '@GuzzleHttp\Client'
+
+    App\Services\Configuration\CssValidationTestConfiguration:
+      arguments:
+        - '%css-validation-ignore-common-cdns%'
+
+    App\Services\Configuration\JsStaticAnalysisTestConfiguration:
+      arguments:
+        - '%js-static-analysis-ignore-common-cdns%'
+
+    App\Services\Configuration\LinkIntegrityTestConfiguration:
+      arguments:
+        - '%link-integrity-excluded-domains%'
+
+    App\Services\Configuration\TestOptionsConfiguration:
+      arguments:
+        - '%test_options%'
+
+    App\Services\Configuration\MailConfiguration:
+      public: false
+      arguments:
+        - '%mail%'
+
+    App\Services\Configuration\StripeConfiguration:
+      arguments:
+        - '%env(STRIPE_KEY)%'
+
+    App\Services\Configuration\CurrencyMap:
+      arguments:
+        - '%currency_map%'
+
+    App\Services\Configuration\DocumentationSiteUrls:
+      arguments:
+        - '%documentation_site_urls%'
+
+    App\Services\Configuration\LinkIntegrityErrorCodeMap:
+      arguments:
+        - '%link_integrity_error_code_map%'
+
+    App\Services\DocumentationUrlCheckerService:
+      arguments:
+        $documentationSitemapPath: '%kernel.project_dir%/config/resources/documentation_sitemap.xml'

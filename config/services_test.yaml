@@ -1,0 +1,26 @@
+services:
+  App\Services\HttpClientFactory:
+    public: true
+    class:   App\Tests\Services\TestHttpClientFactory
+    arguments:
+      - '@webignition\HttpHistoryContainer\Container'
+      - '@webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware'
+      - '@App\Tests\Services\HttpMockHandler'
+
+  webignition\HttpHistoryContainer\Container:
+
+  App\Tests\Services\HttpMockHandler:
+    public: true
+
+  # Need to inject our guzzle client into the postmark client to enable regular HTTP mocking in tests
+  # We don't to this for the dev/prod service as Postmark\PostmarkClient depends on the client constructor being
+  # passed the base url for correct behaviour.
+  Postmark\PostmarkClient:
+    public: true
+    arguments:
+      - '%env(POSTMARK_API_KEY)%'
+    calls:
+      - [setClient, ['@GuzzleHttp\Client']]
+
+  App\Tests\Services\PostmarkMessageVerifier:
+    public: true
