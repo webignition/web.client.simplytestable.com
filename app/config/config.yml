@@ -5,21 +5,7 @@ imports:
     - { resource: services.yml }
 
 framework:
-    #esi:             ~
-    #translator:      { fallback: %locale% }
-    secret:          '%secret%'
-    router:
-        resource: "%kernel.root_dir%/config/routing.yml"
-        strict_requirements: '%kernel.debug%'
-        #strict_parameters: %kernel.debug%
-    form:            true
-    csrf_protection: true
-    validation:      { enable_annotations: true }
     templating:      { engines: ['twig'] } #assets_version: SomeVersionScheme
-    default_locale:  '%locale%'
-    session:
-      cookie_domain: .simplytestable.com
-      save_path: "%simplytestable_session_savepath%"
     assets:
       json_manifest_path: '%kernel.project_dir%/web/build/manifest.json'
 
