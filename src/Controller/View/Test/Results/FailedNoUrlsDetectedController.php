@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\Test\Results\FailedNoUrlsDetected;
+namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
 use App\Entity\Test\Test;
@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController extends AbstractBaseViewController implements RequiresValidUser
+class FailedNoUrlsDetectedController extends AbstractBaseViewController implements RequiresValidUser
 {
     /**
      * @var TestService

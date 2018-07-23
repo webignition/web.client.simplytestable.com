@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\Test\Results\FailedNoUrlsDetected;
+namespace App\Tests\Functional\Controller\View\Test\Results;
 
-use App\Controller\View\Test\Results\FailedNoUrlsDetected\IndexController;
+use App\Controller\View\Test\Results\FailedNoUrlsDetectedController;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Services\SystemUserService;
@@ -16,7 +16,7 @@ use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-results-failed-no-urls-detected.html.twig';
     const ROUTE_NAME = 'view_test_results_failednourlsdetected_index_index';
@@ -103,8 +103,8 @@ class IndexControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var FailedNoUrlsDetectedController $indexController */
+        $indexController = self::$container->get(FailedNoUrlsDetectedController::class);
 
         $response = $indexController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -166,8 +166,8 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var FailedNoUrlsDetectedController $indexController */
+        $indexController = self::$container->get(FailedNoUrlsDetectedController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -209,8 +209,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var FailedNoUrlsDetectedController $indexController */
+        $indexController = self::$container->get(FailedNoUrlsDetectedController::class);
 
         $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
