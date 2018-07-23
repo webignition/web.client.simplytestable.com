@@ -244,6 +244,6 @@ class ClientTest extends AbstractBaseTestCase
         $decodedAuthorizationHeader = base64_decode(str_replace('Basic ', '', $authorizationHeader));
         $authorizationHeaderParts = explode(':', $decodedAuthorizationHeader);
 
-        $this->assertEquals(self::$container->getParameter('mailchimp_api_key'), $authorizationHeaderParts[1]);
+        $this->assertEquals(getenv('MAILCHIMP_API_KEY'), $authorizationHeaderParts[1]);
     }
 }
