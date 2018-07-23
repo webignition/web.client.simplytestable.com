@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Controller\View\Test\History;
 
-use App\Controller\View\Test\History\IndexController;
+use App\Controller\View\Test\HistoryController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
@@ -20,7 +20,7 @@ use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class HistoryControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-history.html.twig';
     const ROUTE_NAME = 'view_test_history_index_index';
@@ -49,7 +49,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 90,
-                'limit' => IndexController::TEST_LIST_LIMIT,
+                'limit' => HistoryController::TEST_LIST_LIMIT,
                 'offset' => 90,
                 'jobs' => [],
             ]),
@@ -91,8 +91,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var HistoryController $indexController */
+        $indexController = self::$container->get(HistoryController::class);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -138,7 +138,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'max_results' => 90,
-                        'limit' => IndexController::TEST_LIST_LIMIT,
+                        'limit' => HistoryController::TEST_LIST_LIMIT,
                         'offset' => 90,
                         'jobs' => [
                             [
@@ -177,7 +177,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'max_results' => 90,
-                        'limit' => IndexController::TEST_LIST_LIMIT,
+                        'limit' => HistoryController::TEST_LIST_LIMIT,
                         'offset' => 90,
                         'jobs' => [],
                     ]),
@@ -196,7 +196,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'max_results' => 190,
-                        'limit' => IndexController::TEST_LIST_LIMIT,
+                        'limit' => HistoryController::TEST_LIST_LIMIT,
                         'offset' => 10,
                         'jobs' => [],
                     ]),
@@ -231,8 +231,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var HistoryController $indexController */
+        $indexController = self::$container->get(HistoryController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction($request);
@@ -249,7 +249,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'max_results' => 90,
-                        'limit' => IndexController::TEST_LIST_LIMIT,
+                        'limit' => HistoryController::TEST_LIST_LIMIT,
                         'offset' => 90,
                         'jobs' => [],
                     ]),
@@ -288,7 +288,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'max_results' => 90,
-                        'limit' => IndexController::TEST_LIST_LIMIT,
+                        'limit' => HistoryController::TEST_LIST_LIMIT,
                         'offset' => 90,
                         'jobs' => [],
                     ]),
@@ -329,7 +329,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'max_results' => 90,
-                        'limit' => IndexController::TEST_LIST_LIMIT,
+                        'limit' => HistoryController::TEST_LIST_LIMIT,
                         'offset' => 90,
                         'jobs' => [],
                     ]),
@@ -368,7 +368,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'max_results' => 1000,
-                        'limit' => IndexController::TEST_LIST_LIMIT,
+                        'limit' => HistoryController::TEST_LIST_LIMIT,
                         'offset' => 100,
                         'jobs' => [
                             [
@@ -418,7 +418,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'max_results' => 0,
-                'limit' => IndexController::TEST_LIST_LIMIT,
+                'limit' => HistoryController::TEST_LIST_LIMIT,
                 'offset' => 0,
                 'jobs' => [],
             ]),
@@ -430,8 +430,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var HistoryController $indexController */
+        $indexController = self::$container->get(HistoryController::class);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);

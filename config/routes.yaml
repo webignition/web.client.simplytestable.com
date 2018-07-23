@@ -148,11 +148,11 @@ view_dashboard_partial_recenttests_index:
 
 view_test_history_index_index:
     path: /history/
-    defaults: { _controller: App\Controller\View\Test\History\IndexController::indexAction, page_number: 1 }
+    defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction, page_number: 1 }
 
 app_history:
     path: /history/{page_number}/
-    defaults: { _controller: App\Controller\View\Test\History\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction }
     requirements:
         page_number: '\d+'
 
