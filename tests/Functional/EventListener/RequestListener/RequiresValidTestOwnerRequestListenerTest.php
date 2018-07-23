@@ -9,7 +9,7 @@ use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\View\Test\Partial\Notification\TestUrlLimitNotificationController;
+use App\Controller\View\Partials\TestUrlLimitNotificationController;
 
 class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelControllerTest
 {
