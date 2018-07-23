@@ -23,7 +23,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexController extends AbstractUserAccountController
+class AccountController extends AbstractUserAccountController
 {
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 

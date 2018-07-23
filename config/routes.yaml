@@ -88,7 +88,7 @@ action_user_account_passwordchange_request:
 
 view_user_account_index_index:
     path: /account/
-    defaults: { _controller: App\Controller\View\User\Account\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\User\Account\AccountController::indexAction }
 
 view_user_account_card_index:
     path: /account/card/

@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Controller\View\User\Account;
 
-use App\Controller\View\User\Account\IndexController;
+use App\Controller\View\User\Account\AccountController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
@@ -20,7 +20,7 @@ use Twig_Environment;
 use webignition\Model\Stripe\Invoice\Invoice;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class AccountControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-account.html.twig';
     const ROUTE_NAME = 'view_user_account_index_index';
@@ -162,11 +162,11 @@ class IndexControllerTest extends AbstractViewControllerTest
             }
         }
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var AccountController $accountController */
+        $accountController = self::$container->get(AccountController::class);
+        $this->setTwigOnController($twig, $accountController);
 
-        $response = $indexController->indexAction(new Request());
+        $response = $accountController->indexAction(new Request());
         $this->assertInstanceOf(Response::class, $response);
     }
 
