@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Controller\View\Test\Progress;
+namespace App\Controller\View\Test;
 
-use App\Controller\View\Test\AbstractRequiresValidOwnerController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
 use App\Interfaces\Controller\RequiresValidUser;
@@ -30,7 +29,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
+class ProgressController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
 

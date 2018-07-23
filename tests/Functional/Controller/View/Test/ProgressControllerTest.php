@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Controller\View\Test\Progress;
 
-use App\Controller\View\Test\Progress\IndexController;
+use App\Controller\View\Test\ProgressController;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
@@ -19,7 +19,7 @@ use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class ProgressControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-progress.html.twig';
     const ROUTE_NAME = 'view_test_progress_index_index';
@@ -162,8 +162,8 @@ class IndexControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ProgressController $indexController */
+        $indexController = self::$container->get(ProgressController::class);
 
         $response = $indexController->indexAction(new Request(), $website, $testId);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -198,8 +198,8 @@ class IndexControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ProgressController $indexController */
+        $indexController = self::$container->get(ProgressController::class);
 
         $request = new Request();
         $request->headers->set('X-Requested-With', 'XMLHttpRequest');
@@ -291,8 +291,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ProgressController $indexController */
+        $indexController = self::$container->get(ProgressController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -438,8 +438,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ProgressController $indexController */
+        $indexController = self::$container->get(ProgressController::class);
 
         $request = new Request();
         $request->headers->set('accept', 'application/json');
@@ -532,8 +532,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ProgressController $indexController */
+        $indexController = self::$container->get(ProgressController::class);
 
         $response = $indexController->indexAction(
             $request,
