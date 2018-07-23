@@ -7,7 +7,19 @@ php:
   - 7.2
 
 env:
-  - SYMFONY_ENV=test
+  global:
+    - APP_ENV=test
+    - DATABASE_URL=mysql://root:@127.0.0.1:3306/myapp_test
+    - APP_SECRET=Secret!
+    - SESSION_SAVE_PATH=/tmp
+    - MARKETING_SITE=https://simplytestable.com/
+    - STRIPE_KEY=stripe_key_value
+    - CORE_URL=http://null
+    - MAILCHIMP_API_KEY=mailchimp_api_key_value-us5
+    - ADMIN_USER_USERNAME=admin_username_value
+    - ADMIN_USER_PASSWORD=admin_password_value
+    - POSTMARK_API_KEY=postmark_api_key_value
+    - RESQUE_PREFIX=web.client.simplytestable.com
 
 cache:
   directories:
@@ -17,8 +29,8 @@ cache:
 before_install:
   - composer self-update
   - cp .travis.composer.config.json ~/.composer/config.json
-  - mv app/config/parameters.yml.travis app/config/parameters.yml
-  - mv --force app/config/config_travis.yml app/config/config_test.yml
+  - rm phpunit.xml.dist
+  - mv phpunit.travis-ci.xml phpunit.xml.dist
   - mysql -e 'CREATE DATABASE myapp_test;'
   - yarn install
 
