@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserManager;
+use App\Services\SystemUserService;
+use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use webignition\SimplyTestableUserModel\User;

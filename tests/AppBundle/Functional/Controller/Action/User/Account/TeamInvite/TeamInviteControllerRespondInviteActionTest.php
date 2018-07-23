@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account\TeamInvite;
 
-use AppBundle\Exception\CoreApplicationReadOnlyException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Services\UserManager;
+use App\Exception\CoreApplicationReadOnlyException;
+use App\Exception\InvalidCredentialsException;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

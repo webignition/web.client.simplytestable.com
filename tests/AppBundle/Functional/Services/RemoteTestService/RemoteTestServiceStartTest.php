@@ -3,12 +3,12 @@
 namespace Tests\AppBundle\Functional\Services\RemoteTestService;
 
 use GuzzleHttp\Post\PostBody;
-use AppBundle\Exception\CoreApplicationReadOnlyException;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\RemoteTest\RemoteTest;
-use AppBundle\Model\TestOptions;
+use App\Exception\CoreApplicationReadOnlyException;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\RemoteTest\RemoteTest;
+use App\Model\TestOptions;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\ModelFactory;
 

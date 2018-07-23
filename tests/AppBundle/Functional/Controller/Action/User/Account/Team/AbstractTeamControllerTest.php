@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account\Team;
 
-use AppBundle\Controller\Action\User\Account\TeamController;
+use App\Controller\Action\User\Account\TeamController;
 use Tests\AppBundle\Functional\Controller\Action\User\Account\AbstractUserAccountControllerTest;
 
 abstract class AbstractTeamControllerTest extends AbstractUserAccountControllerTest

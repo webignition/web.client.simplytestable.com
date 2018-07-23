@@ -2,12 +2,12 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Test\Task\TaskList;
 
-use AppBundle\Controller\View\Test\Task\TaskList\IndexController;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
+use App\Controller\View\Test\Task\TaskList\IndexController;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;

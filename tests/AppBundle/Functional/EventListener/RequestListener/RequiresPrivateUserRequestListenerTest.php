@@ -2,13 +2,13 @@
 
 namespace Tests\AppBundle\Functional\EventListener\RequestListener;
 
-use AppBundle\EventListener\RequiresPrivateUserRequestListener;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserManager;
+use App\EventListener\RequiresPrivateUserRequestListener;
+use App\Services\SystemUserService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Controller\Action\User\Account\NewsSubscriptionsController;
+use App\Controller\Action\User\Account\NewsSubscriptionsController;
 use webignition\SimplyTestableUserModel\User;
 
 class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTest

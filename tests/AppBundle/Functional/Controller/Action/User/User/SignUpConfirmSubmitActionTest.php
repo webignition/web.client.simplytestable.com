@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\User;
 
-use AppBundle\Controller\Action\User\UserController;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Services\ResqueQueueService;
+use App\Controller\Action\User\UserController;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Services\ResqueQueueService;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

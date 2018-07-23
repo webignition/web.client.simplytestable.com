@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Unit\Services\TestOptions;
 
-use AppBundle\Services\TestOptions\OptionsParser;
+use App\Services\TestOptions\OptionsParser;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class OptionsParserTest extends \PHPUnit\Framework\TestCase

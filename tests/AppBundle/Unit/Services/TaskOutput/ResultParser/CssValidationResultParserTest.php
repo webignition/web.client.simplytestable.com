@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Unit\Services\TaskOutput\ResultParser;
 
-use AppBundle\Entity\Task\Output;
-use AppBundle\Model\TaskOutput\Result;
-use AppBundle\Services\TaskOutput\ResultParser\CssValidationResultParser;
+use App\Entity\Task\Output;
+use App\Model\TaskOutput\Result;
+use App\Services\TaskOutput\ResultParser\CssValidationResultParser;
 use Tests\AppBundle\Factory\ModelFactory;
 
 class CssValidationResultParserTest extends \PHPUnit\Framework\TestCase

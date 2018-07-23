@@ -3,9 +3,9 @@
 namespace Tests\AppBundle\Unit\Services\Request\Validator\User;
 
 use Egulias\EmailValidator\EmailValidator;
-use AppBundle\Request\User\AbstractUserAccountRequest;
-use AppBundle\Request\User\AbstractUserRequest;
-use AppBundle\Services\Request\Validator\User\SignInRequestValidator;
+use App\Request\User\AbstractUserAccountRequest;
+use App\Request\User\AbstractUserRequest;
+use App\Services\Request\Validator\User\SignInRequestValidator;
 
 class SignInRequestValidatorTest extends AbstractUserAccountRequestValidatorTest
 {

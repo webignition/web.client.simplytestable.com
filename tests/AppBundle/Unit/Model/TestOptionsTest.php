@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Unit\Model;
 
-use AppBundle\Model\TestOptions;
+use App\Model\TestOptions;
 
 class TestOptionsTest extends \PHPUnit\Framework\TestCase
 {

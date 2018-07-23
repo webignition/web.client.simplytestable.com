@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Unit\Entity\MailChimp\ListRecipients;
 
-use AppBundle\Entity\MailChimp\ListRecipients;
+use App\Entity\MailChimp\ListRecipients;
 
 abstract class EntityTest extends \PHPUnit\Framework\TestCase
 {

@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Unit\Services\Configuration;
 
-use AppBundle\Services\Configuration\MailConfiguration;
-use AppBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use App\Services\Configuration\MailConfiguration;
+use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class ConfigurationTest extends \PHPUnit\Framework\TestCase
 {

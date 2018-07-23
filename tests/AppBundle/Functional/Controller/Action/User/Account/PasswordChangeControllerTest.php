@@ -2,12 +2,12 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account;
 
-use AppBundle\Controller\Action\User\Account\PasswordChangeController;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\User\Account\PasswordChangeController;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;

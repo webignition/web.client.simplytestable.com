@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Functional\Command\PdpPslData;
 
 use Mockery\MockInterface;
-use AppBundle\Command\PdpPslData\RefreshCommand;
-use AppBundle\Services\Pdp\RulesRetriever;
+use App\Command\PdpPslData\RefreshCommand;
+use App\Services\Pdp\RulesRetriever;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;

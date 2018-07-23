@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Functional\Services\MailChimp;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\MailChimp\ListRecipients;
-use AppBundle\Services\MailChimp\ListRecipientsService;
+use App\Entity\MailChimp\ListRecipients;
+use App\Services\MailChimp\ListRecipientsService;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 
 class ListRecipientsServiceTest extends AbstractBaseTestCase

@@ -2,13 +2,13 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\User\SignUp;
 
-use AppBundle\Controller\Action\User\UserController;
-use AppBundle\Controller\View\User\SignUp\IndexController;
-use AppBundle\Model\Coupon;
-use AppBundle\Model\User\Plan;
-use AppBundle\Request\User\SignUpRequest;
-use AppBundle\Services\CouponService;
-use AppBundle\Services\Request\Validator\User\UserAccountRequestValidator;
+use App\Controller\Action\User\UserController;
+use App\Controller\View\User\SignUp\IndexController;
+use App\Model\Coupon;
+use App\Model\User\Plan;
+use App\Request\User\SignUpRequest;
+use App\Services\CouponService;
+use App\Services\Request\Validator\User\UserAccountRequestValidator;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;

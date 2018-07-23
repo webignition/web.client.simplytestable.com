@@ -5,7 +5,7 @@ namespace Tests\AppBundle\Unit\Services;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
-use AppBundle\Services\CoreApplicationResponseCache;
+use App\Services\CoreApplicationResponseCache;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 
 class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase

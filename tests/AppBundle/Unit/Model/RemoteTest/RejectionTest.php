@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Unit\Model\RemoteTest;
 
-use AppBundle\Model\RemoteTest\Rejection;
+use App\Model\RemoteTest\Rejection;
 
 class RejectionTest extends \PHPUnit\Framework\TestCase
 {

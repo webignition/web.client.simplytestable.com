@@ -3,9 +3,9 @@
 namespace Tests\AppBundle\Functional\Services\RemoteTestService;
 
 use ReflectionClass;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Model\RemoteTest\RemoteTest;
-use AppBundle\Services\RemoteTestService;
+use App\Entity\Test\Test;
+use App\Model\RemoteTest\RemoteTest;
+use App\Services\RemoteTestService;
 use Tests\AppBundle\Functional\Services\AbstractCoreApplicationServiceTest;
 use webignition\SimplyTestableUserModel\User;
 

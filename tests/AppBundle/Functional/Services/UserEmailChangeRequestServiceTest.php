@@ -2,12 +2,12 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Exception\UserEmailChangeException;
-use AppBundle\Services\UserEmailChangeRequestService;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Exception\UserEmailChangeException;
+use App\Services\UserEmailChangeRequestService;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use webignition\SimplyTestableUserModel\User;

@@ -3,9 +3,9 @@
 namespace Tests\AppBundle\Functional\Command\CacheValidator;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Command\CacheValidator\ClearCommand;
-use AppBundle\Entity\CacheValidatorHeaders;
-use AppBundle\Services\CacheValidatorHeadersService;
+use App\Command\CacheValidator\ClearCommand;
+use App\Entity\CacheValidatorHeaders;
+use App\Services\CacheValidatorHeadersService;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;

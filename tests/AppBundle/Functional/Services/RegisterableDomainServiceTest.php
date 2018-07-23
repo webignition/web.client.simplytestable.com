@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Services\RegisterableDomainService;
+use App\Services\RegisterableDomainService;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 
 class RegisterableDomainServiceTest extends AbstractBaseTestCase

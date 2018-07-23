@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Unit\Model\Task;
 
-use AppBundle\Entity\Task\Task;
-use AppBundle\Model\Task\Collection;
+use App\Entity\Task\Task;
+use App\Model\Task\Collection;
 use Tests\AppBundle\Factory\ModelFactory;
 
 class CollectionTest extends \PHPUnit\Framework\TestCase

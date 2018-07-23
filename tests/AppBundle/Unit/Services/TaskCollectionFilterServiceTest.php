@@ -4,10 +4,10 @@ namespace Tests\AppBundle\Unit\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Repository\TaskRepository;
-use AppBundle\Services\TaskCollectionFilterService;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Repository\TaskRepository;
+use App\Services\TaskCollectionFilterService;
 
 class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 {

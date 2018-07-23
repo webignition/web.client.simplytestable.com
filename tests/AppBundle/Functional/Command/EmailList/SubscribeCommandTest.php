@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Command\EmailList;
 
-use AppBundle\Command\EmailList\SubscribeCommand;
+use App\Command\EmailList\SubscribeCommand;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\Console\Input\ArrayInput;

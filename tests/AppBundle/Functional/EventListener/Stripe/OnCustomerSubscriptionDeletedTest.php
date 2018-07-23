@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\EventListener\Stripe;
 
-use AppBundle\Event\Stripe\Event as StripeEvent;
+use App\Event\Stripe\Event as StripeEvent;
 use Tests\AppBundle\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Tests\AppBundle\Services\HttpMockHandler;

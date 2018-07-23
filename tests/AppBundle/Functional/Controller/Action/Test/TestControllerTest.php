@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\Test;
 
-use AppBundle\Controller\Action\Test\TestController;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
+use App\Controller\Action\Test\TestController;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;

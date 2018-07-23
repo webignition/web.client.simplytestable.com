@@ -2,12 +2,12 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\User\ResetPassword;
 
-use AppBundle\Controller\Action\User\ResetPassword\IndexController;
-use AppBundle\Controller\View\User\ResetPassword\ChooseController;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\User\ResetPassword\IndexController;
+use App\Controller\View\User\ResetPassword\ChooseController;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Exception\InvalidContentTypeException;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Request;

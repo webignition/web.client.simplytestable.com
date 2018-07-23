@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Functional\Services\Pdp;
 
 use Pdp\Rules;
-use AppBundle\Services\Pdp\RulesFactory;
+use App\Services\Pdp\RulesFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 
 class RulesFactoryTest extends AbstractBaseTestCase

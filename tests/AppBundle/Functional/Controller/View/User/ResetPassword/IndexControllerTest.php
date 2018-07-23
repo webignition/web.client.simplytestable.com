@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\User\ResetPassword;
 
-use AppBundle\Controller\View\User\ResetPassword\IndexController;
+use App\Controller\View\User\ResetPassword\IndexController;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Controller\Action\User\ResetPassword\IndexController
+use App\Controller\Action\User\ResetPassword\IndexController
     as ResetPasswordActionController;
 use Tests\AppBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;

@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Functional\Services\TaskService;
 
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\TaskFactory;
 use Tests\AppBundle\Factory\TestFactory;

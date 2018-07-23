@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Functional\EventListener\RequestListener;
 
-use AppBundle\Controller\BaseViewController;
-use AppBundle\EventListener\IEFilteredRequestListener;
+use App\Controller\BaseViewController;
+use App\EventListener\IEFilteredRequestListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Controller\View\User\SignUp\IndexController;
+use App\Controller\View\User\SignUp\IndexController;
 
 class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
 {

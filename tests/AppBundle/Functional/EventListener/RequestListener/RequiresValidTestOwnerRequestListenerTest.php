@@ -2,14 +2,14 @@
 
 namespace Tests\AppBundle\Functional\EventListener\RequestListener;
 
-use AppBundle\Entity\Test\Test;
-use AppBundle\EventListener\RequiresValidTestOwnerRequestListener;
-use AppBundle\Exception\CoreApplicationRequestException;
+use App\Entity\Test\Test;
+use App\EventListener\RequiresValidTestOwnerRequestListener;
+use App\Exception\CoreApplicationRequestException;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Controller\View\Test\Partial\Notification\UrlLimitController;
+use App\Controller\View\Test\Partial\Notification\UrlLimitController;
 
 class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelControllerTest
 {

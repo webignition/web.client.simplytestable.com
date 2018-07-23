@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services\TaskService;
 
-use AppBundle\Services\TaskService;
+use App\Services\TaskService;
 use Tests\AppBundle\Functional\Services\AbstractCoreApplicationServiceTest;
 
 abstract class AbstractTaskServiceTest extends AbstractCoreApplicationServiceTest

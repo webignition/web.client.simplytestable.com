@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Model\Team\Team;
-use AppBundle\Services\TeamService;
+use App\Model\Team\Team;
+use App\Services\TeamService;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 
 class TeamServiceTest extends AbstractCoreApplicationServiceTest

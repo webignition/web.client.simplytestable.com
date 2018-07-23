@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\EventListener\RequestListener;
 
-use AppBundle\Controller\View\Dashboard\Partial\RecentTestsController;
-use AppBundle\EventListener\RequiresValidUserRequestListener;
+use App\Controller\View\Dashboard\Partial\RecentTestsController;
+use App\EventListener\RequiresValidUserRequestListener;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

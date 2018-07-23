@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Unit\Services\Factory;
 
-use AppBundle\Entity\Task\Output;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Services\Factory\TaskFactory;
-use AppBundle\Services\Factory\TaskOutputFactory;
+use App\Entity\Task\Output;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Services\Factory\TaskFactory;
+use App\Services\Factory\TaskOutputFactory;
 use Tests\AppBundle\Factory\MockFactory;
 
 class TaskFactoryTest extends \PHPUnit\Framework\TestCase

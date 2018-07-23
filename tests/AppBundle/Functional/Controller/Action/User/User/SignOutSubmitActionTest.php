@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\User;
 
-use AppBundle\Services\UserManager;
+use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use webignition\SimplyTestableUserModel\User;

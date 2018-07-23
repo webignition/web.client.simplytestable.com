@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Unit\Model;
 
-use AppBundle\Model\Coupon;
+use App\Model\Coupon;
 
 class CouponTest extends \PHPUnit\Framework\TestCase
 {

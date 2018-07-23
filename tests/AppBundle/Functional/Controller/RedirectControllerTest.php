@@ -4,10 +4,10 @@ namespace Tests\AppBundle\Functional\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use AppBundle\Controller\RedirectController;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Services\RemoteTestService;
-use AppBundle\Services\TestService;
+use App\Controller\RedirectController;
+use App\Entity\Test\Test;
+use App\Services\RemoteTestService;
+use App\Services\TestService;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\TestFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;

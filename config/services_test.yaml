@@ -1,15 +1,15 @@
 services:
-  AppBundle\Services\HttpClientFactory:
+  App\Services\HttpClientFactory:
     public: true
-    class:   Tests\AppBundle\Services\TestHttpClientFactory
+    class:   App\Tests\Services\TestHttpClientFactory
     arguments:
       - '@webignition\HttpHistoryContainer\Container'
       - '@webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware'
-      - '@Tests\AppBundle\Services\HttpMockHandler'
+      - '@App\Tests\Services\HttpMockHandler'
 
   webignition\HttpHistoryContainer\Container:
 
-  Tests\AppBundle\Services\HttpMockHandler:
+  App\Tests\Services\HttpMockHandler:
     public: true
 
   # Need to inject our guzzle client into the postmark client to enable regular HTTP mocking in tests
@@ -22,5 +22,5 @@ services:
     calls:
       - [setClient, ['@GuzzleHttp\Client']]
 
-  Tests\AppBundle\Services\PostmarkMessageVerifier:
+  App\Tests\Services\PostmarkMessageVerifier:
     public: true

@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Services\UserManager;
+use App\Services\UserManager;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Tests\AppBundle\Services\HttpMockHandler;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;

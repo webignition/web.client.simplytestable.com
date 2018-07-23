@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Exception\CoreApplicationReadOnlyException;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Exception\UserAccountCardException;
-use AppBundle\Services\UserAccountCardService;
+use App\Exception\CoreApplicationReadOnlyException;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidCredentialsException;
+use App\Exception\UserAccountCardException;
+use App\Services\UserAccountCardService;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use webignition\SimplyTestableUserModel\User;

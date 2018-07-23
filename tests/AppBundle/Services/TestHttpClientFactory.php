@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Services;
 
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Middleware;
-use AppBundle\Services\HttpClientFactory;
+use App\Services\HttpClientFactory;
 use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 

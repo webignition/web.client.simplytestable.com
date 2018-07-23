@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Functional\Services\Pdp;
 
 use GuzzleHttp\Psr7\Response;
 use phpmock\mockery\PHPMockery;
-use AppBundle\Services\Pdp\RulesRetriever;
+use App\Services\Pdp\RulesRetriever;
 use Tests\AppBundle\Factory\FixtureLoader;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Tests\AppBundle\Services\HttpMockHandler;
@@ -40,7 +40,7 @@ class RulesRetrieverTest extends AbstractBaseTestCase
     {
         $expectedFilePutContentsArg0 = self::$container->getParameter('pdp_psl_data_path');
 
-        $mockedNamespace = 'AppBundle\Services\Pdp';
+        $mockedNamespace = 'App\Services\Pdp';
 
         PHPMockery::mock(
             $mockedNamespace,

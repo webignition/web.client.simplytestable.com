@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Unit\Services;
 
 use Psr\Http\Message\ResponseInterface;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Services\JsonResponseHandler;
+use App\Exception\InvalidContentTypeException;
+use App\Services\JsonResponseHandler;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 
 class JsonResponseHandlerTest extends \PHPUnit\Framework\TestCase

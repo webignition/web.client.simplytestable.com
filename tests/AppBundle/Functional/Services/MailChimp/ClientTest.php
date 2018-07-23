@@ -2,12 +2,12 @@
 
 namespace Tests\AppBundle\Functional\Services\MailChimp;
 
-use AppBundle\Exception\MailChimp\MemberExistsException;
-use AppBundle\Exception\MailChimp\ResourceNotFoundException;
-use AppBundle\Exception\MailChimp\UnknownException;
-use AppBundle\Model\MailChimp\ApiError;
-use AppBundle\Model\MailChimp\ListMembers;
-use AppBundle\Services\MailChimp\Client as MailChimpClient;
+use App\Exception\MailChimp\MemberExistsException;
+use App\Exception\MailChimp\ResourceNotFoundException;
+use App\Exception\MailChimp\UnknownException;
+use App\Model\MailChimp\ApiError;
+use App\Model\MailChimp\ListMembers;
+use App\Services\MailChimp\Client as MailChimpClient;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Tests\AppBundle\Services\HttpMockHandler;

@@ -23,7 +23,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php,AppBundle}'
+        exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -31,32 +31,16 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
-    AppBundle\:
-        resource: '../src/AppBundle/*'
-        exclude: '../src/AppBundle/{Entity,Exception,Repository}'
-
-    AppBundle\Command\:
-        resource: '../src/AppBundle/Command'
-        tags:
-          - { name: console.command }
-
-    AppBundle\Controller\:
-        resource: '../src/AppBundle/Controller'
-        public: true
-        tags: ['controller.service_arguments']
-
-    AppBundle\Cache\CoreApplicationRouterCacheWarmer:
+    App\Cache\CoreApplicationRouterCacheWarmer:
       tags:
         - { name: kernel.cache_warmer, priority: 0 }
 
-    AppBundle\Controller\ExceptionController:
+    App\Controller\ExceptionController:
       public: true
       arguments:
         $debug: '%kernel.debug%'
 
-    AppBundle\EventListener\Stripe\Listener:
+    App\EventListener\Stripe\Listener:
       tags:
         - { name: kernel.event_listener, event: stripe.customer.subscription.created, method: onCustomerSubscriptionCreated }
         - { name: kernel.event_listener, event: stripe.customer.subscription.deleted, method: onCustomerSubscriptionDeleted }
@@ -65,32 +49,32 @@ services:
         - { name: kernel.event_listener, event: stripe.invoice.payment_succeeded, method: onInvoicePaymentSucceeded }
         - { name: kernel.event_listener, event: stripe.invoice.payment_failed, method: onInvoicePaymentFailed }
 
-    AppBundle\EventListener\MailChimp\Listener:
+    App\EventListener\MailChimp\Listener:
       tags:
         - { name: kernel.event_listener, event: mailchimp.subscribe, method: onSubscribe }
         - { name: kernel.event_listener, event: mailchimp.unsubscribe, method: onUnsubscribe }
         - { name: kernel.event_listener, event: mailchimp.upemail, method: onUpEmail }
         - { name: kernel.event_listener, event: mailchimp.cleaned, method: onCleaned }
 
-    AppBundle\EventListener\IEFilteredRequestListener:
+    App\EventListener\IEFilteredRequestListener:
       arguments:
         $marketingSiteUrl: '%env(MARKETING_SITE)%'
       tags:
         - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 25 }
 
-    AppBundle\EventListener\RequiresValidUserRequestListener:
+    App\EventListener\RequiresValidUserRequestListener:
       tags:
         - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 24 }
 
-    AppBundle\EventListener\RequiresPrivateUserRequestListener:
+    App\EventListener\RequiresPrivateUserRequestListener:
       tags:
         - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 23 }
 
-    AppBundle\EventListener\RequiresValidTestOwnerRequestListener:
+    App\EventListener\RequiresValidTestOwnerRequestListener:
       tags:
         - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 22 }
 
-    AppBundle\EventListener\RequiresCompletedTestRequestListener:
+    App\EventListener\RequiresCompletedTestRequestListener:
       tags:
         - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 21 }
 
@@ -98,57 +82,57 @@ services:
       arguments:
         $key: '%kernel.secret%'
 
-    AppBundle\Services\TestOptions\RequestAdapter:
+    App\Services\TestOptions\RequestAdapter:
       calls:
-        - [addFeatureOptionsParser, ['@AppBundle\Services\TestOptions\OptionsParser']]
-        - [addFeatureOptionsParser, ['@AppBundle\Services\TestOptions\CookieOptionsParser', 'cookies']]
+        - [addFeatureOptionsParser, ['@App\Services\TestOptions\OptionsParser']]
+        - [addFeatureOptionsParser, ['@App\Services\TestOptions\CookieOptionsParser', 'cookies']]
 
-    AppBundle\Services\MailChimp\ListRecipientsService:
+    App\Services\MailChimp\ListRecipientsService:
       arguments:
         $listIdentifiers:
           announcements: '%env(MAILCHIMP_ANNOUNCEMENTS_LIST_ID)%'
           updates: '%env(MAILCHIMP_UPDATES_LIST_ID)%'
           introduction: '%env(MAILCHIMP_INTRODUCTION_LIST_ID)%'
 
-    AppBundle\Services\TaskTypeService:
+    App\Services\TaskTypeService:
       calls:
         - [setTaskTypes, ['%task_types%']]
         - [setEarlyAccessUsers, ['%early_access_users%']]
 
-    AppBundle\Services\CouponService:
+    App\Services\CouponService:
       calls:
         - [setCouponData, ['%coupons%']]
 
-    AppBundle\Services\PlansService:
+    App\Services\PlansService:
       calls:
         - [setPlansData, ['%plans%']]
 
-    AppBundle\Services\TaskOutput\ResultParser\Factory:
+    App\Services\TaskOutput\ResultParser\Factory:
       calls:
-        - [addResultParser, ['@AppBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser']]
-        - [addResultParser, ['@AppBundle\Services\TaskOutput\ResultParser\CssValidationResultParser']]
-        - [addResultParser, ['@AppBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
-        - [addResultParser, ['@AppBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
+        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\HtmlValidationResultParser']]
+        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\CssValidationResultParser']]
+        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
+        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
 
-    AppBundle\Services\CoreApplicationRouter:
+    App\Services\CoreApplicationRouter:
       arguments:
         $baseUrl: '%env(CORE_URL)%'
         $kernelProjectDirectory: '%kernel.project_dir%'
         $cacheDir: '%kernel.cache_dir%'
 
-    AppBundle\Services\SystemUserService:
+    App\Services\SystemUserService:
       arguments:
         - '%env(ADMIN_USER_USERNAME)%'
         - '%env(ADMIN_USER_PASSWORD)%'
 
-    AppBundle\Services\MailChimp\Client:
+    App\Services\MailChimp\Client:
       arguments:
         $apiKey: '%env(MAILCHIMP_API_KEY)%'
 
     Egulias\EmailValidator\EmailValidator:
 
     GuzzleHttp\Client:
-      factory: 'AppBundle\Services\HttpClientFactory:getHttpClient'
+      factory: 'App\Services\HttpClientFactory:getHttpClient'
 
     webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware:
 
@@ -157,54 +141,54 @@ services:
         - '%env(POSTMARK_API_KEY)%'
 
     Pdp\Rules:
-      factory: 'AppBundle\Services\Pdp\RulesFactory:create'
+      factory: 'App\Services\Pdp\RulesFactory:create'
 
-    AppBundle\Services\Pdp\RulesFactory:
+    App\Services\Pdp\RulesFactory:
       arguments:
         - '%pdp_psl_data_path%'
 
-    AppBundle\Services\Pdp\RulesRetriever:
+    App\Services\Pdp\RulesRetriever:
       arguments:
         - '%pdp_psl_data_path%'
         - '@GuzzleHttp\Client'
 
-    AppBundle\Services\Configuration\CssValidationTestConfiguration:
+    App\Services\Configuration\CssValidationTestConfiguration:
       arguments:
         - '%css-validation-ignore-common-cdns%'
 
-    AppBundle\Services\Configuration\JsStaticAnalysisTestConfiguration:
+    App\Services\Configuration\JsStaticAnalysisTestConfiguration:
       arguments:
         - '%js-static-analysis-ignore-common-cdns%'
 
-    AppBundle\Services\Configuration\LinkIntegrityTestConfiguration:
+    App\Services\Configuration\LinkIntegrityTestConfiguration:
       arguments:
         - '%link-integrity-excluded-domains%'
 
-    AppBundle\Services\Configuration\TestOptionsConfiguration:
+    App\Services\Configuration\TestOptionsConfiguration:
       arguments:
         - '%test_options%'
 
-    AppBundle\Services\Configuration\MailConfiguration:
+    App\Services\Configuration\MailConfiguration:
       public: false
       arguments:
         - '%mail%'
 
-    AppBundle\Services\Configuration\StripeConfiguration:
+    App\Services\Configuration\StripeConfiguration:
       arguments:
         - '%env(STRIPE_KEY)%'
 
-    AppBundle\Services\Configuration\CurrencyMap:
+    App\Services\Configuration\CurrencyMap:
       arguments:
         - '%currency_map%'
 
-    AppBundle\Services\Configuration\DocumentationSiteUrls:
+    App\Services\Configuration\DocumentationSiteUrls:
       arguments:
         - '%documentation_site_urls%'
 
-    AppBundle\Services\Configuration\LinkIntegrityErrorCodeMap:
+    App\Services\Configuration\LinkIntegrityErrorCodeMap:
       arguments:
         - '%link_integrity_error_code_map%'
 
-    AppBundle\Services\DocumentationUrlCheckerService:
+    App\Services\DocumentationUrlCheckerService:
       arguments:
         $documentationSitemapPath: '%kernel.project_dir%/app/config/resources/documentation_sitemap.xml'

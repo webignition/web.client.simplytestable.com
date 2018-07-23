@@ -2,15 +2,15 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\User\SignUp;
 
-use AppBundle\Controller\Action\User\UserController;
-use AppBundle\Controller\View\User\SignUp\ConfirmController;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\User\UserController;
+use App\Controller\View\User\SignUp\ConfirmController;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use AppBundle\Controller\Action\SignUp\User\ConfirmController as ActionConfirmController;
+use App\Controller\Action\SignUp\User\ConfirmController as ActionConfirmController;
 use Tests\AppBundle\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;

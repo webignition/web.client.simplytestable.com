@@ -3,9 +3,9 @@
 namespace Tests\AppBundle\Functional\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\CacheValidatorHeaders;
-use AppBundle\Repository\CacheValidatorHeadersRepository;
-use AppBundle\Services\CacheValidatorHeadersService;
+use App\Entity\CacheValidatorHeaders;
+use App\Repository\CacheValidatorHeadersRepository;
+use App\Services\CacheValidatorHeadersService;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 
 class CacheValidatorHeadersServiceTest extends AbstractBaseTestCase

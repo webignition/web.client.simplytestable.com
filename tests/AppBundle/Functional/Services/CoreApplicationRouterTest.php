@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Services\CoreApplicationRouter;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Services\CoreApplicationRouter;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 
 class CoreApplicationRouterTest extends AbstractBaseTestCase

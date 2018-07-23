@@ -3,9 +3,9 @@
 namespace Tests\AppBundle\Unit\Services;
 
 use Mockery\MockInterface;
-use AppBundle\Request\User\SignInRequest;
-use AppBundle\Request\User\SignUpRequest;
-use AppBundle\Services\RedirectResponseFactory;
+use App\Request\User\SignInRequest;
+use App\Request\User\SignUpRequest;
+use App\Services\RedirectResponseFactory;
 use Symfony\Component\Routing\RouterInterface;
 
 class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase

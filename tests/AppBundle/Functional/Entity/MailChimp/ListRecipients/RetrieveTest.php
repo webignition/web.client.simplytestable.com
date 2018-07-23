@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Functional\Entity\MailChimp\ListRecipients;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\MailChimp\ListRecipients;
+use App\Entity\MailChimp\ListRecipients;
 
 class RetrieveTest extends EntityTest
 {

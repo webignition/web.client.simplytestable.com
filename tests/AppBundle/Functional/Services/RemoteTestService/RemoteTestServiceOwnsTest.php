@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\Services\RemoteTestService;
 
-use AppBundle\Entity\Test\Test;
-use AppBundle\Exception\CoreApplicationRequestException;
+use App\Entity\Test\Test;
+use App\Exception\CoreApplicationRequestException;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
 

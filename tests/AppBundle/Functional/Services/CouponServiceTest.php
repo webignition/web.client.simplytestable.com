@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Services\CouponService;
+use App\Services\CouponService;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 

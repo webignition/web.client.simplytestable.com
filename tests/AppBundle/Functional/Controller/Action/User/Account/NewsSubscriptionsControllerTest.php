@@ -3,11 +3,11 @@
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Controller\Action\User\Account\NewsSubscriptionsController;
-use AppBundle\Entity\MailChimp\ListRecipients;
-use AppBundle\Model\MailChimp\ApiError;
-use AppBundle\Services\MailChimp\ListRecipientsService;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\User\Account\NewsSubscriptionsController;
+use App\Entity\MailChimp\ListRecipients;
+use App\Model\MailChimp\ApiError;
+use App\Services\MailChimp\ListRecipientsService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

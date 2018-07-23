@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\SignUp\Team;
 
-use AppBundle\Controller\Action\SignUp\Team\InviteController;
+use App\Controller\Action\SignUp\Team\InviteController;
 use AppBundle\Services\ResqueQueueService;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;

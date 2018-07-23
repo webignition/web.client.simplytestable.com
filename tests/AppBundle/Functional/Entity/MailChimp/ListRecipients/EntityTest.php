@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Functional\Entity\MailChimp\ListRecipients;
 
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
-use AppBundle\Entity\MailChimp\ListRecipients;
+use App\Entity\MailChimp\ListRecipients;
 
 abstract class EntityTest extends AbstractBaseTestCase
 {

@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services\TaskService;
 
-use AppBundle\Entity\Task\Task;
+use App\Entity\Task\Task;
 
 class TaskServiceIsIncompleteTest extends AbstractTaskServiceTest
 {

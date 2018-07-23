@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Unit\Services\TestOptions;
 
-use AppBundle\Services\TestOptions\CookieOptionsParser;
+use App\Services\TestOptions\CookieOptionsParser;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class CookieOptionsParserTest extends \PHPUnit\Framework\TestCase

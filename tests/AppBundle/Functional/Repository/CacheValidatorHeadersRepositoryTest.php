@@ -3,12 +3,12 @@
 namespace Tests\AppBundle\Functional\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\CacheValidatorHeaders;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Repository\CacheValidatorHeadersRepository;
-use AppBundle\Repository\TaskRepository;
-use AppBundle\Services\CacheValidatorHeadersService;
+use App\Entity\CacheValidatorHeaders;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Repository\CacheValidatorHeadersRepository;
+use App\Repository\TaskRepository;
+use App\Services\CacheValidatorHeadersService;
 use Tests\AppBundle\Factory\OutputFactory;
 use Tests\AppBundle\Factory\TaskFactory;
 use Tests\AppBundle\Factory\TestFactory;

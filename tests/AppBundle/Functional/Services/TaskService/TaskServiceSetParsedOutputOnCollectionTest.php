@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Services\TaskService;
 
-use AppBundle\Entity\Task\Output;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Model\TaskOutput\Result;
+use App\Entity\Task\Output;
+use App\Entity\Task\Task;
+use App\Model\TaskOutput\Result;
 use Tests\AppBundle\Factory\ModelFactory;
 
 class TaskServiceSetParsedOutputOnCollectionTest extends AbstractTaskServiceTest

@@ -2,14 +2,14 @@
 
 namespace Tests\AppBundle\Functional\EventListener\RequestListener;
 
-use AppBundle\Controller\BaseViewController;
-use AppBundle\Entity\Test\Test;
-use AppBundle\EventListener\RequiresCompletedTestRequestListener;
+use App\Controller\BaseViewController;
+use App\Entity\Test\Test;
+use App\EventListener\RequiresCompletedTestRequestListener;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Controller\View\Test\Results\IndexController;
+use App\Controller\View\Test\Results\IndexController;
 
 class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerTest
 {

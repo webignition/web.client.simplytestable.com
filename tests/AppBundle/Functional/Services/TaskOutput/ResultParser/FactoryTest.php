@@ -2,12 +2,12 @@
 
 namespace Tests\AppBundle\Functional\Services\TaskOutput\ResultParser;
 
-use AppBundle\Entity\Task\Output;
-use AppBundle\Services\TaskOutput\ResultParser\CssValidationResultParser;
-use AppBundle\Services\TaskOutput\ResultParser\Factory as ResultParserFactory;
-use AppBundle\Services\TaskOutput\ResultParser\HtmlValidationResultParser;
-use AppBundle\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser;
-use AppBundle\Services\TaskOutput\ResultParser\LinkIntegrityResultParser;
+use App\Entity\Task\Output;
+use App\Services\TaskOutput\ResultParser\CssValidationResultParser;
+use App\Services\TaskOutput\ResultParser\Factory as ResultParserFactory;
+use App\Services\TaskOutput\ResultParser\HtmlValidationResultParser;
+use App\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser;
+use App\Services\TaskOutput\ResultParser\LinkIntegrityResultParser;
 use Tests\AppBundle\Factory\ModelFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 

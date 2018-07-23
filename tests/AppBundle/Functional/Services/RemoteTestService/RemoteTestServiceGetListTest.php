@@ -2,10 +2,10 @@
 
 namespace Tests\AppBundle\Functional\Services\RemoteTestService;
 
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\TestList;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\TestList;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 
 class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest

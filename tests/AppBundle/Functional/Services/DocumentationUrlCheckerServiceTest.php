@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Services\DocumentationUrlCheckerService;
+use App\Services\DocumentationUrlCheckerService;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 
 class DocumentationUrlCheckerServiceTest extends AbstractBaseTestCase

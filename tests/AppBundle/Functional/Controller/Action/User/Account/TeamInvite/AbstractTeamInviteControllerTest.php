@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account\TeamInvite;
 
-use AppBundle\Controller\Action\User\Account\TeamController;
-use AppBundle\Controller\Action\User\Account\TeamInviteController;
+use App\Controller\Action\User\Account\TeamController;
+use App\Controller\Action\User\Account\TeamInviteController;
 use Tests\AppBundle\Functional\Controller\Action\User\Account\AbstractUserAccountControllerTest;
 
 abstract class AbstractTeamInviteControllerTest extends AbstractUserAccountControllerTest

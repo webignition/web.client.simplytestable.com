@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Functional\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\Task\Output;
-use AppBundle\Repository\TaskOutputRepository;
+use App\Entity\Task\Output;
+use App\Repository\TaskOutputRepository;
 use Tests\AppBundle\Factory\OutputFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 

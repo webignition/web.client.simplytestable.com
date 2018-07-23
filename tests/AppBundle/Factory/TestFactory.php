@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\Test\Test;
+use App\Entity\Test\Test;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 

@@ -2,14 +2,14 @@
 
 namespace Tests\AppBundle\Factory;
 
-use AppBundle\Entity\CacheValidatorHeaders;
-use AppBundle\Entity\Task\Output;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Model\TaskOutput\CssTextFileMessage;
-use AppBundle\Model\TaskOutput\HtmlTextFileMessage;
-use AppBundle\Model\TaskOutput\JsTextFileMessage;
-use AppBundle\Model\TaskOutput\LinkIntegrityMessage;
-use AppBundle\Model\TestOptions;
+use App\Entity\CacheValidatorHeaders;
+use App\Entity\Task\Output;
+use App\Entity\Task\Task;
+use App\Model\TaskOutput\CssTextFileMessage;
+use App\Model\TaskOutput\HtmlTextFileMessage;
+use App\Model\TaskOutput\JsTextFileMessage;
+use App\Model\TaskOutput\LinkIntegrityMessage;
+use App\Model\TestOptions;
 
 class ModelFactory
 {

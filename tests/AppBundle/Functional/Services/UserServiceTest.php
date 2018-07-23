@@ -2,17 +2,17 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Exception\CoreApplicationReadOnlyException;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Exception\UserAlreadyExistsException;
-use AppBundle\Model\Coupon;
-use AppBundle\Model\Team\Invite;
-use AppBundle\Model\User\Summary;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserService;
+use App\Exception\CoreApplicationReadOnlyException;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Exception\UserAlreadyExistsException;
+use App\Model\Coupon;
+use App\Model\Team\Invite;
+use App\Model\User\Summary;
+use App\Services\SystemUserService;
+use App\Services\UserService;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use webignition\SimplyTestableUserModel\User;

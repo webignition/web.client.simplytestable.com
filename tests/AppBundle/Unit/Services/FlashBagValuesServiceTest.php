@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Unit\Services;
 
 use Mockery\MockInterface;
-use AppBundle\Services\FlashBagValues;
+use App\Services\FlashBagValues;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\Session;

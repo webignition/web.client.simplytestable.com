@@ -3,9 +3,9 @@
 namespace Tests\AppBundle\Functional\Command\EmailList;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Command\EmailList\RetrieveRecipientsCommand;
-use AppBundle\Entity\MailChimp\ListRecipients;
-use AppBundle\Services\MailChimp\ListRecipientsService;
+use App\Command\EmailList\RetrieveRecipientsCommand;
+use App\Entity\MailChimp\ListRecipients;
+use App\Services\MailChimp\ListRecipientsService;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\Console\Input\ArrayInput;

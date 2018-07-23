@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Test\Results\Partial\FinishedSummary;
 
-use AppBundle\Controller\View\Test\Results\Partial\FinishedSummary\IndexController;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Model\RemoteTest\RemoteTest;
+use App\Controller\View\Test\Results\Partial\FinishedSummary\IndexController;
+use App\Entity\Test\Test;
+use App\Model\RemoteTest\RemoteTest;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;

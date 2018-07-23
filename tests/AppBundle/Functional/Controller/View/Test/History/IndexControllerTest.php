@@ -2,15 +2,15 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Test\History;
 
-use AppBundle\Controller\View\Test\History\IndexController;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\TestList;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserManager;
+use App\Controller\View\Test\History\IndexController;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\TestList;
+use App\Services\SystemUserService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;

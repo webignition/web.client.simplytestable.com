@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Functional\Controller\MailChimp;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Controller\MailChimp\EventController;
-use AppBundle\Services\MailChimp\ListRecipientsService;
+use App\Controller\MailChimp\EventController;
+use App\Services\MailChimp\ListRecipientsService;
 use Symfony\Component\HttpFoundation\Request;
 use Tests\AppBundle\Functional\Controller\AbstractControllerTest;
 

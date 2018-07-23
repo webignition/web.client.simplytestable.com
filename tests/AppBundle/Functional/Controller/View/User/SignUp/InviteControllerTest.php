@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\User\SignUp;
 
-use AppBundle\Controller\Action\SignUp\Team\InviteController as ActionInviteController;
-use AppBundle\Controller\View\User\SignUp\InviteController;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Model\Team\Invite;
+use App\Controller\Action\SignUp\Team\InviteController as ActionInviteController;
+use App\Controller\View\User\SignUp\InviteController;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Exception\InvalidContentTypeException;
+use App\Model\Team\Invite;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Request;

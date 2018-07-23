@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services\RemoteTestService;
 
-use AppBundle\Model\RemoteTest\RemoteTest;
+use App\Model\RemoteTest\RemoteTest;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 

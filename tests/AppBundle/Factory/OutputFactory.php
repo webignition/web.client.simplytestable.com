@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\Task\Output;
+use App\Entity\Task\Output;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class OutputFactory

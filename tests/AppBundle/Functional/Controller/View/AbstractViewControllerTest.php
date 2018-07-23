@@ -3,7 +3,7 @@
 namespace Tests\AppBundle\Functional\Controller\View;
 
 use ReflectionClass;
-use AppBundle\Controller\BaseViewController;
+use App\Controller\BaseViewController;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Tests\AppBundle\Functional\Controller\AbstractControllerTest;
 use Tests\AppBundle\Services\HttpMockHandler;

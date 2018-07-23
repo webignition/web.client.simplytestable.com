@@ -4,7 +4,7 @@ namespace Tests\AppBundle\Unit\Services\Request\Validator\User;
 
 use Egulias\EmailValidator\EmailValidator;
 use Mockery\MockInterface;
-use AppBundle\Request\User\AbstractUserAccountRequest;
+use App\Request\User\AbstractUserAccountRequest;
 
 abstract class AbstractUserAccountRequestValidatorTest extends \PHPUnit\Framework\TestCase
 {

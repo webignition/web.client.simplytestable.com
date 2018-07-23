@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Unit\Model\RemoteTest;
 
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Entity\TimePeriod;
-use AppBundle\Model\RemoteTest\Rejection;
-use AppBundle\Model\RemoteTest\RemoteTest;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Entity\TimePeriod;
+use App\Model\RemoteTest\Rejection;
+use App\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class RemoteTestTest extends \PHPUnit\Framework\TestCase

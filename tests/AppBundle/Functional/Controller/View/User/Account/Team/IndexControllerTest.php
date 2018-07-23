@@ -2,16 +2,16 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\User\Account\Team;
 
-use AppBundle\Controller\Action\User\Account\TeamController;
-use AppBundle\Controller\Action\User\Account\TeamInviteController;
-use AppBundle\Controller\View\User\Account\Team\IndexController;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\Team\Invite;
-use AppBundle\Model\Team\Team;
-use AppBundle\Model\User\Summary as UserSummary;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\User\Account\TeamController;
+use App\Controller\Action\User\Account\TeamInviteController;
+use App\Controller\View\User\Account\Team\IndexController;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\Team\Invite;
+use App\Model\Team\Team;
+use App\Model\User\Summary as UserSummary;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;

@@ -3,15 +3,15 @@
 namespace Tests\AppBundle\Functional\Controller\Action\User\ResetPassword;
 
 use Psr\Http\Message\ResponseInterface;
-use AppBundle\Controller\Action\User\ResetPassword\IndexController;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Exception\InvalidContentTypeException;
+use App\Controller\Action\User\ResetPassword\IndexController;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Exception\InvalidContentTypeException;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Tests\AppBundle\Functional\Controller\AbstractControllerTest;
 use Tests\AppBundle\Services\HttpMockHandler;
 use Tests\AppBundle\Services\PostmarkMessageVerifier;

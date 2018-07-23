@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services\RemoteTestService;
 
-use AppBundle\Entity\Test\Test;
+use App\Entity\Test\Test;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
 

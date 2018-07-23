@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\User;
 
-use AppBundle\Controller\View\User\SignInController;
-use AppBundle\Services\UserManager;
+use App\Controller\View\User\SignInController;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

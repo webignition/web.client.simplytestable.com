@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\User;
 
-use AppBundle\Controller\Action\User\UserController;
+use App\Controller\Action\User\UserController;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Tests\AppBundle\Functional\Controller\AbstractControllerTest;
 use Tests\AppBundle\Services\HttpMockHandler;

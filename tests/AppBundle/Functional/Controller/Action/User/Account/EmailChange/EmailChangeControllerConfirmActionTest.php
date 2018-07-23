@@ -2,13 +2,13 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account\EmailChange;
 
-use AppBundle\Controller\Action\User\Account\EmailChangeController;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Services\ResqueQueueService;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\User\Account\EmailChangeController;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Services\ResqueQueueService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

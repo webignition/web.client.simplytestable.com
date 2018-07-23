@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Unit\Model\Postmark;
 
-use AppBundle\Model\Postmark\Response;
+use App\Model\Postmark\Response;
 
 class ResponseTest extends \PHPUnit\Framework\TestCase
 {

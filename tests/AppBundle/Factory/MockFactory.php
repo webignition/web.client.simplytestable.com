@@ -4,11 +4,11 @@ namespace Tests\AppBundle\Factory;
 
 use Mockery\MockInterface;
 use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
-use AppBundle\Repository\TaskOutputRepository;
-use AppBundle\Services\CacheValidatorHeadersService;
-use AppBundle\Services\Factory\TaskOutputFactory;
-use AppBundle\Services\UserManager;
-use AppBundle\Services\UserService;
+use App\Repository\TaskOutputRepository;
+use App\Services\CacheValidatorHeadersService;
+use App\Services\Factory\TaskOutputFactory;
+use App\Services\UserManager;
+use App\Services\UserService;
 use Twig_Environment;
 
 class MockFactory

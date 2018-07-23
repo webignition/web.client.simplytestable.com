@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Services\TestOptions;
 
-use AppBundle\Services\TaskTypeService;
-use AppBundle\Services\TestOptions\RequestAdapter;
-use AppBundle\Services\TestOptions\RequestAdapterFactory;
+use App\Services\TaskTypeService;
+use App\Services\TestOptions\RequestAdapter;
+use App\Services\TestOptions\RequestAdapterFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use webignition\SimplyTestableUserModel\User;

@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Services\SystemUserService;
+use App\Services\SystemUserService;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use webignition\SimplyTestableUserModel\User;
 

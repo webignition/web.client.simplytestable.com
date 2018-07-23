@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Test\History;
 
-use AppBundle\Controller\View\Test\History\WebsiteListController;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserManager;
+use App\Controller\View\Test\History\WebsiteListController;
+use App\Services\SystemUserService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;

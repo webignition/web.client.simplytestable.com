@@ -3,13 +3,13 @@
 namespace Tests\AppBundle\Functional\EventListener\MailChimp;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\MailChimp\ListRecipients;
-use AppBundle\EventListener\MailChimp\Listener;
-use AppBundle\Services\MailChimp\ListRecipientsService;
+use App\Entity\MailChimp\ListRecipients;
+use App\EventListener\MailChimp\Listener;
+use App\Services\MailChimp\ListRecipientsService;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
-use AppBundle\Event\MailChimp\Event as MailChimpEvent;
+use App\Event\MailChimp\Event as MailChimpEvent;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use AppBundle\EventListener\MailChimp\Listener as MailChimpListener;
+use App\EventListener\MailChimp\Listener as MailChimpListener;
 
 class ListenerTest extends AbstractBaseTestCase
 {

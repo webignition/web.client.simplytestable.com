@@ -2,10 +2,10 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Test\Partial\Notification;
 
-use AppBundle\Controller\View\Test\Partial\Notification\UrlLimitController;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserManager;
+use App\Controller\View\Test\Partial\Notification\UrlLimitController;
+use App\Entity\Test\Test;
+use App\Services\SystemUserService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;

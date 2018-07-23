@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Functional\Command\Migrate;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Command\Migrate\AddHashToHashlessOutputCommand;
-use AppBundle\Entity\Task\Output;
+use App\Command\Migrate\AddHashToHashlessOutputCommand;
+use App\Entity\Task\Output;
 use Tests\AppBundle\Factory\OutputFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\Console\Input\ArrayInput;

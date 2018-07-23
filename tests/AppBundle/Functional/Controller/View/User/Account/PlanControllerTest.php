@@ -2,14 +2,14 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\User\Account;
 
-use AppBundle\Controller\View\User\Account\PlanController;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\Team\Team;
-use AppBundle\Model\User\Plan;
-use AppBundle\Model\User\Summary as UserSummary;
-use AppBundle\Services\UserManager;
+use App\Controller\View\User\Account\PlanController;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\Team\Team;
+use App\Model\User\Plan;
+use App\Model\User\Summary as UserSummary;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;

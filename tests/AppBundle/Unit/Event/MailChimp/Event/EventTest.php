@@ -2,14 +2,14 @@
 
 namespace Tests\AppBundle\Unit\Event\MailChimp\Event;
 
-use AppBundle\Event\MailChimp\Event as MailChimpEvent;
+use App\Event\MailChimp\Event as MailChimpEvent;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 abstract class EventTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
-     * @var \AppBundle\Event\MailChimp\Event
+     * @var \App\Event\MailChimp\Event
      */
     protected $event;
 

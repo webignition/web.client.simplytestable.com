@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\Services\TestOptions;
 
-use AppBundle\Services\TaskTypeService;
-use AppBundle\Services\TestOptions\RequestAdapter;
+use App\Services\TaskTypeService;
+use App\Services\TestOptions\RequestAdapter;
 use Tests\AppBundle\Factory\PostmarkHttpResponseFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;

@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Functional\Command\Migrate;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Command\Migrate\RemoveUnusedOutputCommand;
-use AppBundle\Entity\Task\Output;
+use App\Command\Migrate\RemoveUnusedOutputCommand;
+use App\Entity\Task\Output;
 use Tests\AppBundle\Factory\OutputFactory;
 use Tests\AppBundle\Factory\TaskFactory;
 use Tests\AppBundle\Factory\TestFactory;

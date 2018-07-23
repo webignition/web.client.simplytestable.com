@@ -3,13 +3,13 @@
 namespace Tests\AppBundle\Functional\Services\MailChimp;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\MailChimp\ListRecipients;
-use AppBundle\Exception\MailChimp\MemberExistsException;
-use AppBundle\Exception\MailChimp\ResourceNotFoundException;
-use AppBundle\Exception\MailChimp\UnknownException;
-use AppBundle\Model\MailChimp\ApiError;
-use AppBundle\Services\MailChimp\ListRecipientsService;
-use AppBundle\Services\MailChimp\Service as MailChimpService;
+use App\Entity\MailChimp\ListRecipients;
+use App\Exception\MailChimp\MemberExistsException;
+use App\Exception\MailChimp\ResourceNotFoundException;
+use App\Exception\MailChimp\UnknownException;
+use App\Model\MailChimp\ApiError;
+use App\Services\MailChimp\ListRecipientsService;
+use App\Services\MailChimp\Service as MailChimpService;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;
 use Tests\AppBundle\Services\HttpMockHandler;

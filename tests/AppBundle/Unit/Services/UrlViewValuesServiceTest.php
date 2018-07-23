@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Unit\Services;
 
-use AppBundle\Services\UrlViewValuesService;
+use App\Services\UrlViewValuesService;
 
 class UrlViewValuesServiceTest extends \PHPUnit\Framework\TestCase
 {

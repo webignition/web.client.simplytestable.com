@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Unit\Services\Request\Factory\User;
 
-use AppBundle\Request\User\SignUpRequest;
-use AppBundle\Services\Request\Factory\User\SignUpRequestFactory;
+use App\Request\User\SignUpRequest;
+use App\Services\Request\Factory\User\SignUpRequestFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 

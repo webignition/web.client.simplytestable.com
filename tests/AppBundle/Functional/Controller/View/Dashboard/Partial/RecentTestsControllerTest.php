@@ -2,14 +2,14 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Dashboard\Partial;
 
-use AppBundle\Controller\View\Dashboard\Partial\RecentTestsController;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\RemoteTest\RemoteTest;
-use AppBundle\Model\TestList;
+use App\Controller\View\Dashboard\Partial\RecentTestsController;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\RemoteTest\RemoteTest;
+use App\Model\TestList;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;

@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account;
 
-use AppBundle\Services\SystemUserService;
+use App\Services\SystemUserService;
 use AppBundle\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Tests\AppBundle\Factory\HttpResponseFactory;

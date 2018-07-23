@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account;
 
-use AppBundle\Controller\Action\User\Account\PlanController;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\User\Account\PlanController;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;

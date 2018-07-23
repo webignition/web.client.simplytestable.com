@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Unit\Services;
 
-use AppBundle\Model\CacheValidatorIdentifier;
-use AppBundle\Services\CacheValidatorHeadersService;
-use AppBundle\Services\CacheValidatorService;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserManager;
+use App\Model\CacheValidatorIdentifier;
+use App\Services\CacheValidatorHeadersService;
+use App\Services\CacheValidatorService;
+use App\Services\SystemUserService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\MockFactory;
 use Tests\AppBundle\Factory\ModelFactory;
 use Symfony\Component\HttpFoundation\Request;

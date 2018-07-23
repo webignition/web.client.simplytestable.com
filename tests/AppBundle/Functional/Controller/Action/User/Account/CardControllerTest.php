@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account;
 
-use AppBundle\Controller\Action\User\Account\CardController;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\User\Account\CardController;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use webignition\SimplyTestableUserModel\User;

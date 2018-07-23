@@ -3,10 +3,10 @@
 namespace Tests\AppBundle\Functional\Controller\Stripe;
 
 use Mockery\Mock;
-use AppBundle\Controller\Stripe\EventController;
+use App\Controller\Stripe\EventController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use AppBundle\Event\Stripe\Event as StripeEvent;
+use App\Event\Stripe\Event as StripeEvent;
 use Tests\AppBundle\Functional\Controller\AbstractControllerTest;
 
 class EventControllerTest extends AbstractControllerTest

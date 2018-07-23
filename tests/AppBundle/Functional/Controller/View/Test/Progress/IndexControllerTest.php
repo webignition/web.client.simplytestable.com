@@ -2,13 +2,13 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Test\Progress;
 
-use AppBundle\Controller\View\Test\Progress\IndexController;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\RemoteTest\RemoteTest;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserManager;
+use App\Controller\View\Test\Progress\IndexController;
+use App\Entity\Test\Test;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\RemoteTest\RemoteTest;
+use App\Services\SystemUserService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;

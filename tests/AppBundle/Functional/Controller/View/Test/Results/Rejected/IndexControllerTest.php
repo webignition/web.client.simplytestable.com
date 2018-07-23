@@ -2,14 +2,14 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Test\Results\Rejected;
 
-use AppBundle\Controller\View\Test\Results\Rejected\IndexController;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\RemoteTest\RemoteTest;
-use AppBundle\Model\User\Summary as UserSummary;
-use AppBundle\Services\UserManager;
+use App\Controller\View\Test\Results\Rejected\IndexController;
+use App\Entity\Test\Test;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\RemoteTest\RemoteTest;
+use App\Model\User\Summary as UserSummary;
+use App\Services\UserManager;
 use Symfony\Component\DomCrawler\Crawler;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;

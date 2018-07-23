@@ -2,9 +2,9 @@
 
 namespace Tests\AppBundle\Functional\Controller\View\Dashboard;
 
-use AppBundle\Controller\View\Dashboard\IndexController;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\UserManager;
+use App\Controller\View\Dashboard\IndexController;
+use App\Services\SystemUserService;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\MockFactory;
 use Symfony\Component\BrowserKit\Cookie;

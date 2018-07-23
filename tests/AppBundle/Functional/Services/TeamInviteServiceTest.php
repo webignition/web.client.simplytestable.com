@@ -2,16 +2,16 @@
 
 namespace Tests\AppBundle\Functional\Services\TeamInvite;
 
-use AppBundle\Exception\CoreApplicationReadOnlyException;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidAdminCredentialsException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\Team\Invite;
-use AppBundle\Services\TeamInviteService;
+use App\Exception\CoreApplicationReadOnlyException;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidAdminCredentialsException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\Team\Invite;
+use App\Services\TeamInviteService;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;
-use AppBundle\Exception\Team\Service\Exception as TeamServiceException;
+use App\Exception\Team\Service\Exception as TeamServiceException;
 use Tests\AppBundle\Functional\Services\AbstractCoreApplicationServiceTest;
 
 class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest

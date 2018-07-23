@@ -4,10 +4,10 @@ namespace Tests\AppBundle\Unit\Services\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
-use AppBundle\Entity\Task\Output;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Repository\TaskOutputRepository;
-use AppBundle\Services\Factory\TaskOutputFactory;
+use App\Entity\Task\Output;
+use App\Entity\Task\Task;
+use App\Repository\TaskOutputRepository;
+use App\Services\Factory\TaskOutputFactory;
 use Tests\AppBundle\Factory\MockFactory;
 
 class TaskOutputFactoryTest extends \PHPUnit\Framework\TestCase

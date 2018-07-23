@@ -3,17 +3,17 @@
 namespace Tests\AppBundle\Functional\Controller\Action\Test;
 
 use Mockery\Mock;
-use AppBundle\Controller\Action\Test\StartController;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Model\RemoteTest\RemoteTest;
-use AppBundle\Services\Configuration\LinkIntegrityTestConfiguration;
-use AppBundle\Services\Configuration\TestOptionsConfiguration;
-use AppBundle\Services\RemoteTestService;
-use AppBundle\Services\SystemUserService;
-use AppBundle\Services\TaskTypeService;
-use AppBundle\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
-use AppBundle\Services\UserManager;
+use App\Controller\Action\Test\StartController;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Model\RemoteTest\RemoteTest;
+use App\Services\Configuration\LinkIntegrityTestConfiguration;
+use App\Services\Configuration\TestOptionsConfiguration;
+use App\Services\RemoteTestService;
+use App\Services\SystemUserService;
+use App\Services\TaskTypeService;
+use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\ConnectExceptionFactory;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Functional\AbstractBaseTestCase;

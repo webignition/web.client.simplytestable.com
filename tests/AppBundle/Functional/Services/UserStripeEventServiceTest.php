@@ -2,10 +2,10 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Exception\InvalidContentTypeException;
-use AppBundle\Exception\InvalidCredentialsException;
-use AppBundle\Services\UserStripeEventService;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Services\UserStripeEventService;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use webignition\Model\Stripe\Event\Event as StripeEvent;
 use webignition\SimplyTestableUserModel\User;

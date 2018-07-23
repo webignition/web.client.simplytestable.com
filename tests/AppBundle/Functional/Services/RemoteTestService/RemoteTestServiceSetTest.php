@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Services\RemoteTestService;
 
-use AppBundle\Model\RemoteTest\RemoteTest;
+use App\Model\RemoteTest\RemoteTest;
 
 class RemoteTestServiceSetTest extends AbstractRemoteTestServiceTest
 {

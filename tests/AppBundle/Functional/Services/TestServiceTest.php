@@ -2,11 +2,11 @@
 
 namespace Tests\AppBundle\Functional\Services;
 
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
-use AppBundle\Entity\TimePeriod;
-use AppBundle\Exception\CoreApplicationRequestException;
-use AppBundle\Services\TestService;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Entity\TimePeriod;
+use App\Exception\CoreApplicationRequestException;
+use App\Services\TestService;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Tests\AppBundle\Factory\TestFactory;
 

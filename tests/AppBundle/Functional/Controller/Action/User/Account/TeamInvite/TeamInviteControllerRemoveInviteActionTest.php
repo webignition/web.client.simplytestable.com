@@ -2,7 +2,7 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\User\Account\TeamInvite;
 
-use AppBundle\Services\UserManager;
+use App\Services\UserManager;
 use Tests\AppBundle\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use webignition\SimplyTestableUserModel\User;

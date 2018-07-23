@@ -2,8 +2,8 @@
 
 namespace Tests\AppBundle\Functional\Controller\Action\Test\Task\Results;
 
-use AppBundle\Controller\Action\Test\Task\Results\ByUrlController;
-use AppBundle\Entity\Task\Task;
+use App\Controller\Action\Test\Task\Results\ByUrlController;
+use App\Entity\Task\Task;
 use Tests\AppBundle\Factory\TaskFactory;
 use Tests\AppBundle\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;

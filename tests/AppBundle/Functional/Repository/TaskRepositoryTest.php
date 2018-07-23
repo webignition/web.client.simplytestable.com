@@ -3,8 +3,8 @@
 namespace Tests\AppBundle\Functional\Repository;
 
 use Doctrine\ORM\EntityManagerInterface;
-use AppBundle\Entity\Task\Task;
-use AppBundle\Entity\Test\Test;
+use App\Entity\Task\Task;
+use App\Entity\Test\Test;
 use AppBundle\Repository\TaskRepository;
 use Tests\AppBundle\Factory\OutputFactory;
 use Tests\AppBundle\Factory\TaskFactory;
