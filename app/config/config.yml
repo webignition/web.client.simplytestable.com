@@ -4,8 +4,6 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
 
-framework:
-
 sensio_framework_extra:
   router:
     annotations: false

@@ -15,7 +15,7 @@ framework:
       json_manifest_path: '%kernel.project_dir%/web/build/manifest.json'
 
     #esi: true
-    #fragments: true
+    fragments: ~
     php_errors:
         log: true
 
