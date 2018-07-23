@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Dashboard\Partial;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class RecentTestsController extends BaseViewController implements RequiresValidUser
+class RecentTestsController extends AbstractBaseViewController implements RequiresValidUser
 {
     const LIMIT = 3;
 

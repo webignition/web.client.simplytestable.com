@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Dashboard;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Services\CacheValidatorService;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController extends BaseViewController implements RequiresValidUser
+class IndexController extends AbstractBaseViewController implements RequiresValidUser
 {
     /**
      * @var TaskTypeService

@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\EventListener\IEFilteredRequestListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,7 +52,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
         $this->assertEquals($expectedHasResponse, $controller->hasResponse());
 
         if ($expectedHasResponse) {
-            $response = $this->getControllerResponse($controller, BaseViewController::class);
+            $response = $this->getControllerResponse($controller, AbstractBaseViewController::class);
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals(getenv('MARKETING_SITE'), $response->getTargetUrl());

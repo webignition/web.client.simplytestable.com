@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Entity\Test\Test;
 use App\EventListener\RequiresCompletedTestRequestListener;
 use App\Tests\Factory\HttpResponseFactory;
@@ -64,7 +64,7 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
         $this->assertEquals($expectedHasResponse, $controller->hasResponse());
 
         if ($expectedHasResponse) {
-            $response = $this->getControllerResponse($controller, BaseViewController::class);
+            $response = $this->getControllerResponse($controller, AbstractBaseViewController::class);
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());

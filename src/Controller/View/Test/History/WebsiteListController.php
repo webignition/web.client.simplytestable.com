@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Test\History;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class WebsiteListController extends BaseViewController implements RequiresValidUser
+class WebsiteListController extends AbstractBaseViewController implements RequiresValidUser
 {
     /**
      * @var RemoteTestService

@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-abstract class BaseViewController extends AbstractController implements IEFiltered
+abstract class AbstractBaseViewController extends AbstractController implements IEFiltered
 {
     /**
      * @var DefaultViewParameters

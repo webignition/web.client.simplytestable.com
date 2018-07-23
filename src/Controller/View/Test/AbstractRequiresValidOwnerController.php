@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Test;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-abstract class AbstractRequiresValidOwnerController extends BaseViewController implements RequiresValidOwner
+abstract class AbstractRequiresValidOwnerController extends AbstractBaseViewController implements RequiresValidOwner
 {
     /**
      * @var UrlViewValuesService

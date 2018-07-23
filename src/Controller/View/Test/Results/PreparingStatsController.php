@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Test\Results;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
 use App\Interfaces\Controller\RequiresValidUser;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class PreparingStatsController extends BaseViewController implements RequiresValidUser, RequiresValidOwner
+class PreparingStatsController extends AbstractBaseViewController implements RequiresValidUser, RequiresValidOwner
 {
     /**
      * @var TestService

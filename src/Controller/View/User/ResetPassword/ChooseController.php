@@ -4,7 +4,7 @@ namespace App\Controller\View\User\ResetPassword;
 
 use App\Controller\Action\User\ResetPassword\IndexController
     as ResetPasswordActionController;
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Controller\View\User\AbstractUserController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;

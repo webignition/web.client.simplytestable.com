@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Test\Results\FailedNoUrlsDetected;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Interfaces\Controller\RequiresValidUser;
@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController extends BaseViewController implements RequiresValidUser
+class IndexController extends AbstractBaseViewController implements RequiresValidUser
 {
     /**
      * @var TestService
