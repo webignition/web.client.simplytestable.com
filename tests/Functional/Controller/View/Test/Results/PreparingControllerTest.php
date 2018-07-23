@@ -112,10 +112,10 @@ class PreparingControllerTest extends AbstractViewControllerTest
             ])),
         ]);
 
-        /* @var PreparingController $indexController */
-        $indexController = self::$container->get(PreparingController::class);
+        /* @var PreparingController $preparingController */
+        $preparingController = self::$container->get(PreparingController::class);
 
-        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $preparingController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/http://example.com//1/', $response->getTargetUrl());
     }
@@ -147,10 +147,10 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var PreparingController $indexController */
-        $indexController = self::$container->get(PreparingController::class);
+        /* @var PreparingController $preparingController */
+        $preparingController = self::$container->get(PreparingController::class);
 
-        $response = $indexController->indexAction($request, $website, self::TEST_ID);
+        $response = $preparingController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -207,11 +207,11 @@ class PreparingControllerTest extends AbstractViewControllerTest
             $testFactory->create($testValues);
         }
 
-        /* @var PreparingController $indexController */
-        $indexController = self::$container->get(PreparingController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var PreparingController $preparingController */
+        $preparingController = self::$container->get(PreparingController::class);
+        $this->setTwigOnController($twig, $preparingController);
 
-        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $preparingController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -321,10 +321,10 @@ class PreparingControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var PreparingController $indexController */
-        $indexController = self::$container->get(PreparingController::class);
+        /* @var PreparingController $preparingController */
+        $preparingController = self::$container->get(PreparingController::class);
 
-        $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $preparingController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -334,7 +334,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $preparingController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

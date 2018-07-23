@@ -162,10 +162,10 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var ProgressController $indexController */
-        $indexController = self::$container->get(ProgressController::class);
+        /* @var ProgressController $progressController */
+        $progressController = self::$container->get(ProgressController::class);
 
-        $response = $indexController->indexAction(new Request(), $website, $testId);
+        $response = $progressController->indexAction(new Request(), $website, $testId);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -198,13 +198,13 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var ProgressController $indexController */
-        $indexController = self::$container->get(ProgressController::class);
+        /* @var ProgressController $progressController */
+        $progressController = self::$container->get(ProgressController::class);
 
         $request = new Request();
         $request->headers->set('X-Requested-With', 'XMLHttpRequest');
 
-        $response = $indexController->indexAction($request, $website, $testId);
+        $response = $progressController->indexAction($request, $website, $testId);
         $this->assertInstanceOf(JsonResponse::class, $response);
 
         $responseData = json_decode($response->getContent());
@@ -291,11 +291,11 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var ProgressController $indexController */
-        $indexController = self::$container->get(ProgressController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var ProgressController $progressController */
+        $progressController = self::$container->get(ProgressController::class);
+        $this->setTwigOnController($twig, $progressController);
 
-        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $progressController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -438,13 +438,13 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var ProgressController $indexController */
-        $indexController = self::$container->get(ProgressController::class);
+        /* @var ProgressController $progressController */
+        $progressController = self::$container->get(ProgressController::class);
 
         $request = new Request();
         $request->headers->set('accept', 'application/json');
 
-        $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $progressController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals('application/json', $response->headers->get('content-type'));
 
@@ -532,10 +532,10 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var ProgressController $indexController */
-        $indexController = self::$container->get(ProgressController::class);
+        /* @var ProgressController $progressController */
+        $progressController = self::$container->get(ProgressController::class);
 
-        $response = $indexController->indexAction(
+        $response = $progressController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID
@@ -549,7 +549,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction(
+        $newResponse = $progressController->indexAction(
             $newRequest,
             self::WEBSITE,
             self::TEST_ID

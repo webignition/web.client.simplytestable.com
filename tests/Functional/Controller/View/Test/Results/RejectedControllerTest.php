@@ -309,11 +309,11 @@ class RejectedControllerTest extends AbstractViewControllerTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var RejectedController $indexController */
-        $indexController = self::$container->get(RejectedController::class);
+        /* @var RejectedController $rejectedController */
+        $rejectedController = self::$container->get(RejectedController::class);
 
         /* @var RedirectResponse $response */
-        $response = $indexController->indexAction($request, $website, self::TEST_ID);
+        $response = $rejectedController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -368,11 +368,11 @@ class RejectedControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var RejectedController $indexController */
-        $indexController = self::$container->get(RejectedController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var RejectedController $rejectedController */
+        $rejectedController = self::$container->get(RejectedController::class);
+        $this->setTwigOnController($twig, $rejectedController);
 
-        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $rejectedController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -501,10 +501,10 @@ class RejectedControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var RejectedController $indexController */
-        $indexController = self::$container->get(RejectedController::class);
+        /* @var RejectedController $rejectedController */
+        $rejectedController = self::$container->get(RejectedController::class);
 
-        $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $rejectedController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -514,7 +514,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $rejectedController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

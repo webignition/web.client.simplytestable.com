@@ -235,11 +235,11 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var ResultsController $indexController */
-        $indexController = self::$container->get(ResultsController::class);
+        /* @var ResultsController $resultsController */
+        $resultsController = self::$container->get(ResultsController::class);
 
         /* @var RedirectResponse $response */
-        $response = $indexController->indexAction(
+        $response = $resultsController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID,
@@ -350,11 +350,11 @@ class ResultsControllerTest extends AbstractViewControllerTest
             $testFactory->create($testValues);
         }
 
-        /* @var ResultsController $indexController */
-        $indexController = self::$container->get(ResultsController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var ResultsController $resultsController */
+        $resultsController = self::$container->get(ResultsController::class);
+        $this->setTwigOnController($twig, $resultsController);
 
-        $response = $indexController->indexAction(
+        $response = $resultsController->indexAction(
             new Request(),
             self::WEBSITE,
             self::TEST_ID,
@@ -927,10 +927,10 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var ResultsController $indexController */
-        $indexController = self::$container->get(ResultsController::class);
+        /* @var ResultsController $resultsController */
+        $resultsController = self::$container->get(ResultsController::class);
 
-        $response = $indexController->indexAction(
+        $response = $resultsController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID,
@@ -945,7 +945,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction(
+        $newResponse = $resultsController->indexAction(
             $newRequest,
             self::WEBSITE,
             self::TEST_ID,

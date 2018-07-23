@@ -150,10 +150,10 @@ class TestTaskListControllerTest extends AbstractControllerTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var TestTaskListController $indexController */
-        $indexController = self::$container->get(TestTaskListController::class);
+        /* @var TestTaskListController $testTaskListController */
+        $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $response = $indexController->indexAction(
+        $response = $testTaskListController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID
@@ -220,10 +220,10 @@ class TestTaskListControllerTest extends AbstractControllerTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var TestTaskListController $indexController */
-        $indexController = self::$container->get(TestTaskListController::class);
+        /* @var TestTaskListController $testTaskListController */
+        $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $response = $indexController->indexAction(
+        $response = $testTaskListController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID
@@ -445,10 +445,10 @@ class TestTaskListControllerTest extends AbstractControllerTest
             'taskIds' => [2],
         ]);
 
-        /* @var TestTaskListController $indexController */
-        $indexController = self::$container->get(TestTaskListController::class);
+        /* @var TestTaskListController $testTaskListController */
+        $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $response = $indexController->indexAction(
+        $response = $testTaskListController->indexAction(
             $request,
             self::WEBSITE,
             self::TEST_ID
@@ -462,7 +462,7 @@ class TestTaskListControllerTest extends AbstractControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction(
+        $newResponse = $testTaskListController->indexAction(
             $newRequest,
             self::WEBSITE,
             self::TEST_ID

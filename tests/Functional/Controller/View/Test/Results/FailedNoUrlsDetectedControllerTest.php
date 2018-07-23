@@ -103,10 +103,10 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var FailedNoUrlsDetectedController $indexController */
-        $indexController = self::$container->get(FailedNoUrlsDetectedController::class);
+        /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
+        $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
 
-        $response = $indexController->indexAction($request, $website, self::TEST_ID);
+        $response = $failedNoUrlsDetectedController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -166,11 +166,11 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        /* @var FailedNoUrlsDetectedController $indexController */
-        $indexController = self::$container->get(FailedNoUrlsDetectedController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
+        $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
+        $this->setTwigOnController($twig, $failedNoUrlsDetectedController);
 
-        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $failedNoUrlsDetectedController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -209,10 +209,10 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var FailedNoUrlsDetectedController $indexController */
-        $indexController = self::$container->get(FailedNoUrlsDetectedController::class);
+        /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
+        $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
 
-        $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $failedNoUrlsDetectedController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -222,7 +222,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $failedNoUrlsDetectedController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

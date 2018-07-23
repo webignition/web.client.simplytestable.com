@@ -152,11 +152,11 @@ class TeamControllerTest extends AbstractViewControllerTest
             }
         }
 
-        /* @var TeamController $indexController */
-        $indexController = self::$container->get(TeamController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var TeamController $teamController */
+        $teamController = self::$container->get(TeamController::class);
+        $this->setTwigOnController($twig, $teamController);
 
-        $response = $indexController->indexAction();
+        $response = $teamController->indexAction();
         $this->assertInstanceOf(Response::class, $response);
     }
 

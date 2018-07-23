@@ -105,11 +105,11 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        /* @var TestFinishedSummaryController $indexController */
-        $indexController = self::$container->get(TestFinishedSummaryController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var TestFinishedSummaryController $testFinishedSummaryController */
+        $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
+        $this->setTwigOnController($twig, $testFinishedSummaryController);
 
-        $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+        $response = $testFinishedSummaryController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -166,10 +166,10 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 
         $request = new Request();
 
-        /* @var TestFinishedSummaryController $indexController */
-        $indexController = self::$container->get(TestFinishedSummaryController::class);
+        /* @var TestFinishedSummaryController $testFinishedSummaryController */
+        $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
 
-        $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $testFinishedSummaryController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -179,7 +179,7 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $testFinishedSummaryController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

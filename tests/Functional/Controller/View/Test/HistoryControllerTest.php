@@ -91,10 +91,10 @@ class HistoryControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var HistoryController $indexController */
-        $indexController = self::$container->get(HistoryController::class);
+        /* @var HistoryController $historyController */
+        $historyController = self::$container->get(HistoryController::class);
 
-        $response = $indexController->indexAction($request);
+        $response = $historyController->indexAction($request);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -231,11 +231,11 @@ class HistoryControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var HistoryController $indexController */
-        $indexController = self::$container->get(HistoryController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var HistoryController $historyController */
+        $historyController = self::$container->get(HistoryController::class);
+        $this->setTwigOnController($twig, $historyController);
 
-        $response = $indexController->indexAction($request);
+        $response = $historyController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -430,10 +430,10 @@ class HistoryControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var HistoryController $indexController */
-        $indexController = self::$container->get(HistoryController::class);
+        /* @var HistoryController $historyController */
+        $historyController = self::$container->get(HistoryController::class);
 
-        $response = $indexController->indexAction($request);
+        $response = $historyController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -443,7 +443,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction($newRequest);
+        $newResponse = $historyController->indexAction($newRequest);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

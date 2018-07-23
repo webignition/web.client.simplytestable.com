@@ -110,11 +110,11 @@ class DashboardControllerTest extends AbstractViewControllerTest
             }
         }
 
-        /* @var DashboardController $indexController */
-        $indexController = self::$container->get(DashboardController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var DashboardController $dashboardController */
+        $dashboardController = self::$container->get(DashboardController::class);
+        $this->setTwigOnController($twig, $dashboardController);
 
-        $response = $indexController->indexAction($request);
+        $response = $dashboardController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
     }
 
@@ -211,10 +211,10 @@ class DashboardControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var DashboardController $indexController */
-        $indexController = self::$container->get(DashboardController::class);
+        /* @var DashboardController $dashboardController */
+        $dashboardController = self::$container->get(DashboardController::class);
 
-        $response = $indexController->indexAction($request);
+        $response = $dashboardController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -224,7 +224,7 @@ class DashboardControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction($newRequest);
+        $newResponse = $dashboardController->indexAction($newRequest);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
