@@ -20,7 +20,7 @@ sign_in_submit:
 
 view_user_resetpassword_index_index:
     path: /reset-password/
-    defaults: { _controller: App\Controller\View\User\ResetPassword\IndexController:indexAction }
+    defaults: { _controller: App\Controller\View\User\ResetPassword\IndexController::indexAction }
 
 action_user_resetpassword_index_request:
     path: /reset-password/submit/
@@ -32,11 +32,11 @@ reset_password_choose_submit:
 
 view_user_resetpassword_choose_index:
     path: /reset-password/{email}/{token}/
-    defaults: { _controller: App\Controller\View\User\ResetPassword\ChooseController:indexAction }
+    defaults: { _controller: App\Controller\View\User\ResetPassword\ChooseController::indexAction }
 
 view_user_signup_index_index:
     path: /signup/
-    defaults: { _controller: App\Controller\View\User\SignUp\IndexController:indexAction }
+    defaults: { _controller: App\Controller\View\User\SignUp\IndexController::indexAction }
 
 sign_up_submit:
     path: /signup/submit/
@@ -44,15 +44,15 @@ sign_up_submit:
 
 view_user_signup_confirm_index:
     path: /signup/confirm/{email}/
-    defaults: { _controller: App\Controller\View\User\SignUp\ConfirmController:indexAction }
+    defaults: { _controller: App\Controller\View\User\SignUp\ConfirmController::indexAction }
 
 view_user_signup_invite_index:
     path: /signup/invite/{token}/
-    defaults: { _controller: App\Controller\View\User\SignUp\InviteController:indexAction }
+    defaults: { _controller: App\Controller\View\User\SignUp\InviteController::indexAction }
 
 sign_up_confirm_submit:
     path: /signup/confirm/{email}/submit/
-    defaults: { _controller: App\Controller\Action\User\UserController:signUpConfirmSubmitAction }
+    defaults: { _controller: App\Controller\Action\User\UserController::signUpConfirmSubmitAction }
 
 action_signup_team_invite_accept:
     path: /signup/invite/{token}/accept/
@@ -136,7 +136,7 @@ user_account_card_associate:
 
 user_account_plan_subscribe:
     path: /account/plan/subscribe/
-    defaults: { _controller: App\Controller\Action\User\Account\PlanController:subscribeAction }
+    defaults: { _controller: App\Controller\Action\User\Account\PlanController::subscribeAction }
 
 view_dashboard_index_index:
     path: /
