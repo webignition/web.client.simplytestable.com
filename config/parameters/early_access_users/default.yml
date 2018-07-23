@@ -1,3 +1,3 @@
 parameters:
     early_access_users:
-      - "user@example.com"
+      - "early-access-user@example.com"
