@@ -1,5 +1,3 @@
 parameters:
     locale: en
     secret: Secret!
-    postmark_api_key: postmark_api_key_value
-    bcc_resque_prefix: web.client.simplytestable.com
