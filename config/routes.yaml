@@ -259,7 +259,7 @@ view_test_results_rejected_index_index:
 
 view_test_results_preparing_index_index:
     path: /{website}/{test_id}/results/preparing/
-    defaults: { _controller: App\Controller\View\Test\Results\Preparing\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\Results\PreparingController::indexAction }
     requirements:
        website: '.+'
 
