@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\Dashboard;
+namespace App\Tests\Functional\Controller\View\Partials;
 
-use App\Controller\View\Dashboard\RecentTestsController;
+use App\Controller\View\Partials\RecentTestsController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;

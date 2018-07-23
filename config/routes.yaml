@@ -144,7 +144,7 @@ view_dashboard_index_index:
 
 view_dashboard_partial_recenttests_index:
     path: /recent-tests/
-    defaults: { _controller: App\Controller\View\Dashboard\RecentTestsController::indexAction }
+    defaults: { _controller: App\Controller\View\Partials\RecentTestsController::indexAction }
 
 view_test_history_index_index:
     path: /history/
