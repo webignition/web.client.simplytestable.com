@@ -6,7 +6,7 @@ mailchimp_event:
   path: /mailchimp/event/
   defaults: { _controller: App\Controller\MailChimp\EventController::indexAction, _format: json }
 
-sign_out_submit:
+action_user_sign_out:
     path: /signout/
     defaults: { _controller: App\Controller\Action\User\UserController::signOutSubmitAction }
 

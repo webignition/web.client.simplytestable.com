@@ -15,7 +15,7 @@ class SignOutSubmitActionTest extends AbstractUserControllerTest
     {
         $this->client->request(
             'POST',
-            $this->router->generate('sign_out_submit')
+            $this->router->generate('action_user_sign_out')
         );
 
         /* @var RedirectResponse $response */
