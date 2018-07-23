@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\Test\Task;
+namespace App\Controller\View\Task;
 
 use App\Controller\View\Test\AbstractRequiresValidOwnerController;
 use App\Entity\Task\Task;
