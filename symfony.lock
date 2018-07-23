@@ -176,9 +176,6 @@
     "psr/simple-cache": {
         "version": "1.0.1"
     },
-    "resquebundle/resque": {
-        "version": "2.0.6"
-    },
     "sebastian/code-unit-reverse-lookup": {
         "version": "1.0.1"
     },
@@ -364,6 +361,9 @@
     },
     "webignition/php-stripe-models": {
         "version": "0.2.6"
+    },
+    "webignition/resque-bundle": {
+        "version": "dev-master"
     },
     "webignition/simplytestable-user-model": {
         "version": "0.1"

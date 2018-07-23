@@ -1,6 +1,12 @@
 {
     "name": "simplytestable/webclient",
     "description": "web client to interface with app.simplytestable.com",
+    "repositories": [
+      {
+        "type": "vcs",
+        "url": "https://github.com/webignition/resque"
+      }
+    ],
     "require": {
         "php": ">=7.2.0",
         "ext-ctype": "*",
@@ -15,7 +21,6 @@
         "egulias/email-validator": "~2.1",
         "guzzlehttp/guzzle": "^6",
         "jeremykendall/php-domain-parser": "~5.3",
-        "resquebundle/resque": "^2",
         "sensio/framework-extra-bundle": "^5.0.0",
         "symfony/asset": "^4.1",
         "symfony/console": "^4.1",
@@ -33,6 +38,7 @@
         "webignition/html-validation-error-normaliser": "^1",
         "webignition/php-ie-detector": ">=0.2,<1",
         "webignition/php-stripe-models": ">=0.2.6,<1.0",
+        "webignition/resque-bundle": "dev-master",
         "webignition/simplytestable-user-model": ">=0.1,<1",
         "webignition/simplytestable-user-serializer": ">=1.1,<2",
         "webignition/url": ">=2.1, <3",
