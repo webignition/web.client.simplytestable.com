@@ -1,17 +1,5 @@
 parameters:
     locale: en
     secret: Secret!
-    admin_user_username: SetThis!
-    admin_user_password: SetThis!
-    simplytestable_session_savepath: /tmp
-    stripe_publishable_key: stripe_publishable_key_value
-    mailchimp_api_key: mailchimp_api_key_value
-    mailchimp_announcements_list_id: 1224633c43
-    mailchimp_updates_list_id: 311aedc7f4
-    mailchimp_introduction_list_id: e1b78ec47a
     postmark_api_key: postmark_api_key_value
-    core_url: http://app.simplytestable.com
-    marketing_site: https://simplytestable.com/
     bcc_resque_prefix: web.client.simplytestable.com
-    early_access_users:
-      - "user@example.com"

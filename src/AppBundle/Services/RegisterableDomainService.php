@@ -12,7 +12,10 @@ class RegisterableDomainService
      */
     private $pdpRules;
 
-    public function __construct($pdpRules)
+    /**
+     * @param PdpRules $pdpRules
+     */
+    public function __construct(PdpRules $pdpRules)
     {
         $this->pdpRules = $pdpRules;
     }
