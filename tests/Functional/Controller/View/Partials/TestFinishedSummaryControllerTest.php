@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\Test\Results\Partial\FinishedSummary;
+namespace App\Tests\Functional\Controller\View\Partials;
 
-use App\Controller\View\Test\Results\Partial\FinishedSummary\IndexController;
+use App\Controller\View\Partials\TestFinishedSummaryController;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
 use App\Tests\Factory\HttpResponseFactory;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'Partials/Test/Summary/finished.html.twig';
     const ROUTE_NAME = 'view_test_results_partial_finishedsummary_index';
@@ -105,8 +105,8 @@ class IndexControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var TestFinishedSummaryController $indexController */
+        $indexController = self::$container->get(TestFinishedSummaryController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -166,8 +166,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $request = new Request();
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var TestFinishedSummaryController $indexController */
+        $indexController = self::$container->get(TestFinishedSummaryController::class);
 
         $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);

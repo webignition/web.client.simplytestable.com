@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\Test\Results\Partial\FinishedSummary;
+namespace App\Controller\View\Partials;
 
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController extends AbstractBaseViewController implements RequiresValidUser, RequiresValidOwner
+class TestFinishedSummaryController extends AbstractBaseViewController implements RequiresValidUser, RequiresValidOwner
 {
     /**
      * @var TestService

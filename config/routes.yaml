@@ -162,7 +162,7 @@ view_test_history_websitelist_index:
 
 view_test_results_partial_finishedsummary_index:
     path: /{website}/{test_id}/finished-summary/
-    defaults: { _controller: App\Controller\View\Test\Results\Partial\FinishedSummary\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Partials\TestFinishedSummaryController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'
