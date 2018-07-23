@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\Test\Partial\Notification;
+namespace App\Tests\Functional\Controller\View\Partials;
 
-use App\Controller\View\Test\Partial\Notification\UrlLimitController;
+use App\Controller\View\Partials\TestUrlLimitNotificationController;
 use App\Entity\Test\Test;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
@@ -14,7 +14,7 @@ use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use webignition\SimplyTestableUserModel\User;
 
-class UrlLimitControllerTest extends AbstractControllerTest
+class TestUrlLimitNotificationControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'view_test_partial_notification_urlimit_index';
     const WEBSITE = 'http://example.com/';
@@ -237,7 +237,7 @@ class UrlLimitControllerTest extends AbstractControllerTest
 
         $request = new Request();
 
-        $urlLimitController = self::$container->get(UrlLimitController::class);
+        $urlLimitController = self::$container->get(TestUrlLimitNotificationController::class);
 
         $response = $urlLimitController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
