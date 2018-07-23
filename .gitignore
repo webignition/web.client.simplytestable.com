@@ -1,10 +1,7 @@
 /var/
 !var/cache/.gitkeep
-!var/logs/.gitkeep
-/app/config/parameters.yml
 /phpunit.xml
 /vendor/
-/web/bundles/
 /node_modules
 /yarn-error.log
 
