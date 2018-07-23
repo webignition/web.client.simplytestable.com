@@ -3,7 +3,7 @@
 namespace App\Tests\Functional\Controller\View\User\SignUp;
 
 use App\Controller\Action\User\UserController;
-use App\Controller\View\User\SignUp\IndexController;
+use App\Controller\View\User\SignUp\RequestController;
 use App\Model\Coupon;
 use App\Model\User\Plan;
 use App\Request\User\SignUpRequest;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class RequestControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-sign-up.html.twig';
     const ROUTE_NAME = 'view_user_signup_index_index';
@@ -55,11 +55,11 @@ class IndexControllerTest extends AbstractViewControllerTest
             }
         }
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
-        $this->setTwigOnController($twig, $indexController);
+        /* @var RequestController $requestController */
+        $requestController = self::$container->get(RequestController::class);
+        $this->setTwigOnController($twig, $requestController);
 
-        $response = $indexController->indexAction($request);
+        $response = $requestController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
 
         /* @var Cookie[] $responseCookies */
@@ -280,10 +280,10 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var RequestController $requestController */
+        $requestController = self::$container->get(RequestController::class);
 
-        $response = $indexController->indexAction($request);
+        $response = $requestController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -293,7 +293,7 @@ class IndexControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $indexController->indexAction($newRequest);
+        $newResponse = $requestController->indexAction($newRequest);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

@@ -6,7 +6,7 @@ use App\Controller\AbstractBaseViewController;
 use App\EventListener\IEFilteredRequestListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Controller\View\User\SignUp\IndexController;
+use App\Controller\View\User\SignUp\RequestController;
 
 class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
 {
@@ -43,7 +43,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
         $request = new Request();
         $request->headers->set('user-agent', $userAgent);
 
-        $controller = self::$container->get(IndexController::class);
+        $controller = self::$container->get(RequestController::class);
 
         $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
 
