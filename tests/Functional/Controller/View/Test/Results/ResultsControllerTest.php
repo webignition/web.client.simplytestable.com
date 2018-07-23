@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
-use App\Controller\View\Test\Results\IndexController;
+use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
@@ -21,7 +21,7 @@ use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class ResultsControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-results.html.twig';
     const ROUTE_NAME = 'view_test_results_index_index';
@@ -256,7 +256,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             'default' => [
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
-                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'filter' => ResultsController::FILTER_WITH_ERRORS,
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
@@ -268,7 +268,7 @@ class IndexControllerTest extends AbstractViewControllerTest
             'integer in website url path' => [
                 'website' => 'http://example.com/articles/foo/bar/6875374/foobar/',
                 'testId' => self::TEST_ID,
-                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'filter' => ResultsController::FILTER_WITH_ERRORS,
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
@@ -331,8 +331,8 @@ class IndexControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ResultsController $indexController */
+        $indexController = self::$container->get(ResultsController::class);
 
         /* @var RedirectResponse $response */
         $response = $indexController->indexAction(
@@ -409,7 +409,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([
-                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                    'filter' => ResultsController::FILTER_WITH_ERRORS,
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=without-errors',
                 'expectedRequestUrls' => [
@@ -440,7 +440,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([
-                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                    'filter' => ResultsController::FILTER_WITH_ERRORS,
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=with-warnings',
                 'expectedRequestUrls' => [
@@ -485,8 +485,8 @@ class IndexControllerTest extends AbstractViewControllerTest
             $testFactory->create($testValues);
         }
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ResultsController $indexController */
+        $indexController = self::$container->get(ResultsController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(
@@ -520,7 +520,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'filter' => ResultsController::FILTER_WITH_ERRORS,
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -533,7 +533,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                                     'is_owner' => true,
                                     'type' => Task::TYPE_HTML_VALIDATION,
                                     'type_label' => Task::TYPE_HTML_VALIDATION,
-                                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
                                     'filter_label' => 'With Errors',
                                     'available_task_types' => [
                                         'html-validation',
@@ -572,7 +572,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'filter' => ResultsController::FILTER_WITH_ERRORS,
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -585,7 +585,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                                     'is_owner' => true,
                                     'type' => Task::TYPE_HTML_VALIDATION,
                                     'type_label' => Task::TYPE_HTML_VALIDATION,
-                                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
                                     'filter_label' => 'With Errors',
                                     'available_task_types' => [
                                         'html-validation',
@@ -624,7 +624,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => SystemUserService::getPublicUser(),
                 'testValues' => [],
                 'taskType' => null,
-                'filter' => IndexController::FILTER_ALL,
+                'filter' => ResultsController::FILTER_ALL,
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -637,7 +637,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                                     'is_owner' => true,
                                     'type' => '',
                                     'type_label' => 'All',
-                                    'filter' => IndexController::FILTER_ALL,
+                                    'filter' => ResultsController::FILTER_ALL,
                                     'filter_label' => 'All',
                                     'available_task_types' => [
                                         'html-validation',
@@ -676,7 +676,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => new User(self::USER_EMAIL),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'filter' => ResultsController::FILTER_WITH_ERRORS,
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -689,7 +689,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                                     'is_owner' => false,
                                     'type' => Task::TYPE_HTML_VALIDATION,
                                     'type_label' => Task::TYPE_HTML_VALIDATION,
-                                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
                                     'filter_label' => 'With Errors',
                                     'available_task_types' => [
                                         'html-validation',
@@ -727,7 +727,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => new User(self::USER_EMAIL),
                 'testValues' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => IndexController::FILTER_WITH_ERRORS,
+                'filter' => ResultsController::FILTER_WITH_ERRORS,
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -740,7 +740,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                                     'is_owner' => true,
                                     'type' => Task::TYPE_HTML_VALIDATION,
                                     'type_label' => Task::TYPE_HTML_VALIDATION,
-                                    'filter' => IndexController::FILTER_WITH_ERRORS,
+                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
                                     'filter_label' => 'With Errors',
                                     'available_task_types' => [
                                         'html-validation',
@@ -781,7 +781,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                 'user' => new User(self::USER_EMAIL),
                 'testValues' => [],
                 'taskType' => Task::TYPE_CSS_VALIDATION,
-                'filter' => IndexController::FILTER_WITHOUT_ERRORS,
+                'filter' => ResultsController::FILTER_WITHOUT_ERRORS,
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -794,7 +794,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                                     'is_owner' => true,
                                     'type' => Task::TYPE_CSS_VALIDATION,
                                     'type_label' => Task::TYPE_CSS_VALIDATION,
-                                    'filter' => IndexController::FILTER_WITHOUT_ERRORS,
+                                    'filter' => ResultsController::FILTER_WITHOUT_ERRORS,
                                     'filter_label' => 'Without Errors',
                                     'available_task_types' => [
                                         'html-validation',
@@ -835,13 +835,13 @@ class IndexControllerTest extends AbstractViewControllerTest
         ]);
 
         $request = new Request([
-            'filter' => IndexController::FILTER_WITH_ERRORS,
+            'filter' => ResultsController::FILTER_WITH_ERRORS,
         ]);
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ResultsController $indexController */
+        $indexController = self::$container->get(ResultsController::class);
 
         $response = $indexController->indexAction(
             $request,

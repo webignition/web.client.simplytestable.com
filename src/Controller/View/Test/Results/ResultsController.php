@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController extends AbstractResultsController
+class ResultsController extends AbstractResultsController
 {
     const FILTER_WITH_ERRORS = 'with-errors';
     const FILTER_WITH_WARNINGS = 'with-warnings';

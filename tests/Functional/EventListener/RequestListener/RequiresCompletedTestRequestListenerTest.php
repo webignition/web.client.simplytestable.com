@@ -9,7 +9,7 @@ use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Controller\View\Test\Results\IndexController;
+use App\Controller\View\Test\Results\ResultsController;
 
 class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerTest
 {
@@ -49,8 +49,8 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
             $testFactory->create($testValues);
         }
 
-        /* @var IndexController $controller */
-        $controller = self::$container->get(IndexController::class);
+        /* @var ResultsController $controller */
+        $controller = self::$container->get(ResultsController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,
