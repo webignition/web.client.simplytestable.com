@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\Dashboard\Partial;
+namespace App\Controller\View\Dashboard;
 
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
