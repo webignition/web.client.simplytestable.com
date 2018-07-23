@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\Test\Task\Results;
+namespace App\Tests\Functional\Controller\View\Test\Task;
 
-use App\Controller\View\Test\Task\Results\IndexController;
+use App\Controller\View\Test\Task\ResultsController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
@@ -21,7 +21,7 @@ use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class ResultsControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'task-results.html.twig';
     const ROUTE_NAME = 'view_test_task_results_index_index';
@@ -235,8 +235,8 @@ class IndexControllerTest extends AbstractViewControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ResultsController $indexController */
+        $indexController = self::$container->get(ResultsController::class);
 
         /* @var RedirectResponse $response */
         $response = $indexController->indexAction(
@@ -350,8 +350,8 @@ class IndexControllerTest extends AbstractViewControllerTest
             $testFactory->create($testValues);
         }
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ResultsController $indexController */
+        $indexController = self::$container->get(ResultsController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(
@@ -927,8 +927,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var ResultsController $indexController */
+        $indexController = self::$container->get(ResultsController::class);
 
         $response = $indexController->indexAction(
             $request,

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\Test\Task\Results;
+namespace App\Controller\View\Test\Task;
 
 use App\Controller\View\Test\AbstractRequiresValidOwnerController;
 use App\Entity\Task\Task;
@@ -32,7 +32,7 @@ use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
 use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
 use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNormalisationResult;
 
-class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
+class ResultsController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
     /**
      * @var TestService
