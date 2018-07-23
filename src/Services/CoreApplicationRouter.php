@@ -35,7 +35,7 @@ class CoreApplicationRouter implements WarmableInterface
         $kernelProjectDirectory,
         $cacheDir
     ) {
-        $locator = new FileLocator($kernelProjectDirectory . '/app/config/resources');
+        $locator = new FileLocator($kernelProjectDirectory . '/config/resources');
         $requestContext = new RequestContext();
         $requestContext->fromRequest(Request::createFromGlobals());
 

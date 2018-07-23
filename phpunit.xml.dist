@@ -47,7 +47,7 @@
         <env name="SESSION_SAVE_PATH" value="/tmp"/>
         <env name="MARKETING_SITE" value="https://simplytestable.com/"/>
         <env name="STRIPE_KEY" value="stripe_key_value"/>
-        <env name="CORE_URL" value="http://app.simplytestable.com"/>
+        <env name="CORE_URL" value="http://null"/>
         <env name="MAILCHIMP_API_KEY" value="mailchimp_api_key_value-us5"/>
         <env name="ADMIN_USER_EMAIL" value="admin_username_value"/>
         <env name="ADMIN_USER_PASSWORD" value="admin_password_value"/>
