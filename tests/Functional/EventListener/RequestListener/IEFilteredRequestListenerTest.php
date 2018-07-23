@@ -55,10 +55,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelControllerTest
             $response = $this->getControllerResponse($controller, BaseViewController::class);
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
-            $this->assertEquals(
-                self::$container->getParameter('marketing_site'),
-                $response->getTargetUrl()
-            );
+            $this->assertEquals(getenv('MARKETING_SITE'), $response->getTargetUrl());
         } else {
             $this->assertTrue(true);
         }

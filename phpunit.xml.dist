@@ -49,7 +49,7 @@
         <env name="STRIPE_KEY" value="stripe_key_value"/>
         <env name="CORE_URL" value="http://null"/>
         <env name="MAILCHIMP_API_KEY" value="mailchimp_api_key_value-us5"/>
-        <env name="ADMIN_USER_USERNAME" value="admin_username_value"/>
+        <env name="ADMIN_USER_USERNAME" value="admin"/>
         <env name="ADMIN_USER_PASSWORD" value="admin_password_value"/>
         <env name="POSTMARK_API_KEY" value="postmark_api_key_value"/>
         <env name="RESQUE_PREFIX" value="web.client.simplytestable.com"/>

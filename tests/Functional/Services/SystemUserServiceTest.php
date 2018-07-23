@@ -36,8 +36,8 @@ class SystemUserServiceTest extends AbstractBaseTestCase
     public function testGetAdminUser()
     {
         $expectedAdminUser = new User(
-            self::$container->getParameter('admin_user_username'),
-            self::$container->getParameter('admin_user_password')
+            getenv('ADMIN_USER_USERNAME'),
+            getenv('ADMIN_USER_PASSWORD')
         );
 
         $this->assertEquals($expectedAdminUser, $this->systemUserService->getAdminUser());
