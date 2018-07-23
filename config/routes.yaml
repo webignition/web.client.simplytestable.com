@@ -140,7 +140,7 @@ user_account_plan_subscribe:
 
 view_dashboard_index_index:
     path: /
-    defaults: { _controller: App\Controller\View\Dashboard\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Dashboard\DashboardController::indexAction }
 
 view_dashboard_partial_recenttests_index:
     path: /recent-tests/

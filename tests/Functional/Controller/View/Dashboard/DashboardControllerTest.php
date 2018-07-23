@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Controller\View\Dashboard;
 
-use App\Controller\View\Dashboard\IndexController;
+use App\Controller\View\Dashboard\DashboardController;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -16,7 +16,7 @@ use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class DashboardControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'dashboard.html.twig';
     const ROUTE_NAME = 'view_dashboard_index_index';
@@ -110,8 +110,8 @@ class IndexControllerTest extends AbstractViewControllerTest
             }
         }
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var DashboardController $indexController */
+        $indexController = self::$container->get(DashboardController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction($request);
@@ -211,8 +211,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var DashboardController $indexController */
+        $indexController = self::$container->get(DashboardController::class);
 
         $response = $indexController->indexAction($request);
         $this->assertInstanceOf(Response::class, $response);
