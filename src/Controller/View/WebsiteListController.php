@@ -1,43 +1,50 @@
 <?php
 
-namespace App\Controller\View\Test\History;
+namespace App\Controller\View;
 
-use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Interfaces\Controller\RequiresValidUser;
-use App\Services\CacheValidatorService;
-use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\RouterInterface;
-use Twig_Environment;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
-class WebsiteListController extends AbstractBaseViewController implements RequiresValidUser
+class WebsiteListController implements RequiresValidUser
 {
+    /**
+     * @var Response|RedirectResponse|JsonResponse
+     */
+    protected $response;
+
     /**
      * @var RemoteTestService
      */
     private $remoteTestService;
 
     /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
      * @param RemoteTestService $remoteTestService
      */
-    public function __construct(
-        RouterInterface $router,
-        Twig_Environment $twig,
-        DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
-        RemoteTestService $remoteTestService
-    ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
-
+    public function __construct(RemoteTestService $remoteTestService)
+    {
         $this->remoteTestService = $remoteTestService;
+    }
+
+    /**
+     * @param Response $response
+     */
+    public function setResponse(Response $response)
+    {
+        $this->response = $response;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasResponse()
+    {
+        return !empty($this->response);
     }
 
     /**

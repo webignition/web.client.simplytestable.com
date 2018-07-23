@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\Test\History;
+namespace App\Tests\Functional\Controller\View;
 
-use App\Controller\View\Test\History\WebsiteListController;
+use App\Controller\View\WebsiteListController;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;

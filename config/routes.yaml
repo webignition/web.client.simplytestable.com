@@ -158,7 +158,7 @@ app_history:
 
 view_test_history_websitelist_index:
     path: /history/websites/
-    defaults: { _controller: App\Controller\View\Test\History\WebsiteListController::indexAction, _format: json }
+    defaults: { _controller: App\Controller\View\WebsiteListController::indexAction, _format: json }
 
 view_test_results_partial_finishedsummary_index:
     path: /{website}/{test_id}/finished-summary/
