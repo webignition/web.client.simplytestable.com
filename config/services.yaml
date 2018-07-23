@@ -90,9 +90,9 @@ services:
     App\Services\MailChimp\ListRecipientsService:
       arguments:
         $listIdentifiers:
-          announcements: '%env(MAILCHIMP_ANNOUNCEMENTS_LIST_ID)%'
-          updates: '%env(MAILCHIMP_UPDATES_LIST_ID)%'
-          introduction: '%env(MAILCHIMP_INTRODUCTION_LIST_ID)%'
+          announcements: '%mailchimp_announcements_list_id%'
+          updates: '%mailchimp_updates_list_id%'
+          introduction: '%mailchimp_introduction_list_id%'
 
     App\Services\TaskTypeService:
       calls:

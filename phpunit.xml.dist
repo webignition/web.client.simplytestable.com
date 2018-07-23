@@ -48,10 +48,7 @@
         <env name="MARKETING_SITE" value="https://simplytestable.com/"/>
         <env name="STRIPE_KEY" value="stripe_key_value"/>
         <env name="CORE_URL" value="http://app.simplytestable.com"/>
-        <env name="MAILCHIMP_API_KEY" value="mailchimp_api_key_value"/>
-        <env name="MAILCHIMP_ANNOUNCEMENTS_LIST_ID" value="1224633c43"/>
-        <env name="MAILCHIMP_UPDATES_LIST_ID" value="311aedc7f4"/>
-        <env name="MAILCHIMP_INTRODUCTION_LIST_ID" value="e1b78ec47a"/>
+        <env name="MAILCHIMP_API_KEY" value="mailchimp_api_key_value-us5"/>
         <env name="ADMIN_USER_EMAIL" value="admin_username_value"/>
         <env name="ADMIN_USER_PASSWORD" value="admin_password_value"/>
         <env name="POSTMARK_API_KEY" value="postmark_api_key_value"/>
