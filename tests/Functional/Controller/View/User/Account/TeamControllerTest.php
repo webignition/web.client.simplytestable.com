@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\User\Account\Team;
+namespace App\Tests\Functional\Controller\View\User\Account;
 
-use App\Controller\Action\User\Account\TeamController;
+use App\Controller\Action\User\Account\TeamController as TeamActionController;
 use App\Controller\Action\User\Account\TeamInviteController;
-use App\Controller\View\User\Account\Team\IndexController;
+use App\Controller\View\User\Account\TeamController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -20,7 +20,7 @@ use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class TeamControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-account-team.html.twig';
     const ROUTE_NAME = 'view_user_account_team_index_index';
@@ -152,8 +152,8 @@ class IndexControllerTest extends AbstractViewControllerTest
             }
         }
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var TeamController $indexController */
+        $indexController = self::$container->get(TeamController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction();
@@ -199,8 +199,8 @@ class IndexControllerTest extends AbstractViewControllerTest
                     ])),
                 ],
                 'flashBagValues' => [
-                    TeamController::FLASH_BAG_CREATE_ERROR_KEY =>
-                        TeamController::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK,
+                    TeamActionController::FLASH_BAG_CREATE_ERROR_KEY =>
+                        TeamActionController::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK,
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -208,7 +208,7 @@ class IndexControllerTest extends AbstractViewControllerTest
                             $this->assertCommonViewData($viewName, $parameters);
 
                             $this->assertEquals(
-                                TeamController::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK,
+                                TeamActionController::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK,
                                 $parameters['team_create_error']
                             );
 

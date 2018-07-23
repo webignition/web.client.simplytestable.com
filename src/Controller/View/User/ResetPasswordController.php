@@ -1,11 +1,8 @@
 <?php
 
-namespace App\Controller\View\User\ResetPassword;
+namespace App\Controller\View\User;
 
-use App\Controller\Action\User\ResetPassword\IndexController
-    as ResetPasswordActionController;
-use App\Controller\AbstractBaseViewController;
-use App\Controller\View\User\AbstractUserController;
+use App\Controller\Action\User\ResetPassword\IndexController as ResetPasswordActionController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
@@ -18,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class ChooseController extends AbstractUserController
+class ResetPasswordController extends AbstractUserController
 {
     /**
      * @var UserService
@@ -48,6 +45,29 @@ class ChooseController extends AbstractUserController
 
     /**
      * @param Request $request
+     *
+     * @return Response
+     */
+    public function requestAction(Request $request)
+    {
+        $viewData = array_merge([
+            'email' => trim($request->query->get('email')),
+        ], $this->flashBagValues->get([
+            'user_reset_password_error',
+            'user_reset_password_confirmation',
+        ]));
+
+        $response = $this->cacheValidator->createResponse($request, $viewData);
+
+        if ($this->cacheValidator->isNotModified($response)) {
+            return $response;
+        }
+
+        return $this->renderWithDefaultViewParameters('user-reset-password.html.twig', $viewData, $response);
+    }
+
+    /**
+     * @param Request $request
      * @param string $email
      * @param string $token
      *
@@ -57,7 +77,7 @@ class ChooseController extends AbstractUserController
      * @throws InvalidAdminCredentialsException
      * @throws InvalidContentTypeException
      */
-    public function indexAction(Request $request, $email, $token)
+    public function chooseAction(Request $request, $email, $token)
     {
         $staySignedIn = $request->query->get('stay-signed-in');
         $actualToken = $this->userService->getConfirmationToken($email);

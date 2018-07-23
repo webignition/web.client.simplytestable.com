@@ -20,7 +20,7 @@ sign_in_submit:
 
 view_user_resetpassword_index_index:
     path: /reset-password/
-    defaults: { _controller: App\Controller\View\User\ResetPassword\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\User\ResetPasswordController::requestAction }
 
 action_user_resetpassword_index_request:
     path: /reset-password/submit/
@@ -32,7 +32,7 @@ reset_password_choose_submit:
 
 view_user_resetpassword_choose_index:
     path: /reset-password/{email}/{token}/
-    defaults: { _controller: App\Controller\View\User\ResetPassword\ChooseController::indexAction }
+    defaults: { _controller: App\Controller\View\User\ResetPasswordController::chooseAction }
 
 view_user_signup_index_index:
     path: /signup/
@@ -96,7 +96,7 @@ view_user_account_card_index:
 
 view_user_account_team_index_index:
     path: /account/team/
-    defaults: { _controller: App\Controller\View\User\Account\Team\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\User\Account\TeamController::indexAction }
 
 action_user_account_team_create:
     path: /account/team/create/

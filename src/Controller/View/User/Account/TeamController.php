@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\User\Account\Team;
+namespace App\Controller\View\User\Account;
 
 use App\Controller\View\User\Account\AbstractUserAccountController;
 use App\Exception\CoreApplicationRequestException;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController extends AbstractUserAccountController
+class TeamController extends AbstractUserAccountController
 {
     const STRIPE_CARD_CHECK_KEY_POSTFIX = '_check';
 
