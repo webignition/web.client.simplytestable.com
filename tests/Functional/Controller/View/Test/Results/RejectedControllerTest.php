@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\Test\Results\Rejected;
+namespace App\Tests\Functional\Controller\View\Test\Results;
 
-use App\Controller\View\Test\Results\Rejected\IndexController;
+use App\Controller\View\Test\Results\RejectedController;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -20,7 +20,7 @@ use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexControllerTest extends AbstractViewControllerTest
+class RejectedControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-results-rejected.html.twig';
     const ROUTE_NAME = 'view_test_results_rejected_index_index';
@@ -309,8 +309,8 @@ class IndexControllerTest extends AbstractViewControllerTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var RejectedController $indexController */
+        $indexController = self::$container->get(RejectedController::class);
 
         /* @var RedirectResponse $response */
         $response = $indexController->indexAction($request, $website, self::TEST_ID);
@@ -368,8 +368,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var RejectedController $indexController */
+        $indexController = self::$container->get(RejectedController::class);
         $this->setTwigOnController($twig, $indexController);
 
         $response = $indexController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -501,8 +501,8 @@ class IndexControllerTest extends AbstractViewControllerTest
 
         self::$container->get('request_stack')->push($request);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var RejectedController $indexController */
+        $indexController = self::$container->get(RejectedController::class);
 
         $response = $indexController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);

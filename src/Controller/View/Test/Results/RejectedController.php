@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\Test\Results\Rejected;
+namespace App\Controller\View\Test\Results;
 
 use App\Controller\View\Test\AbstractRequiresValidOwnerController;
 use App\Entity\Test\Test;
@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
+class RejectedController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
     /**
      * @var TestService
