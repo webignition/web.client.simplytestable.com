@@ -16,7 +16,7 @@ env:
     - STRIPE_KEY=stripe_key_value
     - CORE_URL=http://null
     - MAILCHIMP_API_KEY=mailchimp_api_key_value-us5
-    - ADMIN_USER_USERNAME=admin_username_value
+    - ADMIN_USER_USERNAME=admin
     - ADMIN_USER_PASSWORD=admin_password_value
     - POSTMARK_API_KEY=postmark_api_key_value
     - RESQUE_PREFIX=web.client.simplytestable.com
