@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\Test\Results;
+namespace App\Controller\View\Partials;
 
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
@@ -10,13 +10,16 @@ use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
+use App\Services\SystemUserService;
 use App\Services\TestService;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class PreparingStatsController extends AbstractBaseViewController implements RequiresValidUser, RequiresValidOwner
+class TestUrlLimitNotificationController extends AbstractBaseViewController implements
+    RequiresValidUser,
+    RequiresValidOwner
 {
     /**
      * @var TestService
@@ -51,71 +54,64 @@ class PreparingStatsController extends AbstractBaseViewController implements Req
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getInvalidOwnerResponse(Request $request)
-    {
-        return $this->createJsonResponse(0, 0, 0, 0, 0);
-    }
-
-    /**
+     * @param Request $request
      * @param string $website
      * @param int $test_id
      *
-     * @return JsonResponse
+     * @return Response
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function indexAction($website, $test_id)
+    public function indexAction(Request $request, $website, $test_id)
     {
         if ($this->hasResponse()) {
             return $this->response;
         }
 
         $test = $this->testService->get($website, $test_id);
+        $this->remoteTestService->setTest($test);
+
         $remoteTest = $this->remoteTestService->get();
+        $ammendments = $remoteTest->getAmmendments();
 
-        $localTaskCount = $test->getTaskCount();
-        $remoteTaskCount = $remoteTest->getTaskCount();
+        if (empty($ammendments)) {
+            return new Response();
+        }
 
-        $completionPercent = 0 === $remoteTaskCount
-            ? 100
-            : round(($localTaskCount / $remoteTaskCount) * 100);
+        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
+        $response = $this->cacheValidator->createResponse($request, [
+            'test_id' => $test_id,
+            'is_public_user_test' => $isPublicUserTest,
+        ]);
 
-        return $this->createJsonResponse(
-            $test_id,
-            $completionPercent,
-            $remainingTasksToRetrieveCount,
-            $localTaskCount,
-            $remoteTaskCount
+        if ($this->cacheValidator->isNotModified($response)) {
+            return $response;
+        }
+
+        $ammendments = $remoteTest->getAmmendments();
+        $firstAmmendment = $ammendments[0];
+
+        $total = (int)str_replace('plan-url-limit-reached:discovered-url-count-', '', $firstAmmendment['reason']);
+        $limit = $firstAmmendment['constraint']['limit'];
+
+        return $this->renderWithDefaultViewParameters(
+            'Partials/Alert/Content/url-limit.html.twig',
+            [
+                'is_public_user_test' => $isPublicUserTest,
+                'total' => $total,
+                'limit' => $limit,
+            ],
+            $response
         );
     }
 
     /**
-     * @param int $testId
-     * @param int $completionPercent
-     * @param int $remainingTasksToRetrieveCount
-     * @param int $localTaskCount
-     * @param int $remoteTaskCount
-     *
-     * @return JsonResponse
+     * @inheritdoc}
      */
-    private function createJsonResponse(
-        $testId,
-        $completionPercent,
-        $remainingTasksToRetrieveCount,
-        $localTaskCount,
-        $remoteTaskCount
-    ) {
-        return new JsonResponse([
-            'id' => $testId,
-            'completion_percent' => $completionPercent,
-            'remaining_tasks_to_retrieve_count' => $remainingTasksToRetrieveCount,
-            'local_task_count' => $localTaskCount,
-            'remote_task_count' => $remoteTaskCount
-        ]);
+    public function getInvalidOwnerResponse(Request $request)
+    {
+        return new Response('');
     }
 }

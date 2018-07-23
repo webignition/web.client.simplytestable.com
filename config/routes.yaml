@@ -20,7 +20,7 @@ sign_in_submit:
 
 view_user_resetpassword_index_index:
     path: /reset-password/
-    defaults: { _controller: App\Controller\View\User\ResetPassword\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\User\ResetPasswordController::requestAction }
 
 action_user_resetpassword_index_request:
     path: /reset-password/submit/
@@ -32,11 +32,11 @@ reset_password_choose_submit:
 
 view_user_resetpassword_choose_index:
     path: /reset-password/{email}/{token}/
-    defaults: { _controller: App\Controller\View\User\ResetPassword\ChooseController::indexAction }
+    defaults: { _controller: App\Controller\View\User\ResetPasswordController::chooseAction }
 
 view_user_signup_index_index:
     path: /signup/
-    defaults: { _controller: App\Controller\View\User\SignUp\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\User\SignUp\RequestController::indexAction }
 
 sign_up_submit:
     path: /signup/submit/
@@ -88,7 +88,7 @@ action_user_account_passwordchange_request:
 
 view_user_account_index_index:
     path: /account/
-    defaults: { _controller: App\Controller\View\User\Account\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\User\Account\AccountController::indexAction }
 
 view_user_account_card_index:
     path: /account/card/
@@ -96,7 +96,7 @@ view_user_account_card_index:
 
 view_user_account_team_index_index:
     path: /account/team/
-    defaults: { _controller: App\Controller\View\User\Account\Team\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\User\Account\TeamController::indexAction }
 
 action_user_account_team_create:
     path: /account/team/create/
@@ -140,36 +140,36 @@ user_account_plan_subscribe:
 
 view_dashboard_index_index:
     path: /
-    defaults: { _controller: App\Controller\View\Dashboard\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Dashboard\DashboardController::indexAction }
 
 view_dashboard_partial_recenttests_index:
     path: /recent-tests/
-    defaults: { _controller: App\Controller\View\Dashboard\Partial\RecentTestsController::indexAction }
+    defaults: { _controller: App\Controller\View\Partials\RecentTestsController::indexAction }
 
 view_test_history_index_index:
     path: /history/
-    defaults: { _controller: App\Controller\View\Test\History\IndexController::indexAction, page_number: 1 }
+    defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction, page_number: 1 }
 
 app_history:
     path: /history/{page_number}/
-    defaults: { _controller: App\Controller\View\Test\History\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction }
     requirements:
         page_number: '\d+'
 
 view_test_history_websitelist_index:
     path: /history/websites/
-    defaults: { _controller: App\Controller\View\Test\History\WebsiteListController::indexAction, _format: json }
+    defaults: { _controller: App\Controller\View\WebsiteListController::indexAction, _format: json }
 
 view_test_results_partial_finishedsummary_index:
     path: /{website}/{test_id}/finished-summary/
-    defaults: { _controller: App\Controller\View\Test\Results\Partial\FinishedSummary\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Partials\TestFinishedSummaryController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'
 
 view_test_task_results_index_index_verbose:
     path: /website/{website}/test_id/{test_id}/task_id/{task_id}/results/
-    defaults: { _controller: App\Controller\View\Test\Task\Results\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Task\ResultsController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'
@@ -177,7 +177,7 @@ view_test_task_results_index_index_verbose:
 
 view_test_task_results_index_index:
     path: /{website}/{test_id}/{task_id}/results/{trailingSlash}
-    defaults: { _controller: App\Controller\View\Test\Task\Results\IndexController::indexAction, trailingSlash : "/" }
+    defaults: { _controller: App\Controller\View\Task\ResultsController::indexAction, trailingSlash : "/" }
     requirements:
         website: '.+'
         test_id: '\d+'
@@ -186,7 +186,7 @@ view_test_task_results_index_index:
 
 view_test_partial_notification_urlimit_index:
     path: /{website}/{test_id}/url-limit-notification/
-    defaults: { _controller: App\Controller\View\Test\Partial\Notification\UrlLimitController::indexAction }
+    defaults: { _controller: App\Controller\View\Partials\TestUrlLimitNotificationController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'
@@ -201,20 +201,20 @@ app_task_results_redirector:
 
 view_test_progress_index_index:
     path: /{website}/{test_id}/progress/
-    defaults: { _controller: App\Controller\View\Test\Progress\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\ProgressController::indexAction }
     requirements:
         website: '.+'
 
 view_test_results_index_index_verbose:
     path: /website/{website}/test_id/{test_id}/results/
-    defaults: { _controller: App\Controller\View\Test\Results\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\Results\ResultsController::indexAction }
     requirements:
        website: '.+'
        test_id: '\d+'
 
 view_test_results_index_index:
     path: /{website}/{test_id}/results/
-    defaults: { _controller: App\Controller\View\Test\Results\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\Results\ResultsController::indexAction }
     requirements:
        website: '.+'
        test_id: '\d+'
@@ -247,19 +247,19 @@ app_test_retest:
 
 view_test_results_failednourlsdetected_index_index:
     path: /{website}/{test_id}/results/failed/no-urls-detected/
-    defaults: { _controller: App\Controller\View\Test\Results\FailedNoUrlsDetected\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\Results\FailedNoUrlsDetectedController::indexAction }
     requirements:
        website: '.+'
 
 view_test_results_rejected_index_index:
     path: /{website}/{test_id}/results/rejected/
-    defaults: { _controller: App\Controller\View\Test\Results\Rejected\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\Results\RejectedController::indexAction }
     requirements:
        website: '.+'
 
 view_test_results_preparing_index_index:
     path: /{website}/{test_id}/results/preparing/
-    defaults: { _controller: App\Controller\View\Test\Results\Preparing\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Test\Results\PreparingController::indexAction }
     requirements:
        website: '.+'
 
@@ -291,7 +291,7 @@ view_test_results_bytasktype_index:
 
 view_test_task_tasklist_index_index:
     path: /{website}/{test_id}/tasklist/
-    defaults: { _controller: App\Controller\View\Test\Task\TaskList\IndexController::indexAction }
+    defaults: { _controller: App\Controller\View\Partials\TestTaskListController::indexAction }
     requirements:
         website: '.+'
         test_id: '\d+'

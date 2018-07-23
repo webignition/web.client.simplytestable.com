@@ -2,14 +2,14 @@
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
-use App\Controller\BaseViewController;
+use App\Controller\AbstractBaseViewController;
 use App\Entity\Test\Test;
 use App\EventListener\RequiresCompletedTestRequestListener;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Controller\View\Test\Results\IndexController;
+use App\Controller\View\Test\Results\ResultsController;
 
 class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerTest
 {
@@ -49,8 +49,8 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
             $testFactory->create($testValues);
         }
 
-        /* @var IndexController $controller */
-        $controller = self::$container->get(IndexController::class);
+        /* @var ResultsController $controller */
+        $controller = self::$container->get(ResultsController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,
@@ -64,7 +64,7 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
         $this->assertEquals($expectedHasResponse, $controller->hasResponse());
 
         if ($expectedHasResponse) {
-            $response = $this->getControllerResponse($controller, BaseViewController::class);
+            $response = $this->getControllerResponse($controller, AbstractBaseViewController::class);
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());

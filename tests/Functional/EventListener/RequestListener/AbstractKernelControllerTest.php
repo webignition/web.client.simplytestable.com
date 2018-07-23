@@ -4,7 +4,7 @@ namespace App\Tests\Functional\EventListener\RequestListener;
 
 use ReflectionClass;
 use App\Controller\Action\User\UserController;
-use App\Controller\View\Dashboard\IndexController;
+use App\Controller\View\Dashboard\DashboardController;
 use App\EventListener\IEFilteredRequestListener;
 use App\EventListener\RequiresCompletedTestRequestListener;
 use App\EventListener\RequiresPrivateUserRequestListener;
@@ -129,7 +129,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
         $request = new Request();
 
         /* @var SettableResponse $controller */
-        $controller = self::$container->get(IndexController::class);
+        $controller = self::$container->get(DashboardController::class);
         $controller->setResponse(new Response());
 
         $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');

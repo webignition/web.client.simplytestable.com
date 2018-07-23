@@ -9,7 +9,7 @@ use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Controller\View\Test\Partial\Notification\UrlLimitController;
+use App\Controller\View\Partials\TestUrlLimitNotificationController;
 
 class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelControllerTest
 {
@@ -44,8 +44,8 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
             $testFactory->create($testValues);
         }
 
-        /* @var UrlLimitController $controller */
-        $controller = self::$container->get(UrlLimitController::class);
+        /* @var TestUrlLimitNotificationController $controller */
+        $controller = self::$container->get(TestUrlLimitNotificationController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,
@@ -59,7 +59,7 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
         $this->assertEquals($expectedHasResponse, $controller->hasResponse());
 
         if ($expectedHasResponse) {
-            $response = $this->getControllerResponse($controller, UrlLimitController::class);
+            $response = $this->getControllerResponse($controller, TestUrlLimitNotificationController::class);
 
             $this->assertInstanceOf(Response::class, $response);
         }
@@ -121,8 +121,8 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
             TestFactory::KEY_TEST_ID => self::TEST_ID,
         ]);
 
-        /* @var UrlLimitController $controller */
-        $controller = self::$container->get(UrlLimitController::class);
+        /* @var TestUrlLimitNotificationController $controller */
+        $controller = self::$container->get(TestUrlLimitNotificationController::class);
 
         $request = new Request([], [], [
             'website' => self::WEBSITE,

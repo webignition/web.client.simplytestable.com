@@ -3,8 +3,7 @@
 namespace App\Tests\Functional\Controller\View;
 
 use ReflectionClass;
-use App\Controller\BaseViewController;
-use App\Tests\Functional\AbstractBaseTestCase;
+use App\Controller\AbstractBaseViewController;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
@@ -35,13 +34,13 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
 
     /**
      * @param Twig_Environment $twig
-     * @param BaseViewController $controller
+     * @param AbstractBaseViewController $controller
      *
      * @throws \ReflectionException
      */
-    protected function setTwigOnController(Twig_Environment $twig, BaseViewController $controller)
+    protected function setTwigOnController(Twig_Environment $twig, AbstractBaseViewController $controller)
     {
-        $reflectionClass = new ReflectionClass(BaseViewController::class);
+        $reflectionClass = new ReflectionClass(AbstractBaseViewController::class);
 
         $reflectionProperty = $reflectionClass->getProperty('twig');
         $reflectionProperty->setAccessible(true);
