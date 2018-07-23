@@ -34,9 +34,6 @@ use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNorma
 
 class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
-    const DOCUMENTATION_SITEMAP_RESOURCE_PATH =
-        '@SimplyTestableWebClientBundle/Resources/config/documentation_sitemap.xml';
-
     /**
      * @var TestService
      */
