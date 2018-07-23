@@ -23,6 +23,7 @@
         "jeremykendall/php-domain-parser": "~5.3",
         "sensio/framework-extra-bundle": "^5.0.0",
         "symfony/asset": "^4.1",
+        "symfony/browser-kit": "^4.1",
         "symfony/console": "^4.1",
         "symfony/dotenv": "^4.0",
         "symfony/flex": "^1.0",
