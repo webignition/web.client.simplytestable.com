@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\View\Test\Task\TaskList;
+namespace App\Controller\View\Partials;
 
 use App\Controller\View\Test\AbstractRequiresValidOwnerController;
 use App\Exception\CoreApplicationRequestException;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class IndexController extends AbstractRequiresValidOwnerController implements RequiresValidUser
+class TestTaskListController extends AbstractRequiresValidOwnerController implements RequiresValidUser
 {
     /**
      * @var TestService

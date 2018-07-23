@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\Test\Task\TaskList;
+namespace App\Tests\Functional\Controller\View\Partials;
 
-use App\Controller\View\Test\Task\TaskList\IndexController;
+use App\Controller\View\Partials\TestTaskListController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 
-class IndexControllerTest extends AbstractControllerTest
+class TestTaskListControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'view_test_task_tasklist_index_index';
     const WEBSITE = 'http://example.com/';
@@ -150,8 +150,8 @@ class IndexControllerTest extends AbstractControllerTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var TestTaskListController $indexController */
+        $indexController = self::$container->get(TestTaskListController::class);
 
         $response = $indexController->indexAction(
             $request,
@@ -220,8 +220,8 @@ class IndexControllerTest extends AbstractControllerTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var TestTaskListController $indexController */
+        $indexController = self::$container->get(TestTaskListController::class);
 
         $response = $indexController->indexAction(
             $request,
@@ -445,8 +445,8 @@ class IndexControllerTest extends AbstractControllerTest
             'taskIds' => [2],
         ]);
 
-        /* @var IndexController $indexController */
-        $indexController = self::$container->get(IndexController::class);
+        /* @var TestTaskListController $indexController */
+        $indexController = self::$container->get(TestTaskListController::class);
 
         $response = $indexController->indexAction(
             $request,
