@@ -88,7 +88,7 @@
 
                                                 {% if is_owner or is_public_user_test %}
                                                     <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
-                                                        <a href="{{ path('view_test_history', {'filter': website.raw}) }}">
+                                                        <a href="{{ path('view_test_history_page1', {'filter': website.raw}) }}">
                                                             {{ domain_test_count }} {% if is_public_user_test %}demo{% endif %} test{% if domain_test_count != 1%}s{% endif %} for this URL
                                                             <i class="fa fa-caret-right"></i>
                                                         </a>
