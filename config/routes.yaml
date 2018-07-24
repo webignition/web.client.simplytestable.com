@@ -227,7 +227,7 @@ action_test_task_results_byurl:
         test_id: '\d+'
         task_url: '.+'
 
-app_test_lock:
+action_test_lock:
     path: /{website}/{test_id}/lock/
     defaults: { _controller: App\Controller\Action\Test\TestController::lockAction }
     requirements:
