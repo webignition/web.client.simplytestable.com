@@ -94,7 +94,7 @@ class PlanController extends AbstractUserAccountController
         $team = null;
 
         if ($userSummary->getPlan()->getAccountPlan()->getIsCustom()) {
-            return new RedirectResponse($this->generateUrl('view_user_account_index_index'));
+            return new RedirectResponse($this->generateUrl('view_user_account'));
         }
 
         $stripeCustomer = $userSummary->getStripeCustomer();

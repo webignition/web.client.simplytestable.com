@@ -23,8 +23,7 @@ use webignition\SimplyTestableUserModel\User;
 class AccountControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-account.html.twig';
-    const ROUTE_NAME = 'view_user_account_index_index';
-
+    const ROUTE_NAME = 'view_user_account';
     const USER_EMAIL = 'user@example.com';
 
     /**

@@ -44,9 +44,9 @@
                     {% endif %}
 
                     {% if is_logged_in %}
-                        <li class="user-actions text {% if app.request.get('_route') == 'view_user_account_index_index' %}active{% endif %}">
+                        <li class="user-actions text {% if app.request.get('_route') == 'view_user_account' %}active{% endif %}">
                             <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>
-                            <a class="username" href="{{ path('view_user_account_index_index') }}">
+                            <a class="username" href="{{ path('view_user_account') }}">
                                 <i class="fa fa-user"></i> {{ user.username }}
                             </a>
                         </li>

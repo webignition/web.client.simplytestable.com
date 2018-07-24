@@ -15,7 +15,7 @@
 } %}
 
 {% block title %}Your card details ({{ user.username }}) - {{ parent() }}{% endblock %}
-{% block heading %}<a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: your card details{% endblock %}
+{% block heading %}<a href="{{ path('view_user_account') }}">{{ parent() }}</a>: your card details{% endblock %}
 
 {% block javascripts %}
     <script type="text/javascript" src="https://js.stripe.com/v2/"></script>

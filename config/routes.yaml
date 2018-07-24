@@ -86,7 +86,7 @@ action_user_account_passwordchange_request:
     path: /account/details/update/password/request/
     defaults: { _controller: App\Controller\Action\User\Account\PasswordChangeController::requestAction }
 
-view_user_account_index_index:
+view_user_account:
     path: /account/
     defaults: { _controller: App\Controller\View\User\Account\AccountController::indexAction }
 

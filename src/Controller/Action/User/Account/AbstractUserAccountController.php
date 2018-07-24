@@ -55,7 +55,7 @@ abstract class AbstractUserAccountController extends AbstractController implemen
         return new RedirectResponse($router->generate(
             'view_user_sign_in',
             [
-                'redirect' => base64_encode(json_encode(['route' => 'view_user_account_index_index']))
+                'redirect' => base64_encode(json_encode(['route' => 'view_user_account']))
             ]
         ));
     }

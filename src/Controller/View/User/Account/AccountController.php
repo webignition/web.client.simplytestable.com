@@ -97,7 +97,7 @@ class AccountController extends AbstractUserAccountController
      */
     protected function getUserSignInRedirectResponseRoute()
     {
-        return 'view_user_account_index_index';
+        return 'view_user_account';
     }
 
     /**

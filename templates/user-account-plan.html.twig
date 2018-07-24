@@ -2,7 +2,7 @@
 
 {% block title %}Plan: {{ plan_presentation_name }} ({{ user.username }}) - {{ parent() }}{% endblock %}
 {% block heading %}
-    <a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: plan: {{ plan_presentation_name|lower }}
+    <a href="{{ path('view_user_account') }}">{{ parent() }}</a>: plan: {{ plan_presentation_name|lower }}
     {% if user_summary.getTeamSummary.isInTeam and team is defined %}
         ({{ team.name }})
     {% endif %}

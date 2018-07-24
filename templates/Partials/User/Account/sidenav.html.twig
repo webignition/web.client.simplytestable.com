@@ -1,4 +1,4 @@
-{% set is_account_main = app.request.attributes.get('_route') == 'view_user_account_index_index' %}
+{% set is_account_main = app.request.attributes.get('_route') == 'view_user_account' %}
 {% set is_account_card = app.request.attributes.get('_route') == 'view_user_account_card_index' %}
 {% set is_account_team = app.request.attributes.get('_route') == 'view_user_account_team_index_index' %}
 {% set is_account_plan = app.request.attributes.get('_route') == 'view_user_account_plan_index' %}
@@ -13,21 +13,21 @@
 
 <ul class="nav" id="sidenav" data-default-active="{{ default_active }}" data-active-scope="{{ active_scope }}">
     <li class="active">
-        <a href="{{ not is_account_main ? path('view_user_account_index_index') : '' }}#email-address-and-password">Email address and password</a>
+        <a href="{{ not is_account_main ? path('view_user_account') : '' }}#email-address-and-password">Email address and password</a>
     </li>
     <li class="{{ is_account_plan ? 'active' : ''}}">
-        <a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#plan">Plan: {{ plan_presentation_name }}</a>
+        <a href="{{ not is_account_main ? path('view_user_account' ) : '' }}#plan">Plan: {{ plan_presentation_name }}</a>
         <ul class="nav">
-            <li><a href="{{ (not is_account_main and not is_account_plan) ? path('view_user_account_index_index' ) : '' }}#plan-allowances">Allowances</a></li>
+            <li><a href="{{ (not is_account_main and not is_account_plan) ? path('view_user_account' ) : '' }}#plan-allowances">Allowances</a></li>
 
             {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and team.leader == user.username) %}
-                <li><a href="{{ (not is_account_main and not is_account_plan) ? path('view_user_account_index_index' ) : '' }}#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
+                <li><a href="{{ (not is_account_main and not is_account_plan) ? path('view_user_account' ) : '' }}#plan-upgrade-downgrade">Upgrade/downgrade</a></li>
             {% endif %}
 
         </ul>
     </li>
     <li class="{{ is_account_team ? 'active' : ''}}" id="sidenav-team">
-        <a href="{{ not is_account_main ? path('view_user_account_index_index') : '' }}#team">
+        <a href="{{ not is_account_main ? path('view_user_account') : '' }}#team">
             Team{% if user_summary.getTeamSummary.isInTeam %}: {{ team.name }}{% endif %}
         </a>
         <ul class="nav">
@@ -51,7 +51,7 @@
         </ul>
     </li>
     <li class="{{ is_account_card ? 'active' : ''}}">
-        <a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#payment-details">Payment details</a>
+        <a href="{{ not is_account_main ? path('view_user_account' ) : '' }}#payment-details">Payment details</a>
         {% if not (user_summary.plan.accountplan.name == 'basic' and user_summary.plan.hasTrialPeriodAvailable) %}
             {% if not user_summary.getTeamSummary.isInTeam or (user_summary.getTeamSummary.isInTeam and user.username == team.leader) %}
                 <ul class="nav">
@@ -63,17 +63,17 @@
                         {% endif %}
                     </li>
                     {% if stripe_event_data['invoice'] is defined %}
-                        <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#payment-latest-invoice">Latest invoice</a></li>
+                        <li><a href="{{ not is_account_main ? path('view_user_account' ) : '' }}#payment-latest-invoice">Latest invoice</a></li>
                     {% endif %}
                 </ul>
             {% endif %}
         {% endif %}
     </li>
     <li>
-        <a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#news-subscriptions">News subscriptions</a>
+        <a href="{{ not is_account_main ? path('view_user_account' ) : '' }}#news-subscriptions">News subscriptions</a>
         <ul class="nav">
-            <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#news-subscriptions-product-announcements">Product announcements</a></li>
-            <li><a href="{{ not is_account_main ? path('view_user_account_index_index' ) : '' }}#news-subscriptions-weekly-updates">Weekly updates</a></li>
+            <li><a href="{{ not is_account_main ? path('view_user_account' ) : '' }}#news-subscriptions-product-announcements">Product announcements</a></li>
+            <li><a href="{{ not is_account_main ? path('view_user_account' ) : '' }}#news-subscriptions-weekly-updates">Weekly updates</a></li>
         </ul>
     </li>
 </ul>

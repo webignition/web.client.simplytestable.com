@@ -92,7 +92,7 @@ class CardController extends AbstractUserAccountController
             $team = $this->teamService->getTeam();
 
             if ($team->getLeader() !== $user->getUsername()) {
-                return new RedirectResponse($this->generateUrl('view_user_account_index_index'));
+                return new RedirectResponse($this->generateUrl('view_user_account'));
             }
         }
 

@@ -101,7 +101,7 @@ class EmailChangeController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_index_index'));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account'));
 
         $user = $this->userManager->getUser();
         $username = $user->getUsername();
@@ -240,7 +240,7 @@ class EmailChangeController extends AbstractUserAccountController
             }
         }
 
-        return new RedirectResponse($this->generateUrl('view_user_account_index_index'));
+        return new RedirectResponse($this->generateUrl('view_user_account'));
     }
 
     /**
@@ -264,7 +264,7 @@ class EmailChangeController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse =  new RedirectResponse($this->generateUrl('view_user_account_index_index'));
+        $redirectResponse =  new RedirectResponse($this->generateUrl('view_user_account'));
 
         $token = trim($requestData->get('token'));
 
@@ -359,7 +359,7 @@ class EmailChangeController extends AbstractUserAccountController
         $this->emailChangeRequestService->cancelEmailChangeRequest();
         $this->session->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
 
-        return new RedirectResponse($this->generateUrl('view_user_account_index_index'));
+        return new RedirectResponse($this->generateUrl('view_user_account'));
     }
 
     /**
@@ -387,7 +387,7 @@ class EmailChangeController extends AbstractUserAccountController
         $messageProperties = $mailConfiguration->getMessageProperties('user_email_change_request_confirmation');
 
         $confirmationUrl = $this->generateUrl(
-            'view_user_account_index_index',
+            'view_user_account',
             [
                 'token' => $emailChangeRequest['token'],
             ],
