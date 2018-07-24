@@ -11,7 +11,7 @@
 </p>
 
 <div class="cta">
-    <form method="post" action="{{ path('app_test_retest', {'website': website.raw, 'test_id': remote_test.id}) }}">
+    <form method="post" action="{{ path('action_test_retest', {'website': website.raw, 'test_id': remote_test.id}) }}">
         <button type="submit" class="btn btn-primary btn-lg">
             <span class="primary">Re-test {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %}</span>
             <span class="byline">Just one click. Do it now.</span>

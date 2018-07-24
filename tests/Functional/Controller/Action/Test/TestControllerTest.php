@@ -289,7 +289,7 @@ class TestControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('app_test_retest', [
+            $this->router->generate('action_test_retest', [
                 'website' => self::WEBSITE,
                 'test_id' => self::TEST_ID,
             ])

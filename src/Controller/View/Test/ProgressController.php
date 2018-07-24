@@ -172,7 +172,7 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
 
             return $this->createRedirectResponse(
                 $request,
-                'app_test_retest',
+                'action_test_retest',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
