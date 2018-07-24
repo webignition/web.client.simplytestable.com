@@ -4,7 +4,7 @@ namespace App\Tests\Functional\Services\TestOptions;
 
 use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapter;
-use App\Tests\Factory\PostmarkHttpResponseFactory;
+use App\Services\UserManager;
 use App\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use webignition\SimplyTestableUserModel\User;
@@ -25,12 +25,10 @@ class RequestAdapterTest extends AbstractBaseTestCase
 
         $user = new User('user@example.com');
 
+        $userManager = self::$container->get(UserManager::class);
+        $userManager->setUser($user);
+
         $taskTypeService = self::$container->get(TaskTypeService::class);
-        $taskTypeService->setEarlyAccessUsers([
-            $user,
-        ]);
-        $taskTypeService->setUser($user);
-        $taskTypeService->setUserIsAuthenticated();
 
         $this->requestAdapter = self::$container->get(RequestAdapter::class);
 

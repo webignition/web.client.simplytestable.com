@@ -28,12 +28,6 @@ class RequestAdapterFactoryTest extends AbstractBaseTestCase
 
     public function testCreate()
     {
-        $user = new User('user@example.com');
-
-        $taskTypeService = self::$container->get(TaskTypeService::class);
-        $taskTypeService->setUser($user);
-        $taskTypeService->setUserIsAuthenticated();
-
         $adapter = $this->requestAdapterFactory->create();
         $adapter->setRequestData(new ParameterBag([]));
 
