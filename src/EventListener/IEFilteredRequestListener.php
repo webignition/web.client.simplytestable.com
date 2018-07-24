@@ -3,12 +3,12 @@
 namespace App\EventListener;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use App\Interfaces\Controller\IEFiltered;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use webignition\IEDetector\IEDetector;
 
-class IEFilteredRequestListener extends AbstractRequestListener
+class IEFilteredRequestListener
 {
     /**
      * @var LoggerInterface
@@ -31,42 +31,46 @@ class IEFilteredRequestListener extends AbstractRequestListener
     }
 
     /**
-     * @param FilterControllerEvent $event
+     * @param GetResponseEvent $event
+     *
+     * @return null|RedirectResponse
      */
-    public function onKernelController(FilterControllerEvent $event)
+    public function onKernelRequest(GetResponseEvent $event)
     {
-        if (!parent::onKernelController($event)) {
-            return;
+        if (!$event->isMasterRequest()) {
+            return null;
         }
 
-        if ($this->controller instanceof IEFiltered) {
-            $request = $event->getRequest();
+        $request = $event->getRequest();
 
-            $userAgentString = $request->headers->get('user-agent');
-            if (empty($userAgentString)) {
-                $userAgentString = $request->server->get('HTTP_USER_AGENT');
-            }
-
-            if (empty($userAgentString)) {
-                return;
-            }
-
-            $isUsingOldIE =
-                IEDetector::isIE6($userAgentString) ||
-                IEDetector::isIE7($userAgentString) ||
-                IEDetector::isIE8($userAgentString) ||
-                IEDetector::isIE9($userAgentString);
-
-            if ($isUsingOldIE) {
-                $this->logger->error(sprintf(
-                    'Detected old IE for [%s]',
-                    $userAgentString
-                ));
-
-                /* @var IEFiltered $controller */
-                $controller = $this->controller;
-                $controller->setResponse(new RedirectResponse($this->marketingSiteUrl));
-            }
+        if (Request::METHOD_GET !== $request->getMethod()) {
+            return null;
         }
+
+        $userAgentString = $request->headers->get('user-agent');
+        if (empty($userAgentString)) {
+            $userAgentString = $request->server->get('HTTP_USER_AGENT');
+        }
+
+        if (empty($userAgentString)) {
+            return null;
+        }
+
+        $isUsingOldIE =
+            IEDetector::isIE6($userAgentString) ||
+            IEDetector::isIE7($userAgentString) ||
+            IEDetector::isIE8($userAgentString) ||
+            IEDetector::isIE9($userAgentString);
+
+        if ($isUsingOldIE) {
+            $this->logger->error(sprintf(
+                'FOO Detected old IE for [%s]',
+                $userAgentString
+            ));
+
+            $event->setResponse(new RedirectResponse($this->marketingSiteUrl));
+        }
+
+        return null;
     }
 }
