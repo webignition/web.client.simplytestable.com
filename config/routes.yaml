@@ -38,7 +38,7 @@ view_user_sign_up_request:
     path: /signup/
     defaults: { _controller: App\Controller\View\User\SignUp\RequestController::indexAction }
 
-action_user_sign_up_submit:
+action_user_sign_up_request:
     path: /signup/submit/
     defaults: { _controller: App\Controller\Action\User\UserController::signUpSubmitAction }
 
