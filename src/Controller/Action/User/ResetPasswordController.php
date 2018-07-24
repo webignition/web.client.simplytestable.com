@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Controller\Action\User\ResetPassword;
+namespace App\Controller\Action\User;
 
+use App\Exception\CoreApplicationReadOnlyException;
+use App\Exception\InvalidCredentialsException;
+use App\Services\UserManager;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
 use Postmark\Models\PostmarkException;
@@ -20,8 +23,9 @@ use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
+use webignition\SimplyTestableUserModel\User;
 
-class IndexController extends AbstractController
+class ResetPasswordController extends AbstractController
 {
     const FLASH_BAG_REQUEST_ERROR_KEY = 'user_reset_password_error';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';
@@ -36,6 +40,11 @@ class IndexController extends AbstractController
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN = 'postmark-failure';
     const FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL = 'invalid-email';
+
+    const FLASH_BAG_RESET_PASSWORD_ERROR_KEY = 'user_reset_password_error';
+    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID = 'invalid-token';
+    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK = 'blank-password';
+    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY = 'failed-read-only';
 
     /**
      * @var UserService
@@ -63,12 +72,18 @@ class IndexController extends AbstractController
     private $postmarkClient;
 
     /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @param RouterInterface $router
      * @param UserService $userService
      * @param Twig_Environment $twig
      * @param SessionInterface $session
      * @param MailConfiguration $mailConfiguration
      * @param PostmarkClient $postmarkClient
+     * @param UserManager $userManager
      */
     public function __construct(
         RouterInterface $router,
@@ -76,7 +91,8 @@ class IndexController extends AbstractController
         Twig_Environment $twig,
         SessionInterface $session,
         MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient
+        PostmarkClient $postmarkClient,
+        UserManager $userManager
     ) {
         parent::__construct($router);
 
@@ -85,6 +101,7 @@ class IndexController extends AbstractController
         $this->session = $session;
         $this->mailConfiguration = $mailConfiguration;
         $this->postmarkClient = $postmarkClient;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -182,6 +199,84 @@ class IndexController extends AbstractController
         }
 
         return $redirectResponse;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return RedirectResponse
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    public function chooseAction(Request $request)
+    {
+        $requestData = $request->request;
+        $flashBag = $this->session->getFlashBag();
+
+        $email = trim($requestData->get('email'));
+        $requestToken = trim($requestData->get('token'));
+        $staySignedIn = empty($requestData->get('stay-signed-in')) ? 0 : 1;
+        $userExists = $this->userService->exists($email);
+
+        $emailValidator = new EmailValidator;
+        $isEmailValid = $emailValidator->isValid($email, new RFCValidation());
+
+        if (!$isEmailValid || empty($requestToken) || !$userExists) {
+            return new RedirectResponse($this->generateUrl('view_user_reset_password_request'));
+        }
+
+        $failureRedirectResponse = new RedirectResponse($this->generateUrl('view_user_reset_password_choose', [
+            'email' => $email,
+            'token' => $requestToken,
+            'stay-signed-in' => $staySignedIn
+        ]));
+
+        $token = $this->userService->getConfirmationToken($email);
+
+        if ($token !== $requestToken) {
+            $flashBag->set(
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID
+            );
+
+            return $failureRedirectResponse;
+        }
+
+        $password = trim($requestData->get('password'));
+
+        if (empty($password)) {
+            $flashBag->set(
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK
+            );
+
+            return $failureRedirectResponse;
+        }
+
+        try {
+            $this->userService->resetPassword($token, $password);
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            $flashBag->set(
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
+                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY
+            );
+
+            return $failureRedirectResponse;
+        }
+
+        $user = new User($email, $password);
+        $this->userManager->setUser($user);
+
+        $response = new RedirectResponse($this->generateUrl('view_dashboard'));
+
+        if ($staySignedIn) {
+            $response->headers->setCookie($this->userManager->createUserCookie());
+        }
+
+        return $response;
     }
 
     /**

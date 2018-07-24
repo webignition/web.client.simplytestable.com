@@ -2,8 +2,6 @@
 
 namespace App\Controller\Action\User;
 
-use Egulias\EmailValidator\EmailValidator;
-use Egulias\EmailValidator\Validation\RFCValidation;
 use Postmark\Models\PostmarkException;
 use Postmark\PostmarkClient;
 use App\Controller\AbstractController;
@@ -11,7 +9,6 @@ use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Exception\UserAlreadyExistsException;
 use App\Request\User\SignInRequest;
 use App\Request\User\SignUpRequest;
@@ -62,11 +59,6 @@ class UserController extends AbstractController
     const FLASH_SIGN_UP_SUCCESS_KEY = 'user_create_confirmation';
     const FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS = 'user-exists';
     const FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED = 'user-created';
-
-    const FLASH_BAG_RESET_PASSWORD_ERROR_KEY = 'user_reset_password_error';
-    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID = 'invalid-token';
-    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK = 'blank-password';
-    const FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY = 'failed-read-only';
 
     const FLASH_BAG_SIGN_UP_CONFIRM_USER_ERROR_KEY = 'user_error';
     const FLASH_BAG_SIGN_UP_CONFIRM_USER_ERROR_MESSAGE_USER_INVALID = 'invalid-user';
@@ -254,81 +246,6 @@ class UserController extends AbstractController
         }
 
         return $this->createDashboardRedirectResponse();
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     */
-    public function resetPasswordChooseSubmitAction(Request $request)
-    {
-        $requestData = $request->request;
-        $flashBag = $this->session->getFlashBag();
-
-        $email = trim($requestData->get('email'));
-        $requestToken = trim($requestData->get('token'));
-        $staySignedIn = empty($requestData->get('stay-signed-in')) ? 0 : 1;
-        $userExists = $this->userService->exists($email);
-
-        if (!$this->isEmailValid($email) || empty($requestToken) || !$userExists) {
-            return new RedirectResponse($this->generateUrl('view_user_reset_password_request'));
-        }
-
-        $failureRedirectResponse = $this->createPasswordChooseRedirectResponse([
-            'email' => $email,
-            'token' => $requestToken,
-            'stay-signed-in' => $staySignedIn
-        ]);
-
-        $token = $this->userService->getConfirmationToken($email);
-
-        if ($token !== $requestToken) {
-            $flashBag->set(
-                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
-                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID
-            );
-
-            return $failureRedirectResponse;
-        }
-
-        $password = trim($requestData->get('password'));
-
-        if (empty($password)) {
-            $flashBag->set(
-                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
-                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK
-            );
-
-            return $failureRedirectResponse;
-        }
-
-        try {
-            $this->userService->resetPassword($token, $password);
-        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
-            $flashBag->set(
-                self::FLASH_BAG_RESET_PASSWORD_ERROR_KEY,
-                self::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY
-            );
-
-            return $failureRedirectResponse;
-        }
-
-        $user = new User($email, $password);
-        $this->userManager->setUser($user);
-
-        $response = $this->createDashboardRedirectResponse();
-
-        if ($staySignedIn) {
-            $response->headers->setCookie($this->userManager->createUserCookie());
-        }
-
-        return $response;
     }
 
     /**
@@ -572,32 +489,10 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param string $email
-     *
-     * @return bool
-     */
-    private function isEmailValid($email)
-    {
-        $validator = new EmailValidator();
-
-        return $validator->isValid($email, new RFCValidation());
-    }
-
-    /**
      * @return RedirectResponse
      */
     private function createDashboardRedirectResponse()
     {
         return new RedirectResponse($this->generateUrl('view_dashboard'));
-    }
-
-    /**
-     * @param array $routeParameters
-     *
-     * @return RedirectResponse
-     */
-    private function createPasswordChooseRedirectResponse(array $routeParameters)
-    {
-        return new RedirectResponse($this->generateUrl('view_user_reset_password_choose', $routeParameters));
     }
 }

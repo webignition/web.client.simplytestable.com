@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\User;
 
-use App\Controller\Action\User\ResetPassword\IndexController as ResetPasswordActionController;
+use App\Controller\Action\User\ResetPasswordController as ResetPasswordActionController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
