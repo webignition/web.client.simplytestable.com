@@ -130,7 +130,7 @@ view_user_account_plan:
     path: /account/plan/
     defaults: { _controller: App\Controller\View\User\Account\PlanController::indexAction }
 
-user_account_card_associate:
+action_user_account_card_associate:
     path: /account/card/{stripe_card_token}/associate/
     defaults: { _controller: App\Controller\Action\User\Account\CardController::associateAction }
 

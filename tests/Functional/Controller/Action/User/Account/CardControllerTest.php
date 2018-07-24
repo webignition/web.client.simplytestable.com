@@ -10,8 +10,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class CardControllerTest extends AbstractUserAccountControllerTest
 {
-    const ROUTE_NAME = 'user_account_card_associate';
-
+    const ROUTE_NAME = 'action_user_account_card_associate';
     const USER_EMAIL = 'user@example.com';
     const STRIPE_CARD_TOKEN = 'card_Bb4A2szGLfgwJe';
 
