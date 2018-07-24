@@ -111,6 +111,6 @@ class NewsSubscriptionsController extends AbstractUserAccountController
 
         $this->session->getFlashBag()->set('user_account_newssubscriptions_update', $flashData);
 
-        return $this->createUserAccountRedirectResponse();
+        return $this->createUserAccountRedirectResponse('#news-subscriptions');
     }
 }

@@ -77,10 +77,18 @@ abstract class AbstractUserAccountController extends AbstractController implemen
     }
 
     /**
+     * @param string|null $urlSuffix
+     *
      * @return RedirectResponse
      */
-    protected function createUserAccountRedirectResponse()
+    protected function createUserAccountRedirectResponse($urlSuffix = null)
     {
-        return new RedirectResponse($this->generateUrl('view_user_account'));
+        $url = $this->generateUrl('view_user_account');
+
+        if ($urlSuffix) {
+            $url .= $urlSuffix;
+        }
+
+        return new RedirectResponse($url);
     }
 }
