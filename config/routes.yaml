@@ -156,7 +156,7 @@ view_test_history:
     requirements:
         page_number: '\d+'
 
-view_test_history_websitelist_index:
+view_website_list:
     path: /history/websites/
     defaults: { _controller: App\Controller\View\WebsiteListController::indexAction, _format: json }
 

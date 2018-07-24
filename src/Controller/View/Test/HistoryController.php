@@ -131,7 +131,7 @@ class HistoryController extends AbstractBaseViewController implements RequiresVa
             return $response;
         }
 
-        $websitesSourceUrl = $this->generateUrl('view_test_history_websitelist_index');
+        $websitesSourceUrl = $this->generateUrl('view_website_list');
 
         return $this->renderWithDefaultViewParameters(
             'test-history.html.twig',
