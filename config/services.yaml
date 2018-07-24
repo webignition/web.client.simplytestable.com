@@ -97,8 +97,7 @@ services:
     App\Services\TaskTypeService:
       arguments:
         $taskTypes: '%task_types%'
-      calls:
-        - [setEarlyAccessUsers, ['%early_access_users%']]
+        $earlyAccessUsers: '%early_access_users%'
 
     App\Services\CouponService:
       calls:
