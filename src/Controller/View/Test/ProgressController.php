@@ -196,11 +196,6 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
             return $response;
         }
 
-        $this->taskTypeService->setUser($user);
-        if (!SystemUserService::isPublicUser($user)) {
-            $this->taskTypeService->setUserIsAuthenticated();
-        }
-
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
         $testOptionsAdapter->setInvertInvertableOptions(true);

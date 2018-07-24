@@ -178,11 +178,6 @@ class ResultsController extends AbstractResultsController
         $test = $this->testService->get($website, $test_id);
         $remoteTest = $this->remoteTestService->get();
 
-        $this->taskTypeService->setUser($user);
-        if (!SystemUserService::isPublicUser($user)) {
-            $this->taskTypeService->setUserIsAuthenticated();
-        }
-
         if ($this->requiresPreparation($remoteTest, $test)) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_results_preparing',

@@ -11,12 +11,10 @@ use App\Services\Configuration\LinkIntegrityTestConfiguration;
 use App\Services\Configuration\TestOptionsConfiguration;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
-use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\UserManager;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
-use App\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Tests\Functional\Controller\AbstractControllerTest;
@@ -598,7 +596,6 @@ class StartControllerTest extends AbstractControllerTest
     {
         $router = self::$container->get('router');
         $testOptionsRequestAdapterFactory = self::$container->get(TestOptionsRequestAdapterFactory::class);
-        $taskTypeService = self::$container->get(TaskTypeService::class);
         $userManager = self::$container->get(UserManager::class);
         $linkIntegrityTestConfiguration = self::$container->get(LinkIntegrityTestConfiguration::class);
         $testOptionsConfiguration = self::$container->get(TestOptionsConfiguration::class);
@@ -622,7 +619,6 @@ class StartControllerTest extends AbstractControllerTest
             $router,
             $remoteTestService,
             $testOptionsRequestAdapterFactory,
-            $taskTypeService,
             $userManager,
             $linkIntegrityTestConfiguration,
             $testOptionsConfiguration,

@@ -116,12 +116,6 @@ class DashboardController extends AbstractBaseViewController implements Requires
         }
 
         $user = $this->userManager->getUser();
-        $isLoggedIn = !SystemUserService::isPublicUser($user);
-
-        $this->taskTypeService->setUser($user);
-        if ($isLoggedIn) {
-            $this->taskTypeService->setUserIsAuthenticated();
-        }
 
         $requestData = $request->query;
         $testOptionsAdapter = $this->testOptionsAdapterFactory->create();
@@ -132,6 +126,7 @@ class DashboardController extends AbstractBaseViewController implements Requires
 
         $website = $requestData->get('website');
         $availableTaskTypes = $this->taskTypeService->getAvailable();
+
         $taskTypes = $this->taskTypeService->get();
         $testOptions = $this->getTestOptionsArray($testOptionsAdapter, $requestData, $hasTestStartError);
 
@@ -146,7 +141,7 @@ class DashboardController extends AbstractBaseViewController implements Requires
             'test_options' => json_encode($testOptions),
             'css_validation_ignore_common_cdns' => json_encode($cssValidationExcludedDomains),
             'js_static_analysis_ignore_common_cdns' => json_encode($jsStaticAnalysisExcludedDomains),
-            'is_logged_in' => $isLoggedIn,
+            'is_logged_in' => !SystemUserService::isPublicUser($user),
         ]);
 
         if ($this->cacheValidator->isNotModified($response)) {
