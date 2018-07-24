@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Interfaces\Controller\IEFiltered;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-abstract class AbstractBaseViewController extends AbstractController implements IEFiltered
+abstract class AbstractBaseViewController extends AbstractController
 {
     /**
      * @var DefaultViewParameters
