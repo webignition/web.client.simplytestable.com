@@ -16,7 +16,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class TestUrlLimitNotificationControllerTest extends AbstractControllerTest
 {
-    const ROUTE_NAME = 'view_test_partial_notification_urlimit_index';
+    const ROUTE_NAME = 'view_partials_test_url_limit_notification';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';

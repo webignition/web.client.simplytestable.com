@@ -11,7 +11,7 @@
     {{ parent() }}
 
     <div class="alert-container"
-         data-url-limit-notification-url="{{ path('view_test_partial_notification_urlimit_index', route_parameters) }}"
+         data-url-limit-notification-url="{{ path('view_partials_test_url_limit_notification', route_parameters) }}"
     >
         {% include 'Partials/Generic/Notification/Conditional/url-limit.html.twig' with {'alert_classes':'alert-ammendment'} %}
     </div>

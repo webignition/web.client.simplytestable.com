@@ -184,7 +184,7 @@ view_task_results:
         task_id: '\d+'
         trailingSlash : "[/]{0,1}"
 
-view_test_partial_notification_urlimit_index:
+view_partials_test_url_limit_notification:
     path: /{website}/{test_id}/url-limit-notification/
     defaults: { _controller: App\Controller\View\Partials\TestUrlLimitNotificationController::indexAction }
     requirements:
