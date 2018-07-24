@@ -289,7 +289,7 @@ view_test_results_by_task_type_filter:
        website: '.+'
        test_id: '\d+'
 
-view_test_task_tasklist_index_index:
+view_partials_test_task_list:
     path: /{website}/{test_id}/tasklist/
     defaults: { _controller: App\Controller\View\Partials\TestTaskListController::indexAction }
     requirements:

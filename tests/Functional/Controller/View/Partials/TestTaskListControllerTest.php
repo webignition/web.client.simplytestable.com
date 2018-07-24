@@ -18,7 +18,7 @@ use App\Tests\Services\HttpMockHandler;
 
 class TestTaskListControllerTest extends AbstractControllerTest
 {
-    const ROUTE_NAME = 'view_test_task_tasklist_index_index';
+    const ROUTE_NAME = 'view_partials_test_task_list';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
