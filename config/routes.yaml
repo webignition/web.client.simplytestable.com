@@ -146,7 +146,7 @@ view_partials_recenttests:
     path: /recent-tests/
     defaults: { _controller: App\Controller\View\Partials\RecentTestsController::indexAction }
 
-view_test_history_index_index:
+view_test_history:
     path: /history/
     defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction, page_number: 1 }
 

@@ -83,7 +83,7 @@ class HistoryController extends AbstractBaseViewController implements RequiresVa
         $pageNumber = (int)$request->attributes->get('page_number');
 
         if ($pageNumber < self::DEFAULT_PAGE_NUMBER) {
-            return new RedirectResponse($this->generateUrl('view_test_history_index_index'));
+            return new RedirectResponse($this->generateUrl('view_test_history'));
         }
 
         $filter = trim($request->get('filter'));
