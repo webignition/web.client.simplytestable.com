@@ -233,7 +233,7 @@ action_test_lock:
     requirements:
        website: '.+'
 
-app_test_unlock:
+action_test_unlock:
     path: /{website}/{test_id}/unlock/
     defaults: { _controller: App\Controller\Action\Test\TestController::unlockAction }
     requirements:

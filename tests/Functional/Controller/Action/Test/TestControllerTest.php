@@ -101,7 +101,7 @@ class TestControllerTest extends AbstractControllerTest
                     HttpResponseFactory::createForbiddenResponse(),
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
-                'routeName' => 'app_test_unlock',
+                'routeName' => 'action_test_unlock',
                 'routeParameters' => [
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
@@ -123,7 +123,7 @@ class TestControllerTest extends AbstractControllerTest
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'routeName' => 'app_test_unlock',
+                'routeName' => 'action_test_unlock',
                 'routeParameters' => [
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
