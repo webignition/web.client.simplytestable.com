@@ -219,7 +219,7 @@ view_test_results:
        website: '.+'
        test_id: '\d+'
 
-action_test_task_results_byurl_index:
+action_test_task_results_byurl:
     path: /{website}/{test_id}/{task_url}/{task_type}/results/
     defaults: { _controller: App\Controller\Action\Test\Task\Results\ByUrlController::indexAction }
     requirements:
