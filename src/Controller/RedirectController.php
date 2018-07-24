@@ -78,7 +78,7 @@ class RedirectController extends AbstractController
 
             if ($latestRemoteTest instanceof RemoteTest) {
                 return new RedirectResponse($this->generateUrl(
-                    'app_test_redirector',
+                    'redirect_test',
                     [
                         'website' => $latestRemoteTest->getWebsite(),
                         'test_id' => $latestRemoteTest->getId()
@@ -95,7 +95,7 @@ class RedirectController extends AbstractController
 
             if (!empty($latestTest)) {
                 return new RedirectResponse($this->generateUrl(
-                    'app_test_redirector',
+                    'redirect_test',
                     [
                         'website' => $normalisedWebsite,
                         'test_id' => $latestTest->getTestId(),

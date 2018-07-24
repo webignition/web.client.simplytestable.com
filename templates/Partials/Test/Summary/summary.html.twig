@@ -5,7 +5,7 @@
 {% endif %}
 
 {% if url is not defined %}
-    {% set url = path('app_test_redirector', {'website': test.test.website, 'test_id':test.test.testId}) %}
+    {% set url = path('redirect_test', {'website': test.test.website, 'test_id':test.test.testId}) %}
 {% endif %}
 
 {% if container_attributes is not defined %}

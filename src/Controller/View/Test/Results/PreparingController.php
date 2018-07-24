@@ -95,7 +95,7 @@ class PreparingController extends AbstractBaseViewController implements Requires
 
         if (0 === $remoteTaskCount) {
             return new RedirectResponse($this->generateUrl(
-                'app_test_redirector',
+                'redirect_test',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id,
@@ -129,7 +129,7 @@ class PreparingController extends AbstractBaseViewController implements Requires
 
         if ($test->getWebsite() != $website) {
             return new RedirectResponse($this->generateUrl(
-                'app_test_redirector',
+                'redirect_test',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id,
