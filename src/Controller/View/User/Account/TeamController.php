@@ -67,7 +67,7 @@ class TeamController extends AbstractUserAccountController
      */
     protected function getUserSignInRedirectResponseRoute()
     {
-        return 'view_user_account_team_index_index';
+        return 'view_user_account_team';
     }
 
     /**

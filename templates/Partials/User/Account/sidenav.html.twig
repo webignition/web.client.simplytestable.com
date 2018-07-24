@@ -1,6 +1,6 @@
 {% set is_account_main = app.request.attributes.get('_route') == 'view_user_account' %}
 {% set is_account_card = app.request.attributes.get('_route') == 'view_user_account_card' %}
-{% set is_account_team = app.request.attributes.get('_route') == 'view_user_account_team_index_index' %}
+{% set is_account_team = app.request.attributes.get('_route') == 'view_user_account_team' %}
 {% set is_account_plan = app.request.attributes.get('_route') == 'view_user_account_plan_index' %}
 
 {% set default_active = '#email-address-and-password' %}
@@ -32,20 +32,20 @@
         </a>
         <ul class="nav">
             {% if user_summary.getTeamSummary.isInTeam %}
-                <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#members">Members</a></li>
+                <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team') }}#members">Members</a></li>
 
                 {% if team.leader == user.username %}
-                    <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#invites">Invites</a></li>
+                    <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team') }}#invites">Invites</a></li>
                 {% else %}
-                    <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#leave">Leave team</a></li>
+                    <li><a href="{{ (is_account_team) ? '' : path('view_user_account_team') }}#leave">Leave team</a></li>
                 {% endif %}
 
             {% else %}
                 <li>
-                    <a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#create">Create your team</a>
+                    <a href="{{ (is_account_team) ? '' : path('view_user_account_team') }}#create">Create your team</a>
                 </li>
                 <li>
-                    <a href="{{ (is_account_team) ? '' : path('view_user_account_team_index_index') }}#invites">Invites</a>
+                    <a href="{{ (is_account_team) ? '' : path('view_user_account_team') }}#invites">Invites</a>
                 </li>
             {% endif %}
         </ul>

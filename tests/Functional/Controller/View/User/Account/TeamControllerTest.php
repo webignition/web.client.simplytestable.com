@@ -23,8 +23,7 @@ use webignition\SimplyTestableUserModel\User;
 class TeamControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-account-team.html.twig';
-    const ROUTE_NAME = 'view_user_account_team_index_index';
-
+    const ROUTE_NAME = 'view_user_account_team';
     const USER_EMAIL = 'user@example.com';
 
     /**

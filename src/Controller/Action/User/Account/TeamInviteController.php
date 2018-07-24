@@ -107,7 +107,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team'));
 
         $invitee = trim($requestData->get('email'));
 
@@ -242,7 +242,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team'));
 
         $response = trim($requestData->get('response'));
 
@@ -288,7 +288,7 @@ class TeamInviteController extends AbstractUserAccountController
             'user' => $invitee
         ]));
 
-        return new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
+        return new RedirectResponse($this->generateUrl('view_user_account_team'));
     }
 
     /**
@@ -349,7 +349,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $this->session->getFlashBag()->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
 
-        return new RedirectResponse($this->generateUrl('view_user_account_team_index_index'));
+        return new RedirectResponse($this->generateUrl('view_user_account_team'));
     }
 
     /**
@@ -371,7 +371,7 @@ class TeamInviteController extends AbstractUserAccountController
         $messageProperties = $mailConfiguration->getMessageProperties('user_team_invite_invitation');
 
         $confirmationUrl = $this->generateUrl(
-            'view_user_account_team_index_index',
+            'view_user_account_team',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
