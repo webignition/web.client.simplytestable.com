@@ -36,6 +36,19 @@ class IEFilteredRequestListenerTest extends AbstractBaseTestCase
         $this->requestListener = self::$container->get(IEFilteredRequestListener::class);
     }
 
+    public function testRequest()
+    {
+        $this->client->request('GET', '/', [], [], [
+            'HTTP_USER_AGENT' => self::IE6_USER_AGENT,
+        ]);
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals(getenv('MARKETING_SITE'), $response->getTargetUrl());
+    }
+
     public function testOnKernelRequestSubRequest()
     {
         $event = $this->createGetResponseEvent(new Request(), HttpKernelInterface::SUB_REQUEST);
