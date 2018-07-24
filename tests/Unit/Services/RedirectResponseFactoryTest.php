@@ -78,7 +78,7 @@ class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
         $router
             ->shouldReceive('generate')
             ->withArgs([
-                'view_user_sign_up_request_index',
+                'view_user_sign_up_request',
                 $expectedRouteParameters
             ])
             ->andReturn('http://example.com/');

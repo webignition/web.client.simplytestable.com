@@ -19,7 +19,7 @@ use Twig_Environment;
 class RequestControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-sign-up.html.twig';
-    const ROUTE_NAME = 'view_user_sign_up_request_index';
+    const ROUTE_NAME = 'view_user_sign_up_request';
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionPublicUserGetRequest()

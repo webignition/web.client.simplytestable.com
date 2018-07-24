@@ -64,6 +64,6 @@ class RedirectResponseFactory
 
         $routeParameters[SignUpRequest::PARAMETER_PLAN] = $plan;
 
-        return new RedirectResponse($this->router->generate('view_user_sign_up_request_index', $routeParameters));
+        return new RedirectResponse($this->router->generate('view_user_sign_up_request', $routeParameters));
     }
 }

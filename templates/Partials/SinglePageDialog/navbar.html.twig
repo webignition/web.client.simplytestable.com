@@ -42,8 +42,8 @@
                 <i class="fa fa-sign-in"></i> Sign in
             </a>
         </li>
-        <li class="text {% if app.request.get('_route') == 'view_user_sign_up_request_index' %}active{% endif %}">
-            <a class="" href="{{ path('view_user_sign_up_request_index') }}">
+        <li class="text {% if app.request.get('_route') == 'view_user_sign_up_request' %}active{% endif %}">
+            <a class="" href="{{ path('view_user_sign_up_request') }}">
                 <i class="fa fa-user"></i> Create an account
             </a>
         </li>

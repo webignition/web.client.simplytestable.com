@@ -96,13 +96,13 @@ class InviteController extends AbstractController
         $requestData = $request->request;
 
         if (empty($token)) {
-            return new RedirectResponse($this->generateUrl('view_user_sign_up_request_index'));
+            return new RedirectResponse($this->generateUrl('view_user_sign_up_request'));
         }
 
         $invite = $this->teamInviteService->getForToken($token);
 
         if (empty($invite)) {
-            return new RedirectResponse($this->generateUrl('view_user_sign_up_request_index'));
+            return new RedirectResponse($this->generateUrl('view_user_sign_up_request'));
         }
 
         $password = trim($requestData->get('password'));
