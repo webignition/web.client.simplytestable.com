@@ -59,7 +59,7 @@ class RedirectController extends AbstractController
             $routeParameters = $this->getWebsiteAndTestIdAndTaskIdFromWebsite($website);
 
             return new RedirectResponse($this->generateUrl(
-                'view_test_task_results_index_index_verbose',
+                'view_task_results_verbose',
                 $routeParameters
             ));
         }

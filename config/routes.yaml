@@ -167,7 +167,7 @@ view_partials_test_finished_summary:
         website: '.+'
         test_id: '\d+'
 
-view_test_task_results_index_index_verbose:
+view_task_results_verbose:
     path: /website/{website}/test_id/{test_id}/task_id/{task_id}/results/
     defaults: { _controller: App\Controller\View\Task\ResultsController::indexAction }
     requirements:
