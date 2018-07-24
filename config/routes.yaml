@@ -312,7 +312,7 @@ action_test_start:
     path: /test/start/
     defaults: { _controller: App\Controller\Action\Test\StartController::startNewAction }
 
-test_cancel:
+action_test_cancel:
     path: /test/{website}/{test_id}/cancel/
     defaults: { _controller: App\Controller\Action\Test\TestController::cancelAction }
     requirements:

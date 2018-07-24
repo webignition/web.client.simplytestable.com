@@ -144,7 +144,7 @@ class TestControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('test_cancel', [
+            $this->router->generate('action_test_cancel', [
                 'website' => self::WEBSITE,
                 'test_id' => self::TEST_ID,
             ])
