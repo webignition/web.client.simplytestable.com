@@ -62,7 +62,7 @@ action_sign_up_user_confirm_resend:
     path: /signup/confirm/{email}/resend/
     defaults: { _controller: App\Controller\Action\SignUp\User\ConfirmController::resendAction }
 
-action_user_account_newssubscriptions_update:
+action_user_account_news_subscriptions_update:
     path: /account/news-subscriptions/update/
     defaults: { _controller: App\Controller\Action\User\Account\NewsSubscriptionsController::updateAction }
 
