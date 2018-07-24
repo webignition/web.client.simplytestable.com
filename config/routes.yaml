@@ -160,7 +160,7 @@ view_website_list:
     path: /history/websites/
     defaults: { _controller: App\Controller\View\WebsiteListController::indexAction, _format: json }
 
-view_test_results_partial_finishedsummary_index:
+view_partials_test_finished_summary:
     path: /{website}/{test_id}/finished-summary/
     defaults: { _controller: App\Controller\View\Partials\TestFinishedSummaryController::indexAction }
     requirements:
