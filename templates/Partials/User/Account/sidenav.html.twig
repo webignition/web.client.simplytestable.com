@@ -1,7 +1,7 @@
 {% set is_account_main = app.request.attributes.get('_route') == 'view_user_account' %}
 {% set is_account_card = app.request.attributes.get('_route') == 'view_user_account_card' %}
 {% set is_account_team = app.request.attributes.get('_route') == 'view_user_account_team' %}
-{% set is_account_plan = app.request.attributes.get('_route') == 'view_user_account_plan_index' %}
+{% set is_account_plan = app.request.attributes.get('_route') == 'view_user_account_plan' %}
 
 {% set default_active = '#email-address-and-password' %}
 {% set active_scope = '#sidenav' %}

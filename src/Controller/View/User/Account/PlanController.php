@@ -74,7 +74,7 @@ class PlanController extends AbstractUserAccountController
      */
     protected function getUserSignInRedirectResponseRoute()
     {
-        return 'view_user_account_plan_index';
+        return 'view_user_account_plan';
     }
 
     /**

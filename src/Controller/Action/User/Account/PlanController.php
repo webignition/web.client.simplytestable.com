@@ -82,7 +82,7 @@ class PlanController extends AbstractUserAccountController
         }
 
         $user = $this->userManager->getUser();
-        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_plan_index'));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_plan'));
 
         $userSummary = $this->userService->getSummary($user);
         $requestData = $request->request;

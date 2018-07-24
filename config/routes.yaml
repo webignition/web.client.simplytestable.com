@@ -126,7 +126,7 @@ action_user_account_team_leave:
     path: /account/team/leave/
     defaults: { _controller: App\Controller\Action\User\Account\TeamController::leaveAction }
 
-view_user_account_plan_index:
+view_user_account_plan:
     path: /account/plan/
     defaults: { _controller: App\Controller\View\User\Account\PlanController::indexAction }
 
