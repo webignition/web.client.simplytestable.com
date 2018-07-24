@@ -3,7 +3,7 @@
 {% set was_not_started = test.test.state == 'cancelled' and test.remote_test.taskcount == test.remote_test.taskcountbystate.cancelled %}
 {% set no_urls = test.test.state == 'failed-no-sitemap' and test.remote_test.crawl is null %}
 {% set icon = 'fa-bar-chart-o' %}
-{% set url = path('view_test_results_index_index', {'website': test.test.website, 'test_id':test.test.testId}) %}
+{% set url = path('view_test_results', {'website': test.test.website, 'test_id':test.test.testId}) %}
 
 {% block container_class %}finished {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}{% endblock %}
 
@@ -13,7 +13,7 @@
 
 {% block url_button_label %}View full results{% endblock %}
 
-{% set results_url = path('view_test_results_index_index', {'website': test.test.website, 'test_id': test.test.testid}) %}
+{% set results_url = path('view_test_results', {'website': test.test.website, 'test_id': test.test.testid}) %}
 
 {% block pre_stats %}
     {% if test_list is defined and test_list.requiresresults(test.test) %}

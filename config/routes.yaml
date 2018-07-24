@@ -212,7 +212,7 @@ view_test_results_verbose:
        website: '.+'
        test_id: '\d+'
 
-view_test_results_index_index:
+view_test_results:
     path: /{website}/{test_id}/results/
     defaults: { _controller: App\Controller\View\Test\Results\ResultsController::indexAction }
     requirements:

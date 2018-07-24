@@ -11,7 +11,7 @@
     'data-unretrieved-remote-task-ids-url="' ~ path('app_unretrieved_task_ids', route_parameters|merge({limit: 100})) ~ '"',
     'data-results-retrieve-url="' ~ path('task_results_retrieve', route_parameters) ~ '"',
     'data-preparing-stats-url="' ~ path('view_test_results_preparingstats_index', route_parameters) ~ '"',
-    'data-results-url="' ~ path('view_test_results_index_index', route_parameters) ~ '"'
+    'data-results-url="' ~ path('view_test_results', route_parameters) ~ '"'
 ] %}
 
 {% block body_attrs %}{{ body_attrs|join(' ')|raw }}{% endblock %}

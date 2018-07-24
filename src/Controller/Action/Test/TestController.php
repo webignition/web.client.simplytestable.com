@@ -106,7 +106,7 @@ class TestController extends AbstractController
         }
 
         return new RedirectResponse($this->generateUrl(
-            'view_test_results_index_index',
+            'view_test_results',
             $routeParameters
         ));
     }

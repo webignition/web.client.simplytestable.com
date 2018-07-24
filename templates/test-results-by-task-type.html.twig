@@ -25,7 +25,7 @@
 
                     <h1>
                         {{ task_type }} report for
-                        <a href="{{ path('view_test_results_index_index', {'website': website.raw, 'test_id': test.testId}) }}">
+                        <a href="{{ path('view_test_results', {'website': website.raw, 'test_id': test.testId}) }}">
                             <span id="test-url" title="{{website.raw}}">{{ website.utf8.schemeless.raw }}</span>
                             <span id="test-id">(#{{ test.testId }})</span>
                         </a>

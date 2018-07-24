@@ -206,7 +206,7 @@ class ResultsController extends AbstractResultsController
 
         if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_results_index_index',
+                'view_test_results',
                 [
                     'website' => $website,
                     'test_id' => $test_id,

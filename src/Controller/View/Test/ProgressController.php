@@ -162,7 +162,7 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
             if (Test::STATE_FAILED_NO_SITEMAP  !== $test->getState() || SystemUserService::isPublicUser($user)) {
                 return $this->createRedirectResponse(
                     $request,
-                    'view_test_results_index_index',
+                    'view_test_results',
                     [
                         'website' => $testWebsite,
                         'test_id' => $test_id
