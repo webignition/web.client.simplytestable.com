@@ -113,7 +113,7 @@ class InviteController extends AbstractController
             );
 
             return new RedirectResponse($this->generateUrl(
-                'view_user_sign_up_invite_index',
+                'view_user_sign_up_invite',
                 [
                     'token' => $token
                 ]
@@ -144,7 +144,7 @@ class InviteController extends AbstractController
             );
 
             return new RedirectResponse($this->generateUrl(
-                'view_user_sign_up_invite_index',
+                'view_user_sign_up_invite',
                 [
                     'token' => $token
                 ]

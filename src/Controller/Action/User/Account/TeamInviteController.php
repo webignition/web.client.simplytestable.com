@@ -413,7 +413,7 @@ class TeamInviteController extends AbstractUserAccountController
         $messageProperties = $mailConfiguration->getMessageProperties('user_team_invite_newuser_invitation');
 
         $confirmationUrl = $this->generateUrl(
-            'view_user_sign_up_invite_index',
+            'view_user_sign_up_invite',
             [
                 'token' => $invite->getToken()
             ],
