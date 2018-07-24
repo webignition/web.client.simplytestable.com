@@ -129,7 +129,7 @@ class ByTaskTypeController extends AbstractResultsController
 
         if (empty($selectedTaskType)) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_results_index_index',
+                'view_test_results',
                 [
                     'website' => $website,
                     'test_id' => $test_id
@@ -141,7 +141,7 @@ class ByTaskTypeController extends AbstractResultsController
 
         if (!$hasValidFilter) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_results_bytasktype_index',
+                'view_test_results_by_task_type_filter',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
@@ -164,7 +164,7 @@ class ByTaskTypeController extends AbstractResultsController
 
         if ($this->requiresPreparation($remoteTest, $test)) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_results_preparing_index_index',
+                'view_test_results_preparing',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
@@ -257,7 +257,7 @@ class ByTaskTypeController extends AbstractResultsController
         $hasValidFilter = in_array($filter, $this->allowedFilters);
 
         return new RedirectResponse($this->generateUrl(
-            'view_test_results_bytasktype_index',
+            'view_test_results_by_task_type_filter',
             [
                 'website' => $remoteTest->getWebsite(),
                 'test_id' => $request->attributes->get('test_id'),

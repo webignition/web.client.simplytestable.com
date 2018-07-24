@@ -83,7 +83,7 @@ class HistoryController extends AbstractBaseViewController implements RequiresVa
         $pageNumber = (int)$request->attributes->get('page_number');
 
         if ($pageNumber < self::DEFAULT_PAGE_NUMBER) {
-            return new RedirectResponse($this->generateUrl('view_test_history_index_index'));
+            return new RedirectResponse($this->generateUrl('view_test_history_page1'));
         }
 
         $filter = trim($request->get('filter'));
@@ -113,7 +113,7 @@ class HistoryController extends AbstractBaseViewController implements RequiresVa
 
         if ($isPageNumberAboveRange) {
             return new RedirectResponse($this->generateUrl(
-                'app_history',
+                'view_test_history',
                 [
                     'page_number' => $testList->getPageCount(),
                     'filter' => $filter,
@@ -131,7 +131,7 @@ class HistoryController extends AbstractBaseViewController implements RequiresVa
             return $response;
         }
 
-        $websitesSourceUrl = $this->generateUrl('view_test_history_websitelist_index');
+        $websitesSourceUrl = $this->generateUrl('view_website_list');
 
         return $this->renderWithDefaultViewParameters(
             'test-history.html.twig',

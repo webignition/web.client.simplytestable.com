@@ -55,7 +55,7 @@ class SignInController extends AbstractUserController
         $user = $this->userManager->getUser();
 
         if (!SystemUserService::isPublicUser($user)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
         }
 
         $requestData = $request->query;

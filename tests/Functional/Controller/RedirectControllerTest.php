@@ -44,7 +44,7 @@ class RedirectControllerTest extends AbstractControllerTest
     {
         $this->client->request(
             'GET',
-            $this->router->generate('app_task_results_redirector', [
+            $this->router->generate('redirect_task', [
                 'website' => 'http://example.com',
                 'test_id' => 1,
                 'task_id' => 2,
@@ -72,7 +72,7 @@ class RedirectControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('app_test_redirector', [
+            $this->router->generate('redirect_website_test', [
                 'website' => 'http://example.com/',
                 'test_id' => 1,
             ])
@@ -99,7 +99,7 @@ class RedirectControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('app_website', [
+            $this->router->generate('redirect_website', [
                 'website' => 'http://example.com/',
             ])
         );

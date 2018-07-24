@@ -3,7 +3,7 @@
 {% set was_not_started = test.test.state == 'cancelled' and test.remote_test.taskcount == test.remote_test.taskcountbystate.cancelled %}
 {% set no_urls = test.test.state == 'failed-no-sitemap' and test.remote_test.crawl is null %}
 {% set icon = 'fa-bar-chart-o' %}
-{% set url = path('view_test_results_index_index', {'website': test.test.website, 'test_id':test.test.testId}) %}
+{% set url = path('view_test_results', {'website': test.test.website, 'test_id':test.test.testId}) %}
 
 {% block container_class %}finished {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}{% endblock %}
 
@@ -13,7 +13,7 @@
 
 {% block url_button_label %}View full results{% endblock %}
 
-{% set results_url = path('view_test_results_index_index', {'website': test.test.website, 'test_id': test.test.testid}) %}
+{% set results_url = path('view_test_results', {'website': test.test.website, 'test_id': test.test.testid}) %}
 
 {% block pre_stats %}
     {% if test_list is defined and test_list.requiresresults(test.test) %}
@@ -22,10 +22,10 @@
             test_id: test.test.testid
         } %}
 
-        {% set status_url = path('view_test_results_preparingstats_index', route_parameters) %}
-        {% set unretrieved_task_ids_url = path('app_unretrieved_task_ids', route_parameters|merge({limit: 100})) %}
+        {% set status_url = path('view_test_results_preparing_stats', route_parameters) %}
+        {% set unretrieved_task_ids_url = path('test_task_ids_unretrieved', route_parameters|merge({limit: 100})) %}
         {% set retrieve_tasks_url = path('task_results_retrieve', route_parameters) %}
-        {% set summary_url = path('view_test_results_partial_finishedsummary_index', route_parameters) %}
+        {% set summary_url = path('view_partials_test_finished_summary', route_parameters) %}
 
         <div class="row preparing js-urls"
              data-status-url="{{ status_url }}"

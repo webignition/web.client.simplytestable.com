@@ -24,8 +24,8 @@ use webignition\SimplyTestableUserModel\User;
 class ResultsControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'task-results.html.twig';
-    const ROUTE_NAME = 'view_test_task_results_index_index';
-    const ROUTE_NAME_VERBOSE = 'view_test_task_results_index_index_verbose';
+    const ROUTE_NAME = 'view_task_results';
+    const ROUTE_NAME_VERBOSE = 'view_task_results_verbose';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const TASK_ID = 2;
@@ -123,8 +123,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ],
                 'expectedRedirectUrl' => sprintf(
                     '/signin/?redirect=%s%s',
-                    'eyJyb3V0ZSI6InZpZXdfdGVzdF9wcm9ncmVzc19pbmRleF9pbmRleCIsInBhcmFtZXRlcnMiOnsid2Vic2l0ZSI6I',
-                    'mh0dHA6XC9cL2V4YW1wbGUuY29tXC8iLCJ0ZXN0X2lkIjoiMSJ9fQ%3D%3D'
+                    'eyJyb3V0ZSI6InZpZXdfdGVzdF9wcm9ncmVzcyIsInBhcmFtZXRlcnMiOnsid2Vic2l0ZSI6Imh0dHA6XC9cL2V4Y',
+                    'W1wbGUuY29tXC8iLCJ0ZXN0X2lkIjoiMSJ9fQ%3D%3D'
                 ),
             ],
         ];

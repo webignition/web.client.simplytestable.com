@@ -277,7 +277,7 @@ class UserController extends AbstractController
         $userExists = $this->userService->exists($email);
 
         if (!$this->isEmailValid($email) || empty($requestToken) || !$userExists) {
-            return new RedirectResponse($this->generateUrl('view_user_resetpassword_index_index'));
+            return new RedirectResponse($this->generateUrl('view_user_reset_password_request'));
         }
 
         $failureRedirectResponse = $this->createPasswordChooseRedirectResponse([
@@ -430,7 +430,7 @@ class UserController extends AbstractController
         $flashBag->set(self::FLASH_SIGN_UP_SUCCESS_KEY, self::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED);
 
         $successRedirectUrl = $this->generateUrl(
-            'view_user_signup_confirm_index',
+            'view_user_sign_up_confirm',
             [
                 'email' => $email,
             ]
@@ -460,7 +460,7 @@ class UserController extends AbstractController
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
         $confirmationUrl = $this->generateUrl(
-            'view_user_signup_confirm_index',
+            'view_user_sign_up_confirm',
             [
                 'email' => $email,
                 'token' => $token,
@@ -504,7 +504,7 @@ class UserController extends AbstractController
         $requestData = $request->request;
 
         $failureRedirect = new RedirectResponse($this->generateUrl(
-            'view_user_signup_confirm_index',
+            'view_user_sign_up_confirm',
             [
                 'email' => $email,
             ]
@@ -568,7 +568,7 @@ class UserController extends AbstractController
             $redirectParameters['redirect'] = $requestRedirectCookie;
         }
 
-        return new RedirectResponse($this->generateUrl('view_user_signin_index', $redirectParameters));
+        return new RedirectResponse($this->generateUrl('view_user_sign_in', $redirectParameters));
     }
 
     /**
@@ -588,7 +588,7 @@ class UserController extends AbstractController
      */
     private function createDashboardRedirectResponse()
     {
-        return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+        return new RedirectResponse($this->generateUrl('view_dashboard'));
     }
 
     /**
@@ -598,9 +598,6 @@ class UserController extends AbstractController
      */
     private function createPasswordChooseRedirectResponse(array $routeParameters)
     {
-        return new RedirectResponse($this->generateUrl(
-            'view_user_resetpassword_choose_index',
-            $routeParameters
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_reset_password_choose', $routeParameters));
     }
 }

@@ -37,7 +37,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
 
         $this->client->request(
             'POST',
-            $this->router->generate('sign_in_submit'),
+            $this->router->generate('action_user_sign_in_submit'),
             [
                 'email' => self::EMAIL,
                 'password' => 'foo',
@@ -327,7 +327,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([
-                        'route' => 'view_user_account_card_index',
+                        'route' => 'view_user_account_card',
                     ])),
                 ]),
                 'expectedResponseHasUserCookie' => false,
@@ -338,7 +338,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([
-                        'route' => 'view_test_progress_index_index',
+                        'route' => 'view_test_progress',
                         'parameters' => [
                             'website' => 'http://example.com',
                         ],
@@ -352,7 +352,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([
-                        'route' => 'view_test_progress_index_index',
+                        'route' => 'view_test_progress',
                         'parameters' => [
                             'website' => 'http://example.com',
                             'test_id' => 1,

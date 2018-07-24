@@ -15,7 +15,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
 {
-    const ROUTE_NAME = 'action_user_account_newssubscriptions_update';
+    const ROUTE_NAME = 'action_user_account_news_subscriptions_update';
 
     /**
      * @var NewsSubscriptionsController

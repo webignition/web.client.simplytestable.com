@@ -11,7 +11,7 @@ use App\Tests\Functional\Controller\AbstractControllerTest;
 
 class EventControllerTest extends AbstractControllerTest
 {
-    const ROUTE_NAME = 'action_user_resetpassword_index_request';
+    const ROUTE_NAME = 'action_user_reset_password_request';
     const EMAIL = 'user@example.com';
 
     public function testIndexActionEventHasNoUser()

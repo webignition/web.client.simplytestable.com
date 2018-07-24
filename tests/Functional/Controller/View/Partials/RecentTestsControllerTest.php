@@ -20,7 +20,7 @@ use Twig_Environment;
 class RecentTestsControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'Partials/Dashboard/recent-tests.html.twig';
-    const ROUTE_NAME = 'view_dashboard_partial_recenttests_index';
+    const ROUTE_NAME = 'view_partials_recenttests';
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionInvalidUserGetRequest()

@@ -66,7 +66,7 @@ class PasswordChangeController extends AbstractUserAccountController
         $currentPassword = trim($requestData->get('current-password'));
         $newPassword = trim($requestData->get('new-password'));
 
-        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_index_index'));
+        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account'));
 
         if (empty($currentPassword) || empty($newPassword)) {
             $this->session->getFlashBag()->set(

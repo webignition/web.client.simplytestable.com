@@ -96,13 +96,13 @@ class InviteController extends AbstractController
         $requestData = $request->request;
 
         if (empty($token)) {
-            return new RedirectResponse($this->generateUrl('view_user_signup_index_index'));
+            return new RedirectResponse($this->generateUrl('view_user_sign_up_request'));
         }
 
         $invite = $this->teamInviteService->getForToken($token);
 
         if (empty($invite)) {
-            return new RedirectResponse($this->generateUrl('view_user_signup_index_index'));
+            return new RedirectResponse($this->generateUrl('view_user_sign_up_request'));
         }
 
         $password = trim($requestData->get('password'));
@@ -113,7 +113,7 @@ class InviteController extends AbstractController
             );
 
             return new RedirectResponse($this->generateUrl(
-                'view_user_signup_invite_index',
+                'view_user_sign_up_invite',
                 [
                     'token' => $token
                 ]
@@ -144,7 +144,7 @@ class InviteController extends AbstractController
             );
 
             return new RedirectResponse($this->generateUrl(
-                'view_user_signup_invite_index',
+                'view_user_sign_up_invite',
                 [
                     'token' => $token
                 ]
@@ -166,7 +166,7 @@ class InviteController extends AbstractController
 
         $staySignedIn = !empty(trim($requestData->get('stay-signed-in')));
 
-        $response = new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+        $response = new RedirectResponse($this->generateUrl('view_dashboard'));
 
         if ($staySignedIn) {
             $response->headers->setCookie($this->userManager->createUserCookie());

@@ -90,7 +90,7 @@ class TestControllerTest extends AbstractControllerTest
                     HttpResponseFactory::createForbiddenResponse(),
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
-                'routeName' => 'app_test_lock',
+                'routeName' => 'action_test_lock',
                 'routeParameters' => [
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
@@ -101,7 +101,7 @@ class TestControllerTest extends AbstractControllerTest
                     HttpResponseFactory::createForbiddenResponse(),
                     HttpResponseFactory::createForbiddenResponse(),
                 ],
-                'routeName' => 'app_test_unlock',
+                'routeName' => 'action_test_unlock',
                 'routeParameters' => [
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
@@ -112,7 +112,7 @@ class TestControllerTest extends AbstractControllerTest
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'routeName' => 'app_test_lock',
+                'routeName' => 'action_test_lock',
                 'routeParameters' => [
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
@@ -123,7 +123,7 @@ class TestControllerTest extends AbstractControllerTest
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'routeName' => 'app_test_unlock',
+                'routeName' => 'action_test_unlock',
                 'routeParameters' => [
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
@@ -144,7 +144,7 @@ class TestControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('test_cancel', [
+            $this->router->generate('action_test_cancel', [
                 'website' => self::WEBSITE,
                 'test_id' => self::TEST_ID,
             ])
@@ -217,7 +217,7 @@ class TestControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('test_cancel_crawl', [
+            $this->router->generate('action_test_cancel_crawl', [
                 'website' => self::WEBSITE,
                 'test_id' => self::TEST_ID,
             ])
@@ -289,7 +289,7 @@ class TestControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('app_test_retest', [
+            $this->router->generate('action_test_retest', [
                 'website' => self::WEBSITE,
                 'test_id' => self::TEST_ID,
             ])

@@ -53,7 +53,7 @@ class ConfirmControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'POST',
-            $this->router->generate('action_signup_user_confirm_resend', [
+            $this->router->generate('action_sign_up_user_confirm_resend', [
                 'email' => self::EMAIL,
             ])
         );

@@ -38,7 +38,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $this->client->request(
             'POST',
-            $this->router->generate('sign_up_submit'),
+            $this->router->generate('action_user_sign_up_request'),
             [
                 'plan' => 'basic',
                 'email' => self::EMAIL,

@@ -73,7 +73,7 @@ abstract class AbstractRequiresValidOwnerController extends AbstractBaseViewCont
         }
 
         $redirectParameters = json_encode([
-            'route' => 'view_test_progress_index_index',
+            'route' => 'view_test_progress',
             'parameters' => [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
@@ -83,7 +83,7 @@ abstract class AbstractRequiresValidOwnerController extends AbstractBaseViewCont
         $this->session->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
 
         return new RedirectResponse($this->generateUrl(
-            'view_user_signin_index',
+            'view_user_sign_in',
             [
                 'redirect' => base64_encode($redirectParameters)
             ]

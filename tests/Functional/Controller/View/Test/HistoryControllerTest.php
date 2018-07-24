@@ -23,7 +23,7 @@ use webignition\SimplyTestableUserModel\User;
 class HistoryControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-history.html.twig';
-    const ROUTE_NAME = 'view_test_history_index_index';
+    const ROUTE_NAME = 'view_test_history_page1';
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionInvalidUserGetRequest()

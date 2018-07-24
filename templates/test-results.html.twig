@@ -29,7 +29,7 @@
                         <span id="test-id">(#{{ test.testId }})</span>
                     </h1>
 
-                    <form class="retest-form" role="form" method="post" action="{{ path('test_start') }}">
+                    <form class="retest-form" role="form" method="post" action="{{ path('action_test_start') }}">
                         <div class="row details">
                             <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
                                 <div class="row">
@@ -64,14 +64,14 @@
                                                         icon: 'unlock',
                                                         action: 'Unlock',
                                                         description: 'Make this test public',
-                                                        url: path('app_test_unlock', route_parameters)
+                                                        url: path('action_test_unlock', route_parameters)
                                                     } %}
 
                                                     {% set data_unlocked = {
                                                         icon: 'lock',
                                                         action: 'Lock',
                                                         description: 'Make this test private',
-                                                        url: path('app_test_lock', route_parameters)
+                                                        url: path('action_test_lock', route_parameters)
                                                     } %}
 
                                                     {% set locked_state = is_public ? 'unlocked' : 'locked' %}
@@ -88,7 +88,7 @@
 
                                                 {% if is_owner or is_public_user_test %}
                                                     <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
-                                                        <a href="{{ path('view_test_history_index_index', {'filter': website.raw}) }}">
+                                                        <a href="{{ path('view_test_history_page1', {'filter': website.raw}) }}">
                                                             {{ domain_test_count }} {% if is_public_user_test %}demo{% endif %} test{% if domain_test_count != 1%}s{% endif %} for this URL
                                                             <i class="fa fa-caret-right"></i>
                                                         </a>
@@ -174,7 +174,7 @@
                     </h2>
 
                     {% if (type is not empty) %}
-                        <a class="clear-type badge" href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">
+                        <a class="clear-type badge" href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">
                             clear &ldquo;{{ type|replace({'html': 'HTML', 'css': 'CSS', 'js': 'JS'}) }}&rdquo; filter
                             <i class="fa fa-times"></i>
                         </a>
@@ -183,41 +183,41 @@
                     {% if tasks is defined %}
                         <ul class="nav nav-tabs {{ filter }} hidden-xs hidden-sm    ">
                             <li class="tasks-all {% if (filter == 'all') %} active {% endif %}">
-                                <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}">
+                                <a href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}">
                                     All <span class="badge">{{ filtered_task_counts.all }}</span>
                                 </a>
                             </li>
                             {% if filtered_task_counts.with_errors > 0 %}
                             <li class="tasks-with-errors {% if (filter == 'with-errors') %} active {% endif %}">
-                                <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}">
+                                <a href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}">
                                     With errors <span class="badge alert-danger">{{ filtered_task_counts.with_errors }}</span>
                                 </a>
                             </li>
                             {% endif %}
                             {% if filtered_task_counts.with_warnings > 0 %}
                             <li class="tasks-with-warnings {% if (filter == 'with-warnings') %} active {% endif %}">
-                                <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}">
+                                <a href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}">
                                     With warnings <span class="badge alert-info">{{ filtered_task_counts.with_warnings }}</span>
                                 </a>
                             </li>
                             {% endif %}
                             {% if filtered_task_counts.without_errors > 0 %}
                             <li class="tasks-without-errors {% if (filter == 'without-errors') %} active {% endif %}">
-                                <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}">
+                                <a href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}">
                                     Without errors <span class="badge alert-success">{{ filtered_task_counts.without_errors }}</span>
                                 </a>
                             </li>
                             {% endif %}
                             {% if filtered_task_counts.skipped > 0 %}
                                 <li class="tasks-skipped {% if (filter == 'skipped') %} active {% endif %}">
-                                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}">
+                                    <a href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}">
                                         Skipped <span class="badge">{{ filtered_task_counts.skipped }}</span>
                                     </a>
                                 </li>
                             {% endif %}
                             {% if filtered_task_counts.cancelled > 0 %}
                                 <li class="tasks-cancelled {% if (filter == 'cancelled') %} active {% endif %}">
-                                    <a href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}">
+                                    <a href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}">
                                         Cancelled <span class="badge">{{ filtered_task_counts.cancelled }}</span>
                                     </a>
                                 </li>
@@ -226,41 +226,41 @@
 
                         <div class="hidden-lg hidden-md tabs">
                             <a class="btn btn-default {{ filter == 'all' ? 'selected' : '' }}"
-                               href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}">
+                               href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'all', 'type': type }) }}">
                                 All <span class="badge">{{ filtered_task_counts.all }}</span>
                             </a>
 
                             {% if filtered_task_counts.with_errors > 0 %}
                             <a class="btn btn-default alert-danger {{ filter == 'with-errors' ? 'selected' : '' }}"
-                               href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}">
+                               href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': type }) }}">
                                 With errors <span class="badge alert-danger">{{ filtered_task_counts.with_errors }}</span>
                             </a>
                             {% endif %}
 
                             {% if filtered_task_counts.with_warnings > 0 %}
                             <a class="btn btn-default alert-info {{ filter == 'with-warnings' ? 'selected' : '' }}"
-                               href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}">
+                               href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': type }) }}">
                                 With warnings <span class="badge alert-info">{{ filtered_task_counts.with_warnings }}</span>
                             </a>
                             {% endif %}
 
                             {% if filtered_task_counts.without_errors > 0 %}
                             <a class="btn btn-default alert-success {{ filter == 'without-errors' ? 'selected' : '' }}"
-                               href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}">
+                               href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'without-errors', 'type': type }) }}">
                                 Without errors <span class="badge alert-success">{{ filtered_task_counts.without_errors }}</span>
                             </a>
                             {% endif %}
 
                             {% if filtered_task_counts.skipped > 0 %}
                             <a class="btn btn-default {{ filter == 'skipped' ? 'selected' : '' }}"
-                               href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}">
+                               href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'skipped', 'type': type }) }}">
                                 Skipped <span class="badge">{{ filtered_task_counts.skipped }}</span>
                             </a>
                             {% endif %}
 
                             {% if filtered_task_counts.cancelled > 0 %}
                             <a class="btn btn-default {{ filter == 'cancelled' ? 'selected' : '' }}"
-                               href="{{ path('view_test_results_index_index', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}">
+                               href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'cancelled', 'type': type }) }}">
                                 Cancelled <span class="badge">{{ filtered_task_counts.cancelled }}</span>
                             </a>
                             {% endif %}

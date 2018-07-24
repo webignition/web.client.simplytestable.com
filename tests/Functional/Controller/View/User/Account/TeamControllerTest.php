@@ -23,8 +23,7 @@ use webignition\SimplyTestableUserModel\User;
 class TeamControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-account-team.html.twig';
-    const ROUTE_NAME = 'view_user_account_team_index_index';
-
+    const ROUTE_NAME = 'view_user_account_team';
     const USER_EMAIL = 'user@example.com';
 
     /**
@@ -88,9 +87,7 @@ class TeamControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'expectedRedirectUrl' =>
-                    '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNl'
-                    .'cl9hY2NvdW50X3RlYW1faW5kZXhfaW5kZXgifQ%3D%3D'
+                'expectedRedirectUrl' =>'/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X3RlYW0ifQ%3D%3D',
             ],
         ];
     }

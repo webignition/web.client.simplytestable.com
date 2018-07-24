@@ -15,7 +15,7 @@
 } %}
 
 {% block title %}Your card details ({{ user.username }}) - {{ parent() }}{% endblock %}
-{% block heading %}<a href="{{ path('view_user_account_index_index') }}">{{ parent() }}</a>: your card details{% endblock %}
+{% block heading %}<a href="{{ path('view_user_account') }}">{{ parent() }}</a>: your card details{% endblock %}
 
 {% block javascripts %}
     <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
@@ -28,7 +28,7 @@
     <form class="form-horizontal js-form-button-spinner"
           role="form"
           id="payment-form"
-          action={{ path('user_account_card_associate', {'stripe_card_token' : 'stripe_card_token'}) }}
+          action={{ path('action_user_account_card_associate', {'stripe_card_token' : 'stripe_card_token'}) }}
           data-stripe-publishable-key="{{ stripe_publishable_key }}"
           novalidate>
 

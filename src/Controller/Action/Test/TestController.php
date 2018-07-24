@@ -97,16 +97,16 @@ class TestController extends AbstractController
             $this->testService->get($website, $test_id);
             $this->remoteTestService->cancel();
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_progress_index_index',
+                'view_test_progress',
                 $routeParameters
             ));
         }
 
         return new RedirectResponse($this->generateUrl(
-            'view_test_results_index_index',
+            'view_test_results',
             $routeParameters
         ));
     }
@@ -134,7 +134,7 @@ class TestController extends AbstractController
         }
 
         return new RedirectResponse($this->generateUrl(
-            'view_test_progress_index_index',
+            'view_test_progress',
             [
                 'website' => $website,
                 'test_id' => $test_id,
@@ -158,7 +158,7 @@ class TestController extends AbstractController
         $remoteTest = $this->remoteTestService->retest($test_id, $website);
 
         return new RedirectResponse($this->generateUrl(
-            'view_test_progress_index_index',
+            'view_test_progress',
             [
                 'website' => $remoteTest->getWebsite(),
                 'test_id' => $remoteTest->getId(),

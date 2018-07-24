@@ -38,7 +38,7 @@ class InviteControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('view_user_signup_invite_index', [
+            $this->router->generate('view_user_sign_up_invite', [
                 'token' => self::TOKEN,
             ])
         );

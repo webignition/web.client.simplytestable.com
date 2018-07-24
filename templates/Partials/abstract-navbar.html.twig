@@ -19,8 +19,8 @@
         <div id="bs-navbar" class="navbar-collapse collapse" aria-expanded="false" style="height: 1px;">
             <ul class="nav navbar-nav navbar-right">
                 {% block items %}
-                    <li class="text {% if app.request.get('_route') == 'view_dashboard_index_index' %}active{% endif %}">
-                        <a href="{{ path('view_dashboard_index_index') }}">
+                    <li class="text {% if app.request.get('_route') == 'view_dashboard' %}active{% endif %}">
+                        <a href="{{ path('view_dashboard') }}">
                             <i class="fa fa-tachometer"></i>
                             {% if is_logged_in %}
                                 Dashboard
@@ -44,14 +44,14 @@
                     {% endif %}
 
                     {% if is_logged_in %}
-                        <li class="user-actions text {% if app.request.get('_route') == 'view_user_account_index_index' %}active{% endif %}">
+                        <li class="user-actions text {% if app.request.get('_route') == 'view_user_account' %}active{% endif %}">
                             <p class="navbar-text spacer highlighted-spacer hidden-xs">&nbsp;</p>
-                            <a class="username" href="{{ path('view_user_account_index_index') }}">
+                            <a class="username" href="{{ path('view_user_account') }}">
                                 <i class="fa fa-user"></i> {{ user.username }}
                             </a>
                         </li>
                         <li>
-                            <form class="navbar-form signout-form" method="post" action="{{ path('sign_out_submit') }}">
+                            <form class="navbar-form signout-form" method="post" action="{{ path('action_user_sign_out') }}">
                                 <button type="submit" class="btn btn-primary btn-sm">
                                     Sign out
                                     <i class="fa fa-caret-right"></i>
@@ -62,7 +62,7 @@
                         <li class="user-actions">
                             <div>
                                 <p class="navbar-text spacer highlighted-spacer">&nbsp;</p>
-                                <a href="{{ path('view_user_signin_index') }}" class="btn btn-default btn-sm navbar-btn">
+                                <a href="{{ path('view_user_sign_in') }}" class="btn btn-default btn-sm navbar-btn">
                                     <i class="fa fa-caret-right"></i> Sign in
                                 </a>
                             </div>
@@ -70,7 +70,7 @@
                         <li>
                             <div>
                                 <p class="navbar-text spacer hidden-xs">&nbsp;</p>
-                                <a href="{{ path('view_user_signup_index_index') }}" class="btn btn-default btn-sm navbar-btn">
+                                <a href="{{ path('view_user_sign_up_request') }}" class="btn btn-default btn-sm navbar-btn">
                                     <i class="fa fa-user"></i> Create an account
                                 </a>
                             </div>

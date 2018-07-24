@@ -150,7 +150,7 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
         if ($testWebsite !== $website) {
             return $this->createRedirectResponse(
                 $request,
-                'view_test_progress_index_index',
+                'view_test_progress',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
@@ -162,7 +162,7 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
             if (Test::STATE_FAILED_NO_SITEMAP  !== $test->getState() || SystemUserService::isPublicUser($user)) {
                 return $this->createRedirectResponse(
                     $request,
-                    'view_test_results_index_index',
+                    'view_test_results',
                     [
                         'website' => $testWebsite,
                         'test_id' => $test_id
@@ -172,7 +172,7 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
 
             return $this->createRedirectResponse(
                 $request,
-                'app_test_retest',
+                'action_test_retest',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
@@ -214,7 +214,7 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
             $viewData = array_merge($commonViewData, [
                 'remote_test' => $remoteTest->__toArray(),
                 'this_url' => $this->generateUrl(
-                    'view_test_progress_index_index',
+                    'view_test_progress',
                     [
                         'website' => $testWebsite,
                         'test_id' => $test_id

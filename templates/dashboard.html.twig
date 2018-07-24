@@ -15,7 +15,7 @@
 
     <div class="header">
         <div class="container">
-            <form id="test-start-form" method="post" action="{{ path('test_start') }}">
+            <form id="test-start-form" method="post" action="{{ path('action_test_start') }}">
                 <div class="row">
                     <div class="col-lg-12">
                         {% include 'Partials/Dashboard/TestStart/Alert/alerts.html.twig' %}
@@ -132,10 +132,10 @@
         <div class="row">
             <div class="col-lg-8 col-md-10 col-sm-12" id="recent-activity">
                 <h2>Recent activity</h2>
-                <a href="{{ path('view_test_history_index_index') }}">Full test history <i class="fa fa-caret-right"></i></a>
+                <a href="{{ path('view_test_history_page1') }}">Full test history <i class="fa fa-caret-right"></i></a>
 
                 <div class="test-list"
-                     data-source-url="{{ path('view_dashboard_partial_recenttests_index') }}"
+                     data-source-url="{{ path('view_partials_recenttests') }}"
                 >
                     <i class="fa fa-spin fa-spinner js-prefill-spinner"></i>
                 </div>

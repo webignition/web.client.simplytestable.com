@@ -25,7 +25,7 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     public function getFailedNoSitemapTestResponse(RouterInterface $router, Request $request)
     {
         return new RedirectResponse($router->generate(
-            'view_test_results_failednourlsdetected_index_index',
+            'view_test_results_failed_no_urls_detected',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
@@ -39,7 +39,7 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     public function getRejectedTestResponse(RouterInterface $router, Request $request)
     {
         return new RedirectResponse($router->generate(
-            'view_test_results_rejected_index_index',
+            'view_test_results_rejected',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
@@ -53,7 +53,7 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     public function getNotFinishedTestResponse(RouterInterface $router, Request $request)
     {
         return new RedirectResponse($router->generate(
-            'view_test_progress_index_index',
+            'view_test_progress',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')

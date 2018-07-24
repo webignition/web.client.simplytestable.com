@@ -24,7 +24,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 
         $this->client->request(
             'POST',
-            $this->router->generate('sign_up_confirm_submit', [
+            $this->router->generate('action_user_sign_up_confirm', [
                 'email' => self::USER_EMAIL,
             ]),
             [

@@ -67,7 +67,7 @@ class CardController extends AbstractUserAccountController
      */
     protected function getUserSignInRedirectResponseRoute()
     {
-        return 'view_user_account_card_index';
+        return 'view_user_account_card';
     }
 
     /**
@@ -92,7 +92,7 @@ class CardController extends AbstractUserAccountController
             $team = $this->teamService->getTeam();
 
             if ($team->getLeader() !== $user->getUsername()) {
-                return new RedirectResponse($this->generateUrl('view_user_account_index_index'));
+                return new RedirectResponse($this->generateUrl('view_user_account'));
             }
         }
 

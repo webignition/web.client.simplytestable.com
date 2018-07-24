@@ -5,7 +5,7 @@
 
 {% include 'Partials/User/Account/NewsSubscriptions/Alert/alerts.html.twig' %}
 
-<form role="form" method="post" action="{{ path('action_user_account_newssubscriptions_update') }}">
+<form role="form" method="post" action="{{ path('action_user_account_news_subscriptions_update') }}">
     <label class="checkbox" id="news-subscriptions-product-announcements">
         <input type="checkbox" name="announcements" {% if mailchimp_announcements_subscribed %}checked{% endif %}>
         <strong class="title">{{ list_key_label_map.announcements }} (infrequent)</strong>

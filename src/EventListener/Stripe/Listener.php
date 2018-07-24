@@ -543,7 +543,7 @@ class Listener
     private function generateAccountUrl()
     {
         return $this->router->generate(
-            'view_user_account_index_index',
+            'view_user_account',
             [],
             UrlGeneratorInterface::ABSOLUTE_URL
         );

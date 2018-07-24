@@ -24,7 +24,7 @@ use webignition\SimplyTestableUserModel\User;
 class PreparingControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-results-preparing.html.twig';
-    const ROUTE_NAME = 'view_test_results_preparing_index_index';
+    const ROUTE_NAME = 'view_test_results_preparing';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';

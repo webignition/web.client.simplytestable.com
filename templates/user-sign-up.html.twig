@@ -29,7 +29,7 @@
         } only %}
     {% endif %}
 
-    <form class="js-form-button-spinner" role="form" method="post" action="{{ path('sign_up_submit') }}" novalidate>
+    <form class="js-form-button-spinner" role="form" method="post" action="{{ path('action_user_sign_up_request') }}" novalidate>
         {% include 'Partials/User/SignUp/Alert/within-form.html.twig' %}
 
         <div class="form-group-collection">

@@ -3,12 +3,12 @@
 </p>
 
 <div class="cta">
-    <a class="btn btn-primary btn-lg" href="{{ path('view_user_signin_index') }}">
+    <a class="btn btn-primary btn-lg" href="{{ path('view_user_sign_in') }}">
         <span class="primary">Sign in</span>
         <span class="byline">{{ primary_byline }}</span>
         <i class="fa fa-sign-in"></i>
     </a>
-    <a href="{{ path('view_user_signup_index_index') }}" class="btn btn-lg btn-cta btn-success">
+    <a href="{{ path('view_user_sign_up_request') }}" class="btn btn-lg btn-cta btn-success">
         <span class="primary">Create an account</span>
         <span class="byline">30-day trial, no credit card required. Get started in seconds.</span>
         <i class="fa fa-user"></i>
@@ -29,7 +29,7 @@
         </li>
         <li>
             <p>
-                <a href="{{ path('view_test_history_index_index', {'filter': remote_test.website}) }}">Past results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %} <i class="fa fa-caret-right"></i></a>
+                <a href="{{ path('view_test_history_page1', {'filter': remote_test.website}) }}">Past results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %} <i class="fa fa-caret-right"></i></a>
             </p>
         </li>
     </ul>

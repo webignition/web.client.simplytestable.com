@@ -148,7 +148,7 @@ class ResultsController extends AbstractResultsController
     public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request)
     {
         return new RedirectResponse($this->generateUrl(
-            'app_test_redirector',
+            'redirect_website_test',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')
@@ -185,7 +185,7 @@ class ResultsController extends AbstractResultsController
 
         if ($this->requiresPreparation($remoteTest, $test)) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_results_preparing_index_index',
+                'view_test_results_preparing',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
@@ -206,7 +206,7 @@ class ResultsController extends AbstractResultsController
 
         if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_results_index_index',
+                'view_test_results',
                 [
                     'website' => $website,
                     'test_id' => $test_id,

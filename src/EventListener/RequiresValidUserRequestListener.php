@@ -40,7 +40,7 @@ class RequiresValidUserRequestListener extends AbstractRequestListener
         }
 
         if ($this->controller instanceof RequiresValidUser && !$this->userService->authenticate()) {
-            $redirectUrl = $this->router->generate('sign_out_submit');
+            $redirectUrl = $this->router->generate('action_user_sign_out');
 
             /* @var RequiresValidUser $controller */
             $controller = $this->controller;

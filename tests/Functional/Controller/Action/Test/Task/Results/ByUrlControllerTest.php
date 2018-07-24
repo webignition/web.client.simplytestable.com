@@ -50,7 +50,7 @@ class ByUrlControllerTest extends AbstractControllerTest
     {
         $this->client->request(
             'GET',
-            $this->router->generate('action_test_task_results_byurl_index', [
+            $this->router->generate('action_test_task_results_byurl', [
                 'website' => self::WEBSITE_URL,
                 'test_id' => self::TEST_ID,
                 'task_url' => self::TASK_URL,

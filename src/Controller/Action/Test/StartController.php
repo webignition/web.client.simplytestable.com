@@ -165,7 +165,7 @@ class StartController extends AbstractController
             $remoteTest = $this->remoteTestService->start($urlToTest, $testOptions, $testType);
 
             return new RedirectResponse($this->generateUrl(
-                'view_test_progress_index_index',
+                'view_test_progress',
                 [
                     'website' => $remoteTest->getWebsite(),
                     'test_id' => $remoteTest->getId(),
@@ -284,6 +284,6 @@ class StartController extends AbstractController
      */
     private function createStartErrorRedirectUrl(array $redirectRouteParameters)
     {
-        return $this->generateUrl('view_dashboard_index_index', $redirectRouteParameters);
+        return $this->generateUrl('view_dashboard', $redirectRouteParameters);
     }
 }

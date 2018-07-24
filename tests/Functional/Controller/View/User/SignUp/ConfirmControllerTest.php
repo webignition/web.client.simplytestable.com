@@ -18,7 +18,7 @@ use webignition\SimplyTestableUserModel\User;
 class ConfirmControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-sign-up-confirm.html.twig';
-    const ROUTE_NAME = 'view_user_signup_confirm_index';
+    const ROUTE_NAME = 'view_user_sign_up_confirm';
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionPublicUserGetRequest()

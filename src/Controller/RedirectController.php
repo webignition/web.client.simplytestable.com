@@ -59,7 +59,7 @@ class RedirectController extends AbstractController
             $routeParameters = $this->getWebsiteAndTestIdAndTaskIdFromWebsite($website);
 
             return new RedirectResponse($this->generateUrl(
-                'view_test_task_results_index_index_verbose',
+                'view_task_results_verbose',
                 $routeParameters
             ));
         }
@@ -78,7 +78,7 @@ class RedirectController extends AbstractController
 
             if ($latestRemoteTest instanceof RemoteTest) {
                 return new RedirectResponse($this->generateUrl(
-                    'app_test_redirector',
+                    'redirect_website_test',
                     [
                         'website' => $latestRemoteTest->getWebsite(),
                         'test_id' => $latestRemoteTest->getId()
@@ -95,7 +95,7 @@ class RedirectController extends AbstractController
 
             if (!empty($latestTest)) {
                 return new RedirectResponse($this->generateUrl(
-                    'app_test_redirector',
+                    'redirect_website_test',
                     [
                         'website' => $normalisedWebsite,
                         'test_id' => $latestTest->getTestId(),
@@ -103,7 +103,7 @@ class RedirectController extends AbstractController
                 ));
             }
 
-            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
         }
 
         if ($hasWebsite && $hasTestId) {
@@ -124,7 +124,7 @@ class RedirectController extends AbstractController
                 );
 
                 return new RedirectResponse($this->generateUrl(
-                    'app_website',
+                    'redirect_website',
                     [
                         'website' => $website
                     ]
@@ -132,8 +132,8 @@ class RedirectController extends AbstractController
             }
 
             $routeName = in_array($test->getState(), $this->testFinishedStates)
-                ? 'view_test_results_index_index'
-                : 'view_test_progress_index_index';
+                ? 'view_test_results'
+                : 'view_test_progress';
 
             return new RedirectResponse($this->generateUrl(
                 $routeName,
@@ -144,7 +144,7 @@ class RedirectController extends AbstractController
             ));
         }
 
-        return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+        return new RedirectResponse($this->generateUrl('view_dashboard'));
     }
 
     /**
@@ -157,7 +157,7 @@ class RedirectController extends AbstractController
     public function taskAction($website, $test_id, $task_id)
     {
         return new RedirectResponse($this->generateUrl(
-            'view_test_task_results_index_index',
+            'view_task_results',
             [
                 'website' => $website,
                 'test_id' => $test_id,

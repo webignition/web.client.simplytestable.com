@@ -43,7 +43,7 @@ class RedirectResponseFactory
             $routeParameters[SignInRequest::PARAMETER_REDIRECT] = $redirect;
         }
 
-        return new RedirectResponse($this->router->generate('view_user_signin_index', $routeParameters));
+        return new RedirectResponse($this->router->generate('view_user_sign_in', $routeParameters));
     }
 
     /**
@@ -64,6 +64,6 @@ class RedirectResponseFactory
 
         $routeParameters[SignUpRequest::PARAMETER_PLAN] = $plan;
 
-        return new RedirectResponse($this->router->generate('view_user_signup_index_index', $routeParameters));
+        return new RedirectResponse($this->router->generate('view_user_sign_up_request', $routeParameters));
     }
 }

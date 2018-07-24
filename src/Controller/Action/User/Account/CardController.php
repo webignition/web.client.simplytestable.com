@@ -66,7 +66,7 @@ class CardController extends AbstractUserAccountController
 
         return new JsonResponse([
             'this_url' => $this->generateUrl(
-                'view_user_account_index_index',
+                'view_user_account',
                 [],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),

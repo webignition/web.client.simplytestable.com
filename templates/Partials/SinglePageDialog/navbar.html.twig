@@ -3,8 +3,8 @@
 {% set username_parts = user.username|split('@') %}
 
 {% block items %}
-    <li class="text hidden-lg hidden-md hidden-sm {% if app.request.get('_route') == 'view_dashboard_index_index' %}active{% endif %}">
-        <a href="{{ path('view_dashboard_index_index') }}">
+    <li class="text hidden-lg hidden-md hidden-sm {% if app.request.get('_route') == 'view_dashboard' %}active{% endif %}">
+        <a href="{{ path('view_dashboard') }}">
             <i class="fa fa-tachometer"></i>
             {% if is_logged_in %}
                 Dashboard
@@ -26,24 +26,24 @@
 
     {% if is_logged_in %}
         <li class="user-actions text">
-            <a class="username" href="{{ path('view_user_account_index_index') }}">
+            <a class="username" href="{{ path('view_user_account') }}">
                 <i class="fa fa-user"></i> {{ username_parts[0] }}<span class="hidden-sm">@{{username_parts[1]}}</span>
             </a>
         </li>
         <li class="text">
-            <a class="username" href="{{ path('sign_out_submit') }}">
+            <a class="username" href="{{ path('action_user_sign_out') }}">
                 <i class="fa fa-sign-out"></i>
                 Sign out
             </a>
         </li>
     {% else %}
-        <li class="user-actions text {% if app.request.get('_route') == 'view_user_signin_index' %}active{% endif %}">
-            <a class="username" href="{{ path('view_user_signin_index') }}">
+        <li class="user-actions text {% if app.request.get('_route') == 'view_user_sign_in' %}active{% endif %}">
+            <a class="username" href="{{ path('view_user_sign_in') }}">
                 <i class="fa fa-sign-in"></i> Sign in
             </a>
         </li>
-        <li class="text {% if app.request.get('_route') == 'view_user_signup_index_index' %}active{% endif %}">
-            <a class="" href="{{ path('view_user_signup_index_index') }}">
+        <li class="text {% if app.request.get('_route') == 'view_user_sign_up_request' %}active{% endif %}">
+            <a class="" href="{{ path('view_user_sign_up_request') }}">
                 <i class="fa fa-user"></i> Create an account
             </a>
         </li>

@@ -23,8 +23,7 @@ use webignition\SimplyTestableUserModel\User;
 class AccountControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-account.html.twig';
-    const ROUTE_NAME = 'view_user_account_index_index';
-
+    const ROUTE_NAME = 'view_user_account';
     const USER_EMAIL = 'user@example.com';
 
     /**
@@ -93,8 +92,7 @@ class AccountControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::create(200),
                 ],
-                'expectedRedirectUrl' =>
-                    '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D'
+                'expectedRedirectUrl' => '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50In0%3D',
             ],
         ];
     }

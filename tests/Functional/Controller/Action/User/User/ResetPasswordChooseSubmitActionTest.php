@@ -29,7 +29,7 @@ class ResetPasswordChooseSubmitActionTest extends AbstractUserControllerTest
 
         $this->client->request(
             'POST',
-            $this->router->generate('reset_password_choose_submit'),
+            $this->router->generate('action_user_reset_password_choose'),
             [
                 'email' => self::USER_EMAIL,
                 'token' => self::TOKEN,

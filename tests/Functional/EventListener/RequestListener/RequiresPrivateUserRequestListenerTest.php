@@ -73,8 +73,7 @@ class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTes
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'expectedHasResponse' => true,
-                'expectedRedirectUrl' =>
-                    '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2luZGV4X2luZGV4In0%3D',
+                'expectedRedirectUrl' => '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50In0%3D',
             ],
             'private user' => [
                 'httpFixtures' => [

@@ -9,7 +9,7 @@
 
     {% include 'Partials/User/SignUp/Confirm/Alert/alerts.html.twig' %}
 
-    <form role="form" method="post" action="{{ path('sign_up_confirm_submit', { 'email': email}) }}" novalidate>
+    <form role="form" method="post" action="{{ path('action_user_sign_up_confirm', { 'email': email}) }}" novalidate>
         <div class="form-group-collection form-group-collection-single">
             <label for="token">Activation code</label>
             <div class="input-group input-group-larger">
@@ -29,7 +29,7 @@
     </form>
 
     <div class="additional input-additional ">
-        <form role="form" method="post" action="{{ path('action_signup_user_confirm_resend', { 'email': email}) }}">
+        <form role="form" method="post" action="{{ path('action_sign_up_user_confirm_resend', { 'email': email}) }}">
             <button class="btn btn-default" type="submit">I can't find my activation code, email it again!</button>
         </form>
     </div>

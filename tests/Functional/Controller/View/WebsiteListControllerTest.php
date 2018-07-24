@@ -14,7 +14,7 @@ use App\Tests\Services\HttpMockHandler;
 
 class WebsiteListControllerTest extends AbstractControllerTest
 {
-    const ROUTE_NAME = 'view_test_history_websitelist_index';
+    const ROUTE_NAME = 'view_website_list';
 
     /**
      * @var HttpMockHandler

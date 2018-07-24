@@ -23,7 +23,7 @@ use webignition\SimplyTestableUserModel\User;
 class RejectedControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-results-rejected.html.twig';
-    const ROUTE_NAME = 'view_test_results_rejected_index_index';
+    const ROUTE_NAME = 'view_test_results_rejected';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';

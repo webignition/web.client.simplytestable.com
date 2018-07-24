@@ -20,7 +20,7 @@ use webignition\SimplyTestableUserModel\User;
 class CardControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-account-card.html.twig';
-    const ROUTE_NAME = 'view_user_account_card_index';
+    const ROUTE_NAME = 'view_user_account_card';
     const USER_EMAIL = 'user@example.com';
 
     /**
@@ -84,8 +84,7 @@ class CardControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse()
                 ],
-                'expectedRedirectUrl' =>
-                    '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2NhcmRfaW5kZXgifQ%3D%3D'
+                'expectedRedirectUrl' => '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X2NhcmQifQ%3D%3D',
             ],
         ];
     }

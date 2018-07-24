@@ -61,7 +61,7 @@ class StartControllerTest extends AbstractControllerTest
     {
         $this->client->request(
             'GET',
-            $this->router->generate('test_start')
+            $this->router->generate('action_test_start')
         );
 
         /* @var RedirectResponse $response */
