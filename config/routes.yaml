@@ -308,7 +308,7 @@ test_task_ids_unretrieved:
     requirements:
         website: '.+'
 
-test_start:
+action_test_start:
     path: /test/start/
     defaults: { _controller: App\Controller\Action\Test\StartController::startNewAction }
 
