@@ -282,7 +282,7 @@ view_test_results_bytasktype_index_default:
        website: '.+'
        test_id: '\d+'
 
-view_test_results_bytasktype_index:
+view_test_results_by_task_type_filter:
     path: /{website}/{test_id}/results/{task_type}/{filter}/
     defaults: { _controller: App\Controller\View\Test\Results\ByTaskTypeController::indexAction }
     requirements:

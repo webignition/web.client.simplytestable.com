@@ -44,12 +44,12 @@
             <div class="col-lg-12">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="{{ filter == 'by-error' ? 'active' : '' }}">
-                        <a href="{{ path('view_test_results_bytasktype_index', {'website': website.raw, 'test_id': test.testId, 'task_type': task_type|lower|replace({' ':'+'}), 'filter': 'by-error'}) }}">
+                        <a href="{{ path('view_test_results_by_task_type_filter', {'website': website.raw, 'test_id': test.testId, 'task_type': task_type|lower|replace({' ':'+'}), 'filter': 'by-error'}) }}">
                             By error ({% include 'Partials/Generic/single-plural-item.html.twig' with {'value': error_task_maps.uniqueErrorCount, 'singular': 'unique error'} %})
                         </a>
                     </li>
                     <li class="{{ filter == 'by-page' ? 'active' : '' }}">
-                        <a href="{{ path('view_test_results_bytasktype_index', {'website': website.raw, 'test_id': test.testId, 'task_type': task_type|lower|replace({' ':'+'}), 'filter': 'by-page'}) }}">
+                        <a href="{{ path('view_test_results_by_task_type_filter', {'website': website.raw, 'test_id': test.testId, 'task_type': task_type|lower|replace({' ':'+'}), 'filter': 'by-page'}) }}">
                             By page ({% include 'Partials/Generic/single-plural-item.html.twig' with {'value': tasks|length, 'singular': 'page'} %})
                         </a>
                     </li>
