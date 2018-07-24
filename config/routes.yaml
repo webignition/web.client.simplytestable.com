@@ -275,7 +275,7 @@ task_results_retrieve:
     requirements:
        website: '.+'
 
-view_test_results_bytasktype_index_default:
+view_test_results_by_task_type:
     path: /{website}/{test_id}/results/{task_type}/
     defaults: { _controller: App\Controller\View\Test\Results\ByTaskTypeController::indexAction }
     requirements:

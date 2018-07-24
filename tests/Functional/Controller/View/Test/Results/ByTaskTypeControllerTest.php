@@ -24,7 +24,7 @@ use webignition\SimplyTestableUserModel\User;
 class ByTaskTypeControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-results-by-task-type.html.twig';
-    const ROUTE_NAME_DEFAULT = 'view_test_results_bytasktype_index_default';
+    const ROUTE_NAME_DEFAULT = 'view_test_results_by_task_type';
     const ROUTE_NAME_FILTER = 'view_test_results_by_task_type_filter';
 
     const WEBSITE = 'http://example.com/';
