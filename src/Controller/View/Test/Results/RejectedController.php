@@ -133,7 +133,7 @@ class RejectedController extends AbstractRequiresValidOwnerController implements
 
         if ($test->getWebsite() != $website) {
             return new RedirectResponse($this->generateUrl(
-                'redirect_test',
+                'redirect_website_test',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id

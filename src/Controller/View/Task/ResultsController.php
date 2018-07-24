@@ -138,7 +138,7 @@ class ResultsController extends AbstractRequiresValidOwnerController implements 
 
         if (empty($task)) {
             return new RedirectResponse($this->generateUrl(
-                'redirect_test',
+                'redirect_website_test',
                 [
                     'website' => $website,
                     'test_id' => $test_id
@@ -151,7 +151,7 @@ class ResultsController extends AbstractRequiresValidOwnerController implements 
 
         if (!$taskHasErrorsOrWarnings || $this->taskService->isIncomplete($task)) {
             return new RedirectResponse($this->generateUrl(
-                'redirect_test',
+                'redirect_website_test',
                 [
                     'website' => $website,
                     'test_id' => $test_id

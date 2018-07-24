@@ -57,7 +57,7 @@ class ByUrlController extends AbstractController
 
         if (empty($task)) {
             return new RedirectResponse($this->generateUrl(
-                'redirect_test',
+                'redirect_website_test',
                 [
                     'website' => $website,
                     'test_id' => $test_id

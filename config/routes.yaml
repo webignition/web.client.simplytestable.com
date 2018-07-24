@@ -324,7 +324,7 @@ action_test_cancel_crawl:
     requirements:
         website: '.+'
 
-redirect_test:
+redirect_website_test:
     path: /{website}/{test_id}/
     defaults: { _controller: App\Controller\RedirectController::testAction }
     requirements:
