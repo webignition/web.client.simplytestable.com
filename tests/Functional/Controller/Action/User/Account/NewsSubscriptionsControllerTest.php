@@ -112,7 +112,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         $response = $this->newsSubscriptionsController->updateAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertTrue($response->isRedirect('/account/#news-subscriptions'));
+        $this->assertEquals('/account/#news-subscriptions', $response->getTargetUrl());
 
         $this->assertEquals(
             $expectedFlashBagValues,

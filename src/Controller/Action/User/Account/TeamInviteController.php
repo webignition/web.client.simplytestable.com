@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class TeamInviteController extends AbstractUserAccountController
+class TeamInviteController extends AbstractUserAccountTeamController
 {
     const FLASH_BAG_KEY_STATUS = 'status';
     const FLASH_BAG_KEY_ERROR = 'error';
@@ -107,7 +107,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team'));
+        $redirectResponse = $this->createUserAccountTeamRedirectResponse();
 
         $invitee = trim($requestData->get('email'));
 
@@ -242,7 +242,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $requestData = $request->request;
 
-        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team'));
+        $redirectResponse = $this->createUserAccountTeamRedirectResponse();
 
         $response = trim($requestData->get('response'));
 
@@ -288,7 +288,7 @@ class TeamInviteController extends AbstractUserAccountController
             'user' => $invitee
         ]));
 
-        return new RedirectResponse($this->generateUrl('view_user_account_team'));
+        return $this->createUserAccountTeamRedirectResponse();
     }
 
     /**
@@ -349,7 +349,7 @@ class TeamInviteController extends AbstractUserAccountController
 
         $this->session->getFlashBag()->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
 
-        return new RedirectResponse($this->generateUrl('view_user_account_team'));
+        return $this->createUserAccountTeamRedirectResponse();
     }
 
     /**
