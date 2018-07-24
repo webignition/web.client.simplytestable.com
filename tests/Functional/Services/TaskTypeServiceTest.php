@@ -68,10 +68,11 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->taskTypeService = self::$container->get(TaskTypeService::class);
-
-        $allTaskTypes = array_merge($this->taskTypeService->get(), $this->testEarlyAccessTaskType);
-        $this->taskTypeService->setTaskTypes($allTaskTypes);
+        $this->taskTypeService = new TaskTypeService(
+            self::$container->get(UserManager::class),
+            array_merge(self::$container->getParameter('task_types'), $this->testEarlyAccessTaskType)
+        );
+        $this->taskTypeService->setEarlyAccessUsers(self::$container->getParameter('early_access_users'));
 
         $this->user = new User('user@example.com');
     }

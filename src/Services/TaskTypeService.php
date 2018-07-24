@@ -16,7 +16,7 @@ class TaskTypeService
     /**
      * @var string[]
      */
-    private $earlyAccessUsers;
+    private $earlyAccessUsers = [];
 
     /**
      * @var UserManager
@@ -25,17 +25,11 @@ class TaskTypeService
 
     /**
      * @param UserManager $userManager
-     */
-    public function __construct(UserManager $userManager)
-    {
-        $this->userManager = $userManager;
-    }
-
-    /**
      * @param array $taskTypes
      */
-    public function setTaskTypes($taskTypes)
+    public function __construct(UserManager $userManager, array $taskTypes)
     {
+        $this->userManager = $userManager;
         $this->taskTypes = $taskTypes;
     }
 

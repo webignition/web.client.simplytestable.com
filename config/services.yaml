@@ -95,8 +95,9 @@ services:
           introduction: '%mailchimp_introduction_list_id%'
 
     App\Services\TaskTypeService:
+      arguments:
+        $taskTypes: '%task_types%'
       calls:
-        - [setTaskTypes, ['%task_types%']]
         - [setEarlyAccessUsers, ['%early_access_users%']]
 
     App\Services\CouponService:
