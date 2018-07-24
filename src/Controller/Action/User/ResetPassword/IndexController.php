@@ -109,11 +109,11 @@ class IndexController extends AbstractController
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK
             );
 
-            return new RedirectResponse($this->generateUrl('view_user_resetpassword_index_index'));
+            return new RedirectResponse($this->generateUrl('view_user_resetpassword_request'));
         }
 
         $redirectResponse = new RedirectResponse($this->generateUrl(
-            'view_user_resetpassword_index_index',
+            'view_user_resetpassword_request',
             [
                 'email' => $email
             ]

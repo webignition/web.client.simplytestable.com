@@ -277,7 +277,7 @@ class UserController extends AbstractController
         $userExists = $this->userService->exists($email);
 
         if (!$this->isEmailValid($email) || empty($requestToken) || !$userExists) {
-            return new RedirectResponse($this->generateUrl('view_user_resetpassword_index_index'));
+            return new RedirectResponse($this->generateUrl('view_user_resetpassword_request'));
         }
 
         $failureRedirectResponse = $this->createPasswordChooseRedirectResponse([
