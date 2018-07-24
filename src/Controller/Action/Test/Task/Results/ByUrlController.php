@@ -66,7 +66,7 @@ class ByUrlController extends AbstractController
         }
 
         return new RedirectResponse($this->generateUrl(
-            'view_test_task_results_index_index',
+            'view_task_results',
             [
                 'website' => $website,
                 'test_id' => $test_id,

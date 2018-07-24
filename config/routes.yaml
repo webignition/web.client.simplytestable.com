@@ -175,7 +175,7 @@ view_task_results_verbose:
         test_id: '\d+'
         task_id: '\d+'
 
-view_test_task_results_index_index:
+view_task_results:
     path: /{website}/{test_id}/{task_id}/results/{trailingSlash}
     defaults: { _controller: App\Controller\View\Task\ResultsController::indexAction, trailingSlash : "/" }
     requirements:
