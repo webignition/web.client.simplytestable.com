@@ -1,11 +1,11 @@
-{% set disable = (is_disabled) and (test_options['link-integrity'] is not defined or not test_options['link-integrity']) %}
+{% set disable = not is_available or ((is_disabled) and (test_options['link-integrity'] is not defined or not test_options['link-integrity'])) %}
 
 <div class="test-options-set task-type-option {% if disable %}test-options-set-disabled{% endif %} {% if not is_available %}not-available modal-button{% endif %}"
      id="link-integrity-options"
      data-task-type="link-integrity"
 >
     <label class="checkbox {% if disable %}disabled{% endif %}">
-        <input {% if (is_disabled) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="link-integrity" {% if (test_options['link-integrity'] is defined and test_options['link-integrity'] == 1) %} checked {% endif %} />
+        <input {% if (disable) %}disabled{% endif %} class="task-type" type="checkbox" value="1" name="link-integrity" {% if (test_options['link-integrity'] is defined and test_options['link-integrity'] == 1) %} checked {% endif %} />
 
         <span class="task-type-name">
             Link integrity
