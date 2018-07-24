@@ -150,7 +150,7 @@ view_test_history_page1:
     path: /history/
     defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction, page_number: 1 }
 
-app_history:
+view_test_history:
     path: /history/{page_number}/
     defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction }
     requirements:

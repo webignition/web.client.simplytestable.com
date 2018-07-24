@@ -113,7 +113,7 @@ class HistoryController extends AbstractBaseViewController implements RequiresVa
 
         if ($isPageNumberAboveRange) {
             return new RedirectResponse($this->generateUrl(
-                'app_history',
+                'view_test_history',
                 [
                     'page_number' => $testList->getPageCount(),
                     'filter' => $filter,
