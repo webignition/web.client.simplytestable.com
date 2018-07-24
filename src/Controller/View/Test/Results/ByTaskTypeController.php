@@ -164,7 +164,7 @@ class ByTaskTypeController extends AbstractResultsController
 
         if ($this->requiresPreparation($remoteTest, $test)) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_results_preparing_index_index',
+                'view_test_results_preparing',
                 [
                     'website' => $website,
                     'test_id' => $test_id,
