@@ -251,7 +251,7 @@ view_test_results_failed_no_urls_detected:
     requirements:
        website: '.+'
 
-view_test_results_rejected_index_index:
+view_test_results_rejected:
     path: /{website}/{test_id}/results/rejected/
     defaults: { _controller: App\Controller\View\Test\Results\RejectedController::indexAction }
     requirements:
