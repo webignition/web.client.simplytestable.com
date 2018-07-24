@@ -12,7 +12,9 @@
                             <input type="checkbox"
                                    value="1"
                                    name="{{ task_type_key }}"
-                                    {% if (test_options[task_type_key] is defined and test_options[task_type_key] == 1) %} checked {% endif %}>
+                                   {% if (test_options[task_type_key] is defined and test_options[task_type_key] == 1) %} checked {% endif %}
+                                   {% if not is_available %}disabled{% endif %}
+                            >
                             <span class="name">
                                 {{ task_type_details.name|replace({'JS': 'JavaScript'}) }}
                                 {% if not is_available %}
