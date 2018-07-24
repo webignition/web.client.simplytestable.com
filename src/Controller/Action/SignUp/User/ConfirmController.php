@@ -96,7 +96,7 @@ class ConfirmController extends AbstractController
     public function resendAction($email)
     {
         $redirectResponse = new RedirectResponse($this->generateUrl(
-            'view_user_sign_up_confirm_index',
+            'view_user_sign_up_confirm',
             [
                 'email' => $email
             ]
@@ -168,7 +168,7 @@ class ConfirmController extends AbstractController
         $messageProperties = $this->mailConfiguration->getMessageProperties('user_creation_confirmation');
 
         $confirmationUrl = $this->generateUrl(
-            'view_user_sign_up_confirm_index',
+            'view_user_sign_up_confirm',
             [
                 'email' => $email,
                 'token' => $token,

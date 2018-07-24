@@ -42,7 +42,7 @@ action_user_sign_up_request:
     path: /signup/submit/
     defaults: { _controller: App\Controller\Action\User\UserController::signUpSubmitAction }
 
-view_user_sign_up_confirm_index:
+view_user_sign_up_confirm:
     path: /signup/confirm/{email}/
     defaults: { _controller: App\Controller\View\User\SignUp\ConfirmController::indexAction }
 
