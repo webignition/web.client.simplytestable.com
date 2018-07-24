@@ -154,7 +154,7 @@ class TaskControllerTest extends AbstractControllerTest
         return [
             'idCollectionAction' => [
                 'method' => 'GET',
-                'routeName' => 'app_task_ids',
+                'routeName' => 'test_task_ids',
                 'routeParameters' => [
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,

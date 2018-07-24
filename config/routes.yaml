@@ -296,7 +296,7 @@ view_partials_test_task_list:
         website: '.+'
         test_id: '\d+'
 
-app_task_ids:
+test_task_ids:
     path: /{website}/{test_id}/tasks/ids/
     defaults: { _controller: App\Controller\TaskController::idCollectionAction, _format: json }
     requirements:
