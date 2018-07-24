@@ -119,7 +119,7 @@ class PreparingController extends AbstractBaseViewController implements Requires
 
         if (!$this->testService->isFinished($test)) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_progress_index_index',
+                'view_test_progress',
                 [
                     'website' => $website,
                     'test_id' => $test_id,

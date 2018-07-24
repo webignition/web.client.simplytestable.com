@@ -73,7 +73,7 @@ abstract class AbstractRequiresValidOwnerController extends AbstractBaseViewCont
         }
 
         $redirectParameters = json_encode([
-            'route' => 'view_test_progress_index_index',
+            'route' => 'view_test_progress',
             'parameters' => [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')

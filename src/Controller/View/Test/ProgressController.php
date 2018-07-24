@@ -150,7 +150,7 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
         if ($testWebsite !== $website) {
             return $this->createRedirectResponse(
                 $request,
-                'view_test_progress_index_index',
+                'view_test_progress',
                 [
                     'website' => $testWebsite,
                     'test_id' => $test_id
@@ -214,7 +214,7 @@ class ProgressController extends AbstractRequiresValidOwnerController implements
             $viewData = array_merge($commonViewData, [
                 'remote_test' => $remoteTest->__toArray(),
                 'this_url' => $this->generateUrl(
-                    'view_test_progress_index_index',
+                    'view_test_progress',
                     [
                         'website' => $testWebsite,
                         'test_id' => $test_id

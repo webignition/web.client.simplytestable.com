@@ -53,7 +53,7 @@ abstract class AbstractResultsController extends AbstractRequiresValidOwnerContr
     public function getNotFinishedTestResponse(RouterInterface $router, Request $request)
     {
         return new RedirectResponse($router->generate(
-            'view_test_progress_index_index',
+            'view_test_progress',
             [
                 'website' => $request->attributes->get('website'),
                 'test_id' => $request->attributes->get('test_id')

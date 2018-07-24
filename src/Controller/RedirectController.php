@@ -133,7 +133,7 @@ class RedirectController extends AbstractController
 
             $routeName = in_array($test->getState(), $this->testFinishedStates)
                 ? 'view_test_results_index_index'
-                : 'view_test_progress_index_index';
+                : 'view_test_progress';
 
             return new RedirectResponse($this->generateUrl(
                 $routeName,

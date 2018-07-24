@@ -5,7 +5,7 @@
 {% set route_parameters = {website: website.raw, test_id: test.testId} %}
 
 {% block body_class %} {{ parent() }} full-width test-progress job-{{ remote_test.state }} {% endblock %}
-{% block body_attrs %}data-summary-url="{{ path('view_test_progress_index_index', route_parameters) }}"{% endblock %}
+{% block body_attrs %}data-summary-url="{{ path('view_test_progress', route_parameters) }}"{% endblock %}
 
 {% block body %}
     {{ parent() }}

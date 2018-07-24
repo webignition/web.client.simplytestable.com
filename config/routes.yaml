@@ -199,7 +199,7 @@ redirect_task:
         test_id: '\d+'
         task_id: '\d+'
 
-view_test_progress_index_index:
+view_test_progress:
     path: /{website}/{test_id}/progress/
     defaults: { _controller: App\Controller\View\Test\ProgressController::indexAction }
     requirements:

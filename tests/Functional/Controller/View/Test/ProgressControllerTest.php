@@ -22,7 +22,7 @@ use webignition\SimplyTestableUserModel\User;
 class ProgressControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-progress.html.twig';
-    const ROUTE_NAME = 'view_test_progress_index_index';
+    const ROUTE_NAME = 'view_test_progress';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';

@@ -143,7 +143,7 @@ class RejectedController extends AbstractRequiresValidOwnerController implements
 
         if (Test::STATE_REJECTED !== $test->getState()) {
             return new RedirectResponse($this->generateUrl(
-                'view_test_progress_index_index',
+                'view_test_progress',
                 [
                     'website' => $website,
                     'test_id' => $test_id
