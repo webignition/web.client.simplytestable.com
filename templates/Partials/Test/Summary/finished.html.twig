@@ -22,7 +22,7 @@
             test_id: test.test.testid
         } %}
 
-        {% set status_url = path('view_test_results_preparingstats_index', route_parameters) %}
+        {% set status_url = path('view_test_results_preparing_stats', route_parameters) %}
         {% set unretrieved_task_ids_url = path('app_unretrieved_task_ids', route_parameters|merge({limit: 100})) %}
         {% set retrieve_tasks_url = path('task_results_retrieve', route_parameters) %}
         {% set summary_url = path('view_partials_test_finished_summary', route_parameters) %}

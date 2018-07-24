@@ -263,7 +263,7 @@ view_test_results_preparing:
     requirements:
        website: '.+'
 
-view_test_results_preparingstats_index:
+view_test_results_preparing_stats:
     path: /{website}/{test_id}/results/preparing/stats/
     defaults: { _controller: App\Controller\View\Test\Results\PreparingStatsController::indexAction, _format: json }
     requirements:
