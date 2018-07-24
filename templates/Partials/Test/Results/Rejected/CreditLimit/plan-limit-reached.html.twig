@@ -43,7 +43,7 @@
     </p>
 
     <div class="cta">
-        <form method="post" action="{{ path('user_account_plan_subscribe') }}">
+        <form method="post" action="{{ path('action_user_account_plan_subscribe') }}">
             <input type="hidden" name="plan" value="{{ next_plan.name|lower }}" />
             <button type="submit" class="btn btn-primary btn-lg">
                 <span class="primary">Upgrade to the {{ next_plan.name|lower }} plan now</span>

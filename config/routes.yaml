@@ -134,7 +134,7 @@ action_user_account_card_associate:
     path: /account/card/{stripe_card_token}/associate/
     defaults: { _controller: App\Controller\Action\User\Account\CardController::associateAction }
 
-user_account_plan_subscribe:
+action_user_account_plan_subscribe:
     path: /account/plan/subscribe/
     defaults: { _controller: App\Controller\Action\User\Account\PlanController::subscribeAction }
 
