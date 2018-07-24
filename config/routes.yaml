@@ -58,7 +58,7 @@ action_sign_up_team_invite_accept:
     path: /signup/invite/{token}/accept/
     defaults: { _controller: App\Controller\Action\SignUp\Team\InviteController::acceptAction }
 
-action_signup_user_confirm_resend:
+action_sign_up_user_confirm_resend:
     path: /signup/confirm/{email}/resend/
     defaults: { _controller: App\Controller\Action\SignUp\User\ConfirmController::resendAction }
 
