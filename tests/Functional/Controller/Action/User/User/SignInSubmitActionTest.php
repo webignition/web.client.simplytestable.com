@@ -37,7 +37,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
 
         $this->client->request(
             'POST',
-            $this->router->generate('sign_in_submit'),
+            $this->router->generate('action_user_sign_in_submit'),
             [
                 'email' => self::EMAIL,
                 'password' => 'foo',
