@@ -99,7 +99,7 @@ class RedirectControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('app_website', [
+            $this->router->generate('redirect_website', [
                 'website' => 'http://example.com/',
             ])
         );

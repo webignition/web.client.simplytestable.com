@@ -330,7 +330,7 @@ redirect_website_test:
     requirements:
         website: '.+'
 
-app_website:
+redirect_website:
     path: /{website}/
     defaults: { _controller: App\Controller\RedirectController::testAction }
     requirements:

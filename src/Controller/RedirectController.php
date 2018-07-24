@@ -124,7 +124,7 @@ class RedirectController extends AbstractController
                 );
 
                 return new RedirectResponse($this->generateUrl(
-                    'app_website',
+                    'redirect_website',
                     [
                         'website' => $website
                     ]
