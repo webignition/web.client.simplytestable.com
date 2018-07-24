@@ -598,9 +598,6 @@ class UserController extends AbstractController
      */
     private function createPasswordChooseRedirectResponse(array $routeParameters)
     {
-        return new RedirectResponse($this->generateUrl(
-            'view_user_resetpassword_choose_index',
-            $routeParameters
-        ));
+        return new RedirectResponse($this->generateUrl('view_user_reset_password_choose', $routeParameters));
     }
 }

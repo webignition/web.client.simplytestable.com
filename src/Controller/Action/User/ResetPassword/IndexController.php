@@ -197,7 +197,7 @@ class IndexController extends AbstractController
         $messageProperties = $this->mailConfiguration->getMessageProperties('user_reset_password');
 
         $confirmationUrl = $this->generateUrl(
-            'view_user_resetpassword_choose_index',
+            'view_user_reset_password_choose',
             [
                 'email' => $email,
                 'token' => $token
