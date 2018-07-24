@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class TeamController extends AbstractUserAccountController
+class TeamController extends AbstractUserAccountTeamController
 {
     const FLASH_BAG_CREATE_ERROR_KEY = 'team_create_error';
     const FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK = 'blank-name';
@@ -53,7 +53,7 @@ class TeamController extends AbstractUserAccountController
             return $this->response;
         }
 
-        $redirectResponse = $this->createRedirectResponse();
+        $redirectResponse = $this->createUserAccountTeamRedirectResponse();
         $requestData = $request->request;
         $name = trim($requestData->get('name'));
 
@@ -91,7 +91,7 @@ class TeamController extends AbstractUserAccountController
 
         $this->teamService->removeFromTeam($member);
 
-        return $this->createRedirectResponse();
+        return $this->createUserAccountTeamRedirectResponse();
     }
 
     /**
@@ -109,14 +109,6 @@ class TeamController extends AbstractUserAccountController
 
         $this->teamService->leave();
 
-        return $this->createRedirectResponse();
-    }
-
-    /**
-     * @return RedirectResponse
-     */
-    private function createRedirectResponse()
-    {
-        return new RedirectResponse($this->generateUrl('view_user_account_team'));
+        return $this->createUserAccountTeamRedirectResponse();
     }
 }
