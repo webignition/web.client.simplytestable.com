@@ -53,10 +53,8 @@ class TeamController extends AbstractUserAccountController
             return $this->response;
         }
 
+        $redirectResponse = $this->createRedirectResponse();
         $requestData = $request->request;
-
-        $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_team'));
-
         $name = trim($requestData->get('name'));
 
         if (empty($name)) {
@@ -93,7 +91,7 @@ class TeamController extends AbstractUserAccountController
 
         $this->teamService->removeFromTeam($member);
 
-        return new RedirectResponse($this->generateUrl('view_user_account_team'));
+        return $this->createRedirectResponse();
     }
 
     /**
@@ -111,6 +109,14 @@ class TeamController extends AbstractUserAccountController
 
         $this->teamService->leave();
 
+        return $this->createRedirectResponse();
+    }
+
+    /**
+     * @return RedirectResponse
+     */
+    private function createRedirectResponse()
+    {
         return new RedirectResponse($this->generateUrl('view_user_account_team'));
     }
 }
