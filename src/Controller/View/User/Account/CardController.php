@@ -67,7 +67,7 @@ class CardController extends AbstractUserAccountController
      */
     protected function getUserSignInRedirectResponseRoute()
     {
-        return 'view_user_account_card_index';
+        return 'view_user_account_card';
     }
 
     /**

@@ -1,5 +1,5 @@
 {% set is_account_main = app.request.attributes.get('_route') == 'view_user_account' %}
-{% set is_account_card = app.request.attributes.get('_route') == 'view_user_account_card_index' %}
+{% set is_account_card = app.request.attributes.get('_route') == 'view_user_account_card' %}
 {% set is_account_team = app.request.attributes.get('_route') == 'view_user_account_team_index_index' %}
 {% set is_account_plan = app.request.attributes.get('_route') == 'view_user_account_plan_index' %}
 
@@ -57,9 +57,9 @@
                 <ul class="nav">
                     <li class="{{ is_account_card ? 'active' : ''}}">
                         {% if user_summary.stripeCustomer.hasActiveCard %}
-                            <a href="{{ path('view_user_account_card_index') }}">Change/update card</a>
+                            <a href="{{ path('view_user_account_card') }}">Change/update card</a>
                         {% else %}
-                            <a href="{{ path('view_user_account_card_index') }}">Add card</a>
+                            <a href="{{ path('view_user_account_card') }}">Add card</a>
                         {% endif %}
                     </li>
                     {% if stripe_event_data['invoice'] is defined %}

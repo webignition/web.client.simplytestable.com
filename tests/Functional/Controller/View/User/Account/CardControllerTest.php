@@ -20,7 +20,7 @@ use webignition\SimplyTestableUserModel\User;
 class CardControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'user-account-card.html.twig';
-    const ROUTE_NAME = 'view_user_account_card_index';
+    const ROUTE_NAME = 'view_user_account_card';
     const USER_EMAIL = 'user@example.com';
 
     /**

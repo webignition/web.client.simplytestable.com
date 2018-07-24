@@ -327,7 +327,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                     'email' => self::EMAIL,
                     'password' => 'foo',
                     'redirect' => base64_encode(json_encode([
-                        'route' => 'view_user_account_card_index',
+                        'route' => 'view_user_account_card',
                     ])),
                 ]),
                 'expectedResponseHasUserCookie' => false,
