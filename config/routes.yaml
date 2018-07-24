@@ -28,7 +28,7 @@ action_user_reset_password_request:
 
 action_user_reset_password_choose:
     path: /reset-password/choose/submit/
-    defaults: { _controller: App\Controller\Action\User\UserController::resetPasswordChooseSubmitAction }
+    defaults: { _controller: App\Controller\Action\User\ResetPassword\IndexController::chooseAction }
 
 view_user_reset_password_choose:
     path: /reset-password/{email}/{token}/

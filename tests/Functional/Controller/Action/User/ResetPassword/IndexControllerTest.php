@@ -2,6 +2,8 @@
 
 namespace App\Tests\Functional\Controller\Action\User\ResetPassword;
 
+use App\Exception\InvalidCredentialsException;
+use App\Services\UserManager;
 use Psr\Http\Message\ResponseInterface;
 use App\Controller\Action\User\ResetPassword\IndexController;
 use App\Exception\CoreApplicationRequestException;
@@ -9,6 +11,7 @@ use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
@@ -21,7 +24,8 @@ class IndexControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'action_user_reset_password_request';
     const EMAIL = 'user@example.com';
-    const CONFIRMATION_TOKEN = 'confirmation-token-here';
+    const PASSWORD = 'password-value';
+    const CONFIRMATION_TOKEN = 'confirmation-token';
 
     /**
      * @var IndexController
@@ -339,5 +343,226 @@ class IndexControllerTest extends AbstractControllerTest
             ],
             $session->getFlashBag()->peekAll()
         );
+    }
+
+    public function testChooseActionPostRequest()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->client->request(
+            'POST',
+            $this->router->generate('action_user_reset_password_choose'),
+            [
+                'email' => self::EMAIL,
+                'token' => self::CONFIRMATION_TOKEN,
+                'password' => self::PASSWORD,
+            ]
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('/', $response->getTargetUrl());
+    }
+
+    /**
+     * @dataProvider chooseActionDataProvider
+     *
+     * @param array $httpFixtures
+     * @param Request $request
+     * @param string $expectedRedirectLocation
+     * @param array $expectedFlashBagValues
+     * @param bool $expectedResponseHasUserCookie
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidAdminCredentialsException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
+     */
+    public function testChooseAction(
+        array $httpFixtures,
+        Request $request,
+        $expectedRedirectLocation,
+        array $expectedFlashBagValues,
+        $expectedResponseHasUserCookie
+    ) {
+        $session = self::$container->get('session');
+
+        $this->httpMockHandler->appendFixtures($httpFixtures);
+
+        /* @var RedirectResponse $response */
+        $response = $this->indexController->chooseAction($request);
+
+        $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
+        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+
+        /* @var Cookie[] $responseCookies */
+        $responseCookies = $response->headers->getCookies();
+
+        if ($expectedResponseHasUserCookie) {
+            $this->assertCount(1, $responseCookies);
+
+            $responseCookie = $responseCookies[0];
+            $this->assertEquals(UserManager::USER_COOKIE_KEY, $responseCookie->getName());
+        } else {
+            $this->assertEmpty($responseCookies);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function chooseActionDataProvider()
+    {
+        return [
+            'empty email' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'request' => new Request([], [
+                    'email' => '',
+                    'token' => self::CONFIRMATION_TOKEN,
+                    'password' => self::PASSWORD,
+                ]),
+                'expectedRedirectLocation' => '/reset-password/',
+                'expectedFlashBagValues' => [],
+                'expectedResponseHasUserCookie' => false,
+            ],
+            'invalid email' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'request' => new Request([], [
+                    'email' => 'foo',
+                    'token' => self::CONFIRMATION_TOKEN,
+                    'password' => self::PASSWORD,
+                ]),
+                'expectedRedirectLocation' => '/reset-password/',
+                'expectedFlashBagValues' => [],
+                'expectedResponseHasUserCookie' => false,
+            ],
+            'empty token' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'request' => new Request([], [
+                    'email' => self::EMAIL,
+                    'token' => '',
+                    'password' => self::PASSWORD,
+                ]),
+                'expectedRedirectLocation' => '/reset-password/',
+                'expectedFlashBagValues' => [],
+                'expectedResponseHasUserCookie' => false,
+            ],
+            'invalid user' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createNotFoundResponse(),
+                ],
+                'request' => new Request([], [
+                    'email' => self::EMAIL,
+                    'token' => self::CONFIRMATION_TOKEN,
+                    'password' => self::PASSWORD,
+                ]),
+                'expectedRedirectLocation' => '/reset-password/',
+                'expectedFlashBagValues' => [],
+                'expectedResponseHasUserCookie' => false,
+            ],
+            'invalid token' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+                ],
+                'request' => new Request([], [
+                    'email' => self::EMAIL,
+                    'token' => 'foo',
+                    'password' => self::PASSWORD,
+                ]),
+                'expectedRedirectLocation' => '/reset-password/user@example.com/foo/?stay-signed-in=0',
+                'expectedFlashBagValues' => [
+                    IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
+                        IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID,
+                    ],
+                ],
+                'expectedResponseHasUserCookie' => false,
+            ],
+            'empty password' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+                ],
+                'request' => new Request([], [
+                    'email' => self::EMAIL,
+                    'token' => self::CONFIRMATION_TOKEN,
+                    'password' => '',
+                ]),
+                'expectedRedirectLocation' =>
+                    '/reset-password/user@example.com/confirmation-token/?stay-signed-in=0',
+                'expectedFlashBagValues' => [
+                    IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
+                        IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK,
+                    ],
+                ],
+                'expectedResponseHasUserCookie' => false,
+            ],
+            'failed; HTTP 503' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                    HttpResponseFactory::createServiceUnavailableResponse(),
+                ],
+                'request' => new Request([], [
+                    'email' => self::EMAIL,
+                    'token' => self::CONFIRMATION_TOKEN,
+                    'password' => self::PASSWORD,
+                ]),
+                'expectedRedirectLocation' =>
+                    '/reset-password/user@example.com/confirmation-token/?stay-signed-in=0',
+                'expectedFlashBagValues' => [
+                    IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
+                        IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY,
+                    ],
+                ],
+                'expectedResponseHasUserCookie' => false,
+            ],
+            'success, stay-signed-in=0' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'request' => new Request([], [
+                    'email' => self::EMAIL,
+                    'token' => self::CONFIRMATION_TOKEN,
+                    'password' => self::PASSWORD,
+                ]),
+                'expectedRedirectLocation' => '/',
+                'expectedFlashBagValues' => [],
+                'expectedResponseHasUserCookie' => false,
+            ],
+            'success, stay-signed-in=1' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'request' => new Request([], [
+                    'email' => self::EMAIL,
+                    'token' => self::CONFIRMATION_TOKEN,
+                    'password' => self::PASSWORD,
+                    'stay-signed-in' => 1,
+                ]),
+                'expectedRedirectLocation' => '/',
+                'expectedFlashBagValues' => [],
+                'expectedResponseHasUserCookie' => true,
+            ],
+        ];
     }
 }
