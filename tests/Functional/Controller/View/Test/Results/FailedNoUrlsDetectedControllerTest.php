@@ -19,7 +19,7 @@ use webignition\SimplyTestableUserModel\User;
 class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-results-failed-no-urls-detected.html.twig';
-    const ROUTE_NAME = 'view_test_results_failednourlsdetected_index_index';
+    const ROUTE_NAME = 'view_test_results_failed_no_urls_detected';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';

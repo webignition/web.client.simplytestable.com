@@ -245,7 +245,7 @@ action_test_retest:
     requirements:
        website: '.+'
 
-view_test_results_failednourlsdetected_index_index:
+view_test_results_failed_no_urls_detected:
     path: /{website}/{test_id}/results/failed/no-urls-detected/
     defaults: { _controller: App\Controller\View\Test\Results\FailedNoUrlsDetectedController::indexAction }
     requirements:
