@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Controller\View\User\ResetPassword;
 
-use App\Controller\Action\User\ResetPassword\ResetPasswordController as ResetPasswordActionController;
+use App\Controller\Action\User\ResetPasswordController as ResetPasswordActionController;
 use App\Controller\View\User\ResetPasswordController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
