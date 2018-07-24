@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Action\User\ResetPassword;
+namespace App\Controller\Action\User;
 
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\InvalidCredentialsException;
@@ -25,7 +25,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class IndexController extends AbstractController
+class ResetPasswordController extends AbstractController
 {
     const FLASH_BAG_REQUEST_ERROR_KEY = 'user_reset_password_error';
     const FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK = 'blank-email';

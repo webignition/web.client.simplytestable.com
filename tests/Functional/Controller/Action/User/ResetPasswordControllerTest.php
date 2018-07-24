@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Tests\Functional\Controller\Action\User\ResetPassword;
+namespace App\Tests\Functional\Controller\Action\User;
 
 use App\Exception\InvalidCredentialsException;
 use App\Services\UserManager;
 use Psr\Http\Message\ResponseInterface;
-use App\Controller\Action\User\ResetPassword\IndexController;
+use App\Controller\Action\User\ResetPasswordController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
@@ -20,7 +20,7 @@ use App\Tests\Services\HttpMockHandler;
 use App\Tests\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
-class IndexControllerTest extends AbstractControllerTest
+class ResetPasswordControllerTest extends AbstractControllerTest
 {
     const ROUTE_NAME = 'action_user_reset_password_request';
     const EMAIL = 'user@example.com';
@@ -28,9 +28,9 @@ class IndexControllerTest extends AbstractControllerTest
     const CONFIRMATION_TOKEN = 'confirmation-token';
 
     /**
-     * @var IndexController
+     * @var ResetPasswordController
      */
-    private $indexController;
+    private $resetPasswordController;
 
     /**
      * @var HttpMockHandler
@@ -44,7 +44,7 @@ class IndexControllerTest extends AbstractControllerTest
     {
         parent::setUp();
 
-        $this->indexController = self::$container->get(IndexController::class);
+        $this->resetPasswordController = self::$container->get(ResetPasswordController::class);
         $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
@@ -90,7 +90,7 @@ class IndexControllerTest extends AbstractControllerTest
         $session = self::$container->get('session');
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction($request);
+        $response = $this->resetPasswordController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -106,8 +106,8 @@ class IndexControllerTest extends AbstractControllerTest
             'empty email' => [
                 'request' => new Request(),
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
-                        IndexController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK,
+                    ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK,
                     ],
                 ],
                 'expectedRedirectUrl' => '/reset-password/',
@@ -117,8 +117,8 @@ class IndexControllerTest extends AbstractControllerTest
                     'email' => 'foo',
                 ]),
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
-                        IndexController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID,
+                    ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID,
                     ],
                 ],
                 'expectedRedirectUrl' => '/reset-password/?email=foo',
@@ -145,14 +145,14 @@ class IndexControllerTest extends AbstractControllerTest
         ]);
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction($request);
+        $response = $this->resetPasswordController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals(
             [
-                IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
-                    IndexController::FLASH_BAG_REQUEST_ERROR_MESSAGE_USER_INVALID,
+                ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
+                    ResetPasswordController::FLASH_BAG_REQUEST_ERROR_MESSAGE_USER_INVALID,
                 ],
             ],
             $session->getFlashBag()->peekAll()
@@ -179,14 +179,14 @@ class IndexControllerTest extends AbstractControllerTest
         ]);
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction($request);
+        $response = $this->resetPasswordController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals(
             [
-                IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
-                    IndexController::FLASH_BAG_REQUEST_ERROR_MESSAGE_INVALID_ADMIN_CREDENTIALS,
+                ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
+                    ResetPasswordController::FLASH_BAG_REQUEST_ERROR_MESSAGE_INVALID_ADMIN_CREDENTIALS,
                 ],
             ],
             $session->getFlashBag()->peekAll()
@@ -224,7 +224,7 @@ class IndexControllerTest extends AbstractControllerTest
         ]);
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction($request);
+        $response = $this->resetPasswordController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
@@ -245,32 +245,32 @@ class IndexControllerTest extends AbstractControllerTest
             'postmark not allowed to send to user email' => [
                 'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(405),
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
-                        IndexController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
+                    ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
                     ]
                 ],
             ],
             'postmark inactive recipient' => [
                 'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(406),
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
-                        IndexController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
+                    ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                     ]
                 ],
             ],
             'postmark invalid email' => [
                 'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(300),
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
-                        IndexController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL,
+                    ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL,
                     ]
                 ],
             ],
             'postmark unknown error' => [
                 'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(303),
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_REQUEST_ERROR_KEY => [
-                        IndexController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
+                    ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
                     ]
                 ],
             ],
@@ -288,7 +288,7 @@ class IndexControllerTest extends AbstractControllerTest
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $this->indexController->requestAction(new Request([], [
+        $this->resetPasswordController->requestAction(new Request([], [
             'email' => self::EMAIL,
         ]));
 
@@ -331,14 +331,14 @@ class IndexControllerTest extends AbstractControllerTest
         ]);
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->requestAction($request);
+        $response = $this->resetPasswordController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals(
             [
-                IndexController::FLASH_BAG_REQUEST_SUCCESS_KEY => [
-                    IndexController::FLASH_BAG_REQUEST_MESSAGE_SUCCESS,
+                ResetPasswordController::FLASH_BAG_REQUEST_SUCCESS_KEY => [
+                    ResetPasswordController::FLASH_BAG_REQUEST_MESSAGE_SUCCESS,
                 ]
             ],
             $session->getFlashBag()->peekAll()
@@ -396,7 +396,7 @@ class IndexControllerTest extends AbstractControllerTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var RedirectResponse $response */
-        $response = $this->indexController->chooseAction($request);
+        $response = $this->resetPasswordController->chooseAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
@@ -484,8 +484,8 @@ class IndexControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectLocation' => '/reset-password/user@example.com/foo/?stay-signed-in=0',
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
-                        IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID,
+                    ResetPasswordController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_TOKEN_INVALID,
                     ],
                 ],
                 'expectedResponseHasUserCookie' => false,
@@ -503,8 +503,8 @@ class IndexControllerTest extends AbstractControllerTest
                 'expectedRedirectLocation' =>
                     '/reset-password/user@example.com/confirmation-token/?stay-signed-in=0',
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
-                        IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK,
+                    ResetPasswordController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_PASSWORD_BLANK,
                     ],
                 ],
                 'expectedResponseHasUserCookie' => false,
@@ -526,8 +526,8 @@ class IndexControllerTest extends AbstractControllerTest
                 'expectedRedirectLocation' =>
                     '/reset-password/user@example.com/confirmation-token/?stay-signed-in=0',
                 'expectedFlashBagValues' => [
-                    IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
-                        IndexController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY,
+                    ResetPasswordController::FLASH_BAG_RESET_PASSWORD_ERROR_KEY => [
+                        ResetPasswordController::FLASH_BAG_RESET_PASSWORD_ERROR_MESSAGE_FAILED_READ_ONLY,
                     ],
                 ],
                 'expectedResponseHasUserCookie' => false,
