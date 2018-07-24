@@ -318,7 +318,7 @@ action_test_cancel:
     requirements:
         website: '.+'
 
-test_cancel_crawl:
+action_test_cancel_crawl:
     path: /test/{website}/{test_id}/cancel-crawl/
     defaults: { _controller: App\Controller\Action\Test\TestController::cancelCrawlAction }
     requirements:
