@@ -205,7 +205,7 @@ view_test_progress:
     requirements:
         website: '.+'
 
-view_test_results_index_index_verbose:
+view_test_results_verbose:
     path: /website/{website}/test_id/{test_id}/results/
     defaults: { _controller: App\Controller\View\Test\Results\ResultsController::indexAction }
     requirements:

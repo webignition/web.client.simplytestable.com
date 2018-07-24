@@ -25,8 +25,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'test-results.html.twig';
     const ROUTE_NAME = 'view_test_results_index_index';
-    const ROUTE_NAME_VERBOSE = 'view_test_results_index_index_verbose';
-
+    const ROUTE_NAME_VERBOSE = 'view_test_results_verbose';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
