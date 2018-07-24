@@ -2,12 +2,17 @@
 
 namespace App\Tests\Functional\Services;
 
+use App\Services\SystemUserService;
 use App\Services\TaskTypeService;
+use App\Services\UserManager;
 use App\Tests\Functional\AbstractBaseTestCase;
 use webignition\SimplyTestableUserModel\User;
 
 class TaskTypeServiceTest extends AbstractBaseTestCase
 {
+    const USER_EMAIL = 'user@example.com';
+    const EARLY_ACCESS_USER_EMAIL = 'early-access-user@example.com';
+
     /**
      * @var TaskTypeService
      */
@@ -69,7 +74,6 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
         $this->taskTypeService->setTaskTypes($allTaskTypes);
 
         $this->user = new User('user@example.com');
-        $this->taskTypeService->setUser($this->user);
     }
 
     public function testGet()
@@ -83,21 +87,13 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
     /**
      * @dataProvider getAvailableDataProvider
      *
-     * @param bool $isAuthenticated
-     * @param bool $isEarlyAccess
+     * @param User $user
      * @param array $expectedAvailableTaskTypes
      */
-    public function testGetAvailable($isAuthenticated, $isEarlyAccess, $expectedAvailableTaskTypes)
+    public function testGetAvailable(User $user, $expectedAvailableTaskTypes)
     {
-        if ($isAuthenticated) {
-            $this->taskTypeService->setUserIsAuthenticated();
-        }
-
-        if ($isEarlyAccess) {
-            $this->taskTypeService->setEarlyAccessUsers([
-                $this->user->getUsername(),
-            ]);
-        }
+        $userManager = self::$container->get(UserManager::class);
+        $userManager->setUser($user);
 
         $availableTaskTypes = $this->taskTypeService->getAvailable();
 
@@ -111,16 +107,14 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
     {
         return [
             'not authenticated, not early access' => [
-                'isAuthenticated' => false,
-                'isEarlyAccess' => false,
+                'user' => SystemUserService::getPublicUser(),
                 'expectedAvailableTaskTypes' => [
                     'html-validation' => $this->defaultTaskTypes['html-validation'],
                     'css-validation' => $this->defaultTaskTypes['css-validation'],
                 ],
             ],
             'authenticated, not early access' => [
-                'isAuthenticated' => true,
-                'isEarlyAccess' => false,
+                'user' => new User(self::USER_EMAIL),
                 'expectedAvailableTaskTypes' => [
                     'html-validation' => $this->defaultTaskTypes['html-validation'],
                     'css-validation' => $this->defaultTaskTypes['css-validation'],
@@ -128,18 +122,8 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
                     'link-integrity' => $this->defaultTaskTypes['link-integrity'],
                 ],
             ],
-            'not authenticated, early access' => [
-                'isAuthenticated' => false,
-                'isEarlyAccess' => true,
-                'expectedAvailableTaskTypes' => [
-                    'html-validation' => $this->defaultTaskTypes['html-validation'],
-                    'css-validation' => $this->defaultTaskTypes['css-validation'],
-                    'early-access-test' => $this->testEarlyAccessTaskType['early-access-test'],
-                ],
-            ],
             'authenticated, early access' => [
-                'isAuthenticated' => true,
-                'isEarlyAccess' => true,
+                'user' => new User(self::EARLY_ACCESS_USER_EMAIL),
                 'expectedAvailableTaskTypes' => [
                     'html-validation' => $this->defaultTaskTypes['html-validation'],
                     'css-validation' => $this->defaultTaskTypes['css-validation'],

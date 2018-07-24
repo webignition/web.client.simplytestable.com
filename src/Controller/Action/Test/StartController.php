@@ -11,8 +11,6 @@ use App\Exception\InvalidCredentialsException;
 use App\Model\TestOptions;
 use App\Services\Configuration\LinkIntegrityTestConfiguration;
 use App\Services\RemoteTestService;
-use App\Services\SystemUserService;
-use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\Configuration\TestOptionsConfiguration;
 use App\Services\UserManager;
@@ -42,11 +40,6 @@ class StartController extends AbstractController
     private $testOptionsRequestAdapterFactory;
 
     /**
-     * @var TaskTypeService
-     */
-    private $taskTypeService;
-
-    /**
      * @var UserManager
      */
     private $userManager;
@@ -70,7 +63,6 @@ class StartController extends AbstractController
      * @param RouterInterface $router
      * @param RemoteTestService $remoteTestService
      * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
-     * @param TaskTypeService $taskTypeService
      * @param UserManager $userManager
      * @param LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration
      * @param TestOptionsConfiguration $testOptionsConfiguration
@@ -80,7 +72,6 @@ class StartController extends AbstractController
         RouterInterface $router,
         RemoteTestService $remoteTestService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
-        TaskTypeService $taskTypeService,
         UserManager $userManager,
         LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration,
         TestOptionsConfiguration $testOptionsConfiguration,
@@ -90,7 +81,6 @@ class StartController extends AbstractController
 
         $this->remoteTestService = $remoteTestService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
-        $this->taskTypeService = $taskTypeService;
         $this->userManager = $userManager;
         $this->linkIntegrityTestConfiguration = $linkIntegrityTestConfiguration;
         $this->testOptionsConfiguration = $testOptionsConfiguration;
@@ -107,14 +97,6 @@ class StartController extends AbstractController
      */
     public function startNewAction(Request $request)
     {
-        $user = $this->userManager->getUser();
-
-        $this->taskTypeService->setUser($user);
-
-        if (!SystemUserService::isPublicUser($user)) {
-            $this->taskTypeService->setUserIsAuthenticated();
-        }
-
         $requestData = $request->request;
 
         if ($requestData->get(Task::TYPE_KEY_LINK_INTEGRITY)) {

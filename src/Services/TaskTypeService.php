@@ -1,7 +1,6 @@
 <?php
-namespace App\Services;
 
-use webignition\SimplyTestableUserModel\User;
+namespace App\Services;
 
 class TaskTypeService
 {
@@ -20,14 +19,17 @@ class TaskTypeService
     private $earlyAccessUsers;
 
     /**
-     * @var User
+     * @var UserManager
      */
-    private $user;
+    private $userManager;
 
     /**
-     * @var bool
+     * @param UserManager $userManager
      */
-    private $isUserAuthenticated = false;
+    public function __construct(UserManager $userManager)
+    {
+        $this->userManager = $userManager;
+    }
 
     /**
      * @param array $taskTypes
@@ -43,19 +45,6 @@ class TaskTypeService
     public function setEarlyAccessUsers($earlyAccessUsers)
     {
         $this->earlyAccessUsers = $earlyAccessUsers;
-    }
-
-    /**
-     * @param User $user
-     */
-    public function setUser(User $user)
-    {
-        $this->user = $user;
-    }
-
-    public function setUserIsAuthenticated()
-    {
-        $this->isUserAuthenticated = true;
     }
 
     /**
@@ -89,21 +78,27 @@ class TaskTypeService
      */
     private function isAllowedTaskType($taskTypeDetails)
     {
+        $user = $this->userManager->getUser();
+
         $isPublicAccessTaskType = $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_PUBLIC;
         $isAuthenticatedAccessTaskType = $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_AUTHENTICATED;
         $isEarlyAccessTaskType = $taskTypeDetails['access-level'] === self::ACCESS_LEVEL_EARLY_ACCESS;
-        $isEarlyAccessUser = in_array($this->user->getUsername(), $this->earlyAccessUsers);
+        $isEarlyAccessUser = in_array($user->getUsername(), $this->earlyAccessUsers);
+
+        $isUserAuthenticated = !SystemUserService::isPublicUser($user);
 
         if ($isPublicAccessTaskType) {
             return true;
         }
 
-        if ($isAuthenticatedAccessTaskType && $this->isUserAuthenticated) {
+        if ($isAuthenticatedAccessTaskType && $isUserAuthenticated) {
             return true;
         }
 
         if ($isEarlyAccessTaskType && $isEarlyAccessUser) {
             return true;
         }
+
+        return false;
     }
 }
