@@ -18,7 +18,7 @@ action_user_sign_in_submit:
     path: /signin/submit/
     defaults: { _controller: App\Controller\Action\User\UserController::signInSubmitAction }
 
-view_user_resetpassword_request:
+view_user_reset_password_request:
     path: /reset-password/
     defaults: { _controller: App\Controller\View\User\ResetPasswordController::requestAction }
 

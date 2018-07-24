@@ -22,7 +22,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
     const CHOOSE_INVALID_TOKEN_VIEW_NAME = 'user-reset-password-invalid-token.html.twig';
     const CHOOSE_ROUTE_NAME = 'view_user_reset_password_choose';
     const REQUEST_VIEW_NAME = 'user-reset-password.html.twig';
-    const REQUEST_ROUTE_NAME = 'view_user_resetpassword_request';
+    const REQUEST_ROUTE_NAME = 'view_user_reset_password_request';
 
     const USER_EMAIL = 'user@example.com';
     const TOKEN = 'token-value';
