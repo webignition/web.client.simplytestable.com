@@ -52,7 +52,7 @@ class InviteControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'POST',
-            $this->router->generate('action_signup_team_invite_accept', [
+            $this->router->generate('action_sign_up_team_invite_accept', [
                 'token' => self::TOKEN,
             ]),
             [

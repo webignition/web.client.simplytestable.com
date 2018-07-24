@@ -15,7 +15,7 @@
 
     {% include 'Partials/User/SignUp/Invite/Alert/before-form.html.twig' %}
 
-    <form role="form" method="post" action="{{ path('action_signup_team_invite_accept', {'token': token}) }}" novalidate>
+    <form role="form" method="post" action="{{ path('action_sign_up_team_invite_accept', {'token': token}) }}" novalidate>
         <div class="form-group-collection">
             <div class="form-group">
                 <label for="password">Choose your password to activate your account and join the team.</label>

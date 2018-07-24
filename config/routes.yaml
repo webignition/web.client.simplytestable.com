@@ -54,7 +54,7 @@ action_user_sign_up_confirm_submit:
     path: /signup/confirm/{email}/submit/
     defaults: { _controller: App\Controller\Action\User\UserController::signUpConfirmSubmitAction }
 
-action_signup_team_invite_accept:
+action_sign_up_team_invite_accept:
     path: /signup/invite/{token}/accept/
     defaults: { _controller: App\Controller\Action\SignUp\Team\InviteController::acceptAction }
 
