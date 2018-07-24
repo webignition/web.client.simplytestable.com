@@ -19,8 +19,8 @@
         <div id="bs-navbar" class="navbar-collapse collapse" aria-expanded="false" style="height: 1px;">
             <ul class="nav navbar-nav navbar-right">
                 {% block items %}
-                    <li class="text {% if app.request.get('_route') == 'view_dashboard_index_index' %}active{% endif %}">
-                        <a href="{{ path('view_dashboard_index_index') }}">
+                    <li class="text {% if app.request.get('_route') == 'view_dashboard' %}active{% endif %}">
+                        <a href="{{ path('view_dashboard') }}">
                             <i class="fa fa-tachometer"></i>
                             {% if is_logged_in %}
                                 Dashboard

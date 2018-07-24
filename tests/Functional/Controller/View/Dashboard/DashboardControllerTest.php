@@ -19,7 +19,7 @@ use webignition\SimplyTestableUserSerializer\UserSerializer;
 class DashboardControllerTest extends AbstractViewControllerTest
 {
     const VIEW_NAME = 'dashboard.html.twig';
-    const ROUTE_NAME = 'view_dashboard_index_index';
+    const ROUTE_NAME = 'view_dashboard';
     const USER_EMAIL = 'user@example.com';
 
     public function testIndexActionInvalidUserGetRequest()

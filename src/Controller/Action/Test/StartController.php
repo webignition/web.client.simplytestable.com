@@ -284,6 +284,6 @@ class StartController extends AbstractController
      */
     private function createStartErrorRedirectUrl(array $redirectRouteParameters)
     {
-        return $this->generateUrl('view_dashboard_index_index', $redirectRouteParameters);
+        return $this->generateUrl('view_dashboard', $redirectRouteParameters);
     }
 }

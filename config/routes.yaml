@@ -138,7 +138,7 @@ action_user_account_plan_subscribe:
     path: /account/plan/subscribe/
     defaults: { _controller: App\Controller\Action\User\Account\PlanController::subscribeAction }
 
-view_dashboard_index_index:
+view_dashboard:
     path: /
     defaults: { _controller: App\Controller\View\Dashboard\DashboardController::indexAction }
 

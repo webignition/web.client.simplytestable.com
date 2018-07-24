@@ -588,7 +588,7 @@ class UserController extends AbstractController
      */
     private function createDashboardRedirectResponse()
     {
-        return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+        return new RedirectResponse($this->generateUrl('view_dashboard'));
     }
 
     /**

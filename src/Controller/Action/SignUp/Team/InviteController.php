@@ -166,7 +166,7 @@ class InviteController extends AbstractController
 
         $staySignedIn = !empty(trim($requestData->get('stay-signed-in')));
 
-        $response = new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+        $response = new RedirectResponse($this->generateUrl('view_dashboard'));
 
         if ($staySignedIn) {
             $response->headers->setCookie($this->userManager->createUserCookie());

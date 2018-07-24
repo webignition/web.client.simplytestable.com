@@ -46,7 +46,7 @@ class ByUrlController extends AbstractController
         ]);
 
         if (empty($test)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
         }
 
         $task = $taskRepository->findOneBy([

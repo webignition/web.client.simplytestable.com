@@ -103,7 +103,7 @@ class RedirectController extends AbstractController
                 ));
             }
 
-            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
         }
 
         if ($hasWebsite && $hasTestId) {
@@ -144,7 +144,7 @@ class RedirectController extends AbstractController
             ));
         }
 
-        return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+        return new RedirectResponse($this->generateUrl('view_dashboard'));
     }
 
     /**

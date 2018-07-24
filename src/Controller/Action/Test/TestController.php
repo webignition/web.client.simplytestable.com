@@ -97,7 +97,7 @@ class TestController extends AbstractController
             $this->testService->get($website, $test_id);
             $this->remoteTestService->cancel();
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            return new RedirectResponse($this->generateUrl('view_dashboard_index_index'));
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_progress_index_index',

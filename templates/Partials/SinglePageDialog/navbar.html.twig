@@ -3,8 +3,8 @@
 {% set username_parts = user.username|split('@') %}
 
 {% block items %}
-    <li class="text hidden-lg hidden-md hidden-sm {% if app.request.get('_route') == 'view_dashboard_index_index' %}active{% endif %}">
-        <a href="{{ path('view_dashboard_index_index') }}">
+    <li class="text hidden-lg hidden-md hidden-sm {% if app.request.get('_route') == 'view_dashboard' %}active{% endif %}">
+        <a href="{{ path('view_dashboard') }}">
             <i class="fa fa-tachometer"></i>
             {% if is_logged_in %}
                 Dashboard
