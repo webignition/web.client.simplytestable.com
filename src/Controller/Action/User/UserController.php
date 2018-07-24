@@ -430,7 +430,7 @@ class UserController extends AbstractController
         $flashBag->set(self::FLASH_SIGN_UP_SUCCESS_KEY, self::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED);
 
         $successRedirectUrl = $this->generateUrl(
-            'view_user_signup_confirm_index',
+            'view_user_sign_up_confirm_index',
             [
                 'email' => $email,
             ]
@@ -460,7 +460,7 @@ class UserController extends AbstractController
         $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
 
         $confirmationUrl = $this->generateUrl(
-            'view_user_signup_confirm_index',
+            'view_user_sign_up_confirm_index',
             [
                 'email' => $email,
                 'token' => $token,
@@ -504,7 +504,7 @@ class UserController extends AbstractController
         $requestData = $request->request;
 
         $failureRedirect = new RedirectResponse($this->generateUrl(
-            'view_user_signup_confirm_index',
+            'view_user_sign_up_confirm_index',
             [
                 'email' => $email,
             ]
