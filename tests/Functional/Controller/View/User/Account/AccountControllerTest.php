@@ -92,7 +92,7 @@ class AccountControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::create(200),
                 ],
-                'expectedRedirectUrl' => '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50In0%3D'
+                'expectedRedirectUrl' => '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50In0%3D',
             ],
         ];
     }
