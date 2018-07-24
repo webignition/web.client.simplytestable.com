@@ -37,8 +37,8 @@
             </a>
         </li>
     {% else %}
-        <li class="user-actions text {% if app.request.get('_route') == 'view_user_signin_index' %}active{% endif %}">
-            <a class="username" href="{{ path('view_user_signin_index') }}">
+        <li class="user-actions text {% if app.request.get('_route') == 'view_user_sign_in' %}active{% endif %}">
+            <a class="username" href="{{ path('view_user_sign_in') }}">
                 <i class="fa fa-sign-in"></i> Sign in
             </a>
         </li>

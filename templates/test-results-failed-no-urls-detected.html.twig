@@ -20,7 +20,7 @@
     </p>
 
     <div class="cta">
-        <a class="btn btn-primary btn-lg" href="{{ path('view_user_signin_index', {'redirect' : redirect}) }}">
+        <a class="btn btn-primary btn-lg" href="{{ path('view_user_sign_in', {'redirect' : redirect}) }}">
             <span class="primary">Sign in</span>
             <span class="byline">To enable page discovery via crawling.</span>
             <i class="fa fa-sign-in"></i>
@@ -72,7 +72,7 @@
                     <li>
                         <p>
                             <a href="{{ path('view_user_signup_index_index', {'redirect': redirect}) }}">create an account</a>
-                            or <a href="{{ path('view_user_signin_index') }}">sign in</a>: tests
+                            or <a href="{{ path('view_user_sign_in') }}">sign in</a>: tests
                             started by registered users will crawl a site to find pages to test
                         </p>
                     </li>

@@ -10,7 +10,7 @@ action_user_sign_out:
     path: /signout/
     defaults: { _controller: App\Controller\Action\User\UserController::signOutSubmitAction }
 
-view_user_signin_index:
+view_user_sign_in:
     path: /signin/
     defaults: { _controller: App\Controller\View\User\SignInController::indexAction }
 

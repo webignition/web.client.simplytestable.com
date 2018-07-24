@@ -568,7 +568,7 @@ class UserController extends AbstractController
             $redirectParameters['redirect'] = $requestRedirectCookie;
         }
 
-        return new RedirectResponse($this->generateUrl('view_user_signin_index', $redirectParameters));
+        return new RedirectResponse($this->generateUrl('view_user_sign_in', $redirectParameters));
     }
 
     /**
