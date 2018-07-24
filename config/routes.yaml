@@ -191,7 +191,7 @@ view_partials_test_url_limit_notification:
         website: '.+'
         test_id: '\d+'
 
-app_task_results_redirector:
+redirect_task:
     path: /{website}/{test_id}/{task_id}/
     defaults: { _controller: App\Controller\RedirectController::taskAction }
     requirements:
