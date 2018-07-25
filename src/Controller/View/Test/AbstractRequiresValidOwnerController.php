@@ -3,19 +3,16 @@
 namespace App\Controller\View\Test;
 
 use App\Controller\AbstractBaseViewController;
-use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-abstract class AbstractRequiresValidOwnerController extends AbstractBaseViewController implements RequiresValidOwner
+abstract class AbstractRequiresValidOwnerController extends AbstractBaseViewController
 {
     /**
      * @var UrlViewValuesService
@@ -55,38 +52,5 @@ abstract class AbstractRequiresValidOwnerController extends AbstractBaseViewCont
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
         $this->session = $session;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInvalidOwnerResponse(Request $request)
-    {
-        if ($this->userManager->isLoggedIn()) {
-            return new RedirectResponse($this->generateUrl(
-                'view_test_unauthorised',
-                [
-                    'website' => $request->attributes->get('website'),
-                    'test_id' => $request->attributes->get('test_id')
-                ]
-            ));
-        }
-
-        $redirectParameters = json_encode([
-            'route' => 'view_test_progress',
-            'parameters' => [
-                'website' => $request->attributes->get('website'),
-                'test_id' => $request->attributes->get('test_id')
-            ]
-        ]);
-
-        $this->session->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
-
-        return new RedirectResponse($this->generateUrl(
-            'view_user_sign_in',
-            [
-                'redirect' => base64_encode($redirectParameters)
-            ]
-        ));
     }
 }
