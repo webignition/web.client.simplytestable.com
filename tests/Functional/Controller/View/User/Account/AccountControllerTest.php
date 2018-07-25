@@ -12,15 +12,13 @@ use App\Model\User\Summary as UserSummary;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\Model\Stripe\Invoice\Invoice;
 use webignition\SimplyTestableUserModel\User;
 
-class AccountControllerTest extends AbstractViewControllerTest
+class AccountControllerTest extends AbstractAccountControllerTest
 {
     const VIEW_NAME = 'user-account.html.twig';
     const ROUTE_NAME = 'view_user_account';
@@ -62,42 +60,23 @@ class AccountControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @dataProvider indexActionInvalidGetRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedRedirectUrl
-     */
-    public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
-    {
-        $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        $this->client->request(
-            'GET',
-            $this->router->generate(self::ROUTE_NAME)
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-    }
-
-    /**
      * @return array
      */
-    public function indexActionInvalidGetRequestDataProvider()
+    public function invalidUserGetRequestDataProvider()
     {
         return [
             'invalid user' => [
                 'httpFixtures' => [
                     HttpResponseFactory::create(404),
                 ],
+                'routeName' => self::ROUTE_NAME,
                 'expectedRedirectUrl' => '/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
                     HttpResponseFactory::create(200),
                 ],
+                'routeName' => self::ROUTE_NAME,
                 'expectedRedirectUrl' => '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50In0%3D',
             ],
         ];
