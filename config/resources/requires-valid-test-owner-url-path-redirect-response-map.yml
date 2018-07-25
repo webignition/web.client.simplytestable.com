@@ -1,0 +1,34 @@
+/preparing/stats/$:
+  type: JsonResponse
+  args: [0, 0, 0, 0, 0]
+
+/finished-summary/$:
+  type: Response
+  statusCode: 400
+
+/tasklist/$:
+  type: Response
+  statusCode: 400
+
+/tasklist/$:
+  type: Response
+  statusCode: 400
+
+/preparing/$:
+  type: Response
+  statusCode: 400
+
+/url-limit-notification/$:
+  type: Response
+
+/results/retrieve/$:
+  type: JsonResponse
+
+/tasks/ids/$:
+  type: JsonResponse
+
+/tasks/ids/unretrieved/:
+  type: JsonResponse
+
+.*:
+  type: default

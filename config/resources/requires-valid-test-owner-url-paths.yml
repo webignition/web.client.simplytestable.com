@@ -1,8 +1,5 @@
-- ^/account/
-- ^/$
-- ^/recent-tests/$
-- ^/history/
 - /finished-summary/$
+- /preparing/
 - /results/
 - /results/$
 - /results$
@@ -12,4 +9,3 @@
 - /tasklist/$
 - /tasks/ids/$
 - /tasks/ids/unretrieved/
-- ^/test/start/$
