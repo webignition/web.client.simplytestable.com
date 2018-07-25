@@ -39,6 +39,7 @@ services:
       arguments:
         $urlPathProviders:
           - '@simplytestable.web_client.requires_valid_user_url_path_provider'
+          - '@simplytestable.web_client.requires_private_user_url_path_provider'
       tags:
         - { name: kernel.cache_warmer, priority: 0 }
 
@@ -219,3 +220,16 @@ services:
       class: App\Services\UrlMatcher
       arguments:
         $urlPathProvider: '@simplytestable.web_client.requires_valid_user_url_path_provider'
+
+    simplytestable.web_client.requires_private_user_url_path_provider:
+      class: App\Services\UrlPathProvider
+      arguments:
+        $kernelProjectDirectory: '%kernel.project_dir%'
+        $cacheDir: '%kernel.cache_dir%'
+        $resource: '/requires-private-user-url-paths.yml'
+        $cacheName: 'SimplyTestableWebClientRequiresPrivateUserUrlPathProvider'
+
+    simplytestable.web_client.requires_private_user_url_matcher:
+      class: App\Services\UrlMatcher
+      arguments:
+        $urlPathProvider: '@simplytestable.web_client.requires_private_user_url_path_provider'
