@@ -2,13 +2,13 @@
 
 namespace App\EventListener;
 
-use App\Interfaces\Controller\RequiresValidUser;
+use App\Services\RequiresValidUserUrlMatcher;
 use App\Services\UserService;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 
-class RequiresValidUserRequestListener extends AbstractRequestListener
+class RequiresValidUserRequestListener
 {
     /**
      * @var UserService
@@ -21,30 +21,40 @@ class RequiresValidUserRequestListener extends AbstractRequestListener
     private $router;
 
     /**
+     * @var RequiresValidUserUrlMatcher
+     */
+    private $requiresValidUserUrlMatcher;
+
+    /**
      * @param UserService $userService
      * @param RouterInterface $router
+     * @param RequiresValidUserUrlMatcher $requiresValidUserUrlMatcher
      */
-    public function __construct(UserService $userService, RouterInterface $router)
-    {
+    public function __construct(
+        UserService $userService,
+        RouterInterface $router,
+        RequiresValidUserUrlMatcher $requiresValidUserUrlMatcher
+    ) {
         $this->userService = $userService;
         $this->router = $router;
+        $this->requiresValidUserUrlMatcher = $requiresValidUserUrlMatcher;
     }
 
     /**
-     * @param FilterControllerEvent $event
+     * @param GetResponseEvent $event
      */
-    public function onKernelController(FilterControllerEvent $event)
+    public function onKernelRequest(GetResponseEvent $event)
     {
-        if (!parent::onKernelController($event)) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
-        if ($this->controller instanceof RequiresValidUser && !$this->userService->authenticate()) {
-            $redirectUrl = $this->router->generate('action_user_sign_out');
+        $request = $event->getRequest();
 
-            /* @var RequiresValidUser $controller */
-            $controller = $this->controller;
-            $controller->setResponse(new RedirectResponse($redirectUrl));
+        $requiresPrivateUser = $this->requiresValidUserUrlMatcher->match($request->getPathInfo());
+
+        if ($requiresPrivateUser && !$this->userService->authenticate()) {
+            $event->setResponse(new RedirectResponse($this->router->generate('action_user_sign_out')));
         }
     }
 }
