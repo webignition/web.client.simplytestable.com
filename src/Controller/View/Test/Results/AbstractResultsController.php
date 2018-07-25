@@ -3,7 +3,6 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\View\Test\AbstractRequiresValidOwnerController;
-use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Interfaces\Controller\Test\RequiresCompletedTest;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
@@ -12,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
 abstract class AbstractResultsController extends AbstractRequiresValidOwnerController implements
-    RequiresValidOwner,
     RequiresCompletedTest
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
