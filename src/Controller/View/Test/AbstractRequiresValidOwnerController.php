@@ -63,13 +63,13 @@ abstract class AbstractRequiresValidOwnerController extends AbstractBaseViewCont
     public function getInvalidOwnerResponse(Request $request)
     {
         if ($this->userManager->isLoggedIn()) {
-            return $this->renderWithDefaultViewParameters(
-                'test-results-not-authorised.html.twig',
+            return new RedirectResponse($this->generateUrl(
+                'view_test_unauthorised',
                 [
-                    'test_id' => $request->attributes->get('test_id'),
-                    'website' => $this->urlViewValues->create($request->attributes->get('website')),
+                    'website' => $request->attributes->get('website'),
+                    'test_id' => $request->attributes->get('test_id')
                 ]
-            );
+            ));
         }
 
         $redirectParameters = json_encode([
