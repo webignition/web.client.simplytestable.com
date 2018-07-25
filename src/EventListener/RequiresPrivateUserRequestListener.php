@@ -2,15 +2,16 @@
 
 namespace App\EventListener;
 
-use App\Interfaces\Controller\RequiresPrivateUser;
+use App\Services\RequiresPrivateUserRedirectRouteProvider;
+use App\Services\UrlMatcher;
 use App\Services\UserManager;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use App\Interfaces\Controller\RequiresPrivateUser as RequiresPrivateUserController;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 
-class RequiresPrivateUserRequestListener extends AbstractRequestListener
+class RequiresPrivateUserRequestListener
 {
     /**
      * @var UserManager
@@ -28,35 +29,68 @@ class RequiresPrivateUserRequestListener extends AbstractRequestListener
     private $router;
 
     /**
+     * @var UrlMatcher
+     */
+    private $urlMatcher;
+
+    /**
+     * @var RequiresPrivateUserRedirectRouteProvider
+     */
+    private $requiresPrivateUserRedirectRouteProvider;
+
+    /**
      * @param UserManager $userManager
      * @param SessionInterface $session
      * @param RouterInterface $router
+     * @param UrlMatcher $urlMatcher
+     * @param RequiresPrivateUserRedirectRouteProvider $requiresPrivateUserRedirectRouteProvider
      */
-    public function __construct(UserManager $userManager, SessionInterface $session, RouterInterface $router)
-    {
+    public function __construct(
+        UserManager $userManager,
+        SessionInterface $session,
+        RouterInterface $router,
+        UrlMatcher $urlMatcher,
+        RequiresPrivateUserRedirectRouteProvider $requiresPrivateUserRedirectRouteProvider
+    ) {
         $this->userManager = $userManager;
         $this->session = $session;
         $this->router = $router;
+        $this->urlMatcher = $urlMatcher;
+        $this->requiresPrivateUserRedirectRouteProvider = $requiresPrivateUserRedirectRouteProvider;
     }
 
     /**
-     * @param FilterControllerEvent $event
+     * @param GetResponseEvent $event
      */
-    public function onKernelController(FilterControllerEvent $event)
+    public function onKernelRequest(GetResponseEvent $event)
     {
-        if (!parent::onKernelController($event)) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
-        if ($this->controller instanceof RequiresPrivateUserController && !$this->userManager->isLoggedIn()) {
+        $request = $event->getRequest();
+        $requestPath = $request->getPathInfo();
+        $requiresPrivateUser = $this->urlMatcher->match($requestPath);
+
+        if ($requiresPrivateUser && !$this->userManager->isLoggedIn()) {
             $this->session->getFlashBag()->set('user_signin_error', 'account-not-logged-in');
 
-            /* @var RequiresPrivateUser $controller */
-            $controller = $this->controller;
-
-            $controller->setResponse(
-                $controller->getUserSignInRedirectResponse($this->router, $event->getRequest())
+            $redirectRoute = $this->requiresPrivateUserRedirectRouteProvider->getRouteForUrlPathPattern(
+                $this->urlMatcher->getMatchPattern($requestPath),
+                $request->getMethod(),
+                $requestPath
             );
+
+            if (!empty($redirectRoute)) {
+                $signInRedirectResponse = new RedirectResponse($this->router->generate(
+                    'view_user_sign_in',
+                    [
+                        'redirect' => base64_encode(json_encode(['route' => $redirectRoute]))
+                    ]
+                ));
+
+                $event->setResponse($signInRedirectResponse);
+            }
         }
     }
 }

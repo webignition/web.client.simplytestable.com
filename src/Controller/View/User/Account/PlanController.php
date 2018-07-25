@@ -70,14 +70,6 @@ class PlanController extends AbstractUserAccountController
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function getUserSignInRedirectResponseRoute()
-    {
-        return 'view_user_account_plan';
-    }
-
-    /**
      * @return RedirectResponse|Response
      *
      * @throws CoreApplicationRequestException

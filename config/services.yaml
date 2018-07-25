@@ -35,7 +35,12 @@ services:
       tags:
         - { name: kernel.cache_warmer, priority: 0 }
 
-    App\Cache\RequiresValidUserUrlMatcherCacheWarmer:
+    App\Cache\UrlMatcherCacheWarmer:
+      arguments:
+        $urlPathProviders:
+          - '@simplytestable.web_client.requires_valid_user_url_path_provider'
+          - '@simplytestable.web_client.requires_private_user_url_path_provider'
+          - '@simplytestable.web_client.requires_private_user_redirect_route_map_provider'
       tags:
         - { name: kernel.cache_warmer, priority: 0 }
 
@@ -67,12 +72,16 @@ services:
         - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 25 }
 
     App\EventListener\RequiresValidUserRequestListener:
+      arguments:
+        $urlMatcher: '@simplytestable.web_client.requires_valid_user_url_matcher'
       tags:
         - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 24 }
 
     App\EventListener\RequiresPrivateUserRequestListener:
+      arguments:
+        $urlMatcher: '@simplytestable.web_client.requires_private_user_url_matcher'
       tags:
-        - { name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 23 }
+        - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 23 }
 
     App\EventListener\RequiresValidTestOwnerRequestListener:
       tags:
@@ -197,8 +206,45 @@ services:
       arguments:
         $documentationSitemapPath: '%kernel.project_dir%/config/resources/documentation_sitemap.xml'
 
-    App\Services\RequiresValidUserUrlMatcher:
-      public: true
+    App\Services\CachedDataProvider:
       arguments:
         $kernelProjectDirectory: '%kernel.project_dir%'
         $cacheDir: '%kernel.cache_dir%'
+
+    simplytestable.web_client.requires_valid_user_url_path_provider:
+      class: App\Services\CachedDataProvider
+      arguments:
+        $kernelProjectDirectory: '%kernel.project_dir%'
+        $cacheDir: '%kernel.cache_dir%'
+        $resource: '/requires-valid-user-url-paths.yml'
+        $cacheName: 'SimplyTestableWebClientRequiresValidUserUrlPathProvider'
+
+    simplytestable.web_client.requires_valid_user_url_matcher:
+      class: App\Services\UrlMatcher
+      arguments:
+        $urlPathProvider: '@simplytestable.web_client.requires_valid_user_url_path_provider'
+
+    simplytestable.web_client.requires_private_user_url_path_provider:
+      class: App\Services\CachedDataProvider
+      arguments:
+        $kernelProjectDirectory: '%kernel.project_dir%'
+        $cacheDir: '%kernel.cache_dir%'
+        $resource: '/requires-private-user-url-paths.yml'
+        $cacheName: 'SimplyTestableWebClientRequiresPrivateUserUrlPathProvider'
+
+    simplytestable.web_client.requires_private_user_url_matcher:
+      class: App\Services\UrlMatcher
+      arguments:
+        $urlPathProvider: '@simplytestable.web_client.requires_private_user_url_path_provider'
+
+    simplytestable.web_client.requires_private_user_redirect_route_map_provider:
+      class: App\Services\CachedDataProvider
+      arguments:
+        $kernelProjectDirectory: '%kernel.project_dir%'
+        $cacheDir: '%kernel.cache_dir%'
+        $resource: '/requires-private-user-url-path-redirect-route-map.yml'
+        $cacheName: 'SimplyTestableWebClientRequiresPrivateUserRedirectRouteMapProvider'
+
+    App\Services\RequiresPrivateUserRedirectRouteProvider:
+      arguments:
+        $redirectRouteMapProvider: '@simplytestable.web_client.requires_private_user_redirect_route_map_provider'

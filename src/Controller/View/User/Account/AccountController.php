@@ -93,14 +93,6 @@ class AccountController extends AbstractUserAccountController
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function getUserSignInRedirectResponseRoute()
-    {
-        return 'view_user_account';
-    }
-
-    /**
      * @param Request $request
      *
      * @return Response

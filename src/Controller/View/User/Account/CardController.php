@@ -63,14 +63,6 @@ class CardController extends AbstractUserAccountController
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function getUserSignInRedirectResponseRoute()
-    {
-        return 'view_user_account_card';
-    }
-
-    /**
      * @return RedirectResponse|Response
      *
      * @throws CoreApplicationRequestException

@@ -14,11 +14,10 @@ use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class PlanControllerTest extends AbstractViewControllerTest
+class PlanControllerTest extends AbstractAccountControllerTest
 {
     const VIEW_NAME = 'user-account-plan.html.twig';
     const ROUTE_NAME = 'view_user_account_plan';
@@ -60,42 +59,23 @@ class PlanControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @dataProvider indexActionInvalidGetRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedRedirectUrl
-     */
-    public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
-    {
-        $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        $this->client->request(
-            'GET',
-            $this->router->generate(self::ROUTE_NAME)
-        );
-
-        /* @var RedirectResponse $response */
-        $response = $this->client->getResponse();
-        $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-    }
-
-    /**
      * @return array
      */
-    public function indexActionInvalidGetRequestDataProvider()
+    public function invalidUserGetRequestDataProvider()
     {
         return [
             'invalid user' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
+                'routeName' => self::ROUTE_NAME,
                 'expectedRedirectUrl' => '/signout/',
             ],
             'public user' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
+                'routeName' => self::ROUTE_NAME,
                 'expectedRedirectUrl' => '/signin/?redirect=eyJyb3V0ZSI6InZpZXdfdXNlcl9hY2NvdW50X3BsYW4ifQ%3D%3D',
             ],
         ];
