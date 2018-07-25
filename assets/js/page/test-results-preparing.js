@@ -43,9 +43,25 @@ class TestResultsPreparing {
         }
 
         if (requestId === 'retrieveRetrievalStats') {
+            if (!response.hasOwnProperty('completion_percent')) {
+                response.completion_percent = 0;
+            }
+
+            if (!response.hasOwnProperty('remaining_tasks_to_retrieve_count')) {
+                response.remaining_tasks_to_retrieve_count = 0;
+            }
+
+            if (!response.hasOwnProperty('local_task_count')) {
+                response.local_task_count = 0;
+            }
+
+            if (!response.hasOwnProperty('remote_task_count')) {
+                response.remote_task_count = 0;
+            }
+
             let completionPercent = response.completion_percent;
 
-            this.document.body.setAttribute('data-remaining-tasks-to-retrieve-count', response.remaining_tasks_to_retrieve_count);
+            this.document.body.setAttribute('data-remaining-tasks-to-retrieve-count', response.remaining_tasks_to_retrieve_count.toString(10));
             this.completionPercentValue.innerText = completionPercent;
             this.progressBar.setCompletionPercent(completionPercent);
             this.localTaskCount.innerText = response.local_task_count;
