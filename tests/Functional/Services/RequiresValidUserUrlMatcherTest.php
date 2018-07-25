@@ -83,12 +83,6 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
             '*/progress/' => [
                 'path' => '/http://example.com//1234/progress/',
             ],
-            '*/lock/' => [
-                'path' => '/http://example.com//1234/lock/',
-            ],
-            '*/unlock/' => [
-                'path' => '/http://example.com//1234/unlock/',
-            ],
             '*/re-test/' => [
                 'path' => '/http://example.com//1234/re-test/',
             ],
@@ -98,14 +92,8 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
             '*/tasks/ids/' => [
                 'path' => '/http://example.com//1234/tasks/ids/',
             ],
-            '/test/* [1]' => [
+            '/test/start/' => [
                 'path' => '/test/start/',
-            ],
-            '/test/* [2]' => [
-                'path' => '/test/http://example.com//1234/cancel/',
-            ],
-            '/test/* [3]' => [
-                'path' => '/test/http://example.com//1234/cancel-crawl/',
             ],
         ];
     }
@@ -167,6 +155,18 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
             ],
             '/signup/confirm/{email}/resend/' => [
                 'path' => '/signup/confirm/user@example.com/resend/',
+            ],
+            '*/lock/' => [
+                'path' => '/http://example.com//1234/lock/',
+            ],
+            '*/unlock/' => [
+                'path' => '/http://example.com//1234/unlock/',
+            ],
+            '/test/../cancel/' => [
+                'path' => '/test/http://example.com//1234/cancel/',
+            ],
+            '/test/../cancel-crawl/' => [
+                'path' => '/test/http://example.com//1234/cancel-crawl/',
             ],
         ];
     }
