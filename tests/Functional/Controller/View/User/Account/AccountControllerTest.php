@@ -55,6 +55,12 @@ class AccountControllerTest extends AbstractViewControllerTest
         ],
     ];
 
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
      *

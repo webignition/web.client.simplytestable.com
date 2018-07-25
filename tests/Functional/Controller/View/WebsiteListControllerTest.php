@@ -12,23 +12,14 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 
-class WebsiteListControllerTest extends AbstractControllerTest
+class WebsiteListControllerTest extends AbstractViewControllerTest
 {
     const ROUTE_NAME = 'view_website_list';
 
-    /**
-     * @var HttpMockHandler
-     */
-    private $httpMockHandler;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
+    public function testIsIEFiltered()
     {
-        parent::setUp();
-
-        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
+        $this->issueIERequest(self::ROUTE_NAME);
+        $this->assertIEFilteredRedirectResponse();
     }
 
     public function testIndexActionInvalidUserGetRequest()

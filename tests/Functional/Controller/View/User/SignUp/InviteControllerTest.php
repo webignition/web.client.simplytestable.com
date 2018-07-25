@@ -17,9 +17,23 @@ use webignition\SimplyTestableUserModel\User;
 
 class InviteControllerTest extends AbstractViewControllerTest
 {
+    const ROUTE_NAME = 'view_user_sign_up_invite';
     const INVITE_USERNAME = 'user@example.com';
     const TOKEN = 'tokenValue';
     const TEAM_NAME = 'Team Name';
+
+    /**
+     * @var array
+     */
+    private $routeParameters = [
+        'token' => self::TOKEN,
+    ];
+
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
 
     public function testIndexActionGetRequest()
     {
@@ -38,9 +52,7 @@ class InviteControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate('view_user_sign_up_invite', [
-                'token' => self::TOKEN,
-            ])
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var SymfonyResponse $response */

@@ -115,6 +115,18 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         ],
     ];
 
+    public function testIsIEFilteredDefaultRoute()
+    {
+        $this->issueIERequest(self::ROUTE_NAME_DEFAULT, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
+    public function testIsIEFilteredFilteredRoute()
+    {
+        $this->issueIERequest(self::ROUTE_NAME_FILTER, array_merge($this->routeParameters, ['filter' => 'foo']));
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
      *

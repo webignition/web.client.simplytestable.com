@@ -27,6 +27,26 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
     const USER_EMAIL = 'user@example.com';
     const TOKEN = 'token-value';
 
+    /**
+     * @var array
+     */
+    private $chooseActionRouteParameters = [
+        'email' => self::USER_EMAIL,
+        'token' => self::TOKEN,
+    ];
+
+    public function testIsIEFilteredChooseRoute()
+    {
+        $this->issueIERequest(self::CHOOSE_ROUTE_NAME, $this->chooseActionRouteParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
+    public function testIsIEFilteredRequestRoute()
+    {
+        $this->issueIERequest(self::REQUEST_ROUTE_NAME);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     public function testChooseActionPublicUserGetRequest()
     {
         $this->httpMockHandler->appendFixtures([
@@ -36,10 +56,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::CHOOSE_ROUTE_NAME, [
-                'email' => self::USER_EMAIL,
-                'token' => self::TOKEN,
-            ])
+            $this->router->generate(self::CHOOSE_ROUTE_NAME, $this->chooseActionRouteParameters)
         );
 
         /* @var Response $response */

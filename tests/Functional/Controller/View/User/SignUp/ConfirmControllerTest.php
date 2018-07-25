@@ -21,6 +21,19 @@ class ConfirmControllerTest extends AbstractViewControllerTest
     const ROUTE_NAME = 'view_user_sign_up_confirm';
     const USER_EMAIL = 'user@example.com';
 
+    /**
+     * @var array
+     */
+    private $routeParameters = [
+        'email' => self::USER_EMAIL,
+    ];
+
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     public function testIndexActionPublicUserGetRequest()
     {
         $this->httpMockHandler->appendFixtures([
@@ -29,9 +42,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::ROUTE_NAME, [
-                'email' => self::USER_EMAIL,
-            ])
+            $this->router->generate(self::ROUTE_NAME, $this->routeParameters)
         );
 
         /* @var Response $response */

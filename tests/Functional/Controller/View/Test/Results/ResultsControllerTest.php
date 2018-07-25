@@ -113,6 +113,18 @@ class ResultsControllerTest extends AbstractViewControllerTest
         ],
     ];
 
+    public function testIsIEFilteredDefaultRoute()
+    {
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
+    public function testIsIEFilteredVerboseRoute()
+    {
+        $this->issueIERequest(self::ROUTE_NAME_VERBOSE, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
      *

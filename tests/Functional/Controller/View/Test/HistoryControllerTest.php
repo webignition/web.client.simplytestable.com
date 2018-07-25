@@ -26,6 +26,12 @@ class HistoryControllerTest extends AbstractViewControllerTest
     const ROUTE_NAME = 'view_test_history_page1';
     const USER_EMAIL = 'user@example.com';
 
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->httpMockHandler->appendFixtures([

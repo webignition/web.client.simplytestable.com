@@ -50,6 +50,12 @@ class PreparingControllerTest extends AbstractViewControllerTest
         'task_count' => 12,
     ];
 
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->httpMockHandler->appendFixtures([

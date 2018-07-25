@@ -10,12 +10,11 @@ use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;
+use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use App\Tests\Functional\Controller\AbstractControllerTest;
-use App\Tests\Services\HttpMockHandler;
 
-class PreparingStatsControllerTest extends AbstractControllerTest
+class PreparingStatsControllerTest extends AbstractViewControllerTest
 {
     const ROUTE_NAME = 'view_test_results_preparing_stats';
     const WEBSITE = 'http://example.com/';
@@ -31,11 +30,6 @@ class PreparingStatsControllerTest extends AbstractControllerTest
     ];
 
     /**
-     * @var HttpMockHandler
-     */
-    private $httpMockHandler;
-
-    /**
      * @var array
      */
     private $remoteTestData = [
@@ -48,14 +42,10 @@ class PreparingStatsControllerTest extends AbstractControllerTest
         'task_count' => 12,
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
+    public function testIsIEFiltered()
     {
-        parent::setUp();
-
-        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
     }
 
     public function testIndexActionInvalidUserGetRequest()

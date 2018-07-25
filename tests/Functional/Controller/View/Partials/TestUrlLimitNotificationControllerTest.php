@@ -7,14 +7,13 @@ use App\Entity\Test\Test;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
+use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Tests\Functional\Controller\AbstractControllerTest;
-use App\Tests\Services\HttpMockHandler;
 use webignition\SimplyTestableUserModel\User;
 
-class TestUrlLimitNotificationControllerTest extends AbstractControllerTest
+class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
 {
     const ROUTE_NAME = 'view_partials_test_url_limit_notification';
     const WEBSITE = 'http://example.com/';
@@ -29,19 +28,10 @@ class TestUrlLimitNotificationControllerTest extends AbstractControllerTest
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var HttpMockHandler
-     */
-    private $httpMockHandler;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
+    public function testIsIEFiltered()
     {
-        parent::setUp();
-
-        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
     }
 
     public function testIndexActionInvalidUserGetRequest()

@@ -6,11 +6,14 @@ use ReflectionClass;
 use App\Controller\AbstractBaseViewController;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 use Twig_Environment;
 
 abstract class AbstractViewControllerTest extends AbstractControllerTest
 {
+    const IE6_USER_AGENT = 'Mozilla/4.0 (MSIE 6.0; Windows NT 5.0)';
+
     /**
      * @var HttpHistoryContainer
      */
@@ -46,5 +49,23 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
         $reflectionProperty->setAccessible(true);
 
         $reflectionProperty->setValue($controller, $twig);
+    }
+
+    protected function issueIERequest(string $routeName, array $routeParameters = [])
+    {
+        $url = $this->router->generate($routeName, $routeParameters);
+
+        $this->client->request('GET', $url, [], [], [
+            'HTTP_USER_AGENT' => self::IE6_USER_AGENT,
+        ]);
+    }
+
+    protected function assertIEFilteredRedirectResponse()
+    {
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals(getenv('MARKETING_SITE'), $response->getTargetUrl());
     }
 }
