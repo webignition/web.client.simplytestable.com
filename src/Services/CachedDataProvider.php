@@ -4,17 +4,17 @@ namespace App\Services;
 
 use Symfony\Component\Yaml\Yaml;
 
-class UrlPathProvider
+class CachedDataProvider
 {
     /**
      * @var string
      */
-    private $patternsResourcePath;
+    private $resourcePath;
 
     /**
-     * @var string[]
+     * @var mixed
      */
-    private $patterns = [];
+    private $data = [];
 
     /**
      * @var string
@@ -39,41 +39,41 @@ class UrlPathProvider
         $cacheName = null
     ) {
         if (null === $resource) {
-            $this->patterns = [];
-            $this->patternsResourcePath = null;
+            $this->data = [];
+            $this->resourcePath = null;
         } else {
-            $this->patternsResourcePath = $kernelProjectDirectory . '/config/resources' . $resource;
+            $this->resourcePath = $kernelProjectDirectory . '/config/resources' . $resource;
             $this->cacheResourcePath = $cacheDir . '/' . $cacheName . '.php.meta';
             $this->cacheDir = $cacheDir;
 
-            $serialisedPatternsPath = $this->cacheResourcePath;
+            $serialisedDataPath = $this->cacheResourcePath;
 
-            if (@file_exists($serialisedPatternsPath)) {
-                $this->patterns = unserialize(file_get_contents($serialisedPatternsPath));
+            if (@file_exists($serialisedDataPath)) {
+                $this->data = unserialize(file_get_contents($serialisedDataPath));
             } else {
-                $this->patterns = $this->createPatterns();
+                $this->data = $this->createData();
             }
         }
     }
 
     /**
-     * @return string[]
+     * @return mixed
      */
-    public function getPatterns()
+    public function getData()
     {
-        return $this->patterns;
+        return $this->data;
     }
 
     /**
      * @return string[]
      */
-    public function createPatterns()
+    public function createData()
     {
-        if (null === $this->patternsResourcePath) {
+        if (null === $this->resourcePath) {
             return [];
         }
 
-        return Yaml::parseFile($this->patternsResourcePath);
+        return Yaml::parseFile($this->resourcePath);
     }
 
     /**

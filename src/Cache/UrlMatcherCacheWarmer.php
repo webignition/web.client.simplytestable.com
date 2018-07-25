@@ -2,19 +2,19 @@
 
 namespace App\Cache;
 
-use App\Services\UrlPathProvider;
+use App\Services\CachedDataProvider;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmer;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
 class UrlMatcherCacheWarmer extends CacheWarmer implements CacheWarmerInterface
 {
     /**
-     * @var UrlPathProvider
+     * @var CachedDataProvider
      */
     private $urlPathProviders;
 
     /**
-     * @param UrlPathProvider[] $urlPathProviders
+     * @param CachedDataProvider[] $urlPathProviders
      */
     public function __construct($urlPathProviders)
     {
@@ -39,7 +39,7 @@ class UrlMatcherCacheWarmer extends CacheWarmer implements CacheWarmerInterface
         foreach ($this->urlPathProviders as $urlPathProvider) {
             $this->writeCacheFile(
                 $urlPathProvider->getCacheResourcePath(),
-                serialize($urlPathProvider->createPatterns())
+                serialize($urlPathProvider->createData())
             );
         }
     }

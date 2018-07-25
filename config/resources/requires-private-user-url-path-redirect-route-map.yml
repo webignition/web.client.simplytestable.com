@@ -1,0 +1,8 @@
+^/account/:
+  POST:
+    .*: view_user_account
+  GET:
+    ^/account/card/$: view_user_account_card
+    ^/account/plan/$: view_user_account_plan
+    ^/account/team/$: view_user_account_team
+    .*: view_user_account

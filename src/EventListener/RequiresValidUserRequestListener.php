@@ -51,9 +51,9 @@ class RequiresValidUserRequestListener
 
         $request = $event->getRequest();
 
-        $requiresPrivateUser = $this->urlMatcher->match($request->getPathInfo());
+        $requiresValidUser = $this->urlMatcher->match($request->getPathInfo());
 
-        if ($requiresPrivateUser && !$this->userService->authenticate()) {
+        if ($requiresValidUser && !$this->userService->authenticate()) {
             $event->setResponse(new RedirectResponse($this->router->generate('action_user_sign_out')));
         }
     }

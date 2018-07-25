@@ -3,10 +3,10 @@
 namespace App\Tests\Functional\EventListener\RequestListener;
 
 use App\EventListener\IEFilteredRequestListener;
+use App\EventListener\RequiresPrivateUserRequestListener;
 use App\EventListener\RequiresValidUserRequestListener;
 use App\Tests\Functional\AbstractBaseTestCase;
 use App\Tests\Services\HttpMockHandler;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 abstract class AbstractKernelRequestListenerTest extends AbstractBaseTestCase
 {
     /**
-     * @var IEFilteredRequestListener|RequiresValidUserRequestListener
+     * @var IEFilteredRequestListener|RequiresValidUserRequestListener|RequiresPrivateUserRequestListener
      */
     protected $requestListener;
 

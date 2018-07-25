@@ -8,10 +8,9 @@ use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Controller\Action\User\Account\NewsSubscriptionsController;
 use webignition\SimplyTestableUserModel\User;
 
-class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTest
+class RequiresPrivateUserRequestListenerTest extends AbstractKernelRequestListenerTest
 {
     /**
      * {@inheritdoc}
@@ -31,7 +30,7 @@ class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTes
      * @param $expectedHasResponse
      * @param string $expectedRedirectUrl
      */
-    public function testOnKernelController(
+    public function testOnKernelRequest(
         array $httpFixtures,
         User $user,
         $expectedHasResponse,
@@ -42,22 +41,22 @@ class RequiresPrivateUserRequestListenerTest extends AbstractKernelControllerTes
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        /* @var NewsSubscriptionsController $controller */
-        $controller = self::$container->get(NewsSubscriptionsController::class);
+        $event = $this->createGetResponseEvent(new Request([], [], [], [], [], [
+            'REQUEST_URI' => '/account/',
+        ]));
 
-        $request = new Request();
+        $this->requestListener->onKernelRequest($event);
 
-        $event = $this->createFilterControllerEvent($request, $controller, 'updateAction');
-
-        $this->requestListener->onKernelController($event);
-
-        $this->assertEquals($expectedHasResponse, $controller->hasResponse());
+        $this->assertEquals($expectedHasResponse, $event->hasResponse());
 
         if ($expectedHasResponse) {
-            $response = $this->getControllerResponse($controller, NewsSubscriptionsController::class);
+            /* @var RedirectResponse $response */
+            $response = $event->getResponse();
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
+        } else {
+            $this->assertTrue(true);
         }
     }
 
