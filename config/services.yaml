@@ -35,7 +35,10 @@ services:
       tags:
         - { name: kernel.cache_warmer, priority: 0 }
 
-    App\Cache\RequiresValidUserUrlMatcherCacheWarmer:
+    App\Cache\UrlMatcherCacheWarmer:
+      arguments:
+        $urlPathProviders:
+          - '@simplytestable.web_client.requires_valid_user_url_path_provider'
       tags:
         - { name: kernel.cache_warmer, priority: 0 }
 
@@ -67,6 +70,8 @@ services:
         - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 25 }
 
     App\EventListener\RequiresValidUserRequestListener:
+      arguments:
+        $urlMatcher: '@simplytestable.web_client.requires_valid_user_url_matcher'
       tags:
         - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 24 }
 
@@ -197,8 +202,20 @@ services:
       arguments:
         $documentationSitemapPath: '%kernel.project_dir%/config/resources/documentation_sitemap.xml'
 
-    App\Services\RequiresValidUserUrlMatcher:
-      public: true
+    App\Services\UrlPathProvider:
       arguments:
         $kernelProjectDirectory: '%kernel.project_dir%'
         $cacheDir: '%kernel.cache_dir%'
+
+    simplytestable.web_client.requires_valid_user_url_path_provider:
+      class: App\Services\UrlPathProvider
+      arguments:
+        $kernelProjectDirectory: '%kernel.project_dir%'
+        $cacheDir: '%kernel.cache_dir%'
+        $resource: '/requires-valid-user-url-paths.yml'
+        $cacheName: 'SimplyTestableWebClientRequiresValidUserUrlPathProvider'
+
+    simplytestable.web_client.requires_valid_user_url_matcher:
+      class: App\Services\UrlMatcher
+      arguments:
+        $urlPathProvider: '@simplytestable.web_client.requires_valid_user_url_path_provider'

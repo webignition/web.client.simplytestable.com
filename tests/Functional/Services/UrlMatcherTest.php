@@ -2,13 +2,13 @@
 
 namespace App\Tests\Functional\Services;
 
-use App\Services\RequiresValidUserUrlMatcher;
+use App\Services\UrlMatcher;
 use App\Tests\Functional\AbstractBaseTestCase;
 
-class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
+class UrlMatcherTest extends AbstractBaseTestCase
 {
     /**
-     * @var RequiresValidUserUrlMatcher
+     * @var UrlMatcher
      */
     private $requiresValidUserUrlMatcher;
 
@@ -19,15 +19,17 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->requiresValidUserUrlMatcher = self::$container->get(RequiresValidUserUrlMatcher::class);
+        $this->requiresValidUserUrlMatcher = self::$container->get(
+            'simplytestable.web_client.requires_valid_user_url_matcher'
+        );
     }
 
     /**
-     * @dataProvider matchExpectedDataProvider
+     * @dataProvider requiresValidUserUrlMatcherMatchExpectedDataProvider
      *
      * @param string $path
      */
-    public function testMatchExpected($path)
+    public function testRequiresValidUserUrlMatcherMatchExpected($path)
     {
         $this->assertTrue($this->requiresValidUserUrlMatcher->match($path));
     }
@@ -35,7 +37,7 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
     /**
      * @return array
      */
-    public function matchExpectedDataProvider()
+    public function requiresValidUserUrlMatcherMatchExpectedDataProvider()
     {
         return [
             '/account/* [1]' => [
@@ -99,11 +101,11 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
     }
 
     /**
-     * @dataProvider matchNotExpectedDataProvider
+     * @dataProvider requiresValidUserUrlMatcherMatchNotExpectedDataProvider
      *
      * @param string $path
      */
-    public function testMatchNotExpected($path)
+    public function testRequiresValidUserUrlMatcherMatchNotExpected($path)
     {
         $this->assertFalse($this->requiresValidUserUrlMatcher->match($path));
     }
@@ -111,7 +113,7 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
     /**
      * @return array
      */
-    public function matchNotExpectedDataProvider()
+    public function requiresValidUserUrlMatcherMatchNotExpectedDataProvider()
     {
         return [
             '/signout/' => [

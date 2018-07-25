@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Services\RequiresValidUserUrlMatcher;
+use App\Services\UrlMatcher;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -21,23 +21,23 @@ class RequiresValidUserRequestListener
     private $router;
 
     /**
-     * @var RequiresValidUserUrlMatcher
+     * @var UrlMatcher
      */
-    private $requiresValidUserUrlMatcher;
+    private $urlMatcher;
 
     /**
      * @param UserService $userService
      * @param RouterInterface $router
-     * @param RequiresValidUserUrlMatcher $requiresValidUserUrlMatcher
+     * @param UrlMatcher $urlMatcher
      */
     public function __construct(
         UserService $userService,
         RouterInterface $router,
-        RequiresValidUserUrlMatcher $requiresValidUserUrlMatcher
+        UrlMatcher $urlMatcher
     ) {
         $this->userService = $userService;
         $this->router = $router;
-        $this->requiresValidUserUrlMatcher = $requiresValidUserUrlMatcher;
+        $this->urlMatcher = $urlMatcher;
     }
 
     /**
@@ -51,7 +51,7 @@ class RequiresValidUserRequestListener
 
         $request = $event->getRequest();
 
-        $requiresPrivateUser = $this->requiresValidUserUrlMatcher->match($request->getPathInfo());
+        $requiresPrivateUser = $this->urlMatcher->match($request->getPathInfo());
 
         if ($requiresPrivateUser && !$this->userService->authenticate()) {
             $event->setResponse(new RedirectResponse($this->router->generate('action_user_sign_out')));
