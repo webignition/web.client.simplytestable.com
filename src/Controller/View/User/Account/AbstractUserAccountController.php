@@ -9,8 +9,6 @@ use App\Services\FlashBagValues;
 use App\Services\TeamService;
 use App\Services\UserManager;
 use App\Services\UserService;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -56,23 +54,5 @@ abstract class AbstractUserAccountController extends AbstractUserController
         $this->userService = $userService;
         $this->userManager = $userManager;
         $this->teamService = $teamService;
-    }
-
-    /**
-     * @return string
-     */
-    abstract protected function getUserSignInRedirectResponseRoute();
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
-    {
-        return new RedirectResponse($router->generate(
-            'view_user_sign_in',
-            [
-                'redirect' => base64_encode(json_encode(['route' => $this->getUserSignInRedirectResponseRoute()]))
-            ]
-        ));
     }
 }

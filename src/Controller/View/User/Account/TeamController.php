@@ -2,7 +2,6 @@
 
 namespace App\Controller\View\User\Account;
 
-use App\Controller\View\User\Account\AbstractUserAccountController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -60,14 +59,6 @@ class TeamController extends AbstractUserAccountController
         );
 
         $this->teamInviteService = $teamInviteService;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getUserSignInRedirectResponseRoute()
-    {
-        return 'view_user_account_team';
     }
 
     /**

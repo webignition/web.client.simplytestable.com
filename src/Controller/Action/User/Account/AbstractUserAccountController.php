@@ -6,7 +6,6 @@ use App\Controller\AbstractController;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -44,19 +43,6 @@ abstract class AbstractUserAccountController extends AbstractController
         $this->userManager = $userManager;
         $this->router = $router;
         $this->session = $session;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUserSignInRedirectResponse(RouterInterface $router, Request $request)
-    {
-        return new RedirectResponse($router->generate(
-            'view_user_sign_in',
-            [
-                'redirect' => base64_encode(json_encode(['route' => 'view_user_account']))
-            ]
-        ));
     }
 
     /**
