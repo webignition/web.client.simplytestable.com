@@ -23,7 +23,6 @@ use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -77,6 +76,16 @@ class ResultsController extends AbstractResultsController
     private $jsStaticAnalysisTestConfiguration;
 
     /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValues;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @var string[]
      */
     private $filters = [
@@ -95,7 +104,6 @@ class ResultsController extends AbstractResultsController
      * @param CacheValidatorService $cacheValidator
      * @param UrlViewValuesService $urlViewValues
      * @param UserManager $userManager
-     * @param SessionInterface $session
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
      * @param TaskService $taskService
@@ -112,7 +120,6 @@ class ResultsController extends AbstractResultsController
         CacheValidatorService $cacheValidator,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
-        SessionInterface $session,
         TestService $testService,
         RemoteTestService $remoteTestService,
         TaskService $taskService,
@@ -126,10 +133,7 @@ class ResultsController extends AbstractResultsController
             $router,
             $twig,
             $defaultViewParameters,
-            $cacheValidator,
-            $urlViewValues,
-            $userManager,
-            $session
+            $cacheValidator
         );
 
         $this->testService = $testService;
@@ -140,6 +144,8 @@ class ResultsController extends AbstractResultsController
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->jsStaticAnalysisTestConfiguration = $jsStaticAnalysisTestConfiguration;
+        $this->urlViewValues = $urlViewValues;
+        $this->userManager = $userManager;
     }
 
     /**

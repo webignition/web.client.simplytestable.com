@@ -20,7 +20,6 @@ use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -51,6 +50,16 @@ class ByTaskTypeController extends AbstractResultsController
     private $taskCollectionFilterService;
 
     /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValues;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @var string[]
      */
     private $allowedFilters = [
@@ -65,7 +74,6 @@ class ByTaskTypeController extends AbstractResultsController
      * @param CacheValidatorService $cacheValidator
      * @param UrlViewValuesService $urlViewValues
      * @param UserManager $userManager
-     * @param SessionInterface $session
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
      * @param TaskService $taskService
@@ -78,7 +86,6 @@ class ByTaskTypeController extends AbstractResultsController
         CacheValidatorService $cacheValidator,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
-        SessionInterface $session,
         TestService $testService,
         RemoteTestService $remoteTestService,
         TaskService $taskService,
@@ -88,16 +95,15 @@ class ByTaskTypeController extends AbstractResultsController
             $router,
             $twig,
             $defaultViewParameters,
-            $cacheValidator,
-            $urlViewValues,
-            $userManager,
-            $session
+            $cacheValidator
         );
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
+        $this->urlViewValues = $urlViewValues;
+        $this->userManager = $userManager;
     }
 
     /**

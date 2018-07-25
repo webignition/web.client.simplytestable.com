@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Partials;
 
-use App\Controller\View\Test\AbstractRequiresValidOwnerController;
+use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -11,16 +11,13 @@ use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
 use App\Services\TaskService;
 use App\Services\TestService;
-use App\Services\UrlViewValuesService;
-use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class TestTaskListController extends AbstractRequiresValidOwnerController
+class TestTaskListController extends AbstractBaseViewController
 {
     /**
      * @var TestService
@@ -37,9 +34,6 @@ class TestTaskListController extends AbstractRequiresValidOwnerController
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
      * @param CacheValidatorService $cacheValidator
-     * @param UrlViewValuesService $urlViewValues
-     * @param UserManager $userManager
-     * @param SessionInterface $session
      * @param TestService $testService
      * @param TaskService $taskService
      */
@@ -48,32 +42,13 @@ class TestTaskListController extends AbstractRequiresValidOwnerController
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheValidatorService $cacheValidator,
-        UrlViewValuesService $urlViewValues,
-        UserManager $userManager,
-        SessionInterface $session,
         TestService $testService,
         TaskService $taskService
     ) {
-        parent::__construct(
-            $router,
-            $twig,
-            $defaultViewParameters,
-            $cacheValidator,
-            $urlViewValues,
-            $userManager,
-            $session
-        );
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
 
         $this->testService = $testService;
         $this->taskService = $taskService;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInvalidOwnerResponse(Request $request)
-    {
-        return new Response('', 400);
     }
 
     /**
