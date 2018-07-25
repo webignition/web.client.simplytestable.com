@@ -3,7 +3,6 @@
 namespace App\Controller\Action\User\Account;
 
 use App\Controller\AbstractController;
-use App\Interfaces\Controller\RequiresPrivateUser;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -13,7 +12,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-abstract class AbstractUserAccountController extends AbstractController implements RequiresPrivateUser
+abstract class AbstractUserAccountController extends AbstractController
 {
     /**
      * @var Response|RedirectResponse|JsonResponse

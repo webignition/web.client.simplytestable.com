@@ -3,7 +3,6 @@
 namespace App\Controller\View\User\Account;
 
 use App\Controller\View\User\AbstractUserController;
-use App\Interfaces\Controller\RequiresPrivateUser;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
@@ -15,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-abstract class AbstractUserAccountController extends AbstractUserController implements RequiresPrivateUser
+abstract class AbstractUserAccountController extends AbstractUserController
 {
     /**
      * @var UserService
