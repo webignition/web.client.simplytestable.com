@@ -83,16 +83,7 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(JsonResponse::class, $response);
 
         $responseData = json_decode($response->getContent(), true);
-        $this->assertEquals(
-            [
-                'id' => 0,
-                'completion_percent' => 0,
-                'remaining_tasks_to_retrieve_count' => 0,
-                'local_task_count' => 0,
-                'remote_task_count' => 0,
-            ],
-            $responseData
-        );
+        $this->assertEquals([], $responseData);
     }
 
     public function testIndexActionPublicUserGetRequest()

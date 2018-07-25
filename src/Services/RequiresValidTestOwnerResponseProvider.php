@@ -74,7 +74,7 @@ class RequiresValidTestOwnerResponseProvider
                         ? (int)$responseProperties['statusCode']
                         : 200;
 
-                    return new Response($statusCode);
+                    return new Response(null, $statusCode);
                 }
 
                 if ('JsonResponse' === $type) {
@@ -82,7 +82,7 @@ class RequiresValidTestOwnerResponseProvider
                         ? (int)$responseProperties['statusCode']
                         : 200;
 
-                    return new JsonResponse($statusCode);
+                    return new JsonResponse(null, $statusCode);
                 }
             }
         }

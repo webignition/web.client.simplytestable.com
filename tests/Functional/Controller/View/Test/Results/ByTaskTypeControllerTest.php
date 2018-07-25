@@ -208,11 +208,11 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             $this->router->generate(self::ROUTE_NAME_DEFAULT, $this->routeParameters)
         );
 
-        /* @var Response $response */
+        /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertContains('<title>Not authorised', $response->getContent());
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('/http://example.com//1/unauthorised/', $response->getTargetUrl());
     }
 
     public function testIndexActionPublicUserGetRequest()

@@ -4,6 +4,8 @@ namespace App\Tests\Functional\Controller\Action\Test\Task\Results;
 
 use App\Controller\Action\Test\Task\Results\ByUrlController;
 use App\Entity\Task\Task;
+use App\Entity\Test\Test;
+use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;
 use App\Tests\Services\HttpMockHandler;
@@ -51,7 +53,22 @@ class ByUrlControllerTest extends AbstractControllerTest
     public function testIndexActionGetRequest()
     {
         $httpMockHandler = self::$container->get(HttpMockHandler::class);
-        $httpMockHandler->appendFixtures([new Response()]);
+        $httpMockHandler->appendFixtures([
+            new Response(),
+            HttpResponseFactory::createJsonResponse([
+                'id' => self::TEST_ID,
+                'website' => self::WEBSITE_URL,
+                'task_types' => [
+                    [
+                        'name' => Task::TYPE_HTML_VALIDATION,
+                    ],
+                ],
+                'user' => 'user@example.com',
+                'state' => Test::STATE_COMPLETED,
+                'task_type_options' => [],
+                'task_count' => 12,
+            ])
+        ]);
 
         $this->client->request(
             'GET',
