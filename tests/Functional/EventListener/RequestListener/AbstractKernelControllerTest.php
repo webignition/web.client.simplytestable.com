@@ -12,7 +12,6 @@ use App\EventListener\RequiresValidTestOwnerRequestListener;
 use App\EventListener\RequiresValidUserRequestListener;
 use App\Interfaces\Controller\SettableResponse;
 use App\Interfaces\Controller\Test\RequiresCompletedTest;
-use App\Interfaces\Controller\Test\RequiresValidOwner;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -71,7 +70,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
     }
 
     /**
-     * @param RequiresCompletedTest|RequiresValidOwner|$controller
+     * @param RequiresCompletedTest|$controller
      * @param string $baseClassName
      *
      * @return Response|RedirectResponse

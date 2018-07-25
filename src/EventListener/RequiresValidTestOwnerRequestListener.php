@@ -2,24 +2,16 @@
 
 namespace App\EventListener;
 
-use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Services\RequiresValidTestOwnerResponseProvider;
 use App\Services\TestService;
 use App\Services\UrlMatcher;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 class RequiresValidTestOwnerRequestListener extends AbstractRequestListener
 {
-//    /**
-//     * @var TestService
-//     */
-//    private $testService;
-
     /**
      * @var UrlMatcher
      */
