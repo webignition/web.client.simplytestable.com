@@ -1,0 +1,14 @@
+- ^/account/
+- ^/$
+- ^/recent-tests/$
+- ^/history/
+- /finished-summary/$
+- /results/
+- /url-limit-notification/$
+- /progress/$
+- /lock/$
+- /unlock/$
+- /re-test/$
+- /tasklist/$
+- /tasks/ids/$
+- ^/test/
