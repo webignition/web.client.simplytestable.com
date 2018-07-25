@@ -6,7 +6,6 @@ use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
@@ -19,7 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class HistoryController extends AbstractBaseViewController implements RequiresValidUser
+class HistoryController extends AbstractBaseViewController
 {
     const RESULTS_PREPARATION_THRESHOLD = 10;
     const DEFAULT_PAGE_NUMBER = 1;

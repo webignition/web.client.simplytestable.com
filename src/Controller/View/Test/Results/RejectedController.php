@@ -7,7 +7,6 @@ use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
@@ -24,7 +23,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class RejectedController extends AbstractRequiresValidOwnerController implements RequiresValidUser
+class RejectedController extends AbstractRequiresValidOwnerController
 {
     /**
      * @var TestService

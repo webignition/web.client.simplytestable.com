@@ -47,6 +47,12 @@ class ProgressControllerTest extends AbstractViewControllerTest
         'task_type_options' => [],
     ];
 
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
      *

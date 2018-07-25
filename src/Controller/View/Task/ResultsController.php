@@ -7,7 +7,6 @@ use App\Entity\Task\Task;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Model\TaskOutput\CssTextFileMessage;
 use App\Model\TaskOutput\JsTextFileMessage;
 use App\Model\TaskOutput\LinkIntegrityMessage;
@@ -32,7 +31,7 @@ use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
 use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
 use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNormalisationResult;
 
-class ResultsController extends AbstractRequiresValidOwnerController implements RequiresValidUser
+class ResultsController extends AbstractRequiresValidOwnerController
 {
     /**
      * @var TestService

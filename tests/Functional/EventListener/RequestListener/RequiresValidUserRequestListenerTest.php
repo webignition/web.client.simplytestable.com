@@ -2,13 +2,12 @@
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
-use App\Controller\View\Partials\RecentTestsController;
 use App\EventListener\RequiresValidUserRequestListener;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class OnKernelControllerRequiresValidUserTest extends AbstractKernelControllerTest
+class RequiresValidUserRequestListenerTest extends AbstractKernelRequestListenerTest
 {
     /**
      * {@inheritdoc}
@@ -29,26 +28,26 @@ class OnKernelControllerRequiresValidUserTest extends AbstractKernelControllerTe
      *
      * @throws \Exception
      */
-    public function testOnKernelController(array $httpFixtures, $expectedHasResponse, $expectedRedirectUrl = null)
+    public function testOnKernelRequest(array $httpFixtures, $expectedHasResponse, $expectedRedirectUrl = null)
     {
+        $this->assertTrue(true);
+
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $request = new Request();
+        $event = $this->createGetResponseEvent(new Request());
 
-        /* @var RecentTestsController $controller */
-        $controller = self::$container->get(RecentTestsController::class);
+        $this->requestListener->onKernelRequest($event);
 
-        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
-
-        $this->requestListener->onKernelController($event);
-
-        $this->assertEquals($expectedHasResponse, $controller->hasResponse());
+        $this->assertEquals($expectedHasResponse, $event->hasResponse());
 
         if ($expectedHasResponse) {
-            $response = $this->getControllerResponse($controller, RecentTestsController::class);
+            /* @var RedirectResponse $response */
+            $response = $event->getResponse();
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
+        } else {
+            $this->assertTrue(true);
         }
     }
 

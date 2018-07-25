@@ -22,6 +22,12 @@ class RequestControllerTest extends AbstractViewControllerTest
     const ROUTE_NAME = 'view_user_sign_up_request';
     const USER_EMAIL = 'user@example.com';
 
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     public function testIndexActionPublicUserGetRequest()
     {
         $this->client->request(

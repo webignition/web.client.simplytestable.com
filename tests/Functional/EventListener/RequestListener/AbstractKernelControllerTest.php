@@ -10,9 +10,7 @@ use App\EventListener\RequiresCompletedTestRequestListener;
 use App\EventListener\RequiresPrivateUserRequestListener;
 use App\EventListener\RequiresValidTestOwnerRequestListener;
 use App\EventListener\RequiresValidUserRequestListener;
-use App\Interfaces\Controller\IEFiltered;
 use App\Interfaces\Controller\RequiresPrivateUser;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Interfaces\Controller\SettableResponse;
 use App\Interfaces\Controller\Test\RequiresCompletedTest;
 use App\Interfaces\Controller\Test\RequiresValidOwner;
@@ -74,7 +72,7 @@ abstract class AbstractKernelControllerTest extends AbstractBaseTestCase
     }
 
     /**
-     * @param RequiresCompletedTest|RequiresValidOwner|IEFiltered|RequiresPrivateUser|RequiresValidUser $controller
+     * @param RequiresCompletedTest|RequiresValidOwner|RequiresPrivateUser $controller
      * @param string $baseClassName
      *
      * @return Response|RedirectResponse

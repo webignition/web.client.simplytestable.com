@@ -3,7 +3,6 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\View\Test\AbstractRequiresValidOwnerController;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Interfaces\Controller\Test\RequiresCompletedTest;
 use App\Entity\Test\Test;
@@ -13,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
 abstract class AbstractResultsController extends AbstractRequiresValidOwnerController implements
-    RequiresValidUser,
     RequiresValidOwner,
     RequiresCompletedTest
 {

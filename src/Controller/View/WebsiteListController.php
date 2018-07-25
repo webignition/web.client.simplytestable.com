@@ -5,13 +5,12 @@ namespace App\Controller\View;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Services\RemoteTestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class WebsiteListController implements RequiresValidUser
+class WebsiteListController
 {
     /**
      * @var Response|RedirectResponse|JsonResponse

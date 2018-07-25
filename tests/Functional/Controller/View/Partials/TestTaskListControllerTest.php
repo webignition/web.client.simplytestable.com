@@ -9,24 +9,18 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
+use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Tests\Functional\Controller\AbstractControllerTest;
-use App\Tests\Services\HttpMockHandler;
 
-class TestTaskListControllerTest extends AbstractControllerTest
+class TestTaskListControllerTest extends AbstractViewControllerTest
 {
     const ROUTE_NAME = 'view_partials_test_task_list';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
-
-    /**
-     * @var HttpMockHandler
-     */
-    private $httpMockHandler;
 
     /**
      * @var array
@@ -66,14 +60,10 @@ class TestTaskListControllerTest extends AbstractControllerTest
         ],
     ];
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
+    public function testIsIEFiltered()
     {
-        parent::setUp();
-
-        $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
     }
 
     public function testIndexActionInvalidUserGetRequest()

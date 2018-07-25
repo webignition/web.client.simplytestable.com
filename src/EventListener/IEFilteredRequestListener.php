@@ -32,19 +32,17 @@ class IEFilteredRequestListener
 
     /**
      * @param GetResponseEvent $event
-     *
-     * @return null|RedirectResponse
      */
     public function onKernelRequest(GetResponseEvent $event)
     {
         if (!$event->isMasterRequest()) {
-            return null;
+            return;
         }
 
         $request = $event->getRequest();
 
         if (Request::METHOD_GET !== $request->getMethod()) {
-            return null;
+            return;
         }
 
         $userAgentString = $request->headers->get('user-agent');
@@ -53,7 +51,7 @@ class IEFilteredRequestListener
         }
 
         if (empty($userAgentString)) {
-            return null;
+            return;
         }
 
         $isUsingOldIE =
@@ -70,7 +68,5 @@ class IEFilteredRequestListener
 
             $event->setResponse(new RedirectResponse($this->marketingSiteUrl));
         }
-
-        return null;
     }
 }

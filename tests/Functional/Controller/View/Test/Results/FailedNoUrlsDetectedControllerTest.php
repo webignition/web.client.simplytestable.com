@@ -44,6 +44,12 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         'task_type_options' => [],
     ];
 
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME, $this->routeParameters);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->httpMockHandler->appendFixtures([

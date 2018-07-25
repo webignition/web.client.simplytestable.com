@@ -5,7 +5,6 @@ namespace App\Controller\View\Partials;
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
@@ -17,9 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class TestUrlLimitNotificationController extends AbstractBaseViewController implements
-    RequiresValidUser,
-    RequiresValidOwner
+class TestUrlLimitNotificationController extends AbstractBaseViewController implements RequiresValidOwner
 {
     /**
      * @var TestService

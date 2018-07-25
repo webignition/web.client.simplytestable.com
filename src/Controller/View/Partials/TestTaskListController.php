@@ -6,7 +6,6 @@ use App\Controller\View\Test\AbstractRequiresValidOwnerController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Model\Task\Collection as TaskCollection;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
@@ -21,7 +20,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class TestTaskListController extends AbstractRequiresValidOwnerController implements RequiresValidUser
+class TestTaskListController extends AbstractRequiresValidOwnerController
 {
     /**
      * @var TestService

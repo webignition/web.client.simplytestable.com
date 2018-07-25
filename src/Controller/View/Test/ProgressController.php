@@ -4,7 +4,6 @@ namespace App\Controller\View\Test;
 
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheValidatorService;
@@ -29,7 +28,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-class ProgressController extends AbstractRequiresValidOwnerController implements RequiresValidUser
+class ProgressController extends AbstractRequiresValidOwnerController
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
 

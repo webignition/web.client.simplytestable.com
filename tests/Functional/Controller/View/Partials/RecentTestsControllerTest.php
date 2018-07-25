@@ -23,6 +23,12 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
     const ROUTE_NAME = 'view_partials_recenttests';
     const USER_EMAIL = 'user@example.com';
 
+    public function testIsIEFiltered()
+    {
+        $this->issueIERequest(self::ROUTE_NAME);
+        $this->assertIEFilteredRedirectResponse();
+    }
+
     public function testIndexActionInvalidUserGetRequest()
     {
         $this->httpMockHandler->appendFixtures([

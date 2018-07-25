@@ -5,7 +5,6 @@ namespace App\Controller\View\Test\Results;
 use App\Controller\AbstractBaseViewController;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
-use App\Interfaces\Controller\RequiresValidUser;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
 use App\Services\SystemUserService;
@@ -18,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class FailedNoUrlsDetectedController extends AbstractBaseViewController implements RequiresValidUser
+class FailedNoUrlsDetectedController extends AbstractBaseViewController
 {
     /**
      * @var TestService

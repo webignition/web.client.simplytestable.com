@@ -57,32 +57,32 @@ class TestControllerTest extends AbstractControllerTest
     }
 
     /**
-     * @dataProvider lockUnlockActionGetRequestDataProvider
+     * @dataProvider lockUnlockActionPostRequestDataProvider
      *
      * @param array $httpFixtures
      * @param string $routeName
      * @param array $routeParameters
      */
-    public function testLockUnlockActionGetRequest(array $httpFixtures, $routeName, array $routeParameters)
+    public function testLockUnlockActionPostRequest(array $httpFixtures, $routeName, array $routeParameters)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->client->request(
-            'GET',
+            'POST',
             $this->router->generate($routeName, $routeParameters)
         );
 
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
-        $this->assertTrue($response->isSuccessful());
 
+        $this->assertTrue($response->isSuccessful());
         $this->assertInstanceOf(Response::class, $response);
     }
 
     /**
      * @return array
      */
-    public function lockUnlockActionGetRequestDataProvider()
+    public function lockUnlockActionPostRequestDataProvider()
     {
         return [
             'lock action invalid owner' => [
@@ -282,6 +282,7 @@ class TestControllerTest extends AbstractControllerTest
     public function testRetestActionGetRequest()
     {
         $this->httpMockHandler->appendFixtures([
+            new \GuzzleHttp\Psr7\Response(),
             HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                 'id' => 2,
             ])),

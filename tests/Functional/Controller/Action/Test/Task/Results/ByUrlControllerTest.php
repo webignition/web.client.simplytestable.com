@@ -6,6 +6,8 @@ use App\Controller\Action\Test\Task\Results\ByUrlController;
 use App\Entity\Task\Task;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;
+use App\Tests\Services\HttpMockHandler;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 
@@ -48,6 +50,9 @@ class ByUrlControllerTest extends AbstractControllerTest
 
     public function testIndexActionGetRequest()
     {
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([new Response()]);
+
         $this->client->request(
             'GET',
             $this->router->generate('action_test_task_results_byurl', [
@@ -61,7 +66,8 @@ class ByUrlControllerTest extends AbstractControllerTest
         /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isRedirect('/http://example.com//1/2/results/'));
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('/http://example.com//1/2/results/', $response->getTargetUrl());
     }
 
     /**

@@ -3,13 +3,10 @@
 namespace App\Tests\Functional\EventListener\RequestListener;
 
 use App\EventListener\IEFilteredRequestListener;
-use App\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class IEFilteredRequestListenerTest extends AbstractBaseTestCase
+class IEFilteredRequestListenerTest extends AbstractKernelRequestListenerTest
 {
     const IE6_USER_AGENT = 'Mozilla/4.0 (MSIE 6.0; Windows NT 5.0)';
     const IE7_USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)';
@@ -22,11 +19,6 @@ class IEFilteredRequestListenerTest extends AbstractBaseTestCase
         .'Chrome/64.0.3282.186 Safari/537.36';
 
     /**
-     * @var IEFilteredRequestListener
-     */
-    private $requestListener;
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -34,6 +26,18 @@ class IEFilteredRequestListenerTest extends AbstractBaseTestCase
         parent::setUp();
 
         $this->requestListener = self::$container->get(IEFilteredRequestListener::class);
+    }
+
+    public function testOnKernelRequestPostRequest()
+    {
+        $request = new Request();
+        $request->setMethod('POST');
+
+        $event = $this->createGetResponseEvent($request);
+
+        $this->requestListener->onKernelRequest($event);
+
+        $this->assertFalse($event->hasResponse());
     }
 
     public function testRequest()
@@ -47,27 +51,6 @@ class IEFilteredRequestListenerTest extends AbstractBaseTestCase
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(getenv('MARKETING_SITE'), $response->getTargetUrl());
-    }
-
-    public function testOnKernelRequestSubRequest()
-    {
-        $event = $this->createGetResponseEvent(new Request(), HttpKernelInterface::SUB_REQUEST);
-
-        $this->requestListener->onKernelRequest($event);
-
-        $this->assertFalse($event->hasResponse());
-    }
-
-    public function testOnKernelRequestPostRequest()
-    {
-        $request = new Request();
-        $request->setMethod('POST');
-
-        $event = $this->createGetResponseEvent($request);
-
-        $this->requestListener->onKernelRequest($event);
-
-        $this->assertFalse($event->hasResponse());
     }
 
     /**
@@ -137,16 +120,5 @@ class IEFilteredRequestListenerTest extends AbstractBaseTestCase
                 'expectedHasResponse' => false,
             ],
         ];
-    }
-
-    /**
-     * @param Request $request
-     * @param int $requestType
-     *
-     * @return GetResponseEvent
-     */
-    private function createGetResponseEvent(Request $request, int $requestType = HttpKernelInterface::MASTER_REQUEST)
-    {
-        return new GetResponseEvent(self::$container->get('kernel'), $request, $requestType);
     }
 }
