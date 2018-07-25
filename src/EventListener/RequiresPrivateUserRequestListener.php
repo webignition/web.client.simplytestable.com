@@ -2,10 +2,9 @@
 
 namespace App\EventListener;
 
-use App\Services\RequiresPrivateUserRedirectRouteProvider;
+use App\Services\RequiresPrivateUserResponseProvider;
 use App\Services\UrlMatcher;
 use App\Services\UserManager;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -34,29 +33,29 @@ class RequiresPrivateUserRequestListener
     private $urlMatcher;
 
     /**
-     * @var RequiresPrivateUserRedirectRouteProvider
+     * @var RequiresPrivateUserResponseProvider
      */
-    private $requiresPrivateUserRedirectRouteProvider;
+    private $requiresPrivateUserResponseProvider;
 
     /**
      * @param UserManager $userManager
      * @param SessionInterface $session
      * @param RouterInterface $router
      * @param UrlMatcher $urlMatcher
-     * @param RequiresPrivateUserRedirectRouteProvider $requiresPrivateUserRedirectRouteProvider
+     * @param RequiresPrivateUserResponseProvider $requiresPrivateUserResponseProvider
      */
     public function __construct(
         UserManager $userManager,
         SessionInterface $session,
         RouterInterface $router,
         UrlMatcher $urlMatcher,
-        RequiresPrivateUserRedirectRouteProvider $requiresPrivateUserRedirectRouteProvider
+        RequiresPrivateUserResponseProvider $requiresPrivateUserResponseProvider
     ) {
         $this->userManager = $userManager;
         $this->session = $session;
         $this->router = $router;
         $this->urlMatcher = $urlMatcher;
-        $this->requiresPrivateUserRedirectRouteProvider = $requiresPrivateUserRedirectRouteProvider;
+        $this->requiresPrivateUserResponseProvider = $requiresPrivateUserResponseProvider;
     }
 
     /**
@@ -75,21 +74,13 @@ class RequiresPrivateUserRequestListener
         if ($requiresPrivateUser && !$this->userManager->isLoggedIn()) {
             $this->session->getFlashBag()->set('user_signin_error', 'account-not-logged-in');
 
-            $redirectRoute = $this->requiresPrivateUserRedirectRouteProvider->getRouteForUrlPathPattern(
-                $this->urlMatcher->getMatchPattern($requestPath),
+            $redirectResponse = $this->requiresPrivateUserResponseProvider->getResponse(
                 $request->getMethod(),
                 $requestPath
             );
 
-            if (!empty($redirectRoute)) {
-                $signInRedirectResponse = new RedirectResponse($this->router->generate(
-                    'view_user_sign_in',
-                    [
-                        'redirect' => base64_encode(json_encode(['route' => $redirectRoute]))
-                    ]
-                ));
-
-                $event->setResponse($signInRedirectResponse);
+            if (!empty($redirectResponse)) {
+                $event->setResponse($redirectResponse);
             }
         }
     }

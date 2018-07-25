@@ -1,12 +1,4 @@
-/preparing/stats/$:
-  type: JsonResponse
-  args: [0, 0, 0, 0, 0]
-
 /finished-summary/$:
-  type: Response
-  statusCode: 400
-
-/tasklist/$:
   type: Response
   statusCode: 400
 
@@ -28,6 +20,9 @@
   type: JsonResponse
 
 /tasks/ids/unretrieved/:
+  type: JsonResponse
+
+/preparing/stats/$:
   type: JsonResponse
 
 .*:
