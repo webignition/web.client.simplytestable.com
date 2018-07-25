@@ -4,6 +4,8 @@
 - ^/history/
 - /finished-summary/$
 - /results/
+- /results/$
+- /results$
 - /url-limit-notification/$
 - /progress/$
 - /lock/$

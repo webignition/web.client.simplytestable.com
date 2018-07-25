@@ -16,13 +16,12 @@ use App\Services\Configuration\TestOptionsConfiguration;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use App\Interfaces\Controller\RequiresValidUser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class DashboardController extends AbstractBaseViewController implements RequiresValidUser
+class DashboardController extends AbstractBaseViewController
 {
     /**
      * @var TaskTypeService

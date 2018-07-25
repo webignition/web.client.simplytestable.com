@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
-interface RequiresPrivateUser extends RequiresValidUser
+interface RequiresPrivateUser extends SettableResponse
 {
     /**
      * @param RouterInterface $router
