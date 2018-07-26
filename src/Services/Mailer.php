@@ -78,6 +78,24 @@ class Mailer
     }
 
     /**
+     * @param array $details
+     *
+     * @throws PostmarkException
+     */
+    public function sendInvalidAdminCredentialsNotification(array $details)
+    {
+        $sender = $this->mailConfiguration->getSender('default');
+
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            'jon@simplytestable.com',
+            'Invalid admin user credentials',
+            null,
+            json_encode($details)
+        );
+    }
+
+    /**
      * @param string $routeName
      * @param array $routeParameters
      *

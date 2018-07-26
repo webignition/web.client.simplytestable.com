@@ -58,6 +58,37 @@ class MailerTest extends AbstractBaseTestCase
         $mailer->sendSignUpConfirmationToken('user@example.com', 'token-value');
     }
 
+    public function testSendInvalidAdminCredentialsNotification()
+    {
+        /* @var PostmarkClient|MockInterface $postmarkClient */
+        $postmarkClient = \Mockery::mock(PostmarkClient::class);
+        $postmarkClient
+            ->shouldReceive('sendEmail')
+            ->withArgs(function ($from, $to, $subject, $htmlBody, $textBody) {
+                $this->assertEquals('robot@simplytestable.com', $from);
+                $this->assertEquals('jon@simplytestable.com', $to);
+                $this->assertEquals('Invalid admin user credentials', $subject);
+                $this->assertNull($htmlBody);
+                $this->assertEquals('{"call":"FooService::bar()","args":{"foo":"bar"}}', $textBody);
+
+                return true;
+            });
+
+        $mailer = new Mailer(
+            self::$container->get(MailConfiguration::class),
+            self::$container->get(RouterInterface::class),
+            $postmarkClient,
+            MockFactory::createTwig()
+        );
+
+        $mailer->sendInvalidAdminCredentialsNotification([
+            'call' => 'FooService::bar()',
+            'args' => [
+                'foo' => 'bar',
+            ],
+        ]);
+    }
+
     protected function tearDown()
     {
         parent::tearDown();
