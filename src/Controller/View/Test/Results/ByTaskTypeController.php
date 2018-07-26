@@ -157,6 +157,18 @@ class ByTaskTypeController extends AbstractResultsController
             ));
         }
 
+        if ($website !== (string)$test->getWebsite()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results_by_task_type_filter',
+                [
+                    'website' => $remoteTest->getWebsite(),
+                    'test_id' => $test_id,
+                    'task_type' => str_replace(' ', '+', $request->attributes->get('task_type')),
+                    'filter' => $filter
+                ]
+            ));
+        }
+
         $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,

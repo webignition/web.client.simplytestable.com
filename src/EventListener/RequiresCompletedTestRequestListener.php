@@ -3,13 +3,19 @@
 namespace App\EventListener;
 
 use App\Services\TestService;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use App\Interfaces\Controller\Test\RequiresCompletedTest;
+use App\Services\UrlMatcher;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Entity\Test\Test;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 
-class RequiresCompletedTestRequestListener extends AbstractRequestListener
+class RequiresCompletedTestRequestListener
 {
+    /**
+     * @var UrlMatcher
+     */
+    private $urlMatcher;
+
     /**
      * @var TestService
      */
@@ -20,61 +26,69 @@ class RequiresCompletedTestRequestListener extends AbstractRequestListener
      */
     private $router;
 
-    /**
-     * @param TestService $testService
-     * @param RouterInterface $router
-     */
-    public function __construct(TestService $testService, RouterInterface $router)
+    public function __construct(UrlMatcher $urlMatcher, TestService $testService, RouterInterface $router)
     {
+        $this->urlMatcher = $urlMatcher;
         $this->testService = $testService;
         $this->router = $router;
     }
 
     /**
-     * @param FilterControllerEvent $event
+     * @param GetResponseEvent $event
      */
-    public function onKernelController(FilterControllerEvent $event)
+    public function onKernelRequest(GetResponseEvent $event)
     {
-        if (!parent::onKernelController($event)) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
-        if ($this->controller instanceof RequiresCompletedTest) {
-            $request = $event->getRequest();
+        $request = $event->getRequest();
 
-            $requestAttributes = $request->attributes;
+        if (!$this->urlMatcher->match($request->getPathInfo())) {
+            return;
+        }
 
-            $website = $requestAttributes->get('website');
-            $testId = $requestAttributes->get('test_id');
+        $requestAttributes = $request->attributes;
 
-            $test = $this->testService->get($website, $testId);
+        $website = $requestAttributes->get('website');
+        $testId = $requestAttributes->get('test_id');
 
-            /* @var RequiresCompletedTest $controller */
-            $controller = $this->controller;
+        $test = $this->testService->get($website, $testId);
 
-            if (Test::STATE_FAILED_NO_SITEMAP === $test->getState()) {
-                $controller->setResponse($controller->getFailedNoSitemapTestResponse($this->router, $request));
+        if (Test::STATE_FAILED_NO_SITEMAP === $test->getState()) {
+            $event->setResponse(new RedirectResponse($this->router->generate(
+                'view_test_results_failed_no_urls_detected',
+                [
+                    'website' => $website,
+                    'test_id' => $testId
+                ]
+            )));
 
-                return;
-            }
+            return;
+        }
 
-            if (Test::STATE_REJECTED === $test->getState()) {
-                $controller->setResponse($controller->getRejectedTestResponse($this->router, $request));
+        if (Test::STATE_REJECTED === $test->getState()) {
+            $event->setResponse(new RedirectResponse($this->router->generate(
+                'view_test_results_rejected',
+                [
+                    'website' => $website,
+                    'test_id' => $testId
+                ]
+            )));
 
-                return;
-            }
+            return;
+        }
 
-            if (!$this->testService->isFinished($test)) {
-                $controller->setResponse($controller->getNotFinishedTestResponse($this->router, $request));
+        if (!$this->testService->isFinished($test)) {
+            $event->setResponse(new RedirectResponse($this->router->generate(
+                'view_test_progress',
+                [
+                    'website' => $website,
+                    'test_id' => $testId
+                ]
+            )));
 
-                return;
-            }
-
-            if ($test->getWebsite() != $website) {
-                $controller->setResponse($controller->getRequestWebsiteMismatchResponse($this->router, $request));
-
-                return;
-            }
+            return;
         }
     }
 }

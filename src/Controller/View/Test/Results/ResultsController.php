@@ -216,6 +216,16 @@ class ResultsController extends AbstractResultsController
             ));
         }
 
+        if ($website !== (string)$test->getWebsite()) {
+            return new RedirectResponse($this->generateUrl(
+                'redirect_website_test',
+                [
+                    'website' => $remoteTest->getWebsite(),
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
         $response = $this->cacheValidator->createResponse($request, [
