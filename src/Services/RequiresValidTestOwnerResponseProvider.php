@@ -62,7 +62,7 @@ class RequiresValidTestOwnerResponseProvider
                     ]);
 
                     return new RedirectResponse($this->router->generate(
-                        'view_user_sign_in',
+                        'sign_in_render',
                         [
                             'redirect' => base64_encode($redirectParameters)
                         ]

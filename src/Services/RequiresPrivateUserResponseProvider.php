@@ -36,7 +36,7 @@ class RequiresPrivateUserResponseProvider
 
                     if (preg_match($regex, $requestPath)) {
                         return new RedirectResponse($this->router->generate(
-                            'view_user_sign_in',
+                            'sign_in_render',
                             [
                                 'redirect' => base64_encode(json_encode(['route' => $routeName]))
                             ]

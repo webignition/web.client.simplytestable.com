@@ -10,15 +10,12 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\UserAlreadyExistsException;
-use App\Request\User\SignInRequest;
 use App\Request\User\SignUpRequest;
 use App\Resque\Job\EmailListSubscribeJob;
 use App\Services\Configuration\MailConfiguration;
 use App\Services\CouponService;
 use App\Services\RedirectResponseFactory;
-use App\Services\Request\Factory\User\SignInRequestFactory;
 use App\Services\Request\Factory\User\SignUpRequestFactory;
-use App\Services\Request\Validator\User\SignInRequestValidator;
 use App\Services\Request\Validator\User\UserAccountRequestValidator;
 use App\Services\ResqueQueueService;
 use App\Services\UserManager;
@@ -30,7 +27,6 @@ use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
-use webignition\SimplyTestableUserModel\User;
 
 class UserController extends AbstractController
 {
@@ -115,129 +111,6 @@ class UserController extends AbstractController
         $response->headers->clearCookie(UserManager::USER_COOKIE_KEY, '/', '.simplytestable.com');
 
         return $response;
-    }
-
-    /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param Twig_Environment $twig
-     * @param SignInRequestFactory $signInRequestFactory
-     * @param SignInRequestValidator $signInRequestValidator
-     *
-     * @return RedirectResponse
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     */
-    public function signInSubmitAction(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig,
-        SignInRequestFactory $signInRequestFactory,
-        SignInRequestValidator $signInRequestValidator
-    ) {
-        $signInRequest = $signInRequestFactory->create();
-        $signInRequestValidator->validate($signInRequest);
-
-        $email = $signInRequest->getEmail();
-        $password = $signInRequest->getPassword();
-        $staySignedIn = $signInRequest->getStaySignedIn();
-        $redirect = $signInRequest->getRedirect();
-
-        $flashBag = $this->flashBag;
-
-        $signInRedirectResponse = $this->redirectResponseFactory->createSignInRedirectResponse($signInRequest);
-
-        if (false === $signInRequestValidator->getIsValid()) {
-            $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, $signInRequestValidator->getInvalidFieldName());
-            $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, $signInRequestValidator->getInvalidFieldState());
-
-            return $signInRedirectResponse;
-        }
-
-        $user = new User($email, $password);
-        $this->userManager->setUser($user);
-
-        if (!$this->userService->authenticate()) {
-            if (!$this->userService->exists()) {
-                $this->userManager->clearSessionUser();
-
-                $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
-                $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_INVALID_USER);
-
-                return $signInRedirectResponse;
-            }
-
-            if ($this->userService->isEnabled()) {
-                $this->userManager->clearSessionUser();
-
-                $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
-                $flashBag->set(
-                    self::FLASH_SIGN_IN_ERROR_STATE_KEY,
-                    self::FLASH_SIGN_IN_ERROR_STATE_AUTHENTICATION_FAILURE
-                );
-
-                return $signInRedirectResponse;
-            }
-
-            $this->userManager->clearSessionUser();
-
-            $token = $this->userService->getConfirmationToken($email);
-
-            $this->sendConfirmationToken($mailConfiguration, $postmarkClient, $twig, $email, $token);
-
-            $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
-            $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED);
-
-            return $signInRedirectResponse;
-        }
-
-        if (!$this->userService->isEnabled()) {
-            $this->userManager->clearSessionUser();
-
-            $token = $this->userService->getConfirmationToken($email);
-            $this->sendConfirmationToken($mailConfiguration, $postmarkClient, $twig, $email, $token);
-
-            $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
-            $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED);
-
-            return $signInRedirectResponse;
-        }
-
-        $response = $this->createPostSignInRedirectResponse($redirect);
-
-        if ($staySignedIn) {
-            $response->headers->setCookie($this->userManager->createUserCookie());
-        }
-
-        return $response;
-    }
-
-    /**
-     * @param string $requestRedirect
-     *
-     * @return RedirectResponse
-     */
-    private function createPostSignInRedirectResponse($requestRedirect)
-    {
-        $redirectValues = json_decode(base64_decode($requestRedirect), true);
-
-        if (!is_array($redirectValues) || !isset($redirectValues['route'])) {
-            return $this->createDashboardRedirectResponse();
-        }
-
-        $routeName = $redirectValues['route'];
-        $routeParameters = isset($redirectValues['parameters']) ? $redirectValues['parameters'] : [];
-
-        try {
-            return new RedirectResponse($this->generateUrl($routeName, $routeParameters));
-        } catch (\Exception $exception) {
-        }
-
-        return $this->createDashboardRedirectResponse();
     }
 
     /**
@@ -477,7 +350,7 @@ class UserController extends AbstractController
             $redirectParameters['redirect'] = $requestRedirectCookie;
         }
 
-        return new RedirectResponse($this->generateUrl('view_user_sign_in', $redirectParameters));
+        return new RedirectResponse($this->generateUrl('sign_in_render', $redirectParameters));
     }
 
     /**

@@ -1,7 +1,12 @@
 <?php
 
-namespace App\Tests\Functional\Controller\Action\User\User;
+namespace App\Tests\Functional\Controller\User;
 
+use App\Controller\User\SignInController;
+use App\Services\RedirectResponseFactory;
+use App\Services\UserService;
+use App\Tests\Functional\Controller\AbstractControllerTest;
+use App\Tests\Services\HttpMockHandler;
 use Egulias\EmailValidator\EmailValidator;
 use Postmark\Models\PostmarkException;
 use Postmark\PostmarkClient;
@@ -23,14 +28,15 @@ use App\Tests\Services\PostmarkMessageVerifier;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
-class SignInSubmitActionTest extends AbstractUserControllerTest
+class SignInSubmitActionTest extends AbstractControllerTest
 {
     const EMAIL = 'user@example.com';
     const CONFIRMATION_TOKEN = 'confirmation-token-here';
 
-    public function testSignInSubmitActionPostRequest()
+    public function testSignInActionPostRequest()
     {
-        $this->httpMockHandler->appendFixtures([
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
+        $httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
@@ -38,7 +44,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
 
         $this->client->request(
             'POST',
-            $this->router->generate('action_user_sign_in_submit'),
+            $this->router->generate('sign_in_action'),
             [
                 'email' => self::EMAIL,
                 'password' => 'foo',
@@ -51,7 +57,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         $this->assertEquals('/', $response->getTargetUrl());
     }
 
-    public function testSignInSubmitActionBadRequest()
+    public function testSignInActionBadRequest()
     {
         $request = new Request();
         $signInRequestValidator = \Mockery::mock(SignInRequestValidator::class);
@@ -76,7 +82,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
 
         $flashBag = self::$container->get(FlashBagInterface::class);
 
-        $response = $this->callSignInSubmitAction($request, $signInRequestValidator);
+        $response = $this->callSignInAction($request, $signInRequestValidator);
 
         $this->assertEquals('/signin/?stay-signed-in=0', $response->getTargetUrl());
         $this->assertEquals(
@@ -89,7 +95,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     }
 
     /**
-     * @dataProvider signInSubmitActionAuthenticationFailureDataProvider
+     * @dataProvider signInActionAuthenticationFailureDataProvider
      *
      * @param array $httpFixtures
      * @param array $expectedFlashBagValues
@@ -99,20 +105,21 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
-    public function testSignInSubmitActionAuthenticationFailure(
+    public function testSignInActionAuthenticationFailure(
         array $httpFixtures,
         array $expectedFlashBagValues
     ) {
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
         $flashBag = self::$container->get(FlashBagInterface::class);
 
-        $this->httpMockHandler->appendFixtures($httpFixtures);
+        $httpMockHandler->appendFixtures($httpFixtures);
 
         $request = new Request([], [
             'email' => self::EMAIL,
             'password' => 'foo',
         ]);
 
-        $response = $this->callSignInSubmitAction($request);
+        $response = $this->callSignInAction($request);
 
         $this->assertEquals(
             '/signin/?email=user%40example.com&stay-signed-in=0',
@@ -124,7 +131,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     /**
      * @return array
      */
-    public function signInSubmitActionAuthenticationFailureDataProvider()
+    public function signInActionAuthenticationFailureDataProvider()
     {
         return [
             'user does not exist' => [
@@ -154,7 +161,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     }
 
     /**
-     * @dataProvider signInSubmitActionResendConfirmationTokenDataProvider
+     * @dataProvider signInActionResendConfirmationTokenDataProvider
      *
      * @param array $httpFixtures
      *
@@ -164,13 +171,14 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws MailConfigurationException
      * @throws PostmarkException
      */
-    public function testSignInSubmitActionResendConfirmationToken(array $httpFixtures)
+    public function testSignInActionResendConfirmationToken(array $httpFixtures)
     {
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
         $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
-        $this->httpMockHandler->appendFixtures(array_merge($httpFixtures, [
+        $httpMockHandler->appendFixtures(array_merge($httpFixtures, [
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]));
 
@@ -179,7 +187,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             'password' => 'foo',
         ]);
 
-        $response = $this->callSignInSubmitAction($request);
+        $response = $this->callSignInAction($request);
 
         $this->assertEquals(
             sprintf('/signin/?email=%s&stay-signed-in=0', urlencode(self::EMAIL)),
@@ -221,7 +229,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     /**
      * @return array
      */
-    public function signInSubmitActionResendConfirmationTokenDataProvider()
+    public function signInActionResendConfirmationTokenDataProvider()
     {
         return [
             'authentication failure and user is not enabled' => [
@@ -243,7 +251,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     }
 
     /**
-     * @dataProvider signInSubmitActionSuccessDataProvider
+     * @dataProvider signInActionSuccessDataProvider
      *
      * @param Request $request
      * @param $expectedResponseHasUserCookie
@@ -254,18 +262,20 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
-    public function testSignInSubmitActionSuccess(
+    public function testSignInActionSuccess(
         Request $request,
         $expectedResponseHasUserCookie,
         $expectedRedirectUrl
     ) {
-        $this->httpMockHandler->appendFixtures([
+        $httpMockHandler = self::$container->get(HttpMockHandler::class);
+
+        $httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $response = $this->callSignInSubmitAction($request);
+        $response = $this->callSignInAction($request);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
@@ -283,7 +293,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
     /**
      * @return array
      */
-    public function signInSubmitActionSuccessDataProvider()
+    public function signInActionSuccessDataProvider()
     {
         return [
             'stay-signed-in false' => [
@@ -377,7 +387,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      * @throws MailConfigurationException
      * @throws PostmarkException
      */
-    private function callSignInSubmitAction(Request $request, $signInRequestValidator = null)
+    private function callSignInAction(Request $request, $signInRequestValidator = null)
     {
         $requestStack = new RequestStack();
         $requestStack->push($request);
@@ -388,12 +398,17 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             $signInRequestValidator = new SignInRequestValidator(new EmailValidator());
         }
 
-        return $this->userController->signInSubmitAction(
+        /* @var SignInController $signInController */
+        $signInController = self::$container->get(SignInController::class);
+
+        return $signInController->signInAction(
             self::$container->get(MailConfiguration::class),
             self::$container->get(PostmarkClient::class),
-            self::$container->get('twig'),
             $signInRequestFactory,
-            $signInRequestValidator
+            $signInRequestValidator,
+            self::$container->get(FlashBagInterface::class),
+            self::$container->get(RedirectResponseFactory::class),
+            self::$container->get(UserService::class)
         );
     }
 
