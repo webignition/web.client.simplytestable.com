@@ -14,6 +14,7 @@ use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
@@ -140,32 +141,23 @@ class PlanControllerTest extends AbstractAccountControllerTest
      * @dataProvider indexActionRenderDataProvider
      *
      * @param array $httpFixtures
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testIndexActionRender(
-        array $httpFixtures,
-        array $flashBagValues,
-        Twig_Environment $twig
-    ) {
-        $session = self::$container->get('session');
+    public function testIndexActionRender(array $httpFixtures, array $flashBagMessages, Twig_Environment $twig)
+    {
         $userManager = self::$container->get(UserManager::class);
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $user = new User(self::USER_EMAIL);
-
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $flashBag->setAll($flashBagMessages);
 
         /* @var PlanController $planController */
         $planController = self::$container->get(PlanController::class);
@@ -294,8 +286,8 @@ class PlanControllerTest extends AbstractAccountControllerTest
                     ])),
                 ],
                 'flashBagValues' => [
-                    'plan_subscribe_error' => 403,
-                    'plan_subscribe_success' => 'success',
+                    'plan_subscribe_error' => [403],
+                    'plan_subscribe_success' => ['success'],
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [

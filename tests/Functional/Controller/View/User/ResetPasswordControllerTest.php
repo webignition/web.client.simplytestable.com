@@ -13,6 +13,8 @@ use App\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
@@ -69,7 +71,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
      * @dataProvider chooseActionRenderDataProvider
      *
      * @param array $httpFixtures
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Request $request
      * @param string $token
      * @param Twig_Environment $twig
@@ -80,24 +82,19 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
      */
     public function testChooseActionRender(
         array $httpFixtures,
-        array $flashBagValues,
+        array $flashBagMessages,
         Request $request,
         $token,
         Twig_Environment $twig
     ) {
-        $session = self::$container->get('session');
         $userManager = self::$container->get(UserManager::class);
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $user = new User(self::USER_EMAIL);
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $flashBag->setAll($flashBagMessages);
 
         /* @var ResetPasswordController $resetPasswordController */
         $resetPasswordController = self::$container->get(ResetPasswordController::class);
@@ -117,7 +114,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(self::TOKEN),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'token' => 'invalid-token',
                 'twig' => MockFactory::createTwig([
@@ -139,7 +136,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(self::TOKEN),
                 ],
-                'flashBagValues' => [
+                'flashBagMessages' => [
                     ResetPasswordActionController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
                 ],
                 'request' => new Request(),
@@ -163,9 +160,10 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(self::TOKEN),
                 ],
-                'flashBagValues' => [
-                    ResetPasswordActionController::FLASH_BAG_REQUEST_ERROR_KEY =>
+                'flashBagMessages' => [
+                    ResetPasswordActionController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         ResetPasswordActionController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
+                    ]
                 ],
                 'request' => new Request(),
                 'token' => self::TOKEN,
@@ -192,7 +190,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(self::TOKEN),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'token' => self::TOKEN,
                 'twig' => MockFactory::createTwig([
@@ -215,7 +213,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(self::TOKEN),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request([
                     'stay-signed-in' => 1,
                 ]),
@@ -291,22 +289,17 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
     /**
      * @dataProvider requestActionRenderDataProvider
      *
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Request $request
      * @param Twig_Environment $twig
      */
-    public function testRequestActionRender(
-        array $flashBagValues,
-        Request $request,
-        Twig_Environment $twig
-    ) {
-        $session = self::$container->get('session');
+    public function testRequestActionRender(array $flashBagMessages, Request $request, Twig_Environment $twig)
+    {
+        $session = self::$container->get(SessionInterface::class);
+        $session->start();
 
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $flashBag = self::$container->get(FlashBagInterface::class);
+        $flashBag->setAll($flashBagMessages);
 
         /* @var ResetPasswordController $resetPasswordController */
         $resetPasswordController = self::$container->get(ResetPasswordController::class);
@@ -323,7 +316,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
     {
         return [
             'no email' => [
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -341,7 +334,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'has email' => [
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request([
                     'email' => self::USER_EMAIL,
                 ]),
@@ -361,9 +354,10 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'has user_reset_password_error' => [
-                'flashBagValues' => [
-                    ResetPasswordActionController::FLASH_BAG_REQUEST_ERROR_KEY =>
+                'flashBagMessages' => [
+                    ResetPasswordActionController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         ResetPasswordActionController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK,
+                    ]
                 ],
                 'request' => new Request([
                     'email' => self::USER_EMAIL,
@@ -387,9 +381,10 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'has user_reset_password_confirmation' => [
-                'flashBagValues' => [
-                    ResetPasswordActionController::FLASH_BAG_REQUEST_SUCCESS_KEY =>
+                'flashBagMessages' => [
+                    ResetPasswordActionController::FLASH_BAG_REQUEST_SUCCESS_KEY => [
                         ResetPasswordActionController::FLASH_BAG_REQUEST_MESSAGE_SUCCESS,
+                    ]
                 ],
                 'request' => new Request([
                     'email' => self::USER_EMAIL,

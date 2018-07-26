@@ -14,6 +14,7 @@ use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Twig_Environment;
 use webignition\Model\Stripe\Invoice\Invoice;
 use webignition\SimplyTestableUserModel\User;
@@ -116,7 +117,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
      * @dataProvider indexActionRenderDataProvider
      *
      * @param array $httpFixtures
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
@@ -124,26 +125,16 @@ class AccountControllerTest extends AbstractAccountControllerTest
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testIndexActionRender(
-        array $httpFixtures,
-        array $flashBagValues,
-        Twig_Environment $twig
-    ) {
+    public function testIndexActionRender(array $httpFixtures, array $flashBagMessages, Twig_Environment $twig)
+    {
         $userManager = self::$container->get(UserManager::class);
-
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $user = new User(self::USER_EMAIL);
-
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $flashBag->setAll($flashBagMessages);
 
         /* @var AccountController $accountController */
         $accountController = self::$container->get(AccountController::class);
@@ -182,7 +173,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                     HttpResponseFactory::createJsonResponse([]),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -238,7 +229,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                     HttpResponseFactory::createJsonResponse([]),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -306,7 +297,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                     HttpResponseFactory::createJsonResponse([]),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -377,7 +368,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                     HttpResponseFactory::createJsonResponse([]),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -453,7 +444,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                     ]),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -520,7 +511,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                     ]),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -580,7 +571,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                         'token' => 'token-value',
                     ]),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -645,18 +636,18 @@ class AccountControllerTest extends AbstractAccountControllerTest
                     HttpResponseFactory::createJsonResponse([]),
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'flashBagValues' => [
-                    'user_account_details_update_notice' => 'foo1',
-                    'user_account_details_update_email' => 'foo2',
-                    'user_account_details_update_email_confirm_notice' => 'foo3',
-                    'user_account_card_exception_message' => 'foo4',
-                    'user_account_card_exception_param' => 'foo5',
-                    'user_account_card_exception_code' => 'foo6',
-                    'user_account_details_resend_email_change_notice' => 'foo7',
-                    'user_account_details_resend_email_change_error' => 'foo8',
-                    'user_account_details_update_email_request_notice' => 'foo9',
-                    'user_account_details_update_password_request_notice' => 'foo10',
-                    'user_account_newssubscriptions_update' => 'foo11',
+                'flashBagMessages' => [
+                    'user_account_details_update_notice' => ['foo1'],
+                    'user_account_details_update_email' => ['foo2'],
+                    'user_account_details_update_email_confirm_notice' => ['foo3'],
+                    'user_account_card_exception_message' => ['foo4'],
+                    'user_account_card_exception_param' => ['foo5'],
+                    'user_account_card_exception_code' => ['foo6'],
+                    'user_account_details_resend_email_change_notice' => ['foo7'],
+                    'user_account_details_resend_email_change_error' => ['foo8'],
+                    'user_account_details_update_email_request_notice' => ['foo9'],
+                    'user_account_details_update_password_request_notice' => ['foo10'],
+                    'user_account_newssubscriptions_update' => ['foo11'],
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [

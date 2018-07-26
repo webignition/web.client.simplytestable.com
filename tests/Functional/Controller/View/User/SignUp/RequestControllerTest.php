@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig_Environment;
 
 class RequestControllerTest extends AbstractViewControllerTest
@@ -42,24 +44,22 @@ class RequestControllerTest extends AbstractViewControllerTest
     /**
      * @dataProvider indexActionRenderDataProvider
      *
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Request $request
      * @param Twig_Environment $twig
      * @param bool $expectedHasRedirectCookie
      */
     public function testIndexActionRender(
-        array $flashBagValues,
+        array $flashBagMessages,
         Request $request,
         Twig_Environment $twig,
         $expectedHasRedirectCookie
     ) {
-        $session = self::$container->get('session');
+        $session = self::$container->get(SessionInterface::class);
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $session->start();
+        $flashBag->setAll($flashBagMessages);
 
         /* @var RequestController $requestController */
         $requestController = self::$container->get(RequestController::class);
@@ -88,7 +88,7 @@ class RequestControllerTest extends AbstractViewControllerTest
     {
         return [
             'no request data' => [
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -112,7 +112,7 @@ class RequestControllerTest extends AbstractViewControllerTest
                 'expectedHasRedirectCookie' => false,
             ],
             'invalid plan' => [
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request([
                     'plan' => 'foo',
                 ]),
@@ -138,7 +138,7 @@ class RequestControllerTest extends AbstractViewControllerTest
                 'expectedHasRedirectCookie' => false,
             ],
             'request has email, plan, redirect' => [
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request([
                     'email' => self::USER_EMAIL,
                     'plan' => 'agency',
@@ -166,11 +166,9 @@ class RequestControllerTest extends AbstractViewControllerTest
                 'expectedHasRedirectCookie' => true,
             ],
             'invalid email with error_field and error_state' => [
-                'flashBagValues' => [
-                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY =>
-                        SignUpRequest::PARAMETER_EMAIL,
-                    UserController::FLASH_SIGN_UP_ERROR_STATE_KEY =>
-                        UserAccountRequestValidator::STATE_INVALID,
+                'flashBagMessages' => [
+                    UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [SignUpRequest::PARAMETER_EMAIL],
+                    UserController::FLASH_SIGN_UP_ERROR_STATE_KEY => [UserAccountRequestValidator::STATE_INVALID],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
@@ -195,9 +193,10 @@ class RequestControllerTest extends AbstractViewControllerTest
                 'expectedHasRedirectCookie' => false,
             ],
             'user_create_error' => [
-                'flashBagValues' => [
-                    UserController::FLASH_SIGN_UP_ERROR_KEY =>
+                'flashBagMessages' => [
+                    UserController::FLASH_SIGN_UP_ERROR_KEY => [
                         UserController::FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_READ_ONLY,
+                    ],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
@@ -225,9 +224,10 @@ class RequestControllerTest extends AbstractViewControllerTest
                 'expectedHasRedirectCookie' => false,
             ],
             'user_create_confirmation' => [
-                'flashBagValues' => [
-                     UserController::FLASH_SIGN_UP_SUCCESS_KEY =>
-                        UserController::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
+                'flashBagMessages' => [
+                     UserController::FLASH_SIGN_UP_SUCCESS_KEY => [
+                         UserController::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
+                     ],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
@@ -252,7 +252,7 @@ class RequestControllerTest extends AbstractViewControllerTest
                 'expectedHasRedirectCookie' => false,
             ],
             'has coupon' => [
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request([], [], [], [
                     CouponService::COUPON_COOKIE_NAME => 'TMS',
                 ]),

@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\Action\SignUp\User\ConfirmController as ActionConfirmController;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
@@ -54,7 +55,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRenderDataProvider
      *
      * @param array $httpFixtures
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Request $request
      * @param Twig_Environment $twig
      *
@@ -62,24 +63,18 @@ class ConfirmControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionRender(
         array $httpFixtures,
-        array $flashBagValues,
+        array $flashBagMessages,
         Request $request,
         Twig_Environment $twig
     ) {
-        $session = self::$container->get('session');
         $userManager = self::$container->get(UserManager::class);
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $user = new User(self::USER_EMAIL);
-
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $flashBag->setAll($flashBagMessages);
 
         /* @var ConfirmController $confirmController */
         $confirmController = self::$container->get(ConfirmController::class);
@@ -99,7 +94,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -127,7 +122,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -153,7 +148,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request([
                     'token' => 'foo',
                 ]),
@@ -181,9 +176,10 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'flashBagValues' => [
-                    ActionConfirmController::FLASH_BAG_TOKEN_RESEND_SUCCESS_KEY =>
+                'flashBagMessages' => [
+                    ActionConfirmController::FLASH_BAG_TOKEN_RESEND_SUCCESS_KEY => [
                         ActionConfirmController::FLASH_BAG_TOKEN_RESEND_SUCCESS_MESSAGE,
+                    ],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
@@ -210,9 +206,10 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'flashBagValues' => [
-                    UserController::FLASH_SIGN_UP_SUCCESS_KEY =>
+                'flashBagMessages' => [
+                    UserController::FLASH_SIGN_UP_SUCCESS_KEY => [
                         UserController::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED
+                    ],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
@@ -239,10 +236,11 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'flashBagValues' => [
-                    'user_token_error' => 'blank-token',
-                    ActionConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY =>
+                'flashBagMessages' => [
+                    'user_token_error' => ['blank-token'],
+                    ActionConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY => [
                         ActionConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
+                    ],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
@@ -272,9 +270,10 @@ class ConfirmControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'flashBagValues' => [
-                    ActionConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY =>
+                'flashBagMessages' => [
+                    ActionConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY => [
                         ActionConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_USER_INVALID,
+                    ],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
