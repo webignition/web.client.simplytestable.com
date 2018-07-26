@@ -34,10 +34,20 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     /**
      * @var array
      */
-    private $routeParameters = [
+    private $defaultRouteParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
         'task_type' => Task::TYPE_HTML_VALIDATION,
+    ];
+
+    /**
+     * @var array
+     */
+    private $filterRouteParameters = [
+        'website' => self::WEBSITE,
+        'test_id' => self::TEST_ID,
+        'task_type' => Task::TYPE_HTML_VALIDATION,
+        'filter' => 'by-error',
     ];
 
     /**
@@ -117,13 +127,13 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
     public function testIsIEFilteredDefaultRoute()
     {
-        $this->issueIERequest(self::ROUTE_NAME_DEFAULT, $this->routeParameters);
+        $this->issueIERequest(self::ROUTE_NAME_DEFAULT, $this->defaultRouteParameters);
         $this->assertIEFilteredRedirectResponse();
     }
 
     public function testIsIEFilteredFilteredRoute()
     {
-        $this->issueIERequest(self::ROUTE_NAME_FILTER, array_merge($this->routeParameters, ['filter' => 'foo']));
+        $this->issueIERequest(self::ROUTE_NAME_FILTER, array_merge($this->defaultRouteParameters, ['filter' => 'foo']));
         $this->assertIEFilteredRedirectResponse();
     }
 
@@ -139,7 +149,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::ROUTE_NAME_DEFAULT, $this->routeParameters)
+            $this->router->generate(self::ROUTE_NAME_FILTER, $this->filterRouteParameters)
         );
 
         /* @var RedirectResponse $response */
@@ -205,7 +215,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
         $this->client->request(
             'GET',
-            $this->router->generate(self::ROUTE_NAME_DEFAULT, $this->routeParameters)
+            $this->router->generate(self::ROUTE_NAME_DEFAULT, $this->defaultRouteParameters)
         );
 
         /* @var RedirectResponse $response */
