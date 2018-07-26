@@ -3,15 +3,13 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
-use App\Interfaces\Controller\Test\RequiresCompletedTest;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
-abstract class AbstractResultsController extends AbstractBaseViewController implements
-    RequiresCompletedTest
+abstract class AbstractResultsController extends AbstractBaseViewController
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
