@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Services\Configuration\MailConfiguration;
+use Postmark\Models\PostmarkException;
 use Postmark\PostmarkClient;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;

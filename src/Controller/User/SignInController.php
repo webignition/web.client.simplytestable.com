@@ -8,8 +8,8 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Request\User\SignInRequest;
 use App\Services\CacheValidatorService;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\FlashBagValues;
+use App\Services\Mailer;
 use App\Services\RedirectResponseFactory;
 use App\Services\Request\Factory\User\SignInRequestFactory;
 use App\Services\Request\Validator\User\SignInRequestValidator;
@@ -18,12 +18,10 @@ use App\Services\UserManager;
 use App\Services\UserService;
 use App\Services\ViewRenderService;
 use Postmark\Models\PostmarkException;
-use Postmark\PostmarkClient;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\SimplyTestableUserModel\User;
 
@@ -119,8 +117,7 @@ class SignInController
     }
 
     /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
+     * @param Mailer $mailer
      * @param SignInRequestFactory $signInRequestFactory
      * @param SignInRequestValidator $signInRequestValidator
      * @param FlashBagInterface $flashBag
@@ -136,8 +133,7 @@ class SignInController
      * @throws PostmarkException
      */
     public function signInAction(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
+        Mailer $mailer,
         SignInRequestFactory $signInRequestFactory,
         SignInRequestValidator $signInRequestValidator,
         FlashBagInterface $flashBag,
@@ -189,8 +185,7 @@ class SignInController
             $this->userManager->clearSessionUser();
 
             $token = $userService->getConfirmationToken($email);
-
-            $this->sendConfirmationToken($mailConfiguration, $postmarkClient, $email, $token);
+            $mailer->sendSignUpConfirmationToken($email, $token);
 
             $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
             $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED);
@@ -202,7 +197,7 @@ class SignInController
             $this->userManager->clearSessionUser();
 
             $token = $userService->getConfirmationToken($email);
-            $this->sendConfirmationToken($mailConfiguration, $postmarkClient, $email, $token);
+            $mailer->sendSignUpConfirmationToken($email, $token);
 
             $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
             $flashBag->set(self::FLASH_SIGN_IN_ERROR_STATE_KEY, self::FLASH_SIGN_IN_ERROR_STATE_USER_NOT_ENABLED);
@@ -217,50 +212,6 @@ class SignInController
         }
 
         return $response;
-    }
-
-    /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param string $email
-     * @param string $token
-     *
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     */
-    private function sendConfirmationToken(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        $email,
-        $token
-    ) {
-        $sender = $mailConfiguration->getSender('default');
-        $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
-
-        $confirmationUrlRouteParameters = [
-            'email' => $email,
-            'token' => $token,
-        ];
-
-        $confirmationUrl = $this->router->generate(
-            'view_user_sign_up_confirm',
-            $confirmationUrlRouteParameters,
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        $postmarkClient->sendEmail(
-            $sender['email'],
-            $email,
-            $messageProperties['subject'],
-            null,
-            $this->viewRenderService->renderView(
-                'Email/user-creation-confirmation.txt.twig',
-                [
-                    'confirmation_url' => $confirmationUrl,
-                    'confirmation_code' => $token
-                ]
-            )
-        );
     }
 
     /**

@@ -3,18 +3,17 @@
 namespace App\Tests\Functional\Controller\User;
 
 use App\Controller\User\SignInController;
+use App\Services\Mailer;
 use App\Services\RedirectResponseFactory;
 use App\Services\UserService;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use Egulias\EmailValidator\EmailValidator;
 use Postmark\Models\PostmarkException;
-use Postmark\PostmarkClient;
 use App\Controller\Action\User\UserController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\Request\Factory\User\SignInRequestFactory;
 use App\Services\Request\Validator\User\SignInRequestValidator;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -402,8 +401,7 @@ class SignInSubmitActionTest extends AbstractControllerTest
         $signInController = self::$container->get(SignInController::class);
 
         return $signInController->signInAction(
-            self::$container->get(MailConfiguration::class),
-            self::$container->get(PostmarkClient::class),
+            self::$container->get(Mailer::class),
             $signInRequestFactory,
             $signInRequestValidator,
             self::$container->get(FlashBagInterface::class),
