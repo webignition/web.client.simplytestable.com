@@ -31,14 +31,6 @@ class WebsiteListController
     }
 
     /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response)
-    {
-        $this->response = $response;
-    }
-
-    /**
      * @return bool
      */
     public function hasResponse()
