@@ -25,7 +25,7 @@ class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
         $router
             ->shouldReceive('generate')
             ->withArgs([
-                'view_user_sign_in',
+                'sign_in_render',
                 $expectedRouteParameters
             ])
             ->andReturn('http://example.com/');

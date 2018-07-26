@@ -43,7 +43,7 @@ class RedirectResponseFactory
             $routeParameters[SignInRequest::PARAMETER_REDIRECT] = $redirect;
         }
 
-        return new RedirectResponse($this->router->generate('view_user_sign_in', $routeParameters));
+        return new RedirectResponse($this->router->generate('sign_in_render', $routeParameters));
     }
 
     /**

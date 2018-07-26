@@ -6,5 +6,5 @@ URLs of the <strong>{{ total }}</strong> that were discovered.
 {% if is_logged_in %}
     Start a new test or <a href="{{ path('view_user_account') }}">upgrade your plan</a> to allow larger sites to be tested.
 {% else %}
-    <a href="{{ path('view_user_sign_up_request') }}">Create an account</a> or <a href="{{ path('view_user_sign_in') }}">sign in</a> to start a new test without this limit.
+    <a href="{{ path('view_user_sign_up_request') }}">Create an account</a> or <a href="{{ path('sign_in_render') }}">sign in</a> to start a new test without this limit.
 {% endif %}

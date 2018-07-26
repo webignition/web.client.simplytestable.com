@@ -10,13 +10,15 @@ action_user_sign_out:
     path: /signout/
     defaults: { _controller: App\Controller\Action\User\UserController::signOutSubmitAction }
 
-view_user_sign_in:
+sign_in_render:
     path: /signin/
-    defaults: { _controller: App\Controller\View\User\SignInController::indexAction }
+    defaults: { _controller: App\Controller\User\SignInController::renderAction }
+    methods: [GET]
 
-action_user_sign_in_submit:
-    path: /signin/submit/
-    defaults: { _controller: App\Controller\Action\User\UserController::signInSubmitAction }
+sign_in_action:
+    path: /signin/
+    defaults: { _controller: App\Controller\User\SignInController::signInAction }
+    methods: [POST]
 
 view_user_reset_password_request:
     path: /reset-password/

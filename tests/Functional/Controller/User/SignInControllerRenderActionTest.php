@@ -1,32 +1,36 @@
 <?php
 
-namespace App\Tests\Functional\Controller\View\User;
+namespace App\Tests\Functional\Controller\User;
 
-use App\Controller\View\User\SignInController;
+use App\Controller\User\SignInController;
+use App\Services\CacheValidatorService;
+use App\Services\FlashBagValues;
 use App\Services\UserManager;
+use App\Services\ViewRenderService;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Functional\Controller\AbstractControllerTest;
+use ReflectionClass;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
-class SignInControllerTest extends AbstractViewControllerTest
+class SignInControllerRenderActionTest extends AbstractControllerTest
 {
     const VIEW_NAME = 'user-sign-in.html.twig';
-    const ROUTE_NAME = 'view_user_sign_in';
+    const ROUTE_NAME = 'sign_in_render';
     const USER_EMAIL = 'user@example.com';
 
-    public function testIsIEFiltered()
+    public function testRenderActionIsIEFiltered()
     {
         $this->issueIERequest(self::ROUTE_NAME);
         $this->assertIEFilteredRedirectResponse();
     }
 
-    public function testIndexActionPublicUserGetRequest()
+    public function testRenderActionPublicUserGetRequest()
     {
         $this->client->request(
             'GET',
@@ -38,7 +42,7 @@ class SignInControllerTest extends AbstractViewControllerTest
         $this->assertTrue($response->isSuccessful());
     }
 
-    public function testIndexActionIsLoggedIn()
+    public function testRenderActionIsLoggedIn()
     {
         $userManager = self::$container->get(UserManager::class);
 
@@ -48,21 +52,27 @@ class SignInControllerTest extends AbstractViewControllerTest
         /* @var SignInController $signInController */
         $signInController = self::$container->get(SignInController::class);
 
+        /* @var FlashBagValues $flashBagValues */
+        $flashBagValues = \Mockery::mock(FlashBagValues::class);
+
+        /* @var CacheValidatorService $cacheValidatorService */
+        $cacheValidatorService = \Mockery::mock(CacheValidatorService::class);
+
         /* @var RedirectResponse $response */
-        $response = $signInController->indexAction(new Request());
+        $response = $signInController->renderAction($flashBagValues, $cacheValidatorService, new Request());
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/', $response->getTargetUrl());
     }
 
     /**
-     * @dataProvider indexActionRenderDataProvider
+     * @dataProvider renderActionRenderDataProvider
      *
      * @param array $flashBagMessages
      * @param Request $request
      * @param Twig_Environment $twig
      */
-    public function testIndexActionRender(
+    public function testRenderActionRender(
         array $flashBagMessages,
         Request $request,
         Twig_Environment $twig
@@ -75,16 +85,19 @@ class SignInControllerTest extends AbstractViewControllerTest
 
         /* @var SignInController $signInController */
         $signInController = self::$container->get(SignInController::class);
-        $this->setTwigOnController($twig, $signInController);
+        $this->setTwigInViewRenderService($twig);
 
-        $response = $signInController->indexAction($request);
-        $this->assertInstanceOf(Response::class, $response);
+        $signInController->renderAction(
+            self::$container->get(FlashBagValues::class),
+            self::$container->get(CacheValidatorService::class),
+            $request
+        );
     }
 
     /**
      * @return array
      */
-    public function indexActionRenderDataProvider()
+    public function renderActionRenderDataProvider()
     {
         return [
             'no request data, no flash error messages' => [
@@ -166,7 +179,7 @@ class SignInControllerTest extends AbstractViewControllerTest
         ];
     }
 
-    public function testIndexActionCachedResponse()
+    public function testRenderActionCachedResponse()
     {
         $request = new Request();
 
@@ -175,7 +188,11 @@ class SignInControllerTest extends AbstractViewControllerTest
         /* @var SignInController $signInController */
         $signInController = self::$container->get(SignInController::class);
 
-        $response = $signInController->indexAction($request);
+        $response = $signInController->renderAction(
+            self::$container->get(FlashBagValues::class),
+            self::$container->get(CacheValidatorService::class),
+            $request
+        );
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -185,7 +202,11 @@ class SignInControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $signInController->indexAction($newRequest);
+        $newResponse = $signInController->renderAction(
+            self::$container->get(FlashBagValues::class),
+            self::$container->get(CacheValidatorService::class),
+            $newRequest
+        );
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
@@ -221,6 +242,21 @@ class SignInControllerTest extends AbstractViewControllerTest
             ],
             array_keys($parameters)
         );
+    }
+
+    /**
+     * @param Twig_Environment $twig
+     *
+     * @throws \ReflectionException
+     */
+    private function setTwigInViewRenderService(Twig_Environment $twig)
+    {
+        $viewRenderService = self::$container->get(ViewRenderService::class);
+
+        $viewRenderServiceReflector = new ReflectionClass(ViewRenderService::class);
+        $viewRenderServiceTwigProperty = $viewRenderServiceReflector->getProperty('twig');
+        $viewRenderServiceTwigProperty->setAccessible(true);
+        $viewRenderServiceTwigProperty->setValue($viewRenderService, $twig);
     }
 
     /**
