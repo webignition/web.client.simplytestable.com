@@ -49,10 +49,6 @@ class TeamController extends AbstractUserAccountTeamController
      */
     public function createAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $redirectResponse = $this->createUserAccountTeamRedirectResponse();
         $requestData = $request->request;
         $name = trim($requestData->get('name'));
@@ -82,10 +78,6 @@ class TeamController extends AbstractUserAccountTeamController
      */
     public function removeMemberAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
         $member = trim($requestData->get('user'));
 
@@ -103,10 +95,6 @@ class TeamController extends AbstractUserAccountTeamController
      */
     public function leaveAction()
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $this->teamService->leave();
 
         return $this->createUserAccountTeamRedirectResponse();

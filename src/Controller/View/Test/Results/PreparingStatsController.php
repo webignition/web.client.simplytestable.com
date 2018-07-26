@@ -58,10 +58,6 @@ class PreparingStatsController extends AbstractBaseViewController
      */
     public function indexAction($website, $test_id)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $test = $this->testService->get($website, $test_id);
         $remoteTest = $this->remoteTestService->get();
 

@@ -48,10 +48,6 @@ class CardController extends AbstractUserAccountController
      */
     public function associateAction($stripe_card_token)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $user = $this->userManager->getUser();
 
         try {

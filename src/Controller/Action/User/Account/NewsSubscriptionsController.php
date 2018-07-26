@@ -61,10 +61,6 @@ class NewsSubscriptionsController extends AbstractUserAccountController
      */
     public function updateAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $user = $this->userManager->getUser();
         $username = $user->getUsername();
 

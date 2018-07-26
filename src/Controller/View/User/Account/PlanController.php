@@ -78,10 +78,6 @@ class PlanController extends AbstractUserAccountController
      */
     public function indexAction()
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $userSummary = $this->userService->getSummary();
         $team = null;
 

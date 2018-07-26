@@ -110,10 +110,6 @@ class DashboardController extends AbstractBaseViewController
      */
     public function indexAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $user = $this->userManager->getUser();
 
         $requestData = $request->query;

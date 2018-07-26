@@ -27,11 +27,6 @@ class TaskController
     private $taskService;
 
     /**
-     * @var Response|JsonResponse
-     */
-    private $response;
-
-    /**
      * @param TestService $testService
      * @param TaskService $taskService
      */
@@ -39,14 +34,6 @@ class TaskController
     {
         $this->testService = $testService;
         $this->taskService = $taskService;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasResponse()
-    {
-        return !empty($this->response);
     }
 
     /**
@@ -61,12 +48,7 @@ class TaskController
      */
     public function idCollectionAction($website, $test_id)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $test = $this->testService->get($website, $test_id);
-
         $taskIds = $this->taskService->getRemoteTaskIds($test);
 
         return new JsonResponse($taskIds);
@@ -85,10 +67,6 @@ class TaskController
      */
     public function unretrievedIdCollectionAction($website, $test_id, $limit = null)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $test = $this->testService->get($website, $test_id);
 
         $limit = filter_var($limit, FILTER_VALIDATE_INT);
@@ -118,10 +96,6 @@ class TaskController
      */
     public function retrieveAction(Request $request, $website, $test_id)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $test = $this->testService->get($website, $test_id);
 
         $this->taskService->getCollection($test, $this->getRequestRemoteTaskIds($request));

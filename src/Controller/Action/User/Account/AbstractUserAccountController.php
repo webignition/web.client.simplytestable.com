@@ -4,20 +4,13 @@ namespace App\Controller\Action\User\Account;
 
 use App\Controller\AbstractController;
 use App\Services\UserManager;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 abstract class AbstractUserAccountController extends AbstractController
 {
-    /**
-     * @var Response|RedirectResponse|JsonResponse
-     */
-    protected $response;
-
     /**
      * @var UserManager
      */
@@ -43,14 +36,6 @@ abstract class AbstractUserAccountController extends AbstractController
         $this->userManager = $userManager;
         $this->router = $router;
         $this->session = $session;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasResponse()
-    {
-        return !empty($this->response);
     }
 
     /**

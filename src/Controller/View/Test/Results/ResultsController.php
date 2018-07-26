@@ -175,10 +175,6 @@ class ResultsController extends AbstractResultsController
      */
     public function indexAction(Request $request, $website, $test_id)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $user = $this->userManager->getUser();
 
         $test = $this->testService->get($website, $test_id);

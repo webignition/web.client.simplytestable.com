@@ -70,10 +70,6 @@ class FailedNoUrlsDetectedController extends AbstractBaseViewController
      */
     public function indexAction(Request $request, $website, $test_id)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $viewRedirectParameters = [
             'route' => 'view_test_progress',
             'parameters' => [

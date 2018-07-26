@@ -121,10 +121,6 @@ class ByTaskTypeController extends AbstractResultsController
      */
     public function indexAction(Request $request, $website, $test_id, $task_type, $filter = null)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $user = $this->userManager->getUser();
 
         $test = $this->testService->get($website, $test_id);

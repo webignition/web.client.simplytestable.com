@@ -101,10 +101,6 @@ class TeamInviteController extends AbstractUserAccountTeamController
         Twig_Environment $twig,
         Request $request
     ) {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
 
         $redirectResponse = $this->createUserAccountTeamRedirectResponse();
@@ -236,10 +232,6 @@ class TeamInviteController extends AbstractUserAccountTeamController
      */
     public function respondInviteAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
 
         $redirectResponse = $this->createUserAccountTeamRedirectResponse();
@@ -276,10 +268,6 @@ class TeamInviteController extends AbstractUserAccountTeamController
      */
     public function removeInviteAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
 
         $invitee = trim($requestData->get('user'));
@@ -311,10 +299,6 @@ class TeamInviteController extends AbstractUserAccountTeamController
         Twig_Environment $twig,
         Request $request
     ) {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
 
         $invitee = trim($requestData->get('user'));
