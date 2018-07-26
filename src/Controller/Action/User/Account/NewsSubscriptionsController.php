@@ -10,7 +10,7 @@ use App\Services\MailChimp\ListRecipientsService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Services\MailChimp\Service as MailChimpService;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -31,23 +31,15 @@ class NewsSubscriptionsController extends AbstractUserAccountController
      */
     private $entityManager;
 
-    /**
-     * @param RouterInterface $router
-     * @param UserManager $userManager
-     * @param SessionInterface $session
-     * @param ListRecipientsService $mailChimpListRecipientsService
-     * @param MailChimpService $mailChimpService
-     * @param EntityManagerInterface $entityManager
-     */
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
-        SessionInterface $session,
+        FlashBagInterface $flashBag,
         ListRecipientsService $mailChimpListRecipientsService,
         MailChimpService $mailChimpService,
         EntityManagerInterface $entityManager
     ) {
-        parent::__construct($router, $userManager, $session);
+        parent::__construct($router, $userManager, $flashBag);
 
         $this->mailChimpListRecipientsService = $mailChimpListRecipientsService;
         $this->mailChimpService = $mailChimpService;
@@ -105,7 +97,7 @@ class NewsSubscriptionsController extends AbstractUserAccountController
             $this->entityManager->flush();
         }
 
-        $this->session->getFlashBag()->set('user_account_newssubscriptions_update', $flashData);
+        $this->flashBag->set('user_account_newssubscriptions_update', $flashData);
 
         return $this->createUserAccountRedirectResponse('#news-subscriptions');
     }

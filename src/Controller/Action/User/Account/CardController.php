@@ -9,7 +9,7 @@ use App\Exception\UserAccountCardException;
 use App\Services\UserAccountCardService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -20,19 +20,13 @@ class CardController extends AbstractUserAccountController
      */
     private $userAccountCardService;
 
-    /**
-     * @param RouterInterface $router
-     * @param UserManager $userManager
-     * @param SessionInterface $session
-     * @param UserAccountCardService $userAccountCardService
-     */
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
-        SessionInterface $session,
+        FlashBagInterface $flashBag,
         UserAccountCardService $userAccountCardService
     ) {
-        parent::__construct($router, $userManager, $session);
+        parent::__construct($router, $userManager, $flashBag);
 
         $this->userAccountCardService = $userAccountCardService;
     }

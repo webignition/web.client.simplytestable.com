@@ -17,8 +17,7 @@ use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\NormalisedUrl\NormalisedUrl;
 
@@ -55,19 +54,10 @@ class StartController extends AbstractController
     private $testOptionsConfiguration;
 
     /**
-     * @var Session
+     * @var FlashBagInterface
      */
-    private $session;
+    private $flashBag;
 
-    /**
-     * @param RouterInterface $router
-     * @param RemoteTestService $remoteTestService
-     * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
-     * @param UserManager $userManager
-     * @param LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration
-     * @param TestOptionsConfiguration $testOptionsConfiguration
-     * @param SessionInterface $session
-     */
     public function __construct(
         RouterInterface $router,
         RemoteTestService $remoteTestService,
@@ -75,7 +65,7 @@ class StartController extends AbstractController
         UserManager $userManager,
         LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration,
         TestOptionsConfiguration $testOptionsConfiguration,
-        SessionInterface $session
+        FlashBagInterface $flashBag
     ) {
         parent::__construct($router);
 
@@ -84,8 +74,8 @@ class StartController extends AbstractController
         $this->userManager = $userManager;
         $this->linkIntegrityTestConfiguration = $linkIntegrityTestConfiguration;
         $this->testOptionsConfiguration = $testOptionsConfiguration;
-        $this->session = $session;
         $this->router = $router;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -125,16 +115,15 @@ class StartController extends AbstractController
 
         $website = trim($requestData->get('website'));
         $redirectRouteParameters = $this->getRedirectRouteParameters($testOptions, $website);
-        $flashBag = $this->session->getFlashBag();
 
         if (empty($website)) {
-            $flashBag->set('test_start_error', 'website-blank');
+            $this->flashBag->set('test_start_error', 'website-blank');
 
             return new RedirectResponse($this->createStartErrorRedirectUrl($redirectRouteParameters));
         }
 
         if (!$testOptions->hasTestTypes()) {
-            $flashBag->set('test_start_error', 'no-test-types-selected');
+            $this->flashBag->set('test_start_error', 'no-test-types-selected');
 
             return new RedirectResponse($this->createStartErrorRedirectUrl($redirectRouteParameters));
         }
@@ -154,15 +143,15 @@ class StartController extends AbstractController
                 ]
             ));
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
-            $flashBag->set('test_start_error', 'web_resource_exception');
+            $this->flashBag->set('test_start_error', 'web_resource_exception');
 
             return new RedirectResponse($this->createStartErrorRedirectUrl($redirectRouteParameters));
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             if ($coreApplicationRequestException->isCurlException()) {
-                $flashBag->set('test_start_error', 'curl-error');
-                $flashBag->set('curl_error_code', $coreApplicationRequestException->getCode());
+                $this->flashBag->set('test_start_error', 'curl-error');
+                $this->flashBag->set('curl_error_code', $coreApplicationRequestException->getCode());
             } else {
-                $flashBag->set('test_start_error', 'web_resource_exception');
+                $this->flashBag->set('test_start_error', 'web_resource_exception');
             }
 
             return new RedirectResponse($this->createStartErrorRedirectUrl($redirectRouteParameters));

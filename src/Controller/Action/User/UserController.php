@@ -25,8 +25,7 @@ use App\Services\UserManager;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -79,36 +78,29 @@ class UserController extends AbstractController
     private $userService;
 
     /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @var RedirectResponseFactory
      */
     private $redirectResponseFactory;
 
     /**
-     * @param RouterInterface $router
-     * @param UserManager $userManager
-     * @param UserService $userService
-     * @param SessionInterface $session
-     * @param RedirectResponseFactory $redirectResponseFactory
+     * @var FlashBagInterface
      */
+    private $flashBag;
+
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
         UserService $userService,
-        SessionInterface $session,
-        RedirectResponseFactory $redirectResponseFactory
+        RedirectResponseFactory $redirectResponseFactory,
+        FlashBagInterface $flashBag
     ) {
         parent::__construct($router);
 
         $this->userManager = $userManager;
         $this->userService = $userService;
         $this->router = $router;
-        $this->session = $session;
         $this->redirectResponseFactory = $redirectResponseFactory;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -155,7 +147,7 @@ class UserController extends AbstractController
         $staySignedIn = $signInRequest->getStaySignedIn();
         $redirect = $signInRequest->getRedirect();
 
-        $flashBag = $this->session->getFlashBag();
+        $flashBag = $this->flashBag;
 
         $signInRedirectResponse = $this->redirectResponseFactory->createSignInRedirectResponse($signInRequest);
 
@@ -280,7 +272,7 @@ class UserController extends AbstractController
         $password = $signUpRequest->getPassword();
         $plan = $signUpRequest->getPlan();
 
-        $flashBag = $this->session->getFlashBag();
+        $flashBag = $this->flashBag;
 
         $signUpRedirectResponse = $this->redirectResponseFactory->createSignUpRedirectResponse($signUpRequest);
 
@@ -417,7 +409,7 @@ class UserController extends AbstractController
         $email
     ) {
         $userExists = $this->userService->exists($email);
-        $flashBag = $this->session->getFlashBag();
+        $flashBag = $this->flashBag;
         $requestData = $request->request;
 
         $failureRedirect = new RedirectResponse($this->generateUrl(

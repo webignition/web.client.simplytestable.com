@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use webignition\SimplyTestableUserModel\User;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
@@ -602,7 +601,7 @@ class StartControllerTest extends AbstractControllerTest
         $userManager = self::$container->get(UserManager::class);
         $linkIntegrityTestConfiguration = self::$container->get(LinkIntegrityTestConfiguration::class);
         $testOptionsConfiguration = self::$container->get(TestOptionsConfiguration::class);
-        $session = self::$container->get(SessionInterface::class);
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         /* @var RemoteTestService|Mock $remoteTestService */
         $remoteTestService = \Mockery::mock(RemoteTestService::class);
@@ -625,7 +624,7 @@ class StartControllerTest extends AbstractControllerTest
             $userManager,
             $linkIntegrityTestConfiguration,
             $testOptionsConfiguration,
-            $session
+            $flashBag
         );
 
         $requestData = [

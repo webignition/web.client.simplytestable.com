@@ -15,7 +15,7 @@ use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class PlanController extends AbstractUserAccountController
@@ -40,25 +40,16 @@ class PlanController extends AbstractUserAccountController
      */
     private $logger;
 
-    /**
-     * @param RouterInterface $router
-     * @param UserManager $userManager
-     * @param SessionInterface $session
-     * @param UserService $userService
-     * @param TeamService $teamService
-     * @param UserPlanSubscriptionService $userPlanSubscriptionService
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
-        SessionInterface $session,
+        FlashBagInterface $flashBag,
         UserService $userService,
         TeamService $teamService,
         UserPlanSubscriptionService $userPlanSubscriptionService,
         LoggerInterface $logger
     ) {
-        parent::__construct($router, $userManager, $session);
+        parent::__construct($router, $userManager, $flashBag);
 
         $this->userService = $userService;
         $this->teamService = $teamService;
@@ -82,12 +73,11 @@ class PlanController extends AbstractUserAccountController
 
         $userSummary = $this->userService->getSummary($user);
         $requestData = $request->request;
-        $flashBag = $this->session->getFlashBag();
 
         $plan = $requestData->get('plan');
 
         if ($userSummary->hasPlan() && $userSummary->getPlan()->getAccountPlan()->getName() === $plan) {
-            $flashBag->set('plan_subscribe_success', 'already-on-plan');
+            $this->flashBag->set('plan_subscribe_success', 'already-on-plan');
 
             return $redirectResponse;
         }
@@ -102,22 +92,22 @@ class PlanController extends AbstractUserAccountController
 
         try {
             $this->userPlanSubscriptionService->subscribe($user, $plan);
-            $flashBag->set('plan_subscribe_success', 'ok');
+            $this->flashBag->set('plan_subscribe_success', 'ok');
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             $this->logger->error(sprintf(
                 'UserAccountPlanController::subscribeAction::subscribe method return %s ',
                 $coreApplicationRequestException->getCode()
             ));
 
-            $flashBag->set('plan_subscribe_error', $coreApplicationRequestException->getCode());
+            $this->flashBag->set('plan_subscribe_error', $coreApplicationRequestException->getCode());
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
-            $flashBag->set('plan_subscribe_error', 503);
+            $this->flashBag->set('plan_subscribe_error', 503);
         } catch (UserAccountCardException $userAccountCardException) {
             $this->logger->error('UserAccountPlanController::subscribeAction::stripe card error');
 
-            $flashBag->set('user_account_card_exception_message', $userAccountCardException->getMessage());
-            $flashBag->set('user_account_card_exception_param', $userAccountCardException->getParam());
-            $flashBag->set('user_account_card_exception_code', $userAccountCardException->getStripeCode());
+            $this->flashBag->set('user_account_card_exception_message', $userAccountCardException->getMessage());
+            $this->flashBag->set('user_account_card_exception_param', $userAccountCardException->getParam());
+            $this->flashBag->set('user_account_card_exception_code', $userAccountCardException->getStripeCode());
         }
 
         return $redirectResponse;
