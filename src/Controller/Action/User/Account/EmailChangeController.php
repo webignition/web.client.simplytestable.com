@@ -95,10 +95,6 @@ class EmailChangeController extends AbstractUserAccountController
         Twig_Environment $twig,
         Request $request
     ) {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
 
         $redirectResponse = $this->createUserAccountRedirectResponse();
@@ -206,10 +202,6 @@ class EmailChangeController extends AbstractUserAccountController
         PostmarkClient $postmarkClient,
         Twig_Environment $twig
     ) {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         try {
             $this->sendEmailChangeConfirmationToken($mailConfiguration, $postmarkClient, $twig);
             $this->session->getFlashBag()->set(
@@ -258,10 +250,6 @@ class EmailChangeController extends AbstractUserAccountController
         ResqueQueueService $resqueQueueService,
         Request $request
     ) {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
 
         $redirectResponse = $this->createUserAccountRedirectResponse();
@@ -352,10 +340,6 @@ class EmailChangeController extends AbstractUserAccountController
      */
     public function cancelAction()
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $this->emailChangeRequestService->cancelEmailChangeRequest();
         $this->session->getFlashBag()->set('user_account_details_cancel_email_change_notice', 'cancelled');
 

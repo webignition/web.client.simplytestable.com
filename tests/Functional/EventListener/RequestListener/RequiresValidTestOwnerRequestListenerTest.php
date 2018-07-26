@@ -30,8 +30,6 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
      * @param array $httpFixtures
      * @param array $testValues
      * @param bool $expectedHasResponse
-     *
-     * @throws \ReflectionException
      */
     public function testOnKernelController(array $httpFixtures, array $testValues, $expectedHasResponse)
     {

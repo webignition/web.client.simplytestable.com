@@ -77,10 +77,6 @@ class PlanController extends AbstractUserAccountController
      */
     public function subscribeAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $user = $this->userManager->getUser();
         $redirectResponse = new RedirectResponse($this->generateUrl('view_user_account_plan'));
 

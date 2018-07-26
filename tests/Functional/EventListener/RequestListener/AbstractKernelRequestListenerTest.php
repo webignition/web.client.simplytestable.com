@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\EventListener\RequestListener;
 
 use App\EventListener\IEFilteredRequestListener;
+use App\EventListener\RequiresCompletedTestRequestListener;
 use App\EventListener\RequiresPrivateUserRequestListener;
 use App\EventListener\RequiresValidTestOwnerRequestListener;
 use App\EventListener\RequiresValidUserRequestListener;
@@ -15,7 +16,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 abstract class AbstractKernelRequestListenerTest extends AbstractBaseTestCase
 {
     /**
-     * @var IEFilteredRequestListener|RequiresValidUserRequestListener|RequiresPrivateUserRequestListener|RequiresValidTestOwnerRequestListener
+     * @var IEFilteredRequestListener|RequiresValidUserRequestListener|RequiresPrivateUserRequestListener|RequiresValidTestOwnerRequestListener|RequiresCompletedTestRequestListener
      */
     protected $requestListener;
 

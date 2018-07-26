@@ -75,10 +75,6 @@ class HistoryController extends AbstractBaseViewController
      */
     public function indexAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $pageNumber = (int)$request->attributes->get('page_number');
 
         if ($pageNumber < self::DEFAULT_PAGE_NUMBER) {

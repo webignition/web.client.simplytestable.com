@@ -71,10 +71,6 @@ class CardController extends AbstractUserAccountController
      */
     public function indexAction()
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $user = $this->userManager->getUser();
         $userSummary = $this->userService->getSummary();
 

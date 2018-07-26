@@ -10,7 +10,6 @@ use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -59,10 +58,6 @@ class PreparingStatsController extends AbstractBaseViewController
      */
     public function indexAction($website, $test_id)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $test = $this->testService->get($website, $test_id);
         $remoteTest = $this->remoteTestService->get();
 

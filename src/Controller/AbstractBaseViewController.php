@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
@@ -21,11 +19,6 @@ abstract class AbstractBaseViewController extends AbstractController
      * @var Twig_Environment
      */
     private $twig;
-
-    /**
-     * @var Response|RedirectResponse|JsonResponse
-     */
-    protected $response;
 
     /**
      * @var CacheValidatorService
@@ -49,22 +42,6 @@ abstract class AbstractBaseViewController extends AbstractController
         $this->twig = $twig;
         $this->defaultViewParameters = $defaultViewParameters;
         $this->cacheValidator = $cacheValidator;
-    }
-
-    /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response)
-    {
-        $this->response = $response;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasResponse()
-    {
-        return !empty($this->response);
     }
 
     /**

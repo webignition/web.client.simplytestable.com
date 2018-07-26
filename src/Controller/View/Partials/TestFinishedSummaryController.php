@@ -60,10 +60,6 @@ class TestFinishedSummaryController extends AbstractBaseViewController
      */
     public function indexAction(Request $request, $website, $test_id)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $response = $this->cacheValidator->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,

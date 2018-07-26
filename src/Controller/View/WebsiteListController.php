@@ -7,16 +7,9 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Services\RemoteTestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 class WebsiteListController
 {
-    /**
-     * @var Response|RedirectResponse|JsonResponse
-     */
-    protected $response;
-
     /**
      * @var RemoteTestService
      */
@@ -31,30 +24,10 @@ class WebsiteListController
     }
 
     /**
-     * @param Response $response
-     */
-    public function setResponse(Response $response)
-    {
-        $this->response = $response;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasResponse()
-    {
-        return !empty($this->response);
-    }
-
-    /**
      * @return JsonResponse
      */
     public function indexAction()
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $finishedWebsites = [];
 
         try {

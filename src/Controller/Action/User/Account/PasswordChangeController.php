@@ -57,10 +57,6 @@ class PasswordChangeController extends AbstractUserAccountController
      */
     public function requestAction(Request $request)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
 
         $currentPassword = trim($requestData->get('current-password'));

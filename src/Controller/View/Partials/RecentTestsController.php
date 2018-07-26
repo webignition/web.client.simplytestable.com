@@ -69,10 +69,6 @@ class RecentTestsController extends AbstractBaseViewController
      */
     public function indexAction()
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $testList = $this->remoteTestService->getRecent(self::LIMIT);
 
         foreach ($testList->get() as $testObject) {

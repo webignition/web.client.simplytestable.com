@@ -185,7 +185,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         'website' => 'http://foo.example.com/',
                     ])),
                 ],
-                'expectedRedirectUrl' => '/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://foo.example.com//1/',
             ],
             'failed test' => [
                 'httpFixtures' => [

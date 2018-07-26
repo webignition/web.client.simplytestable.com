@@ -121,10 +121,6 @@ class ByTaskTypeController extends AbstractResultsController
      */
     public function indexAction(Request $request, $website, $test_id, $task_type, $filter = null)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $user = $this->userManager->getUser();
 
         $test = $this->testService->get($website, $test_id);
@@ -153,6 +149,18 @@ class ByTaskTypeController extends AbstractResultsController
                     'test_id' => $test_id,
                     'task_type' => strtolower(str_replace(' ', '+', $selectedTaskType)),
                     'filter' => self::DEFAULT_FILTER
+                ]
+            ));
+        }
+
+        if ($website !== (string)$test->getWebsite()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results_by_task_type_filter',
+                [
+                    'website' => $remoteTest->getWebsite(),
+                    'test_id' => $test_id,
+                    'task_type' => str_replace(' ', '+', $request->attributes->get('task_type')),
+                    'filter' => $filter
                 ]
             ));
         }

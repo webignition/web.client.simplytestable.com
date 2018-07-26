@@ -64,10 +64,6 @@ class TestTaskListController extends AbstractBaseViewController
      */
     public function indexAction(Request $request, $website, $test_id)
     {
-        if ($this->hasResponse()) {
-            return $this->response;
-        }
-
         $requestData = $request->request;
 
         $test = $this->testService->get($website, $test_id);

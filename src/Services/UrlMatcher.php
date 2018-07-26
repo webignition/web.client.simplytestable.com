@@ -25,7 +25,7 @@ class UrlMatcher
     public function match($urlPath)
     {
         foreach ($this->patterns as $pattern) {
-            $regex = '/'. str_replace('/', '\\/', $pattern) .'/';
+            $regex = '/'. str_replace('/', '\\/', $pattern) .'/i';
 
             if (preg_match($regex, $urlPath)) {
                 return true;
