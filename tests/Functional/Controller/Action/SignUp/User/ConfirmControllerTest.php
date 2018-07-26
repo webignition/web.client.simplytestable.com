@@ -2,7 +2,11 @@
 
 namespace App\Tests\Functional\Controller\Action\SignUp\User;
 
-use Psr\Http\Message\ResponseInterface;
+use App\Services\Mailer;
+use App\Services\UserService;
+use App\Tests\Factory\PostmarkExceptionFactory;
+use Mockery\MockInterface;
+use Postmark\Models\PostmarkException;
 use App\Controller\Action\SignUp\User\ConfirmController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
@@ -13,9 +17,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
-use App\Tests\Services\PostmarkMessageVerifier;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
+use Symfony\Component\Routing\RouterInterface;
 
 class ConfirmControllerTest extends AbstractControllerTest
 {
@@ -97,12 +100,28 @@ class ConfirmControllerTest extends AbstractControllerTest
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
-            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
+        /* @var MockInterface|Mailer $mailer */
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendInvalidAdminCredentialsNotification')
+            ->withArgs([[
+                'call' => 'UserService::exists()',
+                'args' => [
+                    'email' => self::EMAIL,
+                ]
+            ]]);
+
+        $confirmController = new ConfirmController(
+            self::$container->get(RouterInterface::class),
+            self::$container->get(UserService::class),
+            self::$container->get(FlashBagInterface::class),
+            $mailer
+        );
 
         /* @var RedirectResponse $response */
-        $response = $this->confirmController->resendAction(self::EMAIL);
+        $response = $confirmController->resendAction(self::EMAIL);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -119,7 +138,7 @@ class ConfirmControllerTest extends AbstractControllerTest
     /**
      * @dataProvider resendActionSendConfirmationTokenFailureDataProvider
      *
-     * @param ResponseInterface $postmarkHttpResponse
+     * @param PostmarkException $postmarkException
      * @param array $expectedFlashBagValues
      *
      * @throws MailConfigurationException
@@ -128,30 +147,35 @@ class ConfirmControllerTest extends AbstractControllerTest
      * @throws InvalidContentTypeException
      */
     public function testResendActionSendConfirmationTokenFailure(
-        ResponseInterface $postmarkHttpResponse,
+        PostmarkException $postmarkException,
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
-        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
-            $postmarkHttpResponse,
         ]);
 
+        /* @var MockInterface|Mailer $mailer */
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendSignUpConfirmationToken')
+            ->andThrow($postmarkException);
+
+        $confirmController = new ConfirmController(
+            self::$container->get(RouterInterface::class),
+            self::$container->get(UserService::class),
+            self::$container->get(FlashBagInterface::class),
+            $mailer
+        );
+
         /* @var RedirectResponse $response */
-        $response = $this->confirmController->resendAction(self::EMAIL);
+        $response = $confirmController->resendAction(self::EMAIL);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
-
-        $lastRequest = $httpHistoryContainer->getLastRequest();
-
-        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($lastRequest);
-        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
     }
 
     /**
@@ -161,7 +185,7 @@ class ConfirmControllerTest extends AbstractControllerTest
     {
         return [
             'postmark not allowed to send to user email' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(405),
+                'postmarkException' => PostmarkExceptionFactory::create(405),
                 'expectedFlashBagValues' => [
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY => [
                         ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
@@ -169,7 +193,7 @@ class ConfirmControllerTest extends AbstractControllerTest
                 ],
             ],
             'postmark inactive recipient' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(406),
+                'postmarkException' => PostmarkExceptionFactory::create(406),
                 'expectedFlashBagValues' => [
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY => [
                         ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
@@ -177,7 +201,7 @@ class ConfirmControllerTest extends AbstractControllerTest
                 ],
             ],
             'postmark unknown error' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(300),
+                'postmarkException' => PostmarkExceptionFactory::create(300),
                 'expectedFlashBagValues' => [
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_KEY => [
                         ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_UNKNOWN,
@@ -190,17 +214,30 @@ class ConfirmControllerTest extends AbstractControllerTest
     public function testResendActionSuccess()
     {
         $flashBag = self::$container->get(FlashBagInterface::class);
-        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
-            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
+        /* @var MockInterface|Mailer $mailer */
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendSignUpConfirmationToken')
+            ->withArgs([
+                self::EMAIL,
+                self::CONFIRMATION_TOKEN,
+            ]);
+
+        $confirmController = new ConfirmController(
+            self::$container->get(RouterInterface::class),
+            self::$container->get(UserService::class),
+            self::$container->get(FlashBagInterface::class),
+            $mailer
+        );
+
         /* @var RedirectResponse $response */
-        $response = $this->confirmController->resendAction(self::EMAIL);
+        $response = $confirmController->resendAction(self::EMAIL);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -212,28 +249,5 @@ class ConfirmControllerTest extends AbstractControllerTest
             ],
             $flashBag->peekAll()
         );
-
-        $lastRequest = $httpHistoryContainer->getLastRequest();
-
-        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($lastRequest);
-        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
-
-        $verificationResult = $postmarkMessageVerifier->verify(
-            [
-                'From' => 'robot@simplytestable.com',
-                'To' => self::EMAIL,
-                'Subject' => '[Simply Testable] Activate your account',
-                'TextBody' => [
-                    sprintf(
-                        'http://localhost/signup/confirm/%s/?token=%s',
-                        self::EMAIL,
-                        self::CONFIRMATION_TOKEN
-                    ),
-                ],
-            ],
-            $httpHistoryContainer->getLastRequest()
-        );
-
-        $this->assertTrue($verificationResult, $verificationResult);
     }
 }
