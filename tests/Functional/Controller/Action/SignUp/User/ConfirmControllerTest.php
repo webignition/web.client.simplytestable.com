@@ -14,6 +14,7 @@ use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use App\Tests\Services\PostmarkMessageVerifier;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class ConfirmControllerTest extends AbstractControllerTest
@@ -69,7 +70,7 @@ class ConfirmControllerTest extends AbstractControllerTest
 
     public function testResendActionUserDoesNotExist()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createNotFoundResponse(),
@@ -86,13 +87,13 @@ class ConfirmControllerTest extends AbstractControllerTest
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_USER_INVALID,
                 ],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
     }
 
     public function testResendActionInvalidAdminCredentials()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createForbiddenResponse(),
@@ -111,7 +112,7 @@ class ConfirmControllerTest extends AbstractControllerTest
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_CORE_APP_ADMIN_CREDENTIALS_INVALID,
                 ],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
     }
 
@@ -130,7 +131,7 @@ class ConfirmControllerTest extends AbstractControllerTest
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
@@ -145,7 +146,7 @@ class ConfirmControllerTest extends AbstractControllerTest
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
 
         $lastRequest = $httpHistoryContainer->getLastRequest();
 
@@ -188,7 +189,7 @@ class ConfirmControllerTest extends AbstractControllerTest
 
     public function testResendActionSuccess()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
@@ -209,7 +210,7 @@ class ConfirmControllerTest extends AbstractControllerTest
                     ConfirmController::FLASH_BAG_TOKEN_RESEND_SUCCESS_MESSAGE,
                 ]
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
 
         $lastRequest = $httpHistoryContainer->getLastRequest();

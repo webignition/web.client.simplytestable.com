@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use App\Tests\Services\PostmarkMessageVerifier;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class SignUpSubmitActionTest extends AbstractUserControllerTest
@@ -78,7 +79,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             ->shouldReceive('getInvalidFieldState')
             ->andReturn('empty');
 
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $response = $this->callSignUpSubmitAction($request, $userAccountRequestValidator);
 
@@ -88,7 +89,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => ['email'],
                 UserController::FLASH_SIGN_UP_ERROR_STATE_KEY => ['empty'],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
     }
 
@@ -109,7 +110,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $expectedRedirectLocation,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -122,7 +123,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
     /**
@@ -193,7 +194,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
@@ -216,7 +217,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             $response->getTargetUrl()
         );
 
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
 
         $lastRequest = $httpHistoryContainer->getLastRequest();
 
@@ -279,7 +280,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
      */
     public function testSignUpSubmitActionSuccess(Request $request, array $couponData)
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
         $couponService = self::$container->get(CouponService::class);
@@ -305,7 +306,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                     UserController::FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_CREATED,
                 ]
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
 
         $lastRequest = $httpHistoryContainer->getLastRequest();

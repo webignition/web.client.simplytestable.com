@@ -47,9 +47,7 @@ class InviteControllerTest extends AbstractViewControllerTest
             ]),
         ]);
 
-        $session = self::$container->get('session');
-        $flashBag = $session->getFlashBag();
-
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $flashBag->set(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY, 'foo');
 
         $this->client->request(

@@ -6,6 +6,8 @@ use App\Services\SystemUserService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
@@ -26,8 +28,8 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         $sessionUser,
         User $expectedUser
     ) {
-        $requestStack = self::$container->get('request_stack');
-        $session = self::$container->get('session');
+        $requestStack = self::$container->get(RequestStack::class);
+        $session = self::$container->get(SessionInterface::class);
         $userSerializer = self::$container->get(UserSerializer::class);
 
         $cookieUser = $request->cookies->get(UserManager::USER_COOKIE_KEY);
@@ -91,7 +93,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
     public function testSetUser()
     {
-        $session = self::$container->get('session');
+        $session = self::$container->get(SessionInterface::class);
         $userManager = self::$container->get(UserManager::class);
         $userSerializer = self::$container->get(UserSerializer::class);
 
@@ -119,9 +121,9 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
     public function testIsLoggedIn(User $user, $expectedIsLoggedIn)
     {
         $userManager = new UserManager(
-            self::$container->get('request_stack'),
+            self::$container->get(RequestStack::class),
             self::$container->get(UserSerializer::class),
-            self::$container->get('session'),
+            self::$container->get(SessionInterface::class),
             self::$container->get(SystemUserService::class)
         );
 
@@ -153,13 +155,13 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
     public function testClearSessionUser()
     {
-        $session = self::$container->get('session');
+        $session = self::$container->get(SessionInterface::class);
         $userSerializer = self::$container->get(UserSerializer::class);
 
         $userManager = new UserManager(
-            self::$container->get('request_stack'),
+            self::$container->get(RequestStack::class),
             $userSerializer,
-            self::$container->get('session'),
+            self::$container->get(SessionInterface::class),
             self::$container->get(SystemUserService::class)
         );
 
@@ -180,9 +182,9 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         $userSerializer = self::$container->get(UserSerializer::class);
 
         $userManager = new UserManager(
-            self::$container->get('request_stack'),
+            self::$container->get(RequestStack::class),
             $userSerializer,
-            self::$container->get('session'),
+            self::$container->get(SessionInterface::class),
             self::$container->get(SystemUserService::class)
         );
 

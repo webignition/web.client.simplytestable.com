@@ -8,6 +8,7 @@ use App\Services\ResqueQueueService;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 {
@@ -60,14 +61,14 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
         $expectedRedirectLocation,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->callSignUpConfirmSubmitAction($request, $email);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
     /**
@@ -159,7 +160,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
      */
     public function testSignUpConfirmSubmitActionSuccess(array $requestCookies, $expectedRedirectUrl)
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -181,7 +182,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
             'user_signin_confirmation' => [
                 'user-activated',
             ],
-        ], $session->getFlashBag()->peekAll());
+        ], $flashBag->peekAll());
     }
 
     /**

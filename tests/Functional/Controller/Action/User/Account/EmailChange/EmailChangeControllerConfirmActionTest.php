@@ -12,6 +12,7 @@ use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
@@ -60,7 +61,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
     public function testConfirmActionEmptyToken()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $request = new Request([], []);
 
@@ -72,12 +73,12 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID,
             ],
-        ], $session->getFlashBag()->peekAll());
+        ], $flashBag->peekAll());
     }
 
     public function testConfirmActionInvalidToken()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -97,12 +98,12 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_ERROR_MESSAGE_TOKEN_INVALID,
             ],
-        ], $session->getFlashBag()->peekAll());
+        ], $flashBag->peekAll());
     }
 
     public function testConfirmActionNoEmailChangeRequest()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([]),
@@ -116,7 +117,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/account/', $response->getTargetUrl());
-        $this->assertEquals([], $session->getFlashBag()->peekAll());
+        $this->assertEquals([], $flashBag->peekAll());
     }
 
     /**
@@ -134,7 +135,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         array $confirmEmailChangeRequestHttpFixtures,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures(array_merge([
             HttpResponseFactory::createJsonResponse([
@@ -151,7 +152,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/account/', $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
     /**
@@ -188,7 +189,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
     public function testConfirmActionSuccess()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $resqueQueueService = self::$container->get(ResqueQueueService::class);
         $userSerializer = self::$container->get(UserSerializer::class);
         $userManager = self::$container->get(UserManager::class);
@@ -223,7 +224,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
             EmailChangeController::FLASH_BAG_CONFIRM_KEY => [
                 EmailChangeController::FLASH_BAG_CONFIRM_MESSAGE_SUCCESS
             ]
-        ], $session->getFlashBag()->peekAll());
+        ], $flashBag->peekAll());
 
         $updatedUser = $userManager->getUser();
         $this->assertEquals($userNewEmail, $updatedUser->getUsername());

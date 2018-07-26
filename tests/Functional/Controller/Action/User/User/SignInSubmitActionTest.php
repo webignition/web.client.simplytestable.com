@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use App\Tests\Services\PostmarkMessageVerifier;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class SignInSubmitActionTest extends AbstractUserControllerTest
@@ -73,7 +74,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             ->shouldReceive('getInvalidFieldState')
             ->andReturn('empty');
 
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $response = $this->callSignInSubmitAction($request, $signInRequestValidator);
 
@@ -83,7 +84,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                 UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
                 UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['empty'],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
     }
 
@@ -102,7 +103,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
         array $httpFixtures,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -117,7 +118,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
             '/signin/?email=user%40example.com&stay-signed-in=0',
             $response->getTargetUrl()
         );
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
     /**
@@ -165,7 +166,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
      */
     public function testSignInSubmitActionResendConfirmationToken(array $httpFixtures)
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
@@ -190,7 +191,7 @@ class SignInSubmitActionTest extends AbstractUserControllerTest
                 UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
                 UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['user-not-enabled'],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
 
         $lastRequest = $httpHistoryContainer->getLastRequest();

@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 use App\Tests\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
@@ -97,7 +98,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($this->user);
@@ -106,7 +107,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
     /**
@@ -163,7 +164,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
      */
     public function testRequestActionCreateFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($this->user);
@@ -178,7 +179,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
     /**
@@ -232,7 +233,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
@@ -257,7 +258,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
 
         $httpHistory = $httpHistoryContainer->getRequests();
         $postmarkRequest = $httpHistory[2];
@@ -321,7 +322,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
     public function testRequestActionSuccess()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
@@ -349,7 +350,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
             EmailChangeController::FLASH_BAG_REQUEST_KEY => [
                 EmailChangeController::FLASH_BAG_REQUEST_MESSAGE_SUCCESS,
             ],
-        ], $session->getFlashBag()->peekAll());
+        ], $flashBag->peekAll());
 
         $httpHistory = $httpHistoryContainer->getRequests();
         $postmarkRequest = $httpHistory[2];
