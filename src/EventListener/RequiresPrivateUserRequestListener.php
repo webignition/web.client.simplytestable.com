@@ -5,8 +5,7 @@ namespace App\EventListener;
 use App\Services\RequiresPrivateUserResponseProvider;
 use App\Services\UrlMatcher;
 use App\Services\UserManager;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -18,9 +17,9 @@ class RequiresPrivateUserRequestListener
     private $userManager;
 
     /**
-     * @var Session
+     * @var FlashBagInterface
      */
-    private $session;
+    private $flashBag;
 
     /**
      * @var RouterInterface
@@ -37,22 +36,15 @@ class RequiresPrivateUserRequestListener
      */
     private $requiresPrivateUserResponseProvider;
 
-    /**
-     * @param UserManager $userManager
-     * @param SessionInterface $session
-     * @param RouterInterface $router
-     * @param UrlMatcher $urlMatcher
-     * @param RequiresPrivateUserResponseProvider $requiresPrivateUserResponseProvider
-     */
     public function __construct(
         UserManager $userManager,
-        SessionInterface $session,
+        FlashBagInterface $flashBag,
         RouterInterface $router,
         UrlMatcher $urlMatcher,
         RequiresPrivateUserResponseProvider $requiresPrivateUserResponseProvider
     ) {
         $this->userManager = $userManager;
-        $this->session = $session;
+        $this->flashBag = $flashBag;
         $this->router = $router;
         $this->urlMatcher = $urlMatcher;
         $this->requiresPrivateUserResponseProvider = $requiresPrivateUserResponseProvider;
@@ -72,7 +64,7 @@ class RequiresPrivateUserRequestListener
         $requiresPrivateUser = $this->urlMatcher->match($requestPath);
 
         if ($requiresPrivateUser && !$this->userManager->isLoggedIn()) {
-            $this->session->getFlashBag()->set('user_signin_error', 'account-not-logged-in');
+            $this->flashBag->set('user_signin_error', 'account-not-logged-in');
 
             $redirectResponse = $this->requiresPrivateUserResponseProvider->getResponse(
                 $request->getMethod(),

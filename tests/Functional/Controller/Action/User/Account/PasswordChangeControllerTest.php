@@ -13,6 +13,7 @@ use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
@@ -122,7 +123,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
         array $expectedFlashBagValues,
         $expectedUserPassword
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_CURRENT_PASSWORD);
@@ -138,7 +139,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
 
         $this->assertEquals(
             $expectedFlashBagValues,
-            $session->getFlashBag()->get(PasswordChangeController::FLASH_BAG_REQUEST_KEY)
+            $flashBag->get(PasswordChangeController::FLASH_BAG_REQUEST_KEY)
         );
 
         $this->assertEquals($expectedUserPassword, $user->getPassword());

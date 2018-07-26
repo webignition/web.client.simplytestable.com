@@ -6,8 +6,7 @@ use App\Services\RequiresValidTestOwnerResponseProvider;
 use App\Services\TestService;
 use App\Services\UrlMatcher;
 use App\Services\UserManager;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 class RequiresValidTestOwnerRequestListener
@@ -28,9 +27,9 @@ class RequiresValidTestOwnerRequestListener
     private $userManager;
 
     /**
-     * @var Session
+     * @var FlashBagInterface
      */
-    private $session;
+    private $flashBag;
 
     /**
      * @var TestService
@@ -41,13 +40,13 @@ class RequiresValidTestOwnerRequestListener
         UrlMatcher $urlMatcher,
         RequiresValidTestOwnerResponseProvider $requiresValidTestOwnerResponseProvider,
         UserManager $userManager,
-        SessionInterface $session,
+        FlashBagInterface $flashBag,
         TestService $testService
     ) {
         $this->urlMatcher = $urlMatcher;
         $this->requiresValidTestOwnerResponseProvider = $requiresValidTestOwnerResponseProvider;
         $this->userManager = $userManager;
-        $this->session = $session;
+        $this->flashBag = $flashBag;
         $this->testService = $testService;
     }
 
@@ -73,7 +72,7 @@ class RequiresValidTestOwnerRequestListener
 
             if (!empty($response)) {
                 if (!$this->userManager->isLoggedIn()) {
-                    $this->session->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
+                    $this->flashBag->set('user_signin_error', 'test-not-logged-in');
                 }
 
                 $event->setResponse($response);

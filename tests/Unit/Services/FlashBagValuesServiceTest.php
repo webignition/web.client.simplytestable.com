@@ -2,11 +2,9 @@
 
 namespace App\Tests\Unit\Services;
 
-use Mockery\MockInterface;
 use App\Services\FlashBagValues;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 class FlashBagValuesServiceTest extends \PHPUnit\Framework\TestCase
 {
@@ -27,15 +25,8 @@ class FlashBagValuesServiceTest extends \PHPUnit\Framework\TestCase
     {
         parent::setUp();
 
-        /* @var Session|MockInterface $session */
-        $session = \Mockery::mock(Session::class);
         $this->flashBag = new FlashBag();
-
-        $session
-            ->shouldReceive('getFlashBag')
-            ->andReturn($this->flashBag);
-
-        $this->flashBagValues = new FlashBagValues($session);
+        $this->flashBagValues = new FlashBagValues($this->flashBag);
     }
 
     /**

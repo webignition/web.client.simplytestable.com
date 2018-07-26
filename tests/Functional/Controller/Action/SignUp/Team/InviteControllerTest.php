@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class InviteControllerTest extends AbstractControllerTest
 {
@@ -87,7 +88,7 @@ class InviteControllerTest extends AbstractControllerTest
         array $expectedErrorFlashBagValues,
         array $expectedFailureFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -99,12 +100,12 @@ class InviteControllerTest extends AbstractControllerTest
 
         $this->assertEquals(
             $expectedErrorFlashBagValues,
-            $session->getFlashBag()->get(InviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY)
+            $flashBag->get(InviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY)
         );
 
         $this->assertEquals(
             $expectedFailureFlashBagValues,
-            $session->getFlashBag()->get(InviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY)
+            $flashBag->get(InviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY)
         );
     }
 
@@ -214,8 +215,8 @@ class InviteControllerTest extends AbstractControllerTest
         Request $request,
         $expectedHasUserCookie
     ) {
-        $session = self::$container->get('session');
         $resqueQueueService = self::$container->get(ResqueQueueService::class);
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -249,11 +250,11 @@ class InviteControllerTest extends AbstractControllerTest
         ));
 
         $this->assertEmpty(
-            $session->getFlashBag()->get(InviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY)
+            $flashBag->get(InviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY)
         );
 
         $this->assertEmpty(
-            $session->getFlashBag()->get(InviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY)
+            $flashBag->get(InviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY)
         );
 
         if ($expectedHasUserCookie) {

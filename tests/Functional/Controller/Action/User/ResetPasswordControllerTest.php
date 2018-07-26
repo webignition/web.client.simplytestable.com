@@ -11,13 +11,13 @@ use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
-use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use App\Tests\Services\PostmarkMessageVerifier;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class ResetPasswordControllerTest extends AbstractControllerTest
@@ -87,13 +87,13 @@ class ResetPasswordControllerTest extends AbstractControllerTest
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues, $expectedRedirectUrl)
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         /* @var RedirectResponse $response */
         $response = $this->resetPasswordController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
@@ -134,7 +134,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
      */
     public function testRequestActionUserDoesNotExist()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -155,7 +155,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
                     ResetPasswordController::FLASH_BAG_REQUEST_ERROR_MESSAGE_USER_INVALID,
                 ],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
     }
 
@@ -167,7 +167,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
      */
     public function testRequestActionInvalidAdminCredentials()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $request = new Request([], [
             'email' => self::EMAIL,
@@ -189,7 +189,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
                     ResetPasswordController::FLASH_BAG_REQUEST_ERROR_MESSAGE_INVALID_ADMIN_CREDENTIALS,
                 ],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
     }
 
@@ -209,7 +209,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
@@ -228,7 +228,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
 
         $postmarkRequest = $httpHistoryContainer->getLastRequest();
 
@@ -318,7 +318,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
 
     public function testResendActionSuccess()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -341,7 +341,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
                     ResetPasswordController::FLASH_BAG_REQUEST_MESSAGE_SUCCESS,
                 ]
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
     }
 
@@ -391,7 +391,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         array $expectedFlashBagValues,
         $expectedResponseHasUserCookie
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -399,9 +399,9 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         $response = $this->resetPasswordController->chooseAction($request);
 
         $this->assertEquals($expectedRedirectLocation, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
 
-        /* @var Cookie[] $responseCookies */
+        /* @var array $responseCookies */
         $responseCookies = $response->headers->getCookies();
 
         if ($expectedResponseHasUserCookie) {

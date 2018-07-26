@@ -12,8 +12,7 @@ use App\Exception\Mail\Configuration\Exception;
 use App\Services\Configuration\MailConfiguration;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -43,11 +42,6 @@ class ConfirmController extends AbstractController
     private $twig;
 
     /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @var MailConfiguration
      */
     private $mailConfiguration;
@@ -58,29 +52,26 @@ class ConfirmController extends AbstractController
     private $postmarkClient;
 
     /**
-     * @param RouterInterface $router
-     * @param UserService $userService
-     * @param Twig_Environment $twig
-     * @param SessionInterface $session
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
+     * @var FlashBagInterface
      */
+    private $flashBag;
+
     public function __construct(
         RouterInterface $router,
         UserService $userService,
         Twig_Environment $twig,
-        SessionInterface $session,
         MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient
+        PostmarkClient $postmarkClient,
+        FlashBagInterface $flashBag
     ) {
         parent::__construct($router);
 
         $this->userService = $userService;
         $this->twig = $twig;
         $this->router = $router;
-        $this->session = $session;
         $this->mailConfiguration = $mailConfiguration;
         $this->postmarkClient = $postmarkClient;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -104,7 +95,7 @@ class ConfirmController extends AbstractController
 
         try {
             if (!$this->userService->exists($email)) {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_TOKEN_RESEND_ERROR_KEY,
                     self::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_USER_INVALID
                 );
@@ -112,7 +103,7 @@ class ConfirmController extends AbstractController
                 return $redirectResponse;
             }
         } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_TOKEN_RESEND_ERROR_KEY,
                 self::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_CORE_APP_ADMIN_CREDENTIALS_INVALID
             );
@@ -128,17 +119,17 @@ class ConfirmController extends AbstractController
             $this->sendConfirmationToken($email, $token);
         } catch (PostmarkException $postmarkException) {
             if (405 === $postmarkException->postmarkApiErrorCode) {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_TOKEN_RESEND_ERROR_KEY,
                     self::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
             } elseif (406 === $postmarkException->postmarkApiErrorCode) {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_TOKEN_RESEND_ERROR_KEY,
                     self::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                 );
             } else {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_TOKEN_RESEND_ERROR_KEY,
                     self::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_POSTMARK_UNKNOWN
                 );
@@ -147,7 +138,7 @@ class ConfirmController extends AbstractController
             return $redirectResponse;
         }
 
-        $this->session->getFlashBag()->set(
+        $this->flashBag->set(
             self::FLASH_BAG_TOKEN_RESEND_SUCCESS_KEY,
             self::FLASH_BAG_TOKEN_RESEND_SUCCESS_MESSAGE
         );

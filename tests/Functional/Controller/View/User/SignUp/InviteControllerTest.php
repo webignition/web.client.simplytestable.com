@@ -12,6 +12,8 @@ use App\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
@@ -45,9 +47,7 @@ class InviteControllerTest extends AbstractViewControllerTest
             ]),
         ]);
 
-        $session = self::$container->get('session');
-        $flashBag = $session->getFlashBag();
-
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $flashBag->set(ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY, 'foo');
 
         $this->client->request(
@@ -66,7 +66,7 @@ class InviteControllerTest extends AbstractViewControllerTest
      *
      * @param array $httpFixtures
      * @param Request $request
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Twig_Environment $twig
      *
      * @throws InvalidAdminCredentialsException
@@ -75,18 +75,16 @@ class InviteControllerTest extends AbstractViewControllerTest
     public function testIndexActionRender(
         array $httpFixtures,
         Request $request,
-        array $flashBagValues,
+        array $flashBagMessages,
         Twig_Environment $twig
     ) {
+        $session = self::$container->get(SessionInterface::class);
+        $flashBag = self::$container->get(FlashBagInterface::class);
+
+        $session->start();
+
         $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        $session = self::$container->get('session');
-
-        $flashBag = $session->getFlashBag();
-
-        foreach ($flashBagValues as $key => $value) {
-            $flashBag->set($key, $value);
-        }
+        $flashBag->setAll($flashBagMessages);
 
         /* @var InviteController $inviteController */
         $inviteController = self::$container->get(InviteController::class);
@@ -116,9 +114,10 @@ class InviteControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createJsonResponse($inviteData),
                 ],
                 'request' => new Request(),
-                'flashBagValues' => [
-                    ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY =>
+                'flashBagMessages' => [
+                    ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY => [
                         ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK
+                    ],
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -158,10 +157,11 @@ class InviteControllerTest extends AbstractViewControllerTest
                     $internalServerErrorResponse,
                 ],
                 'request' => new Request(),
-                'flashBagValues' => [
-                    ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY =>
+                'flashBagMessages' => [
+                    ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY => [
                         ActionInviteController::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE,
-                    ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY => 500,
+                    ],
+                    ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY => [500],
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -198,7 +198,7 @@ class InviteControllerTest extends AbstractViewControllerTest
                 'request' => new Request([
                     'stay-signed-in' => 1,
                 ]),
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) use ($invite) {

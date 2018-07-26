@@ -7,6 +7,7 @@ use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 
 class TeamControllerCreateActionTest extends AbstractTeamControllerTest
@@ -57,7 +58,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
 
     public function testCreateActionEmptyName()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         /* @var RedirectResponse $response */
         $response = $this->teamController->createAction(new Request());
@@ -69,14 +70,14 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
                     TeamController::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK,
                 ],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
     }
 
     public function testCreateActionSuccess()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -88,7 +89,7 @@ class TeamControllerCreateActionTest extends AbstractTeamControllerTest
         ]));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals([], $session->getFlashBag()->peekAll());
+        $this->assertEquals([], $flashBag->peekAll());
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
     }
 }

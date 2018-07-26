@@ -146,24 +146,14 @@ class CardControllerTest extends AbstractAccountControllerTest
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function testIndexActionRender(
-        array $httpFixtures,
-        Twig_Environment $twig
-    ) {
-        $session = self::$container->get('session');
+    public function testIndexActionRender(array $httpFixtures, Twig_Environment $twig)
+    {
         $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
-
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
 
         /* @var CardController $cardController */
         $cardController = self::$container->get(CardController::class);

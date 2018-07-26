@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Controller\Action\User\Account\EmailChange;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 
 class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControllerTest
@@ -50,7 +51,7 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
 
     public function testCancelAction()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -67,7 +68,7 @@ class EmailChangeControllerCancelActionTest extends AbstractEmailChangeControlle
                     'cancelled',
                 ],
             ],
-            $session->getFlashBag()->peekAll()
+            $flashBag->peekAll()
         );
     }
 }

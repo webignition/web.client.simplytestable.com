@@ -11,7 +11,7 @@ use App\Services\UserManager;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class PasswordChangeController extends AbstractUserAccountController
@@ -28,19 +28,13 @@ class PasswordChangeController extends AbstractUserAccountController
      */
     private $userService;
 
-    /**
-     * @param RouterInterface $router
-     * @param UserManager $userManager
-     * @param SessionInterface $session
-     * @param UserService $userService
-     */
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
-        SessionInterface $session,
+        FlashBagInterface $flashBag,
         UserService $userService
     ) {
-        parent::__construct($router, $userManager, $session);
+        parent::__construct($router, $userManager, $flashBag);
 
         $this->userService = $userService;
     }
@@ -65,7 +59,7 @@ class PasswordChangeController extends AbstractUserAccountController
         $redirectResponse = $this->createUserAccountRedirectResponse();
 
         if (empty($currentPassword) || empty($newPassword)) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_MISSING
             );
@@ -76,7 +70,7 @@ class PasswordChangeController extends AbstractUserAccountController
         $user = $this->userManager->getUser();
 
         if ($currentPassword != $user->getPassword()) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_PASSWORD_INVALID
             );
@@ -98,17 +92,17 @@ class PasswordChangeController extends AbstractUserAccountController
                 $redirectResponse->headers->setCookie($this->userManager->createUserCookie());
             }
 
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_SUCCESS_MESSAGE
             );
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_READ_ONLY
             );
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_FAILED_UNKNOWN
             );

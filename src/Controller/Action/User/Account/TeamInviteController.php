@@ -19,7 +19,7 @@ use App\Services\UserManager;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -60,21 +60,14 @@ class TeamInviteController extends AbstractUserAccountTeamController
      */
     private $userService;
 
-    /**
-     * @param RouterInterface $router
-     * @param UserManager $userManager
-     * @param SessionInterface $session
-     * @param TeamInviteService $teamInviteService
-     * @param UserService $userService
-     */
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
-        SessionInterface $session,
+        FlashBagInterface $flashBag,
         TeamInviteService $teamInviteService,
         UserService $userService
     ) {
-        parent::__construct($router, $userManager, $session);
+        parent::__construct($router, $userManager, $flashBag);
 
         $this->teamInviteService = $teamInviteService;
         $this->userService = $userService;
@@ -118,7 +111,7 @@ class TeamInviteController extends AbstractUserAccountTeamController
                 self::FLASH_BAG_KEY_INVITEE => $invitee,
             ];
 
-            $this->session->getFlashBag()->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
+            $this->flashBag->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
 
             return $redirectResponse;
         }
@@ -129,7 +122,7 @@ class TeamInviteController extends AbstractUserAccountTeamController
                 self::FLASH_BAG_KEY_ERROR => self::FLASH_BAG_TEAM_INVITE_GET_ERROR_SELF_INVITE,
             ];
 
-            $this->session->getFlashBag()->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
+            $this->flashBag->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
 
             return $redirectResponse;
         }
@@ -168,7 +161,7 @@ class TeamInviteController extends AbstractUserAccountTeamController
             $this->teamInviteService->removeForUser($invite);
         }
 
-        $this->session->getFlashBag()->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
+        $this->flashBag->set(self::FLASH_BAG_TEAM_INVITE_GET_KEY, $flashData);
 
         return $redirectResponse;
     }
@@ -331,7 +324,7 @@ class TeamInviteController extends AbstractUserAccountTeamController
             ];
         }
 
-        $this->session->getFlashBag()->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
+        $this->flashBag->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
 
         return $this->createUserAccountTeamRedirectResponse();
     }

@@ -11,6 +11,7 @@ use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 
 class PlanControllerTest extends AbstractUserAccountControllerTest
@@ -112,7 +113,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         Request $request,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL);
@@ -124,7 +125,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         $response = $this->planController->subscribeAction($request);
 
         $this->assertEquals('/account/plan/', $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
     /**

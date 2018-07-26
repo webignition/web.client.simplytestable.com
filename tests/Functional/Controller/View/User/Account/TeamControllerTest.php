@@ -15,6 +15,7 @@ use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
@@ -106,7 +107,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
      * @dataProvider indexActionRenderDataProvider
      *
      * @param array $httpFixtures
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Twig_Environment $twig
      *
      * @throws CoreApplicationRequestException
@@ -115,24 +116,17 @@ class TeamControllerTest extends AbstractAccountControllerTest
      */
     public function testIndexActionRender(
         array $httpFixtures,
-        array $flashBagValues,
+        array $flashBagMessages,
         Twig_Environment $twig
     ) {
         $userManager = self::$container->get(UserManager::class);
-
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $user = new User(self::USER_EMAIL);
-
         $userManager->setUser($user);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $flashBag->setAll($flashBagMessages);
 
         /* @var TeamController $teamController */
         $teamController = self::$container->get(TeamController::class);
@@ -157,7 +151,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                         ],
                     ])),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -180,9 +174,10 @@ class TeamControllerTest extends AbstractAccountControllerTest
                         ],
                     ])),
                 ],
-                'flashBagValues' => [
-                    TeamActionController::FLASH_BAG_CREATE_ERROR_KEY =>
+                'flashBagMessages' => [
+                    TeamActionController::FLASH_BAG_CREATE_ERROR_KEY => [
                         TeamActionController::FLASH_BAG_CREATE_ERROR_MESSAGE_NAME_BLANK,
+                    ],
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -209,7 +204,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                         ],
                     ])),
                 ],
-                'flashBagValues' => [
+                'flashBagMessages' => [
                     TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
                         TeamInviteController::FLASH_BAG_KEY_STATUS =>
                             TeamInviteController::FLASH_BAG_STATUS_ERROR,
@@ -252,7 +247,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                         ],
                     ])),
                 ],
-                'flashBagValues' => [
+                'flashBagMessages' => [
                     TeamInviteController::FLASH_BAG_TEAM_RESEND_INVITE_KEY => [
                         TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
                         TeamInviteController::FLASH_BAG_KEY_ERROR =>
@@ -299,7 +294,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                         'members' => [],
                     ]),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -332,7 +327,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                     ]),
                     HttpResponseFactory::createJsonResponse([]),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -375,7 +370,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                         ],
                     ]),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -412,7 +407,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                         ],
                     ]),
                 ],
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {

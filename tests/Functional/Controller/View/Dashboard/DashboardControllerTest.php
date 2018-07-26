@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
@@ -92,29 +93,23 @@ class DashboardControllerTest extends AbstractViewControllerTest
      *
      * @param array $httpFixtures
      * @param User $user
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Request $request
      * @param Twig_Environment $twig
      */
     public function testIndexActionRender(
         array $httpFixtures,
         User $user,
-        array $flashBagValues,
+        array $flashBagMessages,
         Request $request,
         Twig_Environment $twig
     ) {
-        $session = self::$container->get('session');
         $userManager = self::$container->get(UserManager::class);
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $userManager->setUser($user);
-
         $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $flashBag->setAll($flashBagMessages);
 
         /* @var DashboardController $dashboardController */
         $dashboardController = self::$container->get(DashboardController::class);
@@ -133,7 +128,7 @@ class DashboardControllerTest extends AbstractViewControllerTest
             'public user' => [
                 'httpFixtures' => [],
                 'user' => SystemUserService::getPublicUser(),
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -157,7 +152,7 @@ class DashboardControllerTest extends AbstractViewControllerTest
             'private user' => [
                 'httpFixtures' => [],
                 'user' => new User(self::USER_EMAIL),
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -183,8 +178,8 @@ class DashboardControllerTest extends AbstractViewControllerTest
             'private user; has test start error' => [
                 'httpFixtures' => [],
                 'user' => new User(self::USER_EMAIL),
-                'flashBagValues' => [
-                    'test_start_error' => 'website-blank',
+                'flashBagMessages' => [
+                    'test_start_error' => ['website-blank'],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([

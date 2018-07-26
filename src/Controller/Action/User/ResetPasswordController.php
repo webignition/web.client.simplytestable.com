@@ -17,8 +17,7 @@ use App\Services\Configuration\MailConfiguration;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -57,9 +56,9 @@ class ResetPasswordController extends AbstractController
     private $twig;
 
     /**
-     * @var Session
+     * @var FlashBagInterface
      */
-    private $session;
+    private $flashBag;
 
     /**
      * @var MailConfiguration
@@ -76,20 +75,11 @@ class ResetPasswordController extends AbstractController
      */
     private $userManager;
 
-    /**
-     * @param RouterInterface $router
-     * @param UserService $userService
-     * @param Twig_Environment $twig
-     * @param SessionInterface $session
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param UserManager $userManager
-     */
     public function __construct(
         RouterInterface $router,
         UserService $userService,
         Twig_Environment $twig,
-        SessionInterface $session,
+        FlashBagInterface $flashBag,
         MailConfiguration $mailConfiguration,
         PostmarkClient $postmarkClient,
         UserManager $userManager
@@ -98,7 +88,7 @@ class ResetPasswordController extends AbstractController
 
         $this->userService = $userService;
         $this->twig = $twig;
-        $this->session = $session;
+        $this->flashBag = $flashBag;
         $this->mailConfiguration = $mailConfiguration;
         $this->postmarkClient = $postmarkClient;
         $this->userManager = $userManager;
@@ -121,7 +111,7 @@ class ResetPasswordController extends AbstractController
         $email = trim($requestData->get('email'));
 
         if (empty($email)) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_ERROR_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_BLANK
             );
@@ -138,7 +128,7 @@ class ResetPasswordController extends AbstractController
 
         $emailValidator = new EmailValidator;
         if (!$emailValidator->isValid($email, new RFCValidation())) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_ERROR_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID
             );
@@ -148,7 +138,7 @@ class ResetPasswordController extends AbstractController
 
         try {
             if (!$this->userService->exists($email)) {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_REQUEST_ERROR_MESSAGE_USER_INVALID
                 );
@@ -156,7 +146,7 @@ class ResetPasswordController extends AbstractController
                 return $redirectResponse;
             }
         } catch (InvalidAdminCredentialsException $invalidAdminCredentialsException) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_ERROR_KEY,
                 self::FLASH_BAG_REQUEST_ERROR_MESSAGE_INVALID_ADMIN_CREDENTIALS
             );
@@ -170,28 +160,28 @@ class ResetPasswordController extends AbstractController
 
         try {
             $this->sendPasswordResetConfirmationToken($email, $token);
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_SUCCESS_KEY,
                 self::FLASH_BAG_REQUEST_MESSAGE_SUCCESS
             );
         } catch (PostmarkException $postmarkException) {
             if (405 === $postmarkException->postmarkApiErrorCode) {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND
                 );
             } elseif (406 === $postmarkException->postmarkApiErrorCode) {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
                 );
             } elseif (300 === $postmarkException->postmarkApiErrorCode) {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL
                 );
             } else {
-                $this->session->getFlashBag()->set(
+                $this->flashBag->set(
                     self::FLASH_BAG_REQUEST_ERROR_KEY,
                     self::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN
                 );
@@ -214,7 +204,7 @@ class ResetPasswordController extends AbstractController
     public function chooseAction(Request $request)
     {
         $requestData = $request->request;
-        $flashBag = $this->session->getFlashBag();
+        $flashBag = $this->flashBag;
 
         $email = trim($requestData->get('email'));
         $requestToken = trim($requestData->get('token'));

@@ -1,22 +1,19 @@
 <?php
+
 namespace App\Services;
 
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class FlashBagValues
 {
     /**
-     * @var Session
+     * @var FlashBagInterface
      */
-    private $session;
+    private $flashBag;
 
-    /**
-     * @param SessionInterface $session
-     */
-    public function __construct(SessionInterface $session)
+    public function __construct(FlashBagInterface $flashBag)
     {
-        $this->session = $session;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -28,10 +25,8 @@ class FlashBagValues
     {
         $values = [];
 
-        $flashBag = $this->session->getFlashBag();
-
         foreach ($keys as $key) {
-            $flashValues = $flashBag->get($key);
+            $flashValues = $this->flashBag->get($key);
 
             if (!empty($flashValues)) {
                 $isSingleItemArray = 1 === count($flashValues);

@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Twig_Environment;
 use webignition\SimplyTestableUserModel\User;
 
@@ -56,22 +58,20 @@ class SignInControllerTest extends AbstractViewControllerTest
     /**
      * @dataProvider indexActionRenderDataProvider
      *
-     * @param array $flashBagValues
+     * @param array $flashBagMessages
      * @param Request $request
      * @param Twig_Environment $twig
      */
     public function testIndexActionRender(
-        array $flashBagValues,
+        array $flashBagMessages,
         Request $request,
         Twig_Environment $twig
     ) {
-        $session = self::$container->get('session');
+        $session = self::$container->get(SessionInterface::class);
+        $session->start();
 
-        if (!empty($flashBagValues)) {
-            foreach ($flashBagValues as $key => $value) {
-                $session->getFlashBag()->set($key, $value);
-            }
-        }
+        $flashBag = self::$container->get(FlashBagInterface::class);
+        $flashBag->setAll($flashBagMessages);
 
         /* @var SignInController $signInController */
         $signInController = self::$container->get(SignInController::class);
@@ -88,7 +88,7 @@ class SignInControllerTest extends AbstractViewControllerTest
     {
         return [
             'no request data, no flash error messages' => [
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -111,7 +111,7 @@ class SignInControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'request has email, stay-signed-in, redirect' => [
-                'flashBagValues' => [],
+                'flashBagMessages' => [],
                 'request' => new Request([
                     'email' => self::USER_EMAIL,
                     'stay-signed-in' => 1,
@@ -138,9 +138,9 @@ class SignInControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'user_signin_error, user_signin_confirmation' => [
-                'flashBagValues' => [
-                    'user_signin_error' => 'account-not-logged-in',
-                    'user_signin_confirmation' => 'user-activated',
+                'flashBagMessages' => [
+                    'user_signin_error' => ['account-not-logged-in'],
+                    'user_signin_confirmation' => ['user-activated'],
                 ],
                 'request' => new Request(),
                 'twig' => MockFactory::createTwig([

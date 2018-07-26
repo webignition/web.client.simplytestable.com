@@ -14,8 +14,7 @@ use App\Services\UserManager;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\Routing\RouterInterface;
 use webignition\SimplyTestableUserModel\User;
 
@@ -50,25 +49,17 @@ class InviteController extends AbstractController
     private $resqueQueueService;
 
     /**
-     * @var Session
+     * @var FlashBagInterface
      */
-    private $session;
+    private $flashBag;
 
-    /**
-     * @param RouterInterface $router
-     * @param TeamInviteService $teamInviteService
-     * @param UserService $userService
-     * @param UserManager $userManager
-     * @param ResqueQueueService $resqueQueueService
-     * @param SessionInterface $session
-     */
     public function __construct(
         RouterInterface $router,
         TeamInviteService $teamInviteService,
         UserService $userService,
         UserManager $userManager,
         ResqueQueueService $resqueQueueService,
-        SessionInterface $session
+        FlashBagInterface $flashBag
     ) {
         parent::__construct($router);
 
@@ -76,8 +67,8 @@ class InviteController extends AbstractController
         $this->userService = $userService;
         $this->userManager = $userManager;
         $this->resqueQueueService = $resqueQueueService;
-        $this->session = $session;
         $this->router = $router;
+        $this->flashBag = $flashBag;
     }
 
     /**
@@ -107,7 +98,7 @@ class InviteController extends AbstractController
 
         $password = trim($requestData->get('password'));
         if (empty($password)) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_PASSWORD_BLANK
             );
@@ -133,15 +124,12 @@ class InviteController extends AbstractController
         }
 
         if (false === $activateAndAcceptIsSuccessful) {
-            $this->session->getFlashBag()->set(
+            $this->flashBag->set(
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_KEY,
                 self::FLASH_BAG_INVITE_ACCEPT_ERROR_MESSAGE_FAILURE
             );
 
-            $this->session->getFlashBag()->set(
-                self::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
-                $activateAndAcceptFailureCode
-            );
+            $this->flashBag->set(self::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY, $activateAndAcceptFailureCode);
 
             return new RedirectResponse($this->generateUrl(
                 'view_user_sign_up_invite',

@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use App\Tests\Services\PostmarkMessageVerifier;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
@@ -107,7 +108,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
      */
     public function testResendInviteActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -117,7 +118,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         ]));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
     }
 
@@ -162,7 +163,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
@@ -187,7 +188,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         ]));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
 
         $postmarkRequest = $httpHistoryContainer->getLastRequest();
@@ -234,7 +235,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         array $expectedEmailProperties,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
@@ -260,7 +261,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         ]));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
 
         $postmarkRequest = $httpHistoryContainer->getLastRequest();

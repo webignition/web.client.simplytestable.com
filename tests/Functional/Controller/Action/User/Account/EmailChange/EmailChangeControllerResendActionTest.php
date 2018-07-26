@@ -14,6 +14,7 @@ use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 use App\Tests\Services\PostmarkMessageVerifier;
 use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
@@ -96,7 +97,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         ResponseInterface $postmarkHttpResponse,
         array $expectedFlashBagValues
     ) {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
@@ -115,7 +116,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
-        $this->assertEquals($expectedFlashBagValues, $session->getFlashBag()->peekAll());
+        $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
 
         $postmarkRequest = $httpHistoryContainer->getLastRequest();
 
@@ -166,7 +167,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
 
     public function testRequestActionSuccess()
     {
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
         $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
         $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
@@ -189,7 +190,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
             EmailChangeController::FLASH_BAG_RESEND_SUCCESS_KEY => [
                 EmailChangeController::FLASH_BAG_RESEND_MESSAGE_SUCCESS
             ],
-        ], $session->getFlashBag()->peekAll());
+        ], $flashBag->peekAll());
 
         $postmarkRequest = $httpHistoryContainer->getLastRequest();
 

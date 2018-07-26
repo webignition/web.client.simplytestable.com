@@ -11,6 +11,7 @@ use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
 
 class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
@@ -82,7 +83,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         $expectedUpdatesListRecipientsContains
     ) {
         $mailChimpListRecipientsService = self::$container->get(ListRecipientsService::class);
-        $session = self::$container->get('session');
+        $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -116,7 +117,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
 
         $this->assertEquals(
             $expectedFlashBagValues,
-            $session->getFlashBag()->get('user_account_newssubscriptions_update')
+            $flashBag->get('user_account_newssubscriptions_update')
         );
 
         $this->assertEquals(
