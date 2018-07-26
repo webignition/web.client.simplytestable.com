@@ -2,16 +2,15 @@
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
-use App\Controller\AbstractBaseViewController;
 use App\Entity\Test\Test;
 use App\EventListener\RequiresCompletedTestRequestListener;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Controller\View\Test\Results\ResultsController;
+use Symfony\Component\Routing\RouterInterface;
 
-class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerTest
+class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestListenerTest
 {
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
@@ -33,8 +32,6 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
      * @param array $testValues
      * @param bool $expectedHasResponse
      * @param string $expectedRedirectUrl
-     *
-     * @throws \ReflectionException
      */
     public function testOnKernelController(
         array $httpFixtures,
@@ -42,6 +39,8 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
         $expectedHasResponse,
         $expectedRedirectUrl = null
     ) {
+        $router = self::$container->get(RouterInterface::class);
+
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
@@ -49,22 +48,35 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
             $testFactory->create($testValues);
         }
 
-        /* @var ResultsController $controller */
-        $controller = self::$container->get(ResultsController::class);
+        $url = $router->generate(
+            'view_test_results',
+            [
+                'website' => self::WEBSITE,
+                'test_id' => self::TEST_ID,
+            ]
+        );
 
-        $request = new Request([], [], [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
+        $event = $this->createGetResponseEvent(new Request(
+            [],
+            [],
+            [
+                'website' => self::WEBSITE,
+                'test_id' => self::TEST_ID,
+            ],
+            [],
+            [],
+            [
+                'REQUEST_URI' => $url,
+            ]
+        ));
 
-        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
+        $this->requestListener->onKernelRequest($event);
 
-        $this->requestListener->onKernelController($event);
-
-        $this->assertEquals($expectedHasResponse, $controller->hasResponse());
+        $this->assertEquals($expectedHasResponse, $event->hasResponse());
 
         if ($expectedHasResponse) {
-            $response = $this->getControllerResponse($controller, AbstractBaseViewController::class);
+            /* @var RedirectResponse $response */
+            $response = $event->getResponse();
 
             $this->assertInstanceOf(RedirectResponse::class, $response);
             $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
@@ -130,20 +142,6 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelControllerT
                 ],
                 'expectedHasResponse' => true,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-            ],
-            'non-matching website' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        'id' => self::TEST_ID,
-                        'website' => 'http://foo.example.com/',
-                        'task_types' => [],
-                        'user' => 'user@example.com',
-                        'state' => Test::STATE_COMPLETED,
-                    ]),
-                ],
-                'testValues' => [],
-                'expectedHasResponse' => true,
-                'expectedRedirectUrl' => '/http://example.com//1/',
             ],
             'state: completed' => [
                 'httpFixtures' => [
