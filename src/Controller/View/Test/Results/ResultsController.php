@@ -184,6 +184,16 @@ class ResultsController extends AbstractResultsController
         $test = $this->testService->get($website, $test_id);
         $remoteTest = $this->remoteTestService->get();
 
+        if ($website !== $remoteTest->getWebsite()) {
+            return new RedirectResponse($this->generateUrl(
+                'redirect_website_test',
+                [
+                    'website' => $remoteTest->getWebsite(),
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
         if ($this->requiresPreparation($remoteTest, $test)) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_results_preparing',
@@ -212,16 +222,6 @@ class ResultsController extends AbstractResultsController
                     'website' => $website,
                     'test_id' => $test_id,
                     'filter' => $defaultFilter
-                ]
-            ));
-        }
-
-        if ($website !== (string)$test->getWebsite()) {
-            return new RedirectResponse($this->generateUrl(
-                'redirect_website_test',
-                [
-                    'website' => $remoteTest->getWebsite(),
-                    'test_id' => $test_id
                 ]
             ));
         }
