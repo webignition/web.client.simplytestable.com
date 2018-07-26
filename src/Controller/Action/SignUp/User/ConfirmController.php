@@ -2,21 +2,17 @@
 
 namespace App\Controller\Action\SignUp\User;
 
+use App\Services\Mailer;
 use Postmark\Models\PostmarkException;
-use Postmark\PostmarkClient;
 use App\Controller\AbstractController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
-use App\Exception\Mail\Configuration\Exception;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Twig_Environment;
 
 class ConfirmController extends AbstractController
 {
@@ -37,41 +33,27 @@ class ConfirmController extends AbstractController
     private $userService;
 
     /**
-     * @var Twig_Environment
-     */
-    private $twig;
-
-    /**
-     * @var MailConfiguration
-     */
-    private $mailConfiguration;
-
-    /**
-     * @var PostmarkClient
-     */
-    private $postmarkClient;
-
-    /**
      * @var FlashBagInterface
      */
     private $flashBag;
 
+    /**
+     * @var Mailer
+     */
+    private $mailer;
+
     public function __construct(
         RouterInterface $router,
         UserService $userService,
-        Twig_Environment $twig,
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        FlashBagInterface $flashBag
+        FlashBagInterface $flashBag,
+        Mailer $mailer
     ) {
         parent::__construct($router);
 
         $this->userService = $userService;
-        $this->twig = $twig;
         $this->router = $router;
-        $this->mailConfiguration = $mailConfiguration;
-        $this->postmarkClient = $postmarkClient;
         $this->flashBag = $flashBag;
+        $this->mailer = $mailer;
     }
 
     /**
@@ -108,7 +90,12 @@ class ConfirmController extends AbstractController
                 self::FLASH_BAG_TOKEN_RESEND_ERROR_MESSAGE_CORE_APP_ADMIN_CREDENTIALS_INVALID
             );
 
-            $this->sendInvalidAdminCredentialsNotification();
+            $this->mailer->sendInvalidAdminCredentialsNotification([
+                'call' => 'UserService::exists()',
+                'args' => [
+                    'email' => $email,
+                ],
+            ]);
 
             return $redirectResponse;
         }
@@ -116,7 +103,7 @@ class ConfirmController extends AbstractController
         $token = $this->userService->getConfirmationToken($email);
 
         try {
-            $this->sendConfirmationToken($email, $token);
+            $this->mailer->sendSignUpConfirmationToken($email, $token);
         } catch (PostmarkException $postmarkException) {
             if (405 === $postmarkException->postmarkApiErrorCode) {
                 $this->flashBag->set(
@@ -144,58 +131,5 @@ class ConfirmController extends AbstractController
         );
 
         return $redirectResponse;
-    }
-
-    /**
-     * @param string $email
-     * @param string $token
-     *
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     */
-    private function sendConfirmationToken($email, $token)
-    {
-        $sender = $this->mailConfiguration->getSender('default');
-        $messageProperties = $this->mailConfiguration->getMessageProperties('user_creation_confirmation');
-
-        $confirmationUrl = $this->generateUrl(
-            'view_user_sign_up_confirm',
-            [
-                'email' => $email,
-                'token' => $token,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        $this->postmarkClient->sendEmail(
-            $sender['email'],
-            $email,
-            $messageProperties['subject'],
-            null,
-            $this->twig->render(
-                'Email/user-creation-confirmation.txt.twig',
-                [
-                    'confirmation_url' => $confirmationUrl,
-                    'confirmation_code' => $token
-                ]
-            )
-        );
-    }
-
-    /**
-     * @throws PostmarkException
-     * @throws Exception
-     */
-    private function sendInvalidAdminCredentialsNotification()
-    {
-        $sender = $this->mailConfiguration->getSender('default');
-
-        $this->postmarkClient->sendEmail(
-            $sender['email'],
-            'jon@simplytestable.com',
-            'Invalid admin user credentials',
-            null,
-            'Invalid admin user credentials exception raised when calling UserService::exists()'
-        );
     }
 }
