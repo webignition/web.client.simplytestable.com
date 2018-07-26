@@ -2,8 +2,8 @@
 
 namespace App\Tests\Functional\Controller\Action\User\User;
 
+use App\Services\Mailer;
 use Egulias\EmailValidator\EmailValidator;
-use Postmark\PostmarkClient;
 use Psr\Http\Message\ResponseInterface;
 use App\Controller\Action\User\UserController;
 use App\Exception\CoreApplicationRequestException;
@@ -11,7 +11,6 @@ use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Request\User\SignUpRequest;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\CouponService;
 use App\Services\Request\Factory\User\SignUpRequestFactory;
 use App\Services\Request\Validator\User\UserAccountRequestValidator;
@@ -416,10 +415,8 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         }
 
         return $this->userController->signUpSubmitAction(
-            self::$container->get(MailConfiguration::class),
-            self::$container->get(PostmarkClient::class),
+            self::$container->get(Mailer::class),
             self::$container->get(CouponService::class),
-            self::$container->get('twig'),
             $signInRequestFactory,
             $userAccountRequestValidator,
             $request
