@@ -13,6 +13,16 @@ class UrlMatcherTest extends AbstractBaseTestCase
     private $requiresValidUserUrlMatcher;
 
     /**
+     * @var UrlMatcher
+     */
+    private $requiresPrivateUserUrlMatcher;
+
+    /**
+     * @var UrlMatcher
+     */
+    private $requiresValidTestOwnerUrlMatcher;
+
+    /**
      * {@inheritdoc}
      */
     protected function setUp()
@@ -21,6 +31,14 @@ class UrlMatcherTest extends AbstractBaseTestCase
 
         $this->requiresValidUserUrlMatcher = self::$container->get(
             'simplytestable.web_client.requires_valid_user_url_matcher'
+        );
+
+        $this->requiresPrivateUserUrlMatcher = self::$container->get(
+            'simplytestable.web_client.requires_private_user_url_matcher'
+        );
+
+        $this->requiresValidTestOwnerUrlMatcher = self::$container->get(
+            'simplytestable.web_client.requires_valid_test_owner_url_matcher'
         );
     }
 
@@ -94,6 +112,9 @@ class UrlMatcherTest extends AbstractBaseTestCase
             '*/tasks/ids/' => [
                 'path' => '/http://example.com//1234/tasks/ids/',
             ],
+            '*/tasks/ids/unretrieved/*' => [
+                'path' => '/http://example.com//1234/tasks/ids/unretrieved/*',
+            ],
             '/test/start/' => [
                 'path' => '/test/start/',
             ],
@@ -163,6 +184,148 @@ class UrlMatcherTest extends AbstractBaseTestCase
             ],
             '*/unlock/' => [
                 'path' => '/http://example.com//1234/unlock/',
+            ],
+            '/test/../cancel/' => [
+                'path' => '/test/http://example.com//1234/cancel/',
+            ],
+            '/test/../cancel-crawl/' => [
+                'path' => '/test/http://example.com//1234/cancel-crawl/',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider requiresPrivateUserUrlMatcherMatchExpectedDataProvider
+     *
+     * @param string $path
+     */
+    public function testRequiresPrivateUserUrlMatcherMatchExpected($path)
+    {
+        $this->assertTrue($this->requiresPrivateUserUrlMatcher->match($path));
+    }
+
+    /**
+     * @return array
+     */
+    public function requiresPrivateUserUrlMatcherMatchExpectedDataProvider()
+    {
+        return [
+            '/account/* [1]' => [
+                'path' => '/account/news-subscriptions/update/',
+            ],
+            '/account/* [2]' => [
+                'path' => '/account/',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider requiresValidUserUrlMatcherMatchNotExpectedDataProvider
+     *
+     * @param string $path
+     */
+    public function testRequiresPrivateUserUrlMatcherMatchNotExpected($path)
+    {
+        $this->assertFalse($this->requiresPrivateUserUrlMatcher->match($path));
+    }
+
+    /**
+     * @return array
+     */
+    public function requiresPrivateUserUrlMatcherMatchNotExpectedDataProvider()
+    {
+        return [
+            '/signout/' => [
+                'path' => '/signout/',
+            ],
+            '/test/../cancel/' => [
+                'path' => '/test/http://example.com//1234/cancel/',
+            ],
+            '/test/../cancel-crawl/' => [
+                'path' => '/test/http://example.com//1234/cancel-crawl/',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider requiresValidTestOwnerUrlMatcherMatchExpectedDataProvider
+     *
+     * @param string $path
+     */
+    public function testRequiresValidTestOwnerUrlMatcherMatchExpected($path)
+    {
+        $this->assertTrue($this->requiresValidTestOwnerUrlMatcher->match($path));
+    }
+
+    /**
+     * @return array
+     */
+    public function requiresValidTestOwnerUrlMatcherMatchExpectedDataProvider()
+    {
+        return [
+            '*/finished-summary/' => [
+                'path' => '/http://example.com//1234/finished-summary/',
+            ],
+            '*/preparing/' => [
+                'path' => '/http://example.com//1234/results/preparing/',
+            ],
+            'task */results/ [1]' => [
+                'path' => '/website/http://example.com//test_id/1234/task_id/567/results/',
+            ],
+            'task */results// [2]' => [
+                'path' => '/http://example.com//1234/task_id/567/results//',
+            ],
+            'test */results// [1]' => [
+                'path' => '/http://example.com//1234/results//',
+            ],
+            'test */results// [2]' => [
+                'path' => '/http://example.com//1234/http://example.com/foo.html/html+validation/results/',
+            ],
+            'test */results/* [1]' => [
+                'path' => '/http://example.com//1234/results/rejected/',
+            ],
+            'test */results/* [2]' => [
+                'path' => '/http://example.com//1234/results/html+validation/foo',
+            ],
+            '*/url-limit-notification/' => [
+                'path' => '/http://example.com//1234/url-limit-notification/',
+            ],
+            '*/progress/' => [
+                'path' => '/http://example.com//1234/progress/',
+            ],
+            '*/tasklist/' => [
+                'path' => '/http://example.com//1234/tasklist/',
+            ],
+            '*/tasks/ids/' => [
+                'path' => '/http://example.com//1234/tasks/ids/',
+            ],
+            '*/tasks/ids/unretrieved/*' => [
+                'path' => '/http://example.com//1234/tasks/ids/unretrieved/*',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider requiresValidTestOwnerUrlMatcherMatchNotExpectedDataProvider
+     *
+     * @param string $path
+     */
+    public function testRequiresValidTestOwnerUrlMatcherMatchNotExpected($path)
+    {
+        $this->assertFalse($this->requiresValidTestOwnerUrlMatcher->match($path));
+    }
+
+    /**
+     * @return array
+     */
+    public function requiresValidTestOwnerUrlMatcherMatchNotExpectedDataProvider()
+    {
+        return [
+            '/' => [
+                'path' => '/',
+            ],
+            '/signout/' => [
+                'path' => '/signout/',
             ],
             '/test/../cancel/' => [
                 'path' => '/test/http://example.com//1234/cancel/',

@@ -5,7 +5,6 @@ namespace App\Controller\View\Test\Results;
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Services\CacheValidatorService;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
@@ -15,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class PreparingStatsController extends AbstractBaseViewController implements RequiresValidOwner
+class PreparingStatsController extends AbstractBaseViewController
 {
     /**
      * @var TestService
@@ -47,14 +46,6 @@ class PreparingStatsController extends AbstractBaseViewController implements Req
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInvalidOwnerResponse(Request $request)
-    {
-        return $this->createJsonResponse(0, 0, 0, 0, 0);
     }
 
     /**

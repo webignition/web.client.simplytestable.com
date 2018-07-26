@@ -4,14 +4,12 @@ namespace App\Tests\Functional\EventListener\RequestListener;
 
 use App\Entity\Test\Test;
 use App\EventListener\RequiresValidTestOwnerRequestListener;
-use App\Exception\CoreApplicationRequestException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use App\Controller\View\Partials\TestUrlLimitNotificationController;
+use Symfony\Component\Routing\RouterInterface;
 
-class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelControllerTest
+class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestListenerTest
 {
     const WEBSITE = 'http://example.com';
     const TEST_ID = 1;
@@ -37,6 +35,8 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
      */
     public function testOnKernelController(array $httpFixtures, array $testValues, $expectedHasResponse)
     {
+        $router = self::$container->get(RouterInterface::class);
+
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
@@ -44,25 +44,31 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
             $testFactory->create($testValues);
         }
 
-        /* @var TestUrlLimitNotificationController $controller */
-        $controller = self::$container->get(TestUrlLimitNotificationController::class);
+        $url = $router->generate(
+            'view_test_results',
+            [
+                'website' => self::WEBSITE,
+                'test_id' => self::TEST_ID,
+            ]
+        );
 
-        $request = new Request([], [], [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
+        $event = $this->createGetResponseEvent(new Request(
+            [],
+            [],
+            [
+                'website' => self::WEBSITE,
+                'test_id' => self::TEST_ID,
+            ],
+            [],
+            [],
+            [
+                'REQUEST_URI' => $url,
+            ]
+        ));
 
-        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
+        $this->requestListener->onKernelRequest($event);
 
-        $this->requestListener->onKernelController($event);
-
-        $this->assertEquals($expectedHasResponse, $controller->hasResponse());
-
-        if ($expectedHasResponse) {
-            $response = $this->getControllerResponse($controller, TestUrlLimitNotificationController::class);
-
-            $this->assertInstanceOf(Response::class, $response);
-        }
+        $this->assertEquals($expectedHasResponse, $event->hasResponse());
     }
 
     /**
@@ -107,34 +113,5 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelController
                 'expectedHasResponse' => false,
             ],
         ];
-    }
-
-    public function testOnKernelControllerCoreApplicationRequestException()
-    {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createNotFoundResponse(),
-        ]);
-
-        $testFactory = new TestFactory(self::$container);
-        $testFactory->create([
-            TestFactory::KEY_WEBSITE => self::WEBSITE,
-            TestFactory::KEY_TEST_ID => self::TEST_ID,
-        ]);
-
-        /* @var TestUrlLimitNotificationController $controller */
-        $controller = self::$container->get(TestUrlLimitNotificationController::class);
-
-        $request = new Request([], [], [
-            'website' => self::WEBSITE,
-            'test_id' => self::TEST_ID,
-        ]);
-
-        $event = $this->createFilterControllerEvent($request, $controller, 'indexAction');
-
-        $this->expectException(CoreApplicationRequestException::class);
-        $this->expectExceptionMessage('Not Found');
-        $this->expectExceptionCode(404);
-
-        $this->requestListener->onKernelController($event);
     }
 }

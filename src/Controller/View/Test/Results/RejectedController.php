@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Test\Results;
 
-use App\Controller\View\Test\AbstractRequiresValidOwnerController;
+use App\Controller\AbstractBaseViewController;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -14,16 +14,14 @@ use App\Services\PlansService;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
-use App\Services\UserManager;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class RejectedController extends AbstractRequiresValidOwnerController
+class RejectedController extends AbstractBaseViewController
 {
     /**
      * @var TestService
@@ -46,13 +44,16 @@ class RejectedController extends AbstractRequiresValidOwnerController
     private $plansService;
 
     /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValues;
+
+    /**
      * @param RouterInterface $router
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
      * @param CacheValidatorService $cacheValidator
      * @param UrlViewValuesService $urlViewValues
-     * @param UserManager $userManager
-     * @param SessionInterface $session
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
      * @param UserService $userService
@@ -64,8 +65,6 @@ class RejectedController extends AbstractRequiresValidOwnerController
         DefaultViewParameters $defaultViewParameters,
         CacheValidatorService $cacheValidator,
         UrlViewValuesService $urlViewValues,
-        UserManager $userManager,
-        SessionInterface $session,
         TestService $testService,
         RemoteTestService $remoteTestService,
         UserService $userService,
@@ -75,16 +74,14 @@ class RejectedController extends AbstractRequiresValidOwnerController
             $router,
             $twig,
             $defaultViewParameters,
-            $cacheValidator,
-            $urlViewValues,
-            $userManager,
-            $session
+            $cacheValidator
         );
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
         $this->userService = $userService;
         $this->plansService = $plansService;
+        $this->urlViewValues = $urlViewValues;
     }
 
     /**

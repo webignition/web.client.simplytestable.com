@@ -2,62 +2,81 @@
 
 namespace App\EventListener;
 
-use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\Test\RequiresValidOwner;
+use App\Services\RequiresValidTestOwnerResponseProvider;
 use App\Services\TestService;
-use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use App\Services\UrlMatcher;
+use App\Services\UserManager;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 class RequiresValidTestOwnerRequestListener extends AbstractRequestListener
 {
+    /**
+     * @var UrlMatcher
+     */
+    private $urlMatcher;
+
+    /**
+     * @var RequiresValidTestOwnerResponseProvider
+     */
+    private $requiresValidTestOwnerResponseProvider;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
     /**
      * @var TestService
      */
     private $testService;
 
-    /**
-     * @param TestService $testService
-     */
-    public function __construct(TestService $testService)
-    {
+    public function __construct(
+        UrlMatcher $urlMatcher,
+        RequiresValidTestOwnerResponseProvider $requiresValidTestOwnerResponseProvider,
+        UserManager $userManager,
+        SessionInterface $session,
+        TestService $testService
+    ) {
+        $this->urlMatcher = $urlMatcher;
+        $this->requiresValidTestOwnerResponseProvider = $requiresValidTestOwnerResponseProvider;
+        $this->userManager = $userManager;
+        $this->session = $session;
         $this->testService = $testService;
     }
 
     /**
-     * @param FilterControllerEvent $event
+     * @param GetResponseEvent $event
      */
-    public function onKernelController(FilterControllerEvent $event)
+    public function onKernelRequest(GetResponseEvent $event)
     {
-        if (!parent::onKernelController($event)) {
+        if (!$event->isMasterRequest()) {
             return;
         }
 
-        if ($this->controller instanceof RequiresValidOwner) {
-            $request = $event->getRequest();
+        $request = $event->getRequest();
+        $requestPath = $request->getPathInfo();
+        $requiresValidTestOwner = $this->urlMatcher->match($requestPath);
 
-            $requestAttributes = $request->attributes;
+        $requestAttributes = $request->attributes;
+        $website = $requestAttributes->get('website');
+        $testId = $requestAttributes->get('test_id');
 
-            $website = $requestAttributes->get('website');
-            $testId = $requestAttributes->get('test_id');
+        if ($requiresValidTestOwner && !$this->testService->get($website, $testId)) {
+            $response = $this->requiresValidTestOwnerResponseProvider->getResponse($request);
 
-            /* @var RequiresValidOwner $controller */
-            $controller = $this->controller;
-
-            try {
-                if (!$this->testService->has($website, $testId)) {
-                    $controller->setResponse($controller->getInvalidOwnerResponse($request));
-
-                    return;
+            if (!empty($response)) {
+                if (!$this->userManager->isLoggedIn()) {
+                    $this->session->getFlashBag()->set('user_signin_error', 'test-not-logged-in');
                 }
 
-                $test = $this->testService->get($website, $testId);
-
-                if (empty($test)) {
-                    throw new InvalidCredentialsException();
-                }
-            } catch (InvalidCredentialsException $invalidCredentialsException) {
-                $controller->setResponse($controller->getInvalidOwnerResponse($request));
-
-                return;
+                $event->setResponse($response);
             }
         }
     }

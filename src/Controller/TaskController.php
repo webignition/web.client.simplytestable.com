@@ -5,14 +5,13 @@ namespace App\Controller;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Interfaces\Controller\Test\RequiresValidOwner;
 use App\Services\TaskService;
 use App\Services\TestService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class TaskController implements RequiresValidOwner
+class TaskController
 {
     const DEFAULT_UNRETRIEVED_TASKID_LIMIT = 100;
     const MAX_UNRETRIEVED_TASKID_LIMIT = 1000;
@@ -56,14 +55,6 @@ class TaskController implements RequiresValidOwner
     public function hasResponse()
     {
         return !empty($this->response);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInvalidOwnerResponse(Request $request)
-    {
-        return new JsonResponse();
     }
 
     /**

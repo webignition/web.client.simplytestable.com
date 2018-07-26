@@ -2,6 +2,7 @@
 
 namespace App\Controller\View\Test;
 
+use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
 use App\Entity\Test\Test;
@@ -22,13 +23,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\NormalisedUrl\NormalisedUrl;
 
-class ProgressController extends AbstractRequiresValidOwnerController
+class ProgressController extends AbstractBaseViewController
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
@@ -63,6 +63,16 @@ class ProgressController extends AbstractRequiresValidOwnerController
     private $jsStaticAnalysisTestConfiguration;
 
     /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValues;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @var string[]
      */
     private $testStateLabelMap = array(
@@ -82,7 +92,6 @@ class ProgressController extends AbstractRequiresValidOwnerController
      * @param CacheValidatorService $cacheValidator
      * @param UrlViewValuesService $urlViewValues
      * @param UserManager $userManager
-     * @param SessionInterface $session
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
      * @param TaskTypeService $taskTypeService
@@ -97,7 +106,6 @@ class ProgressController extends AbstractRequiresValidOwnerController
         CacheValidatorService $cacheValidator,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
-        SessionInterface $session,
         TestService $testService,
         RemoteTestService $remoteTestService,
         TaskTypeService $taskTypeService,
@@ -109,10 +117,7 @@ class ProgressController extends AbstractRequiresValidOwnerController
             $router,
             $twig,
             $defaultViewParameters,
-            $cacheValidator,
-            $urlViewValues,
-            $userManager,
-            $session
+            $cacheValidator
         );
 
         $this->testService = $testService;
@@ -121,6 +126,8 @@ class ProgressController extends AbstractRequiresValidOwnerController
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->jsStaticAnalysisTestConfiguration = $jsStaticAnalysisTestConfiguration;
+        $this->urlViewValues = $urlViewValues;
+        $this->userManager = $userManager;
     }
 
     /**

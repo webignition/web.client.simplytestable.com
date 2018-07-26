@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Task;
 
-use App\Controller\View\Test\AbstractRequiresValidOwnerController;
+use App\Controller\AbstractBaseViewController;
 use App\Entity\Task\Task;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -24,14 +24,13 @@ use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\HtmlValidationErrorLinkifier\HtmlValidationErrorLinkifier;
 use webignition\HtmlValidationErrorNormaliser\HtmlValidationErrorNormaliser;
 use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNormalisationResult;
 
-class ResultsController extends AbstractRequiresValidOwnerController
+class ResultsController extends AbstractBaseViewController
 {
     /**
      * @var TestService
@@ -64,13 +63,22 @@ class ResultsController extends AbstractRequiresValidOwnerController
     private $documentationSiteUrls;
 
     /**
+     * @var UrlViewValuesService
+     */
+    private $urlViewValues;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @param RouterInterface $router
      * @param Twig_Environment $twig
      * @param DefaultViewParameters $defaultViewParameters
      * @param CacheValidatorService $cacheValidator
      * @param UrlViewValuesService $urlViewValues
      * @param UserManager $userManager
-     * @param SessionInterface $session
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
      * @param TaskService $taskService
@@ -85,7 +93,6 @@ class ResultsController extends AbstractRequiresValidOwnerController
         CacheValidatorService $cacheValidator,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
-        SessionInterface $session,
         TestService $testService,
         RemoteTestService $remoteTestService,
         TaskService $taskService,
@@ -97,10 +104,7 @@ class ResultsController extends AbstractRequiresValidOwnerController
             $router,
             $twig,
             $defaultViewParameters,
-            $cacheValidator,
-            $urlViewValues,
-            $userManager,
-            $session
+            $cacheValidator
         );
 
         $this->testService = $testService;
@@ -109,6 +113,8 @@ class ResultsController extends AbstractRequiresValidOwnerController
         $this->documentationUrlLinkChecker = $documentationUrlChecker;
         $this->linkIntegrityErrorCodeMap = $linkIntegrityErrorCodeMap;
         $this->documentationSiteUrls = $documentationSiteUrls;
+        $this->urlViewValues = $urlViewValues;
+        $this->userManager = $userManager;
     }
 
     /**
