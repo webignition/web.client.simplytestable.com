@@ -3,72 +3,28 @@
 namespace App\Tests\Functional\Services\StripeNotificationFactory;
 
 use App\Event\Stripe\Event as StripeEvent;
-use App\Model\StripeNotification;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeNotificationFactoryTest
+trait CustomerSubscriptionDeletedDataProviderTrait
 {
-    const EVENT_NAME = 'customer.subscription.deleted';
-
     /**
      * @var array
      */
-    private $defaultEventData = [
-        'event' => self::EVENT_NAME,
+    private $customerSubscriptionDeletedDefaultEventData = [
+        'event' => 'customer.subscription.deleted',
         'plan_name' => 'Personal',
-        'user' => self::EVENT_USER,
+        'user' => 'user@example.com',
     ];
-
-    /**
-     * @dataProvider createDataProvider
-     *
-     * @param StripeEvent $event
-     * @param array $subjectValueParameters
-     * @param array $subjectKeyParameterNames
-     * @param array $viewNameParameters
-     * @param array $viewParameters
-     * @param string $expectedSubjectSuffix
-     * @param array $expectedMessageContains
-     */
-    public function testCreate(
-        StripeEvent $event,
-        array $subjectValueParameters,
-        array $subjectKeyParameterNames,
-        array $viewNameParameters,
-        array $viewParameters,
-        string $expectedSubjectSuffix,
-        array $expectedMessageContains
-    ) {
-        $notification = $this->stripeNotificationFactory->create(
-            $event,
-            $subjectValueParameters,
-            $subjectKeyParameterNames,
-            $viewNameParameters,
-            $viewParameters
-        );
-
-        $this->assertInstanceOf(StripeNotification::class, $notification);
-
-        $this->assertEquals(self::EVENT_USER, $notification->getRecipient());
-        $this->assertEquals('[Simply Testable] ' . $expectedSubjectSuffix, $notification->getSubject());
-
-        foreach ($expectedMessageContains as $messageShouldContain) {
-            $this->assertContains($messageShouldContain, $notification->getMessage());
-        }
-
-
-        $notification->getMessage();
-    }
 
     /**
      * @return array
      */
-    public function createDataProvider()
+    public function customerSubscriptionDeletedDataProvider()
     {
         return [
             'customer.subscription.deleted; actioned by user during trial, singular trial_days_remaining' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->customerSubscriptionDeletedDefaultEventData,
                     [
                         'actioned_by' => 'user',
                         'trial_days_remaining' => 1,
@@ -76,7 +32,7 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
                     ]
                 ))),
                 'subjectValueParameters' => [
-                    'plan_name' => strtolower($this->defaultEventData['plan_name'])
+                    'plan_name' => strtolower($this->customerSubscriptionDeletedDefaultEventData['plan_name'])
                 ],
                 'subjectKeyParameterNames' => [
                     'actioned_by',
@@ -87,20 +43,20 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
                     'is_during_trial',
                 ],
                 'viewParameters' => [
-                    'plan_name' => strtolower($this->defaultEventData['plan_name']),
+                    'plan_name' => strtolower($this->customerSubscriptionDeletedDefaultEventData['plan_name']),
                     'trial_days_remaining' => 1,
                     'trial_days_remaining_pluralisation' => '',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                 ],
                 'expectedSubjectSuffix' => 'Premium subscription to personal cancelled',
                 'expectedMessageContains' => [
                     'remaining 1 day of your trial',
-                    self::ACCOUNT_URL,
+                    'http://localhost/account/',
                 ],
             ],
             'customer.subscription.deleted; actioned by user during trial, plural trial_days_remaining' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->customerSubscriptionDeletedDefaultEventData,
                     [
                         'actioned_by' => 'user',
                         'trial_days_remaining' => 12,
@@ -108,7 +64,7 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
                     ]
                 ))),
                 'subjectValueParameters' => [
-                    'plan_name' => strtolower($this->defaultEventData['plan_name'])
+                    'plan_name' => strtolower($this->customerSubscriptionDeletedDefaultEventData['plan_name'])
                 ],
                 'subjectKeyParameterNames' => [
                     'actioned_by',
@@ -119,20 +75,20 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
                     'is_during_trial',
                 ],
                 'viewParameters' => [
-                    'plan_name' => strtolower($this->defaultEventData['plan_name']),
+                    'plan_name' => strtolower($this->customerSubscriptionDeletedDefaultEventData['plan_name']),
                     'trial_days_remaining' => 12,
                     'trial_days_remaining_pluralisation' => 's',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                 ],
                 'expectedSubjectSuffix' => 'Premium subscription to personal cancelled',
                 'expectedMessageContains' => [
                     'remaining 12 days of your trial',
-                    self::ACCOUNT_URL,
+                    'http://localhost/account/',
                 ],
             ],
             'customer.subscription.deleted; actioned by user outside trial' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->customerSubscriptionDeletedDefaultEventData,
                     [
                         'actioned_by' => 'user',
                         'trial_days_remaining' => 12,
@@ -140,7 +96,7 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
                     ]
                 ))),
                 'subjectValueParameters' => [
-                    'plan_name' => strtolower($this->defaultEventData['plan_name'])
+                    'plan_name' => strtolower($this->customerSubscriptionDeletedDefaultEventData['plan_name'])
                 ],
                 'subjectKeyParameterNames' => [
                     'actioned_by',
@@ -151,10 +107,10 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
                     'is_during_trial',
                 ],
                 'viewParameters' => [
-                    'plan_name' => strtolower($this->defaultEventData['plan_name']),
+                    'plan_name' => strtolower($this->customerSubscriptionDeletedDefaultEventData['plan_name']),
                     'trial_days_remaining' => 12,
                     'trial_days_remaining_pluralisation' => 's',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                 ],
                 'expectedSubjectSuffix' => 'Premium subscription to personal cancelled',
                 'expectedMessageContains' => [
@@ -163,7 +119,7 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
             ],
             'customer.subscription.deleted; actioned by system' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->customerSubscriptionDeletedDefaultEventData,
                     [
                         'actioned_by' => 'system',
                         'trial_days_remaining' => 12,
@@ -171,7 +127,7 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
                     ]
                 ))),
                 'subjectValueParameters' => [
-                    'plan_name' => strtolower($this->defaultEventData['plan_name'])
+                    'plan_name' => strtolower($this->customerSubscriptionDeletedDefaultEventData['plan_name'])
                 ],
                 'subjectKeyParameterNames' => [
                     'actioned_by',
@@ -180,16 +136,16 @@ class CustomerSubscriptionDeletedNotificationFactoryTest extends AbstractStripeN
                     'actioned_by',
                 ],
                 'viewParameters' => [
-                    'plan_name' => strtolower($this->defaultEventData['plan_name']),
+                    'plan_name' => strtolower($this->customerSubscriptionDeletedDefaultEventData['plan_name']),
                     'trial_days_remaining' => 12,
                     'trial_days_remaining_pluralisation' => 's',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                 ],
                 'expectedSubjectSuffix' =>
                     'Premium subscription to personal cancelled, you\'ve been dropped down to our free plan'
                 ,
                 'expectedMessageContains' => [
-                    self::ACCOUNT_URL,
+                    'http://localhost/account/',
                 ],
             ],
         ];

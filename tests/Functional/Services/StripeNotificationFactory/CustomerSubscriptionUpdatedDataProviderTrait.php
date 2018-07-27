@@ -3,71 +3,27 @@
 namespace App\Tests\Functional\Services\StripeNotificationFactory;
 
 use App\Event\Stripe\Event as StripeEvent;
-use App\Model\StripeNotification;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class CustomerSubscriptionUpdatedNotificationFactoryTest extends AbstractStripeNotificationFactoryTest
+trait CustomerSubscriptionUpdatedDataProviderTrait
 {
-    const EVENT_NAME = 'customer.subscription.updated';
-
     /**
      * @var array
      */
-    private $defaultEventData = [
-        'event' => self::EVENT_NAME,
+    private $customerSubscriptionUpdatedDefaultEventData = [
+        'event' => 'customer.subscription.updated',
         'user' => 'user@example.com',
     ];
 
     /**
-     * @dataProvider createDataProvider
-     *
-     * @param StripeEvent $event
-     * @param array $subjectValueParameters
-     * @param array $subjectKeyParameterNames
-     * @param array $viewNameParameters
-     * @param array $viewParameters
-     * @param string $expectedSubjectSuffix
-     * @param array $expectedMessageContains
-     */
-    public function testCreate(
-        StripeEvent $event,
-        array $subjectValueParameters,
-        array $subjectKeyParameterNames,
-        array $viewNameParameters,
-        array $viewParameters,
-        string $expectedSubjectSuffix,
-        array $expectedMessageContains
-    ) {
-        $notification = $this->stripeNotificationFactory->create(
-            $event,
-            $subjectValueParameters,
-            $subjectKeyParameterNames,
-            $viewNameParameters,
-            $viewParameters
-        );
-
-        $this->assertInstanceOf(StripeNotification::class, $notification);
-
-        $this->assertEquals(self::EVENT_USER, $notification->getRecipient());
-        $this->assertEquals('[Simply Testable] ' . $expectedSubjectSuffix, $notification->getSubject());
-
-        foreach ($expectedMessageContains as $messageShouldContain) {
-            $this->assertContains($messageShouldContain, $notification->getMessage());
-        }
-
-
-        $notification->getMessage();
-    }
-
-    /**
      * @return array
      */
-    public function createDataProvider()
+    public function customerSubscriptionUpdatedDataProvider()
     {
         return [
             'customer.subscription.updated; plan_change=1, subscription_status=active' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->customerSubscriptionUpdatedDefaultEventData,
                     [
                         'is_plan_change' => 1,
                         'subscription_status' => 'active',
@@ -104,7 +60,7 @@ class CustomerSubscriptionUpdatedNotificationFactoryTest extends AbstractStripeN
             ],
             'customer.subscription.updated; plan_change=1, subscription_status=trialing' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->customerSubscriptionUpdatedDefaultEventData,
                     [
                         'is_plan_change' => 1,
                         'subscription_status' => 'trialing',
@@ -140,7 +96,7 @@ class CustomerSubscriptionUpdatedNotificationFactoryTest extends AbstractStripeN
             ],
             'customer.subscription.updated; transition=trialing_to_active, has_card=0' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->customerSubscriptionUpdatedDefaultEventData,
                     [
                         'is_status_change' => 1,
                         'previous_subscription_status' => 'trialing',
@@ -162,19 +118,19 @@ class CustomerSubscriptionUpdatedNotificationFactoryTest extends AbstractStripeN
                 'viewParameters' => [
                     'plan_name' => 'personal',
                     'plan_amount' => '',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                     'currency_symbol' => '',
 
                 ],
                 'expectedSubjectSuffix' => 'Premium trial has ended, you\'ve been dropped down to our free plan',
                 'expectedMessageContains' => [
                     'trial of our personal plan has come to an end',
-                    self::ACCOUNT_URL,
+                    'http://localhost/account/',
                 ],
             ],
             'customer.subscription.updated; transition=trialing_to_active, has_card=1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->customerSubscriptionUpdatedDefaultEventData,
                     [
                         'is_status_change' => 1,
                         'previous_subscription_status' => 'trialing',
@@ -196,7 +152,7 @@ class CustomerSubscriptionUpdatedNotificationFactoryTest extends AbstractStripeN
                 'viewParameters' => [
                     'plan_name' => 'personal',
                     'plan_amount' => '9.00',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                     'currency_symbol' => '£',
 
                 ],
@@ -204,7 +160,7 @@ class CustomerSubscriptionUpdatedNotificationFactoryTest extends AbstractStripeN
                 'expectedMessageContains' => [
                     'trial of our personal plan has come to an end',
                     'will be charged £9.00 per month',
-                    self::ACCOUNT_URL,
+                    'http://localhost/account/',
                 ],
             ],
         ];

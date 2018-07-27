@@ -3,71 +3,27 @@
 namespace App\Tests\Functional\Services\StripeNotificationFactory;
 
 use App\Event\Stripe\Event as StripeEvent;
-use App\Model\StripeNotification;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
-class InvoicePaymentSucceededNotificationFactoryTest extends AbstractStripeNotificationFactoryTest
+trait InvoicePaymentSucceededDataProviderTrait
 {
-    const EVENT_NAME = 'invoice.payment_succeeded';
-
     /**
      * @var array
      */
-    private $defaultEventData = [
-        'event' => self::EVENT_NAME,
+    private $invoicePaymentSucceededDefaultEventData = [
+        'event' => 'invoice.payment_succeeded',
         'user' => 'user@example.com',
     ];
 
     /**
-     * @dataProvider createDataProvider
-     *
-     * @param StripeEvent $event
-     * @param array $subjectValueParameters
-     * @param array $subjectKeyParameterNames
-     * @param array $viewNameParameters
-     * @param array $viewParameters
-     * @param string $expectedSubjectSuffix
-     * @param array $expectedMessageContains
-     */
-    public function testCreate(
-        StripeEvent $event,
-        array $subjectValueParameters,
-        array $subjectKeyParameterNames,
-        array $viewNameParameters,
-        array $viewParameters,
-        string $expectedSubjectSuffix,
-        array $expectedMessageContains
-    ) {
-        $notification = $this->stripeNotificationFactory->create(
-            $event,
-            $subjectValueParameters,
-            $subjectKeyParameterNames,
-            $viewNameParameters,
-            $viewParameters
-        );
-
-        $this->assertInstanceOf(StripeNotification::class, $notification);
-
-        $this->assertEquals(self::EVENT_USER, $notification->getRecipient());
-        $this->assertEquals('[Simply Testable] ' . $expectedSubjectSuffix, $notification->getSubject());
-
-        foreach ($expectedMessageContains as $messageShouldContain) {
-            $this->assertContains($messageShouldContain, $notification->getMessage());
-        }
-
-
-        $notification->getMessage();
-    }
-
-    /**
      * @return array
      */
-    public function createDataProvider()
+    public function invoicePaymentSucceededDataProvider()
     {
         return [
             'invoice.payment_succeeded; has_discount=0' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->invoicePaymentSucceededDefaultEventData,
                     [
                         'lines' => [
                             [
@@ -95,7 +51,7 @@ class InvoicePaymentSucceededNotificationFactoryTest extends AbstractStripeNotif
                 'viewParameters' => [
                     'plan_name' => 'personal',
                     'invoice_id' => '#2nL671LyaO5mbg',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                     'invoice_lines' => ' * Personal plan subscription, 16 August 2018 to 15 September 2018 (£9.00)',
                     'subtotal' => (int)900,
                     'total_line' => '£7.20',
@@ -110,7 +66,7 @@ class InvoicePaymentSucceededNotificationFactoryTest extends AbstractStripeNotif
             ],
             'invoice.payment_succeeded; has_discount=0, proration=1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->invoicePaymentSucceededDefaultEventData,
                     [
                         'lines' => [
                             [
@@ -138,7 +94,7 @@ class InvoicePaymentSucceededNotificationFactoryTest extends AbstractStripeNotif
                 'viewParameters' => [
                     'plan_name' => 'personal',
                     'invoice_id' => '#2nL671LyaO5mbg',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                     'invoice_lines' =>
                         ' * Personal plan subscription, 16 August 2018 to 15 September 2018 (£9.00, prorated)',
                     'subtotal' => (int)900,
@@ -154,7 +110,7 @@ class InvoicePaymentSucceededNotificationFactoryTest extends AbstractStripeNotif
             ],
             'invoice.payment_succeeded; has_discount=1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
-                    $this->defaultEventData,
+                    $this->invoicePaymentSucceededDefaultEventData,
                     [
                         'lines' => [
                             [
@@ -187,7 +143,7 @@ class InvoicePaymentSucceededNotificationFactoryTest extends AbstractStripeNotif
                 'viewParameters' => [
                     'plan_name' => 'personal',
                     'invoice_id' => '#2nL671LyaO5mbg',
-                    'account_url' => self::ACCOUNT_URL,
+                    'account_url' => 'http://localhost/account/',
                     'invoice_lines' =>
                         ' * Personal plan subscription, 16 August 2018 to 15 September 2018 (£9.00, prorated)',
                     'subtotal' => (int)900,
