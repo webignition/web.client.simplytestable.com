@@ -3,7 +3,8 @@
 namespace App\Tests\Functional\Controller\Action\User\Account\EmailChange;
 
 use App\Services\Mailer;
-use Psr\Http\Message\ResponseInterface;
+use App\Tests\Factory\PostmarkExceptionFactory;
+use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\Account\EmailChangeController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
@@ -15,12 +16,11 @@ use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
-use App\Tests\Services\PostmarkMessageVerifier;
-use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class EmailChangeControllerResendActionTest extends AbstractEmailChangeControllerTest
 {
     const ROUTE_NAME = 'action_user_account_emailchange_resend';
+    const CURRENT_EMAIL = 'user@example.com';
     const NEW_EMAIL = 'new-email@example.com';
     const CONFIRMATION_TOKEN = 'email-change-request-token';
     const EXPECTED_REDIRECT_URL = '/account/';
@@ -37,7 +37,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     {
         parent::setUp();
 
-        $this->user = new User('user@example.com');
+        $this->user = new User(self::CURRENT_EMAIL);
     }
 
     /**
@@ -55,8 +55,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     public function testResendActionPostRequestPrivateUser()
     {
         $userManager = self::$container->get(UserManager::class);
-
-        $userManager->setUser(new User('user@example.com'));
+        $userManager->setUser($this->user);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -84,7 +83,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     /**
      * @dataProvider resendActionSendConfirmationTokenFailureDataProvider
      *
-     * @param ResponseInterface $postmarkHttpResponse
+     * @param PostmarkException $postmarkException
      * @param array $expectedFlashBagValues
      *
      * @throws InvalidAdminCredentialsException
@@ -93,13 +92,11 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
      * @throws InvalidContentTypeException
      */
     public function testResendActionSendConfirmationTokenFailure(
-        ResponseInterface $postmarkHttpResponse,
+        PostmarkException $postmarkException,
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
-        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
 
@@ -108,19 +105,23 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
                 'token' => self::CONFIRMATION_TOKEN,
                 'new_email' => self::NEW_EMAIL,
             ]),
-            $postmarkHttpResponse,
         ]);
 
-        $response = $this->callResendAction();
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendEmailChangeConfirmationToken')
+            ->withArgs([
+                self::NEW_EMAIL,
+                self::CURRENT_EMAIL,
+                self::CONFIRMATION_TOKEN,
+            ])
+            ->andThrow($postmarkException);
+
+        $response = $this->callResendAction($mailer);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
-
-        $postmarkRequest = $httpHistoryContainer->getLastRequest();
-
-        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
-        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
     }
 
     /**
@@ -130,7 +131,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     {
         return [
             'postmark not allowed to send to user email' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(405),
+                'postmarkException' => PostmarkExceptionFactory::create(405),
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_RESEND_ERROR_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
@@ -138,7 +139,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
                 ],
             ],
             'postmark inactive recipient' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(406),
+                'postmarkException' => PostmarkExceptionFactory::create(406),
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_RESEND_ERROR_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT,
@@ -146,7 +147,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
                  ],
             ],
             'postmark invalid email address' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(300),
+                'postmarkException' => PostmarkExceptionFactory::create(300),
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_RESEND_ERROR_KEY => [
                         EmailChangeController::FLASH_BAG_REQUEST_ERROR_MESSAGE_EMAIL_INVALID,
@@ -154,7 +155,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
                  ],
             ],
             'postmark unknown error' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(206),
+                'postmarkException' => PostmarkExceptionFactory::create(206),
                 'expectedFlashBagValues' => [
                     EmailChangeController::FLASH_BAG_RESEND_ERROR_KEY => [
                         EmailChangeController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
@@ -168,8 +169,6 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     {
         $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
-        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $userManager->setUser($this->user);
 
@@ -177,11 +176,19 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
             HttpResponseFactory::createJsonResponse([
                 'token' => self::CONFIRMATION_TOKEN,
                 'new_email' => self::NEW_EMAIL,
-            ]),
-            PostmarkHttpResponseFactory::createSuccessResponse(),
+            ])
         ]);
 
-        $response = $this->callResendAction();
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendEmailChangeConfirmationToken')
+            ->withArgs([
+                self::NEW_EMAIL,
+                self::CURRENT_EMAIL,
+                self::CONFIRMATION_TOKEN,
+            ]);
+
+        $response = $this->callResendAction($mailer);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
@@ -190,31 +197,11 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
                 EmailChangeController::FLASH_BAG_RESEND_MESSAGE_SUCCESS
             ],
         ], $flashBag->peekAll());
-
-        $postmarkRequest = $httpHistoryContainer->getLastRequest();
-
-        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
-        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
-
-        $verificationResult = $postmarkMessageVerifier->verify(
-            [
-                'From' => 'robot@simplytestable.com',
-                'To' => self::NEW_EMAIL,
-                'Subject' => '[Simply Testable] Confirm your email address change',
-                'TextBody' => [
-                    sprintf(
-                        'http://localhost/account/?token=%s',
-                        self::CONFIRMATION_TOKEN
-                    ),
-                ],
-            ],
-            $postmarkRequest
-        );
-
-        $this->assertTrue($verificationResult, $verificationResult);
     }
 
     /**
+     * @param Mailer $mailer
+     *
      * @return RedirectResponse
      *
      * @throws CoreApplicationRequestException
@@ -222,10 +209,14 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
-    private function callResendAction()
+    private function callResendAction(Mailer $mailer = null)
     {
+        $mailer = empty($mailer)
+            ? \Mockery::mock($mailer)
+            : $mailer;
+
         return $this->emailChangeController->resendAction(
-            self::$container->get(Mailer::class),
+            $mailer,
             self::$container->get(UserManager::class)
         );
     }
