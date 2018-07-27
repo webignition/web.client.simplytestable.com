@@ -44,17 +44,8 @@ trait InvoicePaymentFailedDataProviderTrait
                 ],
                 'subjectKeyParameterNames' => [],
                 'viewNameParameters' => [],
-                'viewParameters' => [
-                    'invoice_id' => '#2nL671LyaO5mbg',
-                    'account_url' => self::ACCOUNT_URL,
-                    'invoice_lines' => ' * Personal plan subscription, 16 August 2018 to 15 September 2018 (£1.00)',
-                ],
                 'expectedSubjectSuffix' => 'Invoice #2nL671LyaO5mbg payment failed',
-                'expectedMessageContains' => [
-                    'unable to take payment',
-                    'Invoice #2nL671LyaO5mbg summary',
-                    'Personal plan subscription, 16 August 2018 to 15 September 2018 (£1.00)',
-                ],
+                'expectedViewName' => 'Email/Stripe/Event/invoice.payment_failed/notification.txt.twig',
             ],
         ];
     }

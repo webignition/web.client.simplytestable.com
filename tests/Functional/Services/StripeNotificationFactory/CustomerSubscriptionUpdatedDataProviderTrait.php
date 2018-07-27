@@ -44,19 +44,10 @@ trait CustomerSubscriptionUpdatedDataProviderTrait
                     'plan_change',
                     'subscription_status',
                 ],
-                'viewParameters' => [
-                    'new_plan' => 'agency',
-                    'old_plan' => 'personal',
-                    'new_amount' => '12.00',
-                    'trial_end' => '1 September 2018',
-                    'currency_symbol' => '£',
-                ],
                 'expectedSubjectSuffix' => 'You\'ve changed to the agency plan',
-                'expectedMessageContains' => [
-                    'switched to our agency plan at £12.00 per month',
-                    'personal subscription will be pro-rata',
-                    'agency subscription will be pro-rata',
-                ],
+                'expectedViewName' =>
+                    'Email/Stripe/Event/customer.subscription.updated/'
+                    .'plan_change=1-subscription_status=active.txt.twig',
             ],
             'customer.subscription.updated; plan_change=1, subscription_status=trialing' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -81,18 +72,10 @@ trait CustomerSubscriptionUpdatedDataProviderTrait
                     'plan_change',
                     'subscription_status',
                 ],
-                'viewParameters' => [
-                    'new_plan' => 'agency',
-                    'old_plan' => 'personal',
-                    'new_amount' => '12.00',
-                    'trial_end' => '1 September 2018',
-                    'currency_symbol' => '£',
-                ],
                 'expectedSubjectSuffix' => 'You\'ve changed to the agency plan',
-                'expectedMessageContains' => [
-                    'switched to our agency plan',
-                    ' free until 1 September 2018',
-                ],
+                'expectedViewName' =>
+                    'Email/Stripe/Event/customer.subscription.updated/'
+                    .'plan_change=1-subscription_status=trialing.txt.twig',
             ],
             'customer.subscription.updated; transition=trialing_to_active, has_card=0' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -115,18 +98,10 @@ trait CustomerSubscriptionUpdatedDataProviderTrait
                     'transition',
                     'has_card'
                 ],
-                'viewParameters' => [
-                    'plan_name' => 'personal',
-                    'plan_amount' => '',
-                    'account_url' => 'http://localhost/account/',
-                    'currency_symbol' => '',
-
-                ],
                 'expectedSubjectSuffix' => 'Premium trial has ended, you\'ve been dropped down to our free plan',
-                'expectedMessageContains' => [
-                    'trial of our personal plan has come to an end',
-                    'http://localhost/account/',
-                ],
+                'expectedViewName' =>
+                    'Email/Stripe/Event/customer.subscription.updated/'
+                    .'transition=trialing_to_active-has_card=0.txt.twig',
             ],
             'customer.subscription.updated; transition=trialing_to_active, has_card=1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -149,19 +124,10 @@ trait CustomerSubscriptionUpdatedDataProviderTrait
                     'transition',
                     'has_card'
                 ],
-                'viewParameters' => [
-                    'plan_name' => 'personal',
-                    'plan_amount' => '9.00',
-                    'account_url' => 'http://localhost/account/',
-                    'currency_symbol' => '£',
-
-                ],
                 'expectedSubjectSuffix' => 'Premium trial has ended, payment for the next month will be taken soon',
-                'expectedMessageContains' => [
-                    'trial of our personal plan has come to an end',
-                    'will be charged £9.00 per month',
-                    'http://localhost/account/',
-                ],
+                'expectedViewName' =>
+                    'Email/Stripe/Event/customer.subscription.updated/'
+                    .'transition=trialing_to_active-has_card=1.txt.twig',
             ],
         ];
     }

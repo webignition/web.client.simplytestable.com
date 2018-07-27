@@ -38,19 +38,9 @@ trait CustomerSubscriptionTrialWillEndDataProviderTrait
                 'viewNameParameters' => [
                     'has_card',
                 ],
-                'viewParameters' => [
-                    'plan_name' => strtolower($this->customerSubscriptionTrialWillEndDefaultEventData['plan_name']),
-                    'account_url' => 'http://localhost/account/',
-                    'plan_amount' => '9.00',
-                    'currency_symbol' => '£',
-                ],
                 'expectedSubjectSuffix' => 'Your personal account trial ends in 3 days, payment details needed',
-                'expectedMessageContains' => [
-                    'trial period for your personal account subscription',
-                    '£9.00 per month',
-                    'add a credit or debit card to your account',
-                    'http://localhost/account/',
-                ],
+                'expectedViewName' =>
+                    'Email/Stripe/Event/customer.subscription.trial_will_end/has_card=0.txt.twig',
             ],
             'customer.subscription.trial_will_end; has_card=1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -68,17 +58,9 @@ trait CustomerSubscriptionTrialWillEndDataProviderTrait
                 'viewNameParameters' => [
                     'has_card',
                 ],
-                'viewParameters' => [
-                    'plan_name' => strtolower($this->customerSubscriptionTrialWillEndDefaultEventData['plan_name']),
-                    'account_url' => 'http://localhost/account/',
-                    'plan_amount' => '9.00',
-                    'currency_symbol' => '£',
-                ],
                 'expectedSubjectSuffix' => 'Your personal account trial ends in 3 days',
-                'expectedMessageContains' => [
-                    'trial period for your personal account subscription',
-                    '£9.00 per month',
-                ],
+                'expectedViewName' =>
+                    'Email/Stripe/Event/customer.subscription.trial_will_end/has_card=1.txt.twig',
             ],
         ];
     }

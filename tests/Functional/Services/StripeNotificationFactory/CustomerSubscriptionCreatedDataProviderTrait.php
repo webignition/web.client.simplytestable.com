@@ -31,26 +31,14 @@ trait CustomerSubscriptionCreatedDataProviderTrait
                     ]
                 ))),
                 'subjectValueParameters' => [
-                    'plan_name' => strtolower($this->customerSubscriptionCreatedDefaultEventData['plan_name'])
+                    'plan_name' => 'personal',
                 ],
                 'subjectKeyParameterNames' => [],
                 'viewNameParameters' => [
                     'status',
                 ],
-                'viewParameters' => [
-                    'plan_name' => strtolower($this->customerSubscriptionCreatedDefaultEventData['plan_name']),
-                    'trial_period_days' => 30,
-                    'trial_end' => '13 August 2018',
-                    'amount' => '9.00',
-                    'account_url' => 'http://localhost/account/',
-                    'currency_symbol' => '£',
-                ],
                 'expectedSubjectSuffix' => 'You\'ve signed up to the personal plan',
-                'expectedMessageContains' => [
-                    'personal plan',
-                    '£9.00',
-                    'http://localhost/account/',
-                ],
+                'expectedViewName' => 'Email/Stripe/Event/customer.subscription.created/status=active.txt.twig',
             ],
             'customer.subscription.created; status=trialing, has_card=0' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -64,28 +52,16 @@ trait CustomerSubscriptionCreatedDataProviderTrait
                     ]
                 ))),
                 'subjectValueParameters' => [
-                    'plan_name' => strtolower($this->customerSubscriptionCreatedDefaultEventData['plan_name'])
+                    'plan_name' => 'personal',
                 ],
                 'subjectKeyParameterNames' => [],
                 'viewNameParameters' => [
                     'status',
                     'has_card'
                 ],
-                'viewParameters' => [
-                    'plan_name' => strtolower($this->customerSubscriptionCreatedDefaultEventData['plan_name']),
-                    'trial_period_days' => 22,
-                    'trial_end' => '13 August 2018',
-                    'amount' => '9.00',
-                    'account_url' => 'http://localhost/account/',
-                    'currency_symbol' => '£',
-                ],
                 'expectedSubjectSuffix' => 'You\'ve signed up to the personal plan',
-                'expectedMessageContains' => [
-                    'personal plan',
-                    'for 22 days',
-                    'ending 13 August 2018',
-                    'add a credit or debit card to your account',
-                ],
+                'expectedViewName' =>
+                    'Email/Stripe/Event/customer.subscription.created/status=trialing-has_card=0.txt.twig',
             ],
             'customer.subscription.created; status=trialing, has_card=1' => [
                 'event' => new StripeEvent(new ParameterBag(array_merge(
@@ -106,20 +82,9 @@ trait CustomerSubscriptionCreatedDataProviderTrait
                     'status',
                     'has_card'
                 ],
-                'viewParameters' => [
-                    'plan_name' => strtolower($this->customerSubscriptionCreatedDefaultEventData['plan_name']),
-                    'trial_period_days' => 22,
-                    'trial_end' => '13 August 2018',
-                    'amount' => '9.00',
-                    'account_url' => 'http://localhost/account/',
-                    'currency_symbol' => '£',
-                ],
                 'expectedSubjectSuffix' => 'You\'ve signed up to the personal plan',
-                'expectedMessageContains' => [
-                    'personal plan',
-                    'for 22 days',
-                    'ending 13 August 2018',
-                ],
+                'expectedViewName' =>
+                    'Email/Stripe/Event/customer.subscription.created/status=trialing-has_card=1.txt.twig',
             ],
         ];
     }

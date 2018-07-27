@@ -4,8 +4,10 @@ namespace App\Tests\Functional\Services\StripeNotificationFactory;
 
 use App\Event\Stripe\Event as StripeEvent;
 use App\Model\StripeNotification;
+use App\Services\Configuration\MailConfiguration;
 use App\Services\StripeNotificationFactory;
 use App\Tests\Functional\AbstractBaseTestCase;
+use Mockery\MockInterface;
 
 class StripeNotificationFactoryTest extends AbstractBaseTestCase
 {
@@ -16,23 +18,9 @@ class StripeNotificationFactoryTest extends AbstractBaseTestCase
     use InvoicePaymentFailedDataProviderTrait;
     use InvoicePaymentSucceededDataProviderTrait;
 
+    const MOCK_RENDERED_MESSAGE = 'Mock rendered message';
     const EVENT_USER = 'user@example.com';
     const ACCOUNT_URL = 'http://localhost/account';
-
-    /**
-     * @var StripeNotificationFactory
-     */
-    protected $stripeNotificationFactory;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->stripeNotificationFactory = self::$container->get(StripeNotificationFactory::class);
-    }
 
     /**
      * @dataProvider customerSubscriptionCreatedDataProvider
@@ -46,20 +34,38 @@ class StripeNotificationFactoryTest extends AbstractBaseTestCase
      * @param array $subjectValueParameters
      * @param array $subjectKeyParameterNames
      * @param array $viewNameParameters
-     * @param array $viewParameters
      * @param string $expectedSubjectSuffix
-     * @param array $expectedMessageContains
+     * @param string $expectedViewName,
      */
     public function testCreate(
         StripeEvent $event,
         array $subjectValueParameters,
         array $subjectKeyParameterNames,
         array $viewNameParameters,
-        array $viewParameters,
         string $expectedSubjectSuffix,
-        array $expectedMessageContains
+        string $expectedViewName
     ) {
-        $notification = $this->stripeNotificationFactory->create(
+        $viewParameters = [
+            'foo' => 'bar',
+        ];
+
+        /* @var \Twig_Environment|MockInterface $twig */
+        $twig = \Mockery::mock(\Twig_Environment::class);
+        $twig
+            ->shouldReceive('render')
+            ->withArgs([
+                $expectedViewName,
+                $viewParameters
+            ])
+            ->once()
+            ->andReturn(self::MOCK_RENDERED_MESSAGE);
+
+        $stripeNotificationFactory = new StripeNotificationFactory(
+            $twig,
+            self::$container->get(MailConfiguration::class)
+        );
+
+        $notification = $stripeNotificationFactory->create(
             $event,
             $subjectValueParameters,
             $subjectKeyParameterNames,
@@ -71,12 +77,6 @@ class StripeNotificationFactoryTest extends AbstractBaseTestCase
 
         $this->assertEquals(self::EVENT_USER, $notification->getRecipient());
         $this->assertEquals('[Simply Testable] ' . $expectedSubjectSuffix, $notification->getSubject());
-
-        foreach ($expectedMessageContains as $messageShouldContain) {
-            $this->assertContains($messageShouldContain, $notification->getMessage());
-        }
-
-
-        $notification->getMessage();
+        $this->assertEquals(self::MOCK_RENDERED_MESSAGE, $notification->getMessage());
     }
 }
