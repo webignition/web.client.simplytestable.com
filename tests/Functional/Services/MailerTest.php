@@ -17,7 +17,6 @@ class MailerTest extends AbstractBaseTestCase
     const TOKEN = 'token-value';
     const TEAM_NAME = 'Team Name';
 
-
     public function testSendSignUpConfirmationToken()
     {
         $email = 'user@example.com';
@@ -130,6 +129,23 @@ class MailerTest extends AbstractBaseTestCase
 
         $mailer = $this->createMailer($postmarkClient, $twig);
         $mailer->sendTeamInviteForNewUser($invite);
+    }
+
+    public function testPasswordResetConfirmationToken()
+    {
+        $email = 'user@example.com';
+
+        $expectedViewName = Mailer::VIEW_RESET_PASSWORD_CONFIRMATION;
+        $expectedViewParameters = [
+            'confirmation_url' => 'http://localhost/reset-password/user@example.com/' . self::TOKEN . '/',
+            'email' => $email,
+        ];
+
+        $twig = $this->createTwig($expectedViewName, $expectedViewParameters);
+        $postmarkClient = $this->createPostmarkClient($email, 'Reset your password');
+
+        $mailer = $this->createMailer($postmarkClient, $twig);
+        $mailer->sendPasswordResetConfirmationToken($email, self::TOKEN);
     }
 
     private function createMailer(PostmarkClient $postmarkClient, \Twig_Environment $twig)

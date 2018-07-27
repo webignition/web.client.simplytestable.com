@@ -16,6 +16,7 @@ class Mailer
     const VIEW_EMAIL_CHANGE_CONFIRMATION = 'Email/user-email-change-request-confirmation.txt.twig';
     const VIEW_TEAM_INVITE_EXISTING_USER = 'Email/user-team-invite-invitation.txt.twig';
     const VIEW_TEAM_INVITE_NEW_USER = 'Email/user-team-invite-newuser-invitation.txt.twig';
+    const VIEW_RESET_PASSWORD_CONFIRMATION = 'Email/reset-password-confirmation.txt.twig';
 
     /**
      * @var MailConfiguration
@@ -186,6 +187,38 @@ class Mailer
                 [
                     'team_name' => $invite->getTeam(),
                     'confirmation_url' => $confirmationUrl
+                ]
+            )
+        );
+    }
+
+    /**
+     * @param string $email
+     * @param string $token
+     *
+     * @throws PostmarkException
+     * @throws MailConfigurationException
+     */
+    public function sendPasswordResetConfirmationToken($email, $token)
+    {
+        $sender = $this->mailConfiguration->getSender('default');
+        $messageProperties = $this->mailConfiguration->getMessageProperties('user_reset_password');
+
+        $confirmationUrl = $this->generateUrl('view_user_reset_password_choose', [
+            'email' => $email,
+            'token' => $token
+        ]);
+
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            $email,
+            $messageProperties['subject'],
+            null,
+            $this->twig->render(
+                self::VIEW_RESET_PASSWORD_CONFIRMATION,
+                [
+                    'confirmation_url' => $confirmationUrl,
+                    'email' => $email
                 ]
             )
         );
