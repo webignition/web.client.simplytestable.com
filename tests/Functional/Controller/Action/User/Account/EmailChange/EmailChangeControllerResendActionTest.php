@@ -2,13 +2,12 @@
 
 namespace App\Tests\Functional\Controller\Action\User\Account\EmailChange;
 
-use Postmark\PostmarkClient;
+use App\Services\Mailer;
 use Psr\Http\Message\ResponseInterface;
 use App\Controller\Action\User\Account\EmailChangeController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -226,9 +225,8 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
     private function callResendAction()
     {
         return $this->emailChangeController->resendAction(
-            self::$container->get(MailConfiguration::class),
-            self::$container->get(PostmarkClient::class),
-            self::$container->get('twig')
+            self::$container->get(Mailer::class),
+            self::$container->get(UserManager::class)
         );
     }
 }

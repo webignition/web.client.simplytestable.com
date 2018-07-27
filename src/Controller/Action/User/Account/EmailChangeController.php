@@ -2,10 +2,10 @@
 
 namespace App\Controller\Action\User\Account;
 
+use App\Services\Mailer;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
 use Postmark\Models\PostmarkException;
-use Postmark\PostmarkClient;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
@@ -13,7 +13,6 @@ use App\Exception\InvalidCredentialsException;
 use App\Exception\UserEmailChangeException;
 use App\Resque\Job\EmailListSubscribeJob;
 use App\Resque\Job\EmailListUnsubscribeJob;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\ResqueQueueService;
 use App\Services\UserEmailChangeRequestService;
 use App\Services\UserManager;
@@ -21,9 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Twig_Environment;
 
 class EmailChangeController extends AbstractUserAccountController
 {
@@ -70,9 +67,7 @@ class EmailChangeController extends AbstractUserAccountController
     }
 
     /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param Twig_Environment $twig
+     * @param Mailer $mailer
      * @param Request $request
      *
      * @return RedirectResponse
@@ -83,12 +78,8 @@ class EmailChangeController extends AbstractUserAccountController
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
-    public function requestAction(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig,
-        Request $request
-    ) {
+    public function requestAction(Mailer $mailer, Request $request)
+    {
         $requestData = $request->request;
 
         $redirectResponse = $this->createUserAccountRedirectResponse();
@@ -133,7 +124,8 @@ class EmailChangeController extends AbstractUserAccountController
 
         try {
             $this->emailChangeRequestService->createEmailChangeRequest($newEmail);
-            $this->sendEmailChangeConfirmationToken($mailConfiguration, $postmarkClient, $twig);
+            $emailChangeRequest = $this->emailChangeRequestService->getEmailChangeRequest($username);
+            $mailer->sendEmailChangeConfirmationToken($newEmail, $username, $emailChangeRequest['token']);
 
             $this->flashBag->set(
                 self::FLASH_BAG_REQUEST_KEY,
@@ -180,9 +172,8 @@ class EmailChangeController extends AbstractUserAccountController
     }
 
     /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param Twig_Environment $twig
+     * @param Mailer $mailer
+     * @param UserManager $userManager
      *
      * @return RedirectResponse
      *
@@ -191,13 +182,18 @@ class EmailChangeController extends AbstractUserAccountController
      * @throws InvalidContentTypeException
      * @throws MailConfigurationException
      */
-    public function resendAction(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig
-    ) {
+    public function resendAction(Mailer $mailer, UserManager $userManager)
+    {
+        $user = $userManager->getUser();
+        $username = $user->getUsername();
+
         try {
-            $this->sendEmailChangeConfirmationToken($mailConfiguration, $postmarkClient, $twig);
+            $emailChangeRequest = $this->emailChangeRequestService->getEmailChangeRequest($username);
+            $mailer->sendEmailChangeConfirmationToken(
+                $emailChangeRequest['new_email'],
+                $username,
+                $emailChangeRequest['token']
+            );
             $this->flashBag->set(
                 self::FLASH_BAG_RESEND_SUCCESS_KEY,
                 self::FLASH_BAG_RESEND_MESSAGE_SUCCESS
@@ -338,54 +334,5 @@ class EmailChangeController extends AbstractUserAccountController
         $this->flashBag->set('user_account_details_cancel_email_change_notice', 'cancelled');
 
         return $this->createUserAccountRedirectResponse();
-    }
-
-    /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     */
-    private function sendEmailChangeConfirmationToken(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig
-    ) {
-        $user = $this->userManager->getUser();
-        $userName = $user->getUsername();
-
-        $emailChangeRequest = $this->emailChangeRequestService->getEmailChangeRequest($userName);
-
-        $sender = $mailConfiguration->getSender('default');
-        $messageProperties = $mailConfiguration->getMessageProperties('user_email_change_request_confirmation');
-
-        $confirmationUrl = $this->generateUrl(
-            'view_user_account',
-            [
-                'token' => $emailChangeRequest['token'],
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        $postmarkClient->sendEmail(
-            $sender['email'],
-            $emailChangeRequest['new_email'],
-            $messageProperties['subject'],
-            null,
-            $twig->render(
-                'Email/user-email-change-request-confirmation.txt.twig',
-                [
-                    'current_email' => $userName,
-                    'new_email' => $emailChangeRequest['new_email'],
-                    'confirmation_url' => $confirmationUrl,
-                    'confirmation_code' => $emailChangeRequest['token']
-                ]
-            )
-        );
     }
 }
