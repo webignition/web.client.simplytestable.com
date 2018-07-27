@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional\Services;
 
+use App\Model\Team\Invite;
 use App\Services\Configuration\MailConfiguration;
 use App\Services\Mailer;
 use App\Tests\Factory\MockFactory;
@@ -12,53 +13,26 @@ use Symfony\Component\Routing\RouterInterface;
 
 class MailerTest extends AbstractBaseTestCase
 {
+    const MOCK_RENDERED_MESSAGE = 'Mock rendered message';
+    const TOKEN = 'token-value';
+    const TEAM_NAME = 'Team Name';
+
+
     public function testSendSignUpConfirmationToken()
     {
         $email = 'user@example.com';
-        $token = 'token-value';
 
-        $mockRenderedMessage = 'Mock rendered message';
+        $expectedViewName = Mailer::VIEW_SIGN_UP_CONFIRMATION;
+        $expectedViewParameters = [
+            'confirmation_url' => 'http://localhost/signup/confirm/user@example.com/?token=' . self::TOKEN,
+            'confirmation_code' => self::TOKEN,
+        ];
 
-        $twig = MockFactory::createTwig([
-            'render' => [
-                'withArgs' => function ($viewName, $parameters) use ($token) {
-                    $this->assertEquals(Mailer::VIEW_SIGN_UP_CONFIRMATION, $viewName);
-                    $this->assertEquals(
-                        [
-                            'confirmation_url' => 'http://localhost/signup/confirm/user@example.com/?token=' . $token,
-                            'confirmation_code' => $token,
-                        ],
-                        $parameters
-                    );
+        $twig = $this->createTwig($expectedViewName, $expectedViewParameters);
+        $postmarkClient = $this->createPostmarkClient($email, 'Activate your account');
 
-                    return true;
-                },
-                'return' => $mockRenderedMessage,
-            ],
-        ]);
-
-        /* @var PostmarkClient|MockInterface $postmarkClient */
-        $postmarkClient = \Mockery::mock(PostmarkClient::class);
-        $postmarkClient
-            ->shouldReceive('sendEmail')
-            ->withArgs(function ($from, $to, $subject, $htmlBody, $textBody) use ($email, $mockRenderedMessage) {
-                $this->assertEquals('robot@simplytestable.com', $from);
-                $this->assertEquals($email, $to);
-                $this->assertEquals('[Simply Testable] Activate your account', $subject);
-                $this->assertNull($htmlBody);
-                $this->assertEquals($mockRenderedMessage, $textBody);
-
-                return true;
-            });
-
-        $mailer = new Mailer(
-            self::$container->get(MailConfiguration::class),
-            self::$container->get(RouterInterface::class),
-            $postmarkClient,
-            $twig
-        );
-
-        $mailer->sendSignUpConfirmationToken($email, $token);
+        $mailer = $this->createMailer($postmarkClient, $twig);
+        $mailer->sendSignUpConfirmationToken($email, self::TOKEN);
     }
 
     public function testSendInvalidAdminCredentialsNotification()
@@ -77,13 +51,7 @@ class MailerTest extends AbstractBaseTestCase
                 return true;
             });
 
-        $mailer = new Mailer(
-            self::$container->get(MailConfiguration::class),
-            self::$container->get(RouterInterface::class),
-            $postmarkClient,
-            MockFactory::createTwig()
-        );
-
+        $mailer = $this->createMailer($postmarkClient, MockFactory::createTwig());
         $mailer->sendInvalidAdminCredentialsNotification([
             'call' => 'FooService::bar()',
             'args' => [
@@ -96,52 +64,116 @@ class MailerTest extends AbstractBaseTestCase
     {
         $newEmail = 'new-user@example.com';
         $currentEmail = 'user@exaple.com';
-        $token = 'token-value-here';
 
-        $mockRenderedMessage = 'Mock rendered message';
+        $expectedViewName = Mailer::VIEW_EMAIL_CHANGE_CONFIRMATION;
+        $expectedViewParameters = [
+            'confirmation_url' => 'http://localhost/account/?token=' . self::TOKEN,
+            'confirmation_code' => self::TOKEN,
+            'current_email' => $currentEmail,
+            'new_email' => $newEmail,
+        ];
 
-        $twig = MockFactory::createTwig([
-            'render' => [
-                'withArgs' => function ($viewName, $parameters) use ($currentEmail, $newEmail, $token) {
-                    $this->assertEquals(Mailer::VIEW_EMAIL_CHANGE_CONFIRMATION, $viewName);
-                    $this->assertEquals(
-                        [
-                            'confirmation_url' => 'http://localhost/account/?token=' . $token,
-                            'confirmation_code' => $token,
-                            'current_email' => $currentEmail,
-                            'new_email' => $newEmail,
-                        ],
-                        $parameters
-                    );
+        $twig = $this->createTwig($expectedViewName, $expectedViewParameters);
+        $postmarkClient = $this->createPostmarkClient($newEmail, 'Confirm your email address change');
 
-                    return true;
-                },
-                'return' => $mockRenderedMessage,
-            ],
+        $mailer = $this->createMailer($postmarkClient, $twig);
+        $mailer->sendEmailChangeConfirmationToken($newEmail, $currentEmail, self::TOKEN);
+    }
+
+    public function testTeamInviteForExistingUser()
+    {
+        $expectedViewName = Mailer::VIEW_TEAM_INVITE_EXISTING_USER;
+        $expectedViewParameters = [
+            'team_name' => self::TEAM_NAME,
+            'account_team_page_url' => 'http://localhost/account/team/',
+        ];
+
+        $invitee = 'invitee@exaple.com';
+
+        $invite = new Invite([
+            'user' => $invitee,
+            'team' => self::TEAM_NAME,
+            'token' => self::TOKEN,
         ]);
 
-        /* @var PostmarkClient|MockInterface $postmarkClient */
-        $postmarkClient = \Mockery::mock(PostmarkClient::class);
-        $postmarkClient
-            ->shouldReceive('sendEmail')
-            ->withArgs(function ($from, $to, $subject, $htmlBody, $textBody) use ($newEmail, $mockRenderedMessage) {
-                $this->assertEquals('robot@simplytestable.com', $from);
-                $this->assertEquals($newEmail, $to);
-                $this->assertEquals('[Simply Testable] Confirm your email address change', $subject);
-                $this->assertNull($htmlBody);
-                $this->assertEquals($mockRenderedMessage, $textBody);
+        $twig = $this->createTwig($expectedViewName, $expectedViewParameters);
+        $postmarkClient = $this->createPostmarkClient(
+            $invitee,
+            'You have been invited to join the ' . $invite->getTeam() . ' team'
+        );
 
-                return true;
-            });
+        $mailer = $this->createMailer($postmarkClient, $twig);
+        $mailer->sendTeamInviteForExistingUser($invite);
+    }
 
-        $mailer = new Mailer(
+    public function testTeamInviteForNewUser()
+    {
+        $expectedViewName = Mailer::VIEW_TEAM_INVITE_NEW_USER;
+        $expectedViewParameters = [
+            'team_name' => self::TEAM_NAME,
+            'confirmation_url' => 'http://localhost/signup/invite/' . self::TOKEN . '/',
+        ];
+
+        $invitee = 'invitee@exaple.com';
+
+        $invite = new Invite([
+            'user' => $invitee,
+            'team' => self::TEAM_NAME,
+            'token' => self::TOKEN,
+        ]);
+
+        $twig = $this->createTwig($expectedViewName, $expectedViewParameters);
+        $postmarkClient = $this->createPostmarkClient(
+            $invitee,
+            'You have been invited to join the ' . $invite->getTeam() . ' team'
+        );
+
+        $mailer = $this->createMailer($postmarkClient, $twig);
+        $mailer->sendTeamInviteForNewUser($invite);
+    }
+
+    private function createMailer(PostmarkClient $postmarkClient, \Twig_Environment $twig)
+    {
+        return new Mailer(
             self::$container->get(MailConfiguration::class),
             self::$container->get(RouterInterface::class),
             $postmarkClient,
             $twig
         );
+    }
 
-        $mailer->sendEmailChangeConfirmationToken($newEmail, $currentEmail, $token);
+    private function createTwig(string $expectedViewName, array $expectedViewParameters)
+    {
+        return MockFactory::createTwig([
+            'render' => [
+                'withArgs' => function ($viewName, $parameters) use ($expectedViewName, $expectedViewParameters) {
+                    $this->assertEquals($expectedViewName, $viewName);
+                    $this->assertEquals($expectedViewParameters, $parameters);
+
+                    return true;
+                },
+                'return' => self::MOCK_RENDERED_MESSAGE,
+            ],
+        ]);
+    }
+
+    private function createPostmarkClient(string $expectedTo, string $expectedSubjectSuffix)
+    {
+        /* @var PostmarkClient|MockInterface $postmarkClient */
+        $postmarkClient = \Mockery::mock(PostmarkClient::class);
+        $postmarkClient
+            ->shouldReceive('sendEmail')
+            ->withArgs(function ($from, $to, $subject, $htmlBody, $textBody) use ($expectedTo, $expectedSubjectSuffix) {
+                $this->assertEquals('robot@simplytestable.com', $from);
+                $this->assertEquals($expectedTo, $to);
+                $this->assertEquals('[Simply Testable] ' . $expectedSubjectSuffix, $subject);
+                $this->assertNull($htmlBody);
+                $this->assertEquals(self::MOCK_RENDERED_MESSAGE, $textBody);
+
+                return true;
+            });
+
+        return $postmarkClient;
     }
 
     protected function tearDown()

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use App\Model\Team\Invite;
 use App\Services\Configuration\MailConfiguration;
 use Postmark\Models\PostmarkException;
 use Postmark\PostmarkClient;
@@ -13,6 +14,8 @@ class Mailer
 {
     const VIEW_SIGN_UP_CONFIRMATION = 'Email/user-creation-confirmation.txt.twig';
     const VIEW_EMAIL_CHANGE_CONFIRMATION = 'Email/user-email-change-request-confirmation.txt.twig';
+    const VIEW_TEAM_INVITE_EXISTING_USER = 'Email/user-team-invite-invitation.txt.twig';
+    const VIEW_TEAM_INVITE_NEW_USER = 'Email/user-team-invite-newuser-invitation.txt.twig';
 
     /**
      * @var MailConfiguration
@@ -125,6 +128,64 @@ class Mailer
                     'new_email' => $newEmail,
                     'confirmation_url' => $confirmationUrl,
                     'confirmation_code' => $token,
+                ]
+            )
+        );
+    }
+
+    /**
+     * @param Invite $invite
+     *
+     * @throws MailConfigurationException
+     * @throws PostmarkException
+     */
+    public function sendTeamInviteForExistingUser(Invite $invite)
+    {
+        $sender = $this->mailConfiguration->getSender('default');
+        $messageProperties = $this->mailConfiguration->getMessageProperties('user_team_invite_invitation');
+
+        $confirmationUrl = $this->generateUrl('view_user_account_team');
+
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            $invite->getUser(),
+            str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']),
+            null,
+            $this->twig->render(
+                self::VIEW_TEAM_INVITE_EXISTING_USER,
+                [
+                    'team_name' => $invite->getTeam(),
+                    'account_team_page_url' => $confirmationUrl
+                ]
+            )
+        );
+    }
+
+    /**
+     * @param Invite $invite
+     *
+     * @throws MailConfigurationException
+     * @throws PostmarkException
+     */
+    public function sendTeamInviteForNewUser(Invite $invite)
+    {
+        $sender = $this->mailConfiguration->getSender('default');
+        $messageProperties = $this->mailConfiguration->getMessageProperties('user_team_invite_newuser_invitation');
+
+        $confirmationUrl = $this->generateUrl('view_user_sign_up_invite', [
+            'token' => $invite->getToken()
+        ]);
+
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            $invite->getUser(),
+            str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']),
+            null,
+            $this->twig->render(
+                self::VIEW_TEAM_INVITE_NEW_USER,
+                [
+                    'team_name' => $invite->getTeam(),
+                    'confirmation_url' => $confirmationUrl
                 ]
             )
         );
