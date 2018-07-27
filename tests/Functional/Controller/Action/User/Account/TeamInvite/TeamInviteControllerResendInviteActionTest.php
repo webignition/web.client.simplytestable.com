@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Controller\Action\User\Account\TeamInvite;
 
-use Postmark\PostmarkClient;
+use App\Services\Mailer;
 use Psr\Http\Message\ResponseInterface;
 use App\Controller\Action\User\Account\TeamInviteController;
 use App\Exception\CoreApplicationRequestException;
@@ -10,7 +10,6 @@ use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -347,9 +346,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
     private function callResendInviteAction(Request $request)
     {
         return $this->teamInviteController->resendInviteAction(
-            self::$container->get(MailConfiguration::class),
-            self::$container->get(PostmarkClient::class),
-            self::$container->get('twig'),
+            self::$container->get(Mailer::class),
             $request
         );
     }

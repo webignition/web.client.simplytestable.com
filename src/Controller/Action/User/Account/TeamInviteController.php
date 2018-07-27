@@ -2,9 +2,9 @@
 
 namespace App\Controller\Action\User\Account;
 
+use App\Services\Mailer;
 use Egulias\EmailValidator\Validation\RFCValidation;
 use Postmark\Models\PostmarkException;
-use Postmark\PostmarkClient;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
@@ -13,7 +13,6 @@ use App\Exception\InvalidCredentialsException;
 use App\Exception\Team\Service\Exception as TeamServiceException;
 use App\Model\Team\Invite;
 use Egulias\EmailValidator\EmailValidator;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\TeamInviteService;
 use App\Services\UserManager;
 use App\Services\UserService;
@@ -21,9 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Twig_Environment;
 
 class TeamInviteController extends AbstractUserAccountTeamController
 {
@@ -74,9 +71,7 @@ class TeamInviteController extends AbstractUserAccountTeamController
     }
 
     /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param Twig_Environment $twig
+     * @param Mailer $mailer
      * @param Request $request
      *
      * @return RedirectResponse
@@ -88,12 +83,8 @@ class TeamInviteController extends AbstractUserAccountTeamController
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
-    public function inviteMemberAction(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig,
-        Request $request
-    ) {
+    public function inviteMemberAction(Mailer $mailer, Request $request)
+    {
         $requestData = $request->request;
 
         $redirectResponse = $this->createUserAccountTeamRedirectResponse();
@@ -131,9 +122,9 @@ class TeamInviteController extends AbstractUserAccountTeamController
             $invite = $this->teamInviteService->get($invitee);
 
             if ($this->userService->isEnabled($invite->getUser())) {
-                $this->sendInviteEmail($mailConfiguration, $postmarkClient, $twig, $invite);
+                $mailer->sendTeamInviteForExistingUser($invite);
             } else {
-                $this->sendInviteActivationEmail($mailConfiguration, $postmarkClient, $twig, $invite);
+                $mailer->sendTeamInviteForNewUser($invite);
             }
 
             $flashData = [
@@ -273,9 +264,7 @@ class TeamInviteController extends AbstractUserAccountTeamController
     }
 
     /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param Twig_Environment $twig
+     * @param Mailer $mailer
      * @param Request $request
      *
      * @return RedirectResponse
@@ -286,12 +275,8 @@ class TeamInviteController extends AbstractUserAccountTeamController
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
-    public function resendInviteAction(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig,
-        Request $request
-    ) {
+    public function resendInviteAction(Mailer $mailer, Request $request)
+    {
         $requestData = $request->request;
 
         $invitee = trim($requestData->get('user'));
@@ -300,9 +285,9 @@ class TeamInviteController extends AbstractUserAccountTeamController
             $invite = $this->teamInviteService->get($invitee);
 
             if ($this->userService->isEnabled($invite->getUser())) {
-                $this->sendInviteEmail($mailConfiguration, $postmarkClient, $twig, $invite);
+                $mailer->sendTeamInviteForExistingUser($invite);
             } else {
-                $this->sendInviteActivationEmail($mailConfiguration, $postmarkClient, $twig, $invite);
+                $mailer->sendTeamInviteForNewUser($invite);
             }
 
             $flashData = [
@@ -327,88 +312,5 @@ class TeamInviteController extends AbstractUserAccountTeamController
         $this->flashBag->set(self::FLASH_BAG_TEAM_RESEND_INVITE_KEY, $flashData);
 
         return $this->createUserAccountTeamRedirectResponse();
-    }
-
-    /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient,
-     * @param Twig_Environment $twig
-     * @param Invite $invite
-     *
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     */
-    private function sendInviteEmail(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig,
-        Invite $invite
-    ) {
-        $sender = $mailConfiguration->getSender('default');
-        $messageProperties = $mailConfiguration->getMessageProperties('user_team_invite_invitation');
-
-        $confirmationUrl = $this->generateUrl(
-            'view_user_account_team',
-            [],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        $postmarkClient->sendEmail(
-            $sender['email'],
-            $invite->getUser(),
-            str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']),
-            null,
-            $twig->render(
-                'Email/user-team-invite-invitation.txt.twig',
-                [
-                    'team_name' => $invite->getTeam(),
-                    'account_team_page_url' => $confirmationUrl
-                ]
-            )
-        );
-    }
-
-    /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param Twig_Environment $twig
-     * @param Invite $invite
-     *
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    private function sendInviteActivationEmail(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig,
-        Invite $invite
-    ) {
-        $sender = $mailConfiguration->getSender('default');
-        $messageProperties = $mailConfiguration->getMessageProperties('user_team_invite_newuser_invitation');
-
-        $confirmationUrl = $this->generateUrl(
-            'view_user_sign_up_invite',
-            [
-                'token' => $invite->getToken()
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        $postmarkClient->sendEmail(
-            $sender['email'],
-            $invite->getUser(),
-            str_replace('{{team_name}}', $invite->getTeam(), $messageProperties['subject']),
-            null,
-            $twig->render(
-                'Email/user-team-invite-newuser-invitation.txt.twig',
-                [
-                    'team_name' => $invite->getTeam(),
-                    'confirmation_url' => $confirmationUrl
-                ]
-            )
-        );
     }
 }
