@@ -3,8 +3,12 @@
 namespace App\Tests\Functional\Controller\Action\User;
 
 use App\Exception\InvalidCredentialsException;
+use App\Services\Mailer;
 use App\Services\UserManager;
-use Psr\Http\Message\ResponseInterface;
+use App\Services\UserService;
+use App\Tests\Factory\PostmarkExceptionFactory;
+use Mockery\MockInterface;
+use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\ResetPasswordController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
@@ -16,9 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
-use App\Tests\Services\PostmarkMessageVerifier;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
+use Symfony\Component\Routing\RouterInterface;
 
 class ResetPasswordControllerTest extends AbstractControllerTest
 {
@@ -178,8 +181,21 @@ class ResetPasswordControllerTest extends AbstractControllerTest
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
+        /* @var MockInterface|Mailer $mailer */
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendInvalidAdminCredentialsNotification')
+            ->withArgs([[
+                'call' => 'UserService::exists()',
+                'args' => [
+                    'email' => self::EMAIL,
+                ]
+            ]]);
+
+        $resetPasswordController = $this->createResetPasswordController($mailer);
+
         /* @var RedirectResponse $response */
-        $response = $this->resetPasswordController->requestAction($request);
+        $response = $resetPasswordController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
@@ -197,7 +213,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
     /**
      * @dataProvider requestActionSendConfirmationTokenFailureDataProvider
      *
-     * @param ResponseInterface $postmarkHttpResponse
+     * @param PostmarkException $postmarkException
      * @param array $expectedFlashBagValues
      *
      * @throws CoreApplicationRequestException
@@ -206,34 +222,38 @@ class ResetPasswordControllerTest extends AbstractControllerTest
      * @throws MailConfigurationException
      */
     public function testRequestActionSendConfirmationTokenFailure(
-        ResponseInterface $postmarkHttpResponse,
+        PostmarkException $postmarkException,
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
-        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
-            $postmarkHttpResponse,
         ]);
 
         $request = new Request([], [
             'email' => self::EMAIL,
         ]);
 
+        /* @var MockInterface|Mailer $mailer */
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendPasswordResetConfirmationToken')
+            ->withArgs([
+                self::EMAIL,
+                self::CONFIRMATION_TOKEN,
+            ])
+            ->andThrow($postmarkException);
+
+        $resetPasswordController = $this->createResetPasswordController($mailer);
+
         /* @var RedirectResponse $response */
-        $response = $this->resetPasswordController->requestAction($request);
+        $response = $resetPasswordController->requestAction($request);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
-
-        $postmarkRequest = $httpHistoryContainer->getLastRequest();
-
-        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
-        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
     }
 
     /**
@@ -243,7 +263,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
     {
         return [
             'postmark not allowed to send to user email' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(405),
+                'postmarkException' => PostmarkExceptionFactory::create(405),
                 'expectedFlashBagValues' => [
                     ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         ResetPasswordController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND,
@@ -251,7 +271,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
                 ],
             ],
             'postmark inactive recipient' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(406),
+                'postmarkException' => PostmarkExceptionFactory::create(406),
                 'expectedFlashBagValues' => [
                     ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         ResetPasswordController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT
@@ -259,7 +279,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
                 ],
             ],
             'postmark invalid email' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(300),
+                'postmarkException' => PostmarkExceptionFactory::create(300),
                 'expectedFlashBagValues' => [
                     ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         ResetPasswordController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_INVALID_EMAIL,
@@ -267,7 +287,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
                 ],
             ],
             'postmark unknown error' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(303),
+                'postmarkException' => PostmarkExceptionFactory::create(303),
                 'expectedFlashBagValues' => [
                     ResetPasswordController::FLASH_BAG_REQUEST_ERROR_KEY => [
                         ResetPasswordController::FLASH_BAG_ERROR_MESSAGE_POSTMARK_UNKNOWN,
@@ -277,61 +297,30 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         ];
     }
 
-    public function testRequestActionMessageConfirmationUrl()
-    {
-        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
-
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-            HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
-            PostmarkHttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        $this->resetPasswordController->requestAction(new Request([], [
-            'email' => self::EMAIL,
-        ]));
-
-        $postmarkRequest = $httpHistoryContainer->getLastRequest();
-
-        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($postmarkRequest);
-        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
-
-        $verificationResult = $postmarkMessageVerifier->verify(
-            [
-                'From' => 'robot@simplytestable.com',
-                'To' => self::EMAIL,
-                'Subject' => '[Simply Testable] Reset your password',
-                'TextBody' => [
-                    sprintf(
-                        'http://localhost/reset-password/%s/%s/',
-                        self::EMAIL,
-                        self::CONFIRMATION_TOKEN
-                    ),
-                ],
-            ],
-            $postmarkRequest
-        );
-
-        $this->assertTrue($verificationResult, $verificationResult);
-    }
-
-    public function testResendActionSuccess()
+    public function testRequestActionSuccess()
     {
         $flashBag = self::$container->get(FlashBagInterface::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
-            PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $request = new Request([], [
-            'email' => self::EMAIL,
-        ]);
+        /* @var MockInterface|Mailer $mailer */
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendPasswordResetConfirmationToken')
+            ->withArgs([
+                self::EMAIL,
+                self::CONFIRMATION_TOKEN,
+            ]);
+
+        $resetPasswordController = $this->createResetPasswordController($mailer);
 
         /* @var RedirectResponse $response */
-        $response = $this->resetPasswordController->requestAction($request);
+        $response = $resetPasswordController->requestAction(new Request([], [
+            'email' => self::EMAIL,
+        ]));
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/reset-password/?email=user%40example.com', $response->getTargetUrl());
@@ -564,5 +553,22 @@ class ResetPasswordControllerTest extends AbstractControllerTest
                 'expectedResponseHasUserCookie' => true,
             ],
         ];
+    }
+
+    /**
+     * @param Mailer $mailer
+     *
+     * @return ResetPasswordController
+     */
+    private function createResetPasswordController(Mailer $mailer)
+    {
+        return new ResetPasswordController(
+            self::$container->get(RouterInterface::class),
+            self::$container->get(UserService::class),
+            self::$container->get(\Twig_Environment::class),
+            self::$container->get(FlashBagInterface::class),
+            $mailer,
+            self::$container->get(UserManager::class)
+        );
     }
 }
