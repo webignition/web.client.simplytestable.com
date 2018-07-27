@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional\Services;
 
+use App\Model\StripeNotification;
 use App\Model\Team\Invite;
 use App\Services\Configuration\MailConfiguration;
 use App\Services\Mailer;
@@ -131,7 +132,7 @@ class MailerTest extends AbstractBaseTestCase
         $mailer->sendTeamInviteForNewUser($invite);
     }
 
-    public function testPasswordResetConfirmationToken()
+    public function testSendPasswordResetConfirmationToken()
     {
         $email = 'user@example.com';
 
@@ -146,6 +147,27 @@ class MailerTest extends AbstractBaseTestCase
 
         $mailer = $this->createMailer($postmarkClient, $twig);
         $mailer->sendPasswordResetConfirmationToken($email, self::TOKEN);
+    }
+
+    public function testSendStripeNotification()
+    {
+        $email = 'user@example.com';
+        $subjectSuffix = 'You\'ve signed up to the agency plan';
+        $textBody = 'Text body';
+
+        $stripeNotification = new StripeNotification($email, '[Simply Testable] ' . $subjectSuffix, $textBody);
+        $postmarkClient = $this->createPostmarkClient(
+            $email,
+            $subjectSuffix,
+            'jon@simplytestable.com',
+            $textBody
+        );
+
+        /* @var \Twig_Environment $twig */
+        $twig = \Mockery::mock(\Twig_Environment::class);
+
+        $mailer = $this->createMailer($postmarkClient, $twig);
+        $mailer->sendStripeNotification($stripeNotification);
     }
 
     private function createMailer(PostmarkClient $postmarkClient, \Twig_Environment $twig)
@@ -173,18 +195,33 @@ class MailerTest extends AbstractBaseTestCase
         ]);
     }
 
-    private function createPostmarkClient(string $expectedTo, string $expectedSubjectSuffix)
-    {
+    private function createPostmarkClient(
+        string $expectedTo,
+        string $expectedSubjectSuffix,
+        string $expectedFrom = 'robot@simplytestable.com',
+        string $expectedMessage = self::MOCK_RENDERED_MESSAGE
+    ) {
         /* @var PostmarkClient|MockInterface $postmarkClient */
         $postmarkClient = \Mockery::mock(PostmarkClient::class);
         $postmarkClient
             ->shouldReceive('sendEmail')
-            ->withArgs(function ($from, $to, $subject, $htmlBody, $textBody) use ($expectedTo, $expectedSubjectSuffix) {
-                $this->assertEquals('robot@simplytestable.com', $from);
+            ->withArgs(function (
+                $from,
+                $to,
+                $subject,
+                $htmlBody,
+                $textBody
+            ) use (
+                $expectedTo,
+                $expectedSubjectSuffix,
+                $expectedFrom,
+                $expectedMessage
+            ) {
+                $this->assertEquals($expectedFrom, $from);
                 $this->assertEquals($expectedTo, $to);
                 $this->assertEquals('[Simply Testable] ' . $expectedSubjectSuffix, $subject);
                 $this->assertNull($htmlBody);
-                $this->assertEquals(self::MOCK_RENDERED_MESSAGE, $textBody);
+                $this->assertEquals($expectedMessage, $textBody);
 
                 return true;
             });

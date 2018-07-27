@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
+use App\Model\StripeNotification;
 use App\Model\Team\Invite;
 use App\Services\Configuration\MailConfiguration;
 use Postmark\Models\PostmarkException;
@@ -221,6 +222,25 @@ class Mailer
                     'email' => $email
                 ]
             )
+        );
+    }
+
+    /**
+     * @param StripeNotification $stripeNotification
+     *
+     * @throws MailConfigurationException
+     * @throws PostmarkException
+     */
+    public function sendStripeNotification(StripeNotification $stripeNotification)
+    {
+        $sender = $this->mailConfiguration->getSender('notifications');
+
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            $stripeNotification->getRecipient(),
+            $stripeNotification->getSubject(),
+            null,
+            $stripeNotification->getMessage()
         );
     }
 
