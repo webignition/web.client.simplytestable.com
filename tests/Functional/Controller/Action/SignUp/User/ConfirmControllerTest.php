@@ -161,6 +161,10 @@ class ConfirmControllerTest extends AbstractControllerTest
         $mailer = \Mockery::mock(Mailer::class);
         $mailer
             ->shouldReceive('sendSignUpConfirmationToken')
+            ->withArgs([
+                self::EMAIL,
+                self::CONFIRMATION_TOKEN,
+            ])
             ->andThrow($postmarkException);
 
         $confirmController = new ConfirmController(
