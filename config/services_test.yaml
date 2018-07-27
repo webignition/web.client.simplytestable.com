@@ -23,3 +23,5 @@ services:
       - [setClient, ['@GuzzleHttp\Client']]
 
   App\Tests\Services\PostmarkMessageVerifier:
+
+  App\Services\StripeNotificationFactory:
