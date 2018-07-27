@@ -12,6 +12,7 @@ use Symfony\Component\Routing\RouterInterface;
 class Mailer
 {
     const VIEW_SIGN_UP_CONFIRMATION = 'Email/user-creation-confirmation.txt.twig';
+    const VIEW_EMAIL_CHANGE_CONFIRMATION = 'Email/user-email-change-request-confirmation.txt.twig';
 
     /**
      * @var MailConfiguration
@@ -52,7 +53,7 @@ class Mailer
      * @throws MailConfigurationException
      * @throws PostmarkException
      */
-    public function sendSignUpConfirmationToken($email, $token)
+    public function sendSignUpConfirmationToken(string $email, string $token)
     {
         $sender = $this->mailConfiguration->getSender('default');
         $messageProperties = $this->mailConfiguration->getMessageProperties('user_creation_confirmation');
@@ -92,6 +93,40 @@ class Mailer
             'Invalid admin user credentials',
             null,
             json_encode($details)
+        );
+    }
+
+    /**
+     * @param string $newEmail
+     * @param string $currentEmail
+     * @param string $token
+     *
+     * @throws MailConfigurationException
+     * @throws PostmarkException
+     */
+    public function sendEmailChangeConfirmationToken(string $newEmail, string $currentEmail, string $token)
+    {
+        $sender = $this->mailConfiguration->getSender('default');
+        $messageProperties = $this->mailConfiguration->getMessageProperties('user_email_change_request_confirmation');
+
+        $confirmationUrl = $this->generateUrl('view_user_account', [
+            'token' => $token,
+        ]);
+
+        $this->postmarkClient->sendEmail(
+            $sender['email'],
+            $newEmail,
+            $messageProperties['subject'],
+            null,
+            $this->twig->render(
+                self::VIEW_EMAIL_CHANGE_CONFIRMATION,
+                [
+                    'current_email' => $currentEmail,
+                    'new_email' => $newEmail,
+                    'confirmation_url' => $confirmationUrl,
+                    'confirmation_code' => $token,
+                ]
+            )
         );
     }
 

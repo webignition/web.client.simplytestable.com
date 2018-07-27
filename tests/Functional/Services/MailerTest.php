@@ -14,16 +14,19 @@ class MailerTest extends AbstractBaseTestCase
 {
     public function testSendSignUpConfirmationToken()
     {
+        $email = 'user@example.com';
+        $token = 'token-value';
+
         $mockRenderedMessage = 'Mock rendered message';
 
         $twig = MockFactory::createTwig([
             'render' => [
-                'withArgs' => function ($viewName, $parameters) {
+                'withArgs' => function ($viewName, $parameters) use ($token) {
                     $this->assertEquals(Mailer::VIEW_SIGN_UP_CONFIRMATION, $viewName);
                     $this->assertEquals(
                         [
-                            'confirmation_url' => 'http://localhost/signup/confirm/user@example.com/?token=token-value',
-                            'confirmation_code' => 'token-value',
+                            'confirmation_url' => 'http://localhost/signup/confirm/user@example.com/?token=' . $token,
+                            'confirmation_code' => $token,
                         ],
                         $parameters
                     );
@@ -38,9 +41,9 @@ class MailerTest extends AbstractBaseTestCase
         $postmarkClient = \Mockery::mock(PostmarkClient::class);
         $postmarkClient
             ->shouldReceive('sendEmail')
-            ->withArgs(function ($from, $to, $subject, $htmlBody, $textBody) use ($mockRenderedMessage) {
+            ->withArgs(function ($from, $to, $subject, $htmlBody, $textBody) use ($email, $mockRenderedMessage) {
                 $this->assertEquals('robot@simplytestable.com', $from);
-                $this->assertEquals('user@example.com', $to);
+                $this->assertEquals($email, $to);
                 $this->assertEquals('[Simply Testable] Activate your account', $subject);
                 $this->assertNull($htmlBody);
                 $this->assertEquals($mockRenderedMessage, $textBody);
@@ -55,7 +58,7 @@ class MailerTest extends AbstractBaseTestCase
             $twig
         );
 
-        $mailer->sendSignUpConfirmationToken('user@example.com', 'token-value');
+        $mailer->sendSignUpConfirmationToken($email, $token);
     }
 
     public function testSendInvalidAdminCredentialsNotification()
@@ -87,6 +90,58 @@ class MailerTest extends AbstractBaseTestCase
                 'foo' => 'bar',
             ],
         ]);
+    }
+
+    public function testSendEmailChangeConfirmationToken()
+    {
+        $newEmail = 'new-user@example.com';
+        $currentEmail = 'user@exaple.com';
+        $token = 'token-value-here';
+
+        $mockRenderedMessage = 'Mock rendered message';
+
+        $twig = MockFactory::createTwig([
+            'render' => [
+                'withArgs' => function ($viewName, $parameters) use ($currentEmail, $newEmail, $token) {
+                    $this->assertEquals(Mailer::VIEW_EMAIL_CHANGE_CONFIRMATION, $viewName);
+                    $this->assertEquals(
+                        [
+                            'confirmation_url' => 'http://localhost/account/?token=' . $token,
+                            'confirmation_code' => $token,
+                            'current_email' => $currentEmail,
+                            'new_email' => $newEmail,
+                        ],
+                        $parameters
+                    );
+
+                    return true;
+                },
+                'return' => $mockRenderedMessage,
+            ],
+        ]);
+
+        /* @var PostmarkClient|MockInterface $postmarkClient */
+        $postmarkClient = \Mockery::mock(PostmarkClient::class);
+        $postmarkClient
+            ->shouldReceive('sendEmail')
+            ->withArgs(function ($from, $to, $subject, $htmlBody, $textBody) use ($newEmail, $mockRenderedMessage) {
+                $this->assertEquals('robot@simplytestable.com', $from);
+                $this->assertEquals($newEmail, $to);
+                $this->assertEquals('[Simply Testable] Confirm your email address change', $subject);
+                $this->assertNull($htmlBody);
+                $this->assertEquals($mockRenderedMessage, $textBody);
+
+                return true;
+            });
+
+        $mailer = new Mailer(
+            self::$container->get(MailConfiguration::class),
+            self::$container->get(RouterInterface::class),
+            $postmarkClient,
+            $twig
+        );
+
+        $mailer->sendEmailChangeConfirmationToken($newEmail, $currentEmail, $token);
     }
 
     protected function tearDown()
