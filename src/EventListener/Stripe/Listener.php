@@ -20,11 +20,6 @@ class Listener
     private $router;
 
     /**
-     * @var StripeEvent
-     */
-    private $event;
-
-    /**
      * @var array
      */
     private $currencySymbolMap = [
@@ -89,7 +84,6 @@ class Listener
      */
     public function onCustomerSubscriptionCreated(StripeEvent $event)
     {
-        $this->event = $event;
         $eventData = $event->getData();
 
         $subjectValueParameters = [
@@ -131,8 +125,6 @@ class Listener
      */
     public function onCustomerSubscriptionTrialWillEnd(StripeEvent $event)
     {
-        $this->event = $event;
-
         $eventData = $event->getData();
 
         $subjectValueParameters = [
@@ -175,8 +167,6 @@ class Listener
          * No more active to canceled
          * also plan change!
          */
-
-        $this->event = $event;
 
         $eventData = $event->getData();
 
@@ -263,8 +253,6 @@ class Listener
      */
     public function onInvoicePaymentFailed(StripeEvent $event)
     {
-        $this->event = $event;
-
         $eventData = $event->getData();
 
         $subjectValueParameters = [
@@ -295,8 +283,6 @@ class Listener
      */
     public function onInvoicePaymentSucceeded(StripeEvent $event)
     {
-        $this->event = $event;
-
         $eventData = $event->getData();
 
         $subjectValueParameters = [
@@ -312,7 +298,7 @@ class Listener
             'total_line' => $this->getInvoiceTotalLine((int)$eventData->get('total'), $eventData->get('currency')),
         ];
 
-        if ($this->event->getData()->has('discount')) {
+        if ($eventData->has('discount')) {
             $viewParameters['discount_line'] = $this->getInvoiceDiscountContent(
                 $eventData->get('discount'),
                 $eventData->get('currency')
@@ -341,7 +327,6 @@ class Listener
      */
     public function onCustomerSubscriptionDeleted(StripeEvent $event)
     {
-        $this->event = $event;
         $eventData = $event->getData();
 
         $subjectValueParameters = [
