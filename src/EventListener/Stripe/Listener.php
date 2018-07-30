@@ -2,15 +2,12 @@
 
 namespace App\EventListener\Stripe;
 
-use Postmark\Models\PostmarkException;
-use Postmark\PostmarkClient;
-use Psr\Log\LoggerInterface;
+use App\Services\Mailer;
+use App\Services\StripeNotificationFactory;
 use App\Event\Stripe\Event as StripeEvent;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use App\Services\Configuration\MailConfiguration;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Twig_Environment;
 
 class Listener
 {
@@ -18,24 +15,9 @@ class Listener
     const DEFAULT_CURRENCY_SYMBOL = '£';
 
     /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var Twig_Environment
-     */
-    private $twig;
-
-    /**
      * @var RouterInterface
      */
     private $router;
-
-    /**
-     * @var StripeEvent
-     */
-    private $event;
 
     /**
      * @var array
@@ -46,34 +28,23 @@ class Listener
     ];
 
     /**
-     * @var MailConfiguration
+     * @var Mailer
      */
-    private $mailConfiguration;
+    private $mailer;
 
     /**
-     * @var PostmarkClient
+     * @var StripeNotificationFactory
      */
-    private $postmarkClient;
+    private $stripeNotificationFactory;
 
-    /**
-     * @param LoggerInterface $logger
-     * @param Twig_Environment $twig
-     * @param RouterInterface $router
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     */
     public function __construct(
-        LoggerInterface $logger,
-        Twig_Environment $twig,
         RouterInterface $router,
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient
+        Mailer $mailer,
+        StripeNotificationFactory $stripeNotificationFactory
     ) {
-        $this->logger = $logger;
-        $this->twig = $twig;
         $this->router = $router;
-        $this->mailConfiguration = $mailConfiguration;
-        $this->postmarkClient = $postmarkClient;
+        $this->mailer = $mailer;
+        $this->stripeNotificationFactory = $stripeNotificationFactory;
     }
 
     /**
@@ -110,19 +81,22 @@ class Listener
      * @param StripeEvent $event
      *
      * @throws MailConfigurationException
-     * @throws \Twig_Error
      */
     public function onCustomerSubscriptionCreated(StripeEvent $event)
     {
-        $this->event = $event;
         $eventData = $event->getData();
 
-        $subject = $this->createSubject(
-            $event,
-            [
-                'plan_name' => strtolower($eventData->get('plan_name'))
-            ]
-        );
+        $subjectValueParameters = [
+            'plan_name' => strtolower($eventData->get('plan_name'))
+        ];
+
+        $viewNameParameters = [
+            'status'
+        ];
+
+        if ($eventData->get('status') == 'trialing') {
+            $viewNameParameters[] = 'has_card';
+        }
 
         $viewParameters = [
             'plan_name' => strtolower($eventData->get('plan_name')),
@@ -133,39 +107,30 @@ class Listener
             'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
         ];
 
-        $viewPathParameters = [
-            'status'
-        ];
-
-        if ($eventData->get('status') == 'trialing') {
-            $viewPathParameters[] = 'has_card';
-        }
-
-        $this->issueNotification(
-            $subject,
-            $this->twig->render($this->getViewPath($event, $viewPathParameters), $viewParameters)
+        $stripeNotification = $this->stripeNotificationFactory->create(
+            $event,
+            $subjectValueParameters,
+            [],
+            $viewNameParameters,
+            $viewParameters
         );
+
+        $this->mailer->sendStripeNotification($stripeNotification);
     }
 
     /**
      * @param StripeEvent $event
      *
      * @throws MailConfigurationException
-     * @throws \Twig_Error
      */
     public function onCustomerSubscriptionTrialWillEnd(StripeEvent $event)
     {
-        $this->event = $event;
-
         $eventData = $event->getData();
 
-        $subject = $this->createSubject(
-            $event,
-            [
-                'plan_name' => strtolower($eventData->get('plan_name')),
-                'payment_details_needed_suffix' => ($eventData->get('has_card')) ? '' : ', payment details needed'
-            ]
-        );
+        $subjectValueParameters = [
+            'plan_name' => strtolower($eventData->get('plan_name')),
+            'payment_details_needed_suffix' => ($eventData->get('has_card')) ? '' : ', payment details needed'
+        ];
 
         $viewParameters = [
             'plan_name' => strtolower($eventData->get('plan_name')),
@@ -174,16 +139,25 @@ class Listener
             'currency_symbol' => $this->getCurrencySymbol($eventData->get('plan_currency'))
         ];
 
-        $this->issueNotification($subject, $this->twig->render($this->getViewPath($event, [
-            'has_card'
-        ]), $viewParameters));
+        $viewNameParameters = [
+            'has_card',
+        ];
+
+        $stripeNotification = $this->stripeNotificationFactory->create(
+            $event,
+            $subjectValueParameters,
+            [],
+            $viewNameParameters,
+            $viewParameters
+        );
+
+        $this->mailer->sendStripeNotification($stripeNotification);
     }
 
     /**
      * @param StripeEvent $event
      *
      * @throws MailConfigurationException
-     * @throws \Twig_Error
      */
     public function onCustomerSubscriptionUpdated(StripeEvent $event)
     {
@@ -194,22 +168,18 @@ class Listener
          * also plan change!
          */
 
-        $this->event = $event;
-
         $eventData = $event->getData();
 
         if ($eventData->get('is_plan_change')) {
             $eventData->set('plan_change', 1);
 
-            $subject = $this->createSubject(
-                $event,
-                [
-                    'new_plan' => strtolower($eventData->get('new_plan'))
-                ],
-                [
-                    'plan_change'
-                ]
-            );
+            $subjectValueParameters = [
+                'new_plan' => strtolower($eventData->get('new_plan'))
+            ];
+
+            $subjectKeyParameterNames = [
+                'plan_change'
+            ];
 
             $viewParameters = [
                 'new_plan' => strtolower($eventData->get('new_plan')),
@@ -219,10 +189,20 @@ class Listener
                 'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
             ];
 
-            $this->issueNotification($subject, $this->twig->render($this->getViewPath($event, [
+            $viewNameParameters = [
                 'plan_change',
                 'subscription_status'
-            ]), $viewParameters));
+            ];
+
+            $stripeNotification = $this->stripeNotificationFactory->create(
+                $event,
+                $subjectValueParameters,
+                $subjectKeyParameterNames,
+                $viewNameParameters,
+                $viewParameters
+            );
+
+            $this->mailer->sendStripeNotification($stripeNotification);
 
             return;
         }
@@ -235,14 +215,10 @@ class Listener
             );
             $eventData->set('transition', $transition);
 
-            $subject = $this->createSubject(
-                $event,
-                [],
-                [
+            $subjectKeyParameterNames = [
                 'transition',
                 'has_card'
-                ]
-            );
+            ];
 
             $viewParameters = [
                 'plan_name' => strtolower($eventData->get('plan_name')),
@@ -251,10 +227,20 @@ class Listener
                 'currency_symbol' => $this->getCurrencySymbol($eventData->get('currency'))
             ];
 
-            $this->issueNotification($subject, $this->twig->render($this->getViewPath($event, [
+            $viewNameParameters = [
                 'transition',
                 'has_card'
-            ]), $viewParameters));
+            ];
+
+            $stripeNotification = $this->stripeNotificationFactory->create(
+                $event,
+                [],
+                $subjectKeyParameterNames,
+                $viewNameParameters,
+                $viewParameters
+            );
+
+            $this->mailer->sendStripeNotification($stripeNotification);
 
             return;
         }
@@ -264,20 +250,14 @@ class Listener
      * @param StripeEvent $event
      *
      * @throws MailConfigurationException
-     * @throws \Twig_Error
      */
     public function onInvoicePaymentFailed(StripeEvent $event)
     {
-        $this->event = $event;
-
         $eventData = $event->getData();
 
-        $subject = $this->createSubject(
-            $event,
-            [
-                'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id'))
-            ]
-        );
+        $subjectValueParameters = [
+            'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id'))
+        ];
 
         $viewParameters = [
             'invoice_id' => $this->getFormattedInvoiceId($eventData->get('invoice_id')),
@@ -285,20 +265,29 @@ class Listener
             'invoice_lines' => $this->getInvoiceLinesContent($eventData->get('lines'), $eventData->get('currency')),
         ];
 
-        $this->issueNotification($subject, $this->twig->render($this->getViewPath($event), $viewParameters));
+        $stripeNotification = $this->stripeNotificationFactory->create(
+            $event,
+            $subjectValueParameters,
+            [],
+            [],
+            $viewParameters
+        );
+
+        $this->mailer->sendStripeNotification($stripeNotification);
     }
 
     /**
      * @param StripeEvent $event
      *
      * @throws MailConfigurationException
-     * @throws \Twig_Error
      */
     public function onInvoicePaymentSucceeded(StripeEvent $event)
     {
-        $this->event = $event;
-
         $eventData = $event->getData();
+
+        $subjectValueParameters = [
+            'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
+        ];
 
         $viewParameters = [
             'plan_name' => strtolower($eventData->get('plan_name')),
@@ -309,52 +298,48 @@ class Listener
             'total_line' => $this->getInvoiceTotalLine((int)$eventData->get('total'), $eventData->get('currency')),
         ];
 
-        if ($this->event->getData()->has('discount')) {
+        if ($eventData->has('discount')) {
             $viewParameters['discount_line'] = $this->getInvoiceDiscountContent(
                 $eventData->get('discount'),
                 $eventData->get('currency')
             );
         }
 
-        $subject = $this->createSubject(
+        $viewNameParameters = [
+            'has_discount',
+        ];
+
+        $stripeNotification = $this->stripeNotificationFactory->create(
             $event,
-            [
-                'invoice_id' => $this->getFormattedInvoiceId($event->getData()->get('invoice_id'))
-            ]
+            $subjectValueParameters,
+            [],
+            $viewNameParameters,
+            $viewParameters
         );
 
-        $this->issueNotification($subject, $this->twig->render($this->getViewPath($event, [
-            'has_discount'
-        ]), $viewParameters));
+        $this->mailer->sendStripeNotification($stripeNotification);
     }
 
     /**
      * @param StripeEvent $event
      *
      * @throws MailConfigurationException
-     * @throws \Twig_Error
      */
     public function onCustomerSubscriptionDeleted(StripeEvent $event)
     {
-        $this->event = $event;
+        $eventData = $event->getData();
 
-        $subjectKeyParameters = [
+        $subjectValueParameters = [
+            'plan_name' => strtolower($eventData->get('plan_name'))
+        ];
+
+        $subjectKeyParameterNames = [
             'actioned_by'
         ];
 
-        $eventData = $event->getData();
-
         if ($eventData->get('actioned_by') == 'user') {
-            $subjectKeyParameters[] = 'is_during_trial';
+            $subjectKeyParameterNames[] = 'is_during_trial';
         }
-
-        $subject = $this->createSubject(
-            $event,
-            [
-                'plan_name' => strtolower($eventData->get('plan_name'))
-            ],
-            $subjectKeyParameters
-        );
 
         $viewParameters = [
             'trial_days_remaining' => $eventData->get('trial_days_remaining'),
@@ -363,100 +348,23 @@ class Listener
             'plan_name' => strtolower($eventData->get('plan_name'))
         ];
 
-        $viewPathParameters = [
+        $viewNameParameters = [
             'actioned_by'
         ];
 
         if ($eventData->get('actioned_by') == 'user') {
-            $viewPathParameters[] = 'is_during_trial';
+            $viewNameParameters[] = 'is_during_trial';
         }
 
-        $this->issueNotification(
-            $subject,
-            $this->twig->render($this->getViewPath($event, $viewPathParameters), $viewParameters)
+        $stripeNotification = $this->stripeNotificationFactory->create(
+            $event,
+            $subjectValueParameters,
+            $subjectKeyParameterNames,
+            $viewNameParameters,
+            $viewParameters
         );
-    }
 
-    /**
-     * @param StripeEvent $event
-     * @param null $valueParameters
-     * @param null $keyParameterNames
-     *
-     * @return string
-     *
-     * @throws MailConfigurationException
-     */
-    private function createSubject(StripeEvent $event, $valueParameters = null, $keyParameterNames = null)
-    {
-        $eventData = $event->getData();
-
-        $key = 'stripe.' . $event->getName();
-
-        if (is_array($keyParameterNames)) {
-            $keyNameParameterisedParts = [];
-            foreach ($keyParameterNames as $name) {
-                if ($eventData->has($name)) {
-                    $keyNameParameterisedParts[] = $name . '=' . $eventData->get($name);
-                }
-            }
-
-            $key .= '-' . implode('-', $keyNameParameterisedParts);
-        }
-
-        $messageProperties = $this->mailConfiguration->getMessageProperties($key);
-
-        foreach ($valueParameters as $key => $value) {
-            $valueParameters['{{'.$key.'}}'] = $value;
-            unset($valueParameters[$key]);
-        }
-
-        return str_replace(array_keys($valueParameters), array_values($valueParameters), $messageProperties['subject']);
-    }
-
-    /**
-     * @param StripeEvent $event
-     * @param array|null $parameterKeys
-     *
-     * @return string
-     */
-    private function getViewPath(StripeEvent $event, $parameterKeys = null)
-    {
-        $eventData = $event->getData();
-
-        if (is_array($parameterKeys)) {
-            $parameterisedParts = [];
-            foreach ($parameterKeys as $key) {
-                if ($eventData->has($key)) {
-                    $parameterisedParts[] = $key . '=' . $eventData->get($key);
-                }
-            }
-
-            $filenamebody = implode('-', $parameterisedParts);
-        } else {
-            $filenamebody = 'notification';
-        }
-
-        return self::VIEW_BASE_PATH . $eventData->get('event') . '/' . $filenamebody . '.txt.twig';
-    }
-
-    /**
-     * @param string $subject
-     * @param string $messageBody
-     *
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     */
-    private function issueNotification($subject, $messageBody)
-    {
-        $sender = $this->mailConfiguration->getSender('notifications');
-
-        $this->postmarkClient->sendEmail(
-            $sender['email'],
-            $this->event->getUser(),
-            $subject,
-            null,
-            $messageBody
-        );
+        $this->mailer->sendStripeNotification($stripeNotification);
     }
 
     /**

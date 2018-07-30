@@ -3,18 +3,17 @@
 namespace App\Tests\Functional\Controller\User;
 
 use App\Controller\User\SignInController;
+use App\Services\Mailer;
 use App\Services\RedirectResponseFactory;
 use App\Services\UserService;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use Egulias\EmailValidator\EmailValidator;
 use Postmark\Models\PostmarkException;
-use Postmark\PostmarkClient;
 use App\Controller\Action\User\UserController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\Request\Factory\User\SignInRequestFactory;
 use App\Services\Request\Validator\User\SignInRequestValidator;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -23,10 +22,7 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use App\Tests\Factory\PostmarkHttpResponseFactory;
-use App\Tests\Services\PostmarkMessageVerifier;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class SignInSubmitActionTest extends AbstractControllerTest
 {
@@ -82,7 +78,9 @@ class SignInSubmitActionTest extends AbstractControllerTest
 
         $flashBag = self::$container->get(FlashBagInterface::class);
 
-        $response = $this->callSignInAction($request, $signInRequestValidator);
+        $response = $this->callSignInAction($request, [
+            SignInRequestValidator::class => $signInRequestValidator,
+        ]);
 
         $this->assertEquals('/signin/?stay-signed-in=0', $response->getTargetUrl());
         $this->assertEquals(
@@ -175,19 +173,25 @@ class SignInSubmitActionTest extends AbstractControllerTest
     {
         $httpMockHandler = self::$container->get(HttpMockHandler::class);
         $flashBag = self::$container->get(FlashBagInterface::class);
-        $httpHistoryContainer = self::$container->get(HttpHistoryContainer::class);
-        $postmarkMessageVerifier = self::$container->get(PostmarkMessageVerifier::class);
 
-        $httpMockHandler->appendFixtures(array_merge($httpFixtures, [
-            PostmarkHttpResponseFactory::createSuccessResponse(),
-        ]));
+        $httpMockHandler->appendFixtures($httpFixtures);
 
         $request = new Request([], [
             'email' => self::EMAIL,
             'password' => 'foo',
         ]);
 
-        $response = $this->callSignInAction($request);
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendSignUpConfirmationToken')
+            ->withArgs([
+                self::EMAIL,
+                self::CONFIRMATION_TOKEN
+            ]);
+
+        $response = $this->callSignInAction($request, [
+            Mailer::class => $mailer,
+        ]);
 
         $this->assertEquals(
             sprintf('/signin/?email=%s&stay-signed-in=0', urlencode(self::EMAIL)),
@@ -201,29 +205,6 @@ class SignInSubmitActionTest extends AbstractControllerTest
             ],
             $flashBag->peekAll()
         );
-
-        $lastRequest = $httpHistoryContainer->getLastRequest();
-
-        $isPostmarkMessageResult = $postmarkMessageVerifier->isPostmarkRequest($lastRequest);
-        $this->assertTrue($isPostmarkMessageResult, $isPostmarkMessageResult);
-
-        $verificationResult = $postmarkMessageVerifier->verify(
-            [
-                'From' => 'robot@simplytestable.com',
-                'To' => self::EMAIL,
-                'Subject' => '[Simply Testable] Activate your account',
-                'TextBody' => [
-                    sprintf(
-                        'http://localhost/signup/confirm/%s/?token=%s',
-                        self::EMAIL,
-                        self::CONFIRMATION_TOKEN
-                    ),
-                ],
-            ],
-            $httpHistoryContainer->getLastRequest()
-        );
-
-        $this->assertTrue($verificationResult, $verificationResult);
     }
 
     /**
@@ -378,7 +359,7 @@ class SignInSubmitActionTest extends AbstractControllerTest
 
     /**
      * @param Request $request
-     * @param SignInRequestValidator|null $signInRequestValidator
+     * @param array $services
      *
      * @return RedirectResponse
      * @throws CoreApplicationRequestException
@@ -387,28 +368,46 @@ class SignInSubmitActionTest extends AbstractControllerTest
      * @throws MailConfigurationException
      * @throws PostmarkException
      */
-    private function callSignInAction(Request $request, $signInRequestValidator = null)
+    private function callSignInAction(Request $request, array $services = [])
     {
+        if (!isset($services[Mailer::class])) {
+            $services[Mailer::class] = self::$container->get(Mailer::class);
+        }
+
+        if (!isset($services[SignInRequestValidator::class])) {
+            $services[SignInRequestValidator::class] = new SignInRequestValidator(new EmailValidator());
+        }
+
+        if (!isset($services[FlashBagInterface::class])) {
+            $services[FlashBagInterface::class] = self::$container->get(FlashBagInterface::class);
+        }
+
+        if (!isset($services[RedirectResponseFactory::class])) {
+            $services[RedirectResponseFactory::class] = self::$container->get(RedirectResponseFactory::class);
+        }
+
+        if (!isset($services[UserService::class])) {
+            $services[UserService::class] = self::$container->get(UserService::class);
+        }
+
         $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $signInRequestFactory = new SignInRequestFactory($requestStack);
 
-        if (empty($signInRequestValidator)) {
-            $signInRequestValidator = new SignInRequestValidator(new EmailValidator());
-        }
+        $services[SignInRequestFactory::class] = $signInRequestFactory;
+
 
         /* @var SignInController $signInController */
         $signInController = self::$container->get(SignInController::class);
 
         return $signInController->signInAction(
-            self::$container->get(MailConfiguration::class),
-            self::$container->get(PostmarkClient::class),
-            $signInRequestFactory,
-            $signInRequestValidator,
-            self::$container->get(FlashBagInterface::class),
-            self::$container->get(RedirectResponseFactory::class),
-            self::$container->get(UserService::class)
+            $services[Mailer::class],
+            $services[SignInRequestFactory::class],
+            $services[SignInRequestValidator::class],
+            $services[FlashBagInterface::class],
+            $services[RedirectResponseFactory::class],
+            $services[UserService::class]
         );
     }
 

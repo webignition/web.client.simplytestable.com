@@ -2,8 +2,8 @@
 
 namespace App\Controller\Action\User;
 
+use App\Services\Mailer;
 use Postmark\Models\PostmarkException;
-use Postmark\PostmarkClient;
 use App\Controller\AbstractController;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
@@ -12,7 +12,6 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\UserAlreadyExistsException;
 use App\Request\User\SignUpRequest;
 use App\Resque\Job\EmailListSubscribeJob;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\CouponService;
 use App\Services\RedirectResponseFactory;
 use App\Services\Request\Factory\User\SignUpRequestFactory;
@@ -24,9 +23,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Twig_Environment;
 
 class UserController extends AbstractController
 {
@@ -114,10 +111,8 @@ class UserController extends AbstractController
     }
 
     /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
+     * @param Mailer $mailer
      * @param CouponService $couponService
-     * @param Twig_Environment $twig
      * @param SignUpRequestFactory $signUpRequestFactory
      * @param UserAccountRequestValidator $userAccountRequestValidator
      * @param Request $request
@@ -130,10 +125,8 @@ class UserController extends AbstractController
      * @throws MailConfigurationException
      */
     public function signUpSubmitAction(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
+        Mailer $mailer,
         CouponService $couponService,
-        Twig_Environment $twig,
         SignUpRequestFactory $signUpRequestFactory,
         UserAccountRequestValidator $userAccountRequestValidator,
         Request $request
@@ -188,7 +181,7 @@ class UserController extends AbstractController
         $token = $this->userService->getConfirmationToken($email);
 
         try {
-            $this->sendConfirmationToken($mailConfiguration, $postmarkClient, $twig, $email, $token);
+            $mailer->sendSignUpConfirmationToken($email, $token);
         } catch (PostmarkException $postmarkException) {
             $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, SignUpRequest::PARAMETER_EMAIL);
 
@@ -219,50 +212,6 @@ class UserController extends AbstractController
         );
 
         return new RedirectResponse($successRedirectUrl);
-    }
-
-    /**
-     * @param MailConfiguration $mailConfiguration
-     * @param PostmarkClient $postmarkClient
-     * @param Twig_Environment $twig
-     * @param string $email
-     * @param string $token
-     *
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     */
-    private function sendConfirmationToken(
-        MailConfiguration $mailConfiguration,
-        PostmarkClient $postmarkClient,
-        Twig_Environment $twig,
-        $email,
-        $token
-    ) {
-        $sender = $mailConfiguration->getSender('default');
-        $messageProperties = $mailConfiguration->getMessageProperties('user_creation_confirmation');
-
-        $confirmationUrl = $this->generateUrl(
-            'view_user_sign_up_confirm',
-            [
-                'email' => $email,
-                'token' => $token,
-            ],
-            UrlGeneratorInterface::ABSOLUTE_URL
-        );
-
-        $postmarkClient->sendEmail(
-            $sender['email'],
-            $email,
-            $messageProperties['subject'],
-            null,
-            $twig->render(
-                'Email/user-creation-confirmation.txt.twig',
-                [
-                    'confirmation_url' => $confirmationUrl,
-                    'confirmation_code' => $token
-                ]
-            )
-        );
     }
 
     /**

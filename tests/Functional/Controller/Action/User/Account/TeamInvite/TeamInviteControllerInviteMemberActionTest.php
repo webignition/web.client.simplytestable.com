@@ -2,15 +2,16 @@
 
 namespace App\Tests\Functional\Controller\Action\User\Account\TeamInvite;
 
-use Postmark\PostmarkClient;
-use Psr\Http\Message\ResponseInterface;
+use App\Model\Team\Invite;
+use App\Services\Mailer;
+use App\Tests\Factory\PostmarkExceptionFactory;
+use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\Account\TeamInviteController;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Services\Configuration\MailConfiguration;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,7 +20,6 @@ use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
-use webignition\HttpHistoryContainer\Container as HttpHistoryContainer;
 
 class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteControllerTest
 {
@@ -264,7 +264,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
     /**
      * @dataProvider inviteMemberActionSendInviteFailureDataProvider
      *
-     * @param ResponseInterface $postmarkHttpResponse
+     * @param PostmarkException $postmarkException
      * @param array $expectedFlashBagValues
      *
      * @throws CoreApplicationReadOnlyException
@@ -275,7 +275,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
      * @throws MailConfigurationException
      */
     public function testInviteMemberActionSendInviteFailure(
-        ResponseInterface $postmarkHttpResponse,
+        PostmarkException $postmarkException,
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -290,13 +290,24 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
             HttpResponseFactory::createJsonResponse($inviteData),
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createSuccessResponse(),
-            $postmarkHttpResponse,
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive('sendTeamInviteForExistingUser')
+            ->withArgs(function (Invite $invite) use ($inviteData) {
+                $this->assertEquals($inviteData['user'], $invite->getUser());
+                $this->assertEquals($inviteData['team'], $invite->getTeam());
+                $this->assertEquals($inviteData['token'], $invite->getToken());
+
+                return true;
+            })
+            ->andThrow($postmarkException);
+
         $response = $this->callInviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
-        ]));
+        ]), $mailer);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
@@ -310,7 +321,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
     {
         return [
             'Postmark not allowed to send' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(405),
+                'postmarkException' => PostmarkExceptionFactory::create(405),
                 'expectedFlashBagValues' => [
                     TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
                         TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
@@ -321,7 +332,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
                 ],
             ],
             'Postmark inactive recipient' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(406),
+                'postmarkException' => PostmarkExceptionFactory::create(406),
                 'expectedFlashBagValues' => [
                     TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
                         TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
@@ -332,7 +343,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
                 ],
             ],
             'Postmark invalid email' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(300),
+                'postmarkException' => PostmarkExceptionFactory::create(300),
                 'expectedFlashBagValues' => [
                     TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
                         TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
@@ -343,7 +354,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
                 ],
             ],
             'Postmark unknown error' => [
-                'postmarkHttpResponse' => PostmarkHttpResponseFactory::createErrorResponse(303),
+                'postmarkException' => PostmarkExceptionFactory::create(303),
                 'expectedFlashBagValues' => [
                     TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
                         TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_ERROR,
@@ -360,7 +371,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
      * @dataProvider inviteMemberActionSuccessDataProvider
      *
      * @param array $httpFixtures
-     * @param string $expectedPostmarkMessageContains
+     * @param string $expectedMailerMethodName
      * @param array $expectedFlashBagValues
      *
      * @throws CoreApplicationReadOnlyException
@@ -372,7 +383,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
      */
     public function testInviteMemberActionSuccess(
         array $httpFixtures,
-        $expectedPostmarkMessageContains,
+        string $expectedMailerMethodName,
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -387,24 +398,27 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
             [
                 HttpResponseFactory::createJsonResponse($inviteData),
             ],
-            $httpFixtures,
-            [
-                PostmarkHttpResponseFactory::createSuccessResponse(),
-            ]
+            $httpFixtures
         ));
+
+        $mailer = \Mockery::mock(Mailer::class);
+        $mailer
+            ->shouldReceive($expectedMailerMethodName)
+            ->withArgs(function (Invite $invite) use ($inviteData) {
+                $this->assertEquals($inviteData['user'], $invite->getUser());
+                $this->assertEquals($inviteData['team'], $invite->getTeam());
+                $this->assertEquals($inviteData['token'], $invite->getToken());
+
+                return true;
+            });
 
         $response = $this->callInviteMemberAction(new Request([], [
             'email' => self::INVITEE_EMAIL,
-        ]));
+        ]), $mailer);
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
-
-        $httpHistory = self::$container->get(HttpHistoryContainer::class);
-        $lastMessageBody = json_decode($httpHistory->getLastRequest()->getBody()->getContents(), true);
-
-        $this->assertContains($expectedPostmarkMessageContains, $lastMessageBody['TextBody']);
     }
 
     /**
@@ -418,7 +432,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
-                'expectedPostmarkMessageContains' => 'http://localhost/account/team/',
+                'expectedMailerMethodName' => 'sendTeamInviteForExistingUser',
                 'expectedFlashBagValues' => [
                     TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
                         TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_SUCCESS,
@@ -432,7 +446,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createNotFoundResponse()
                 ],
-                'expectedPostmarkMessageContains' => sprintf('http://localhost/signup/invite/%s/', self::INVITE_TOKEN),
+                'expectedMailerMethodName' => 'sendTeamInviteForNewUser',
                 'expectedFlashBagValues' => [
                     TeamInviteController::FLASH_BAG_TEAM_INVITE_GET_KEY => [
                         TeamInviteController::FLASH_BAG_KEY_STATUS => TeamInviteController::FLASH_BAG_STATUS_SUCCESS,
@@ -445,6 +459,7 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
     }
 
     /**
+     * @param Mailer $mailer
      * @param Request $request
      *
      * @return RedirectResponse
@@ -456,13 +471,12 @@ class TeamInviteControllerInviteMemberActionTest extends AbstractTeamInviteContr
      * @throws InvalidCredentialsException
      * @throws MailConfigurationException
      */
-    private function callInviteMemberAction(Request $request)
+    private function callInviteMemberAction(Request $request, Mailer $mailer = null)
     {
-        return $this->teamInviteController->inviteMemberAction(
-            self::$container->get(MailConfiguration::class),
-            self::$container->get(PostmarkClient::class),
-            self::$container->get('twig'),
-            $request
-        );
+        $mailer = empty($mailer)
+            ? \Mockery::mock(Mailer::class)
+            : $mailer;
+
+        return $this->teamInviteController->inviteMemberAction($mailer, $request);
     }
 }
