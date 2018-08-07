@@ -173,7 +173,7 @@ class SignInController
             if ($userService->isEnabled()) {
                 $this->userManager->clearSessionUser();
 
-                $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_EMAIL);
+                $flashBag->set(self::FLASH_SIGN_IN_ERROR_FIELD_KEY, SignInRequest::PARAMETER_PASSWORD);
                 $flashBag->set(
                     self::FLASH_SIGN_IN_ERROR_STATE_KEY,
                     self::FLASH_SIGN_IN_ERROR_STATE_AUTHENTICATION_FAILURE
