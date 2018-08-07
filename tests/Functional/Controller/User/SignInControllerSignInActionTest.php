@@ -151,7 +151,7 @@ class SignInSubmitActionTest extends AbstractControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedFlashBagValues' => [
-                    UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['email'],
+                    UserController::FLASH_SIGN_IN_ERROR_FIELD_KEY => ['password'],
                     UserController::FLASH_SIGN_IN_ERROR_STATE_KEY => ['authentication-failure'],
                 ],
             ],
