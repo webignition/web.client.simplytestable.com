@@ -374,6 +374,9 @@
     "webignition/resque-bundle": {
         "version": "dev-master"
     },
+    "webignition/simplytestable-user-hydrator": {
+        "version": "0.1"
+    },
     "webignition/simplytestable-user-model": {
         "version": "0.1"
     },

@@ -3,12 +3,12 @@
 namespace App\Tests\Functional\Services;
 
 use App\Services\SystemUserService;
-use App\Services\UserHydrator;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use webignition\SimplyTestableUserHydrator\UserHydrator;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
