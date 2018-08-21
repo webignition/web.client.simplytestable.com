@@ -171,17 +171,22 @@ class UserHydratorTest extends \PHPUnit\Framework\TestCase
         if ($response instanceof InvalidCipherTextException) {
             $userSerializer
                 ->shouldReceive($method)
-                ->once()
                 ->withArgs([$arg])
                 ->andThrow($response);
         } else {
             $userSerializer
                 ->shouldReceive($method)
-                ->once()
                 ->withArgs([$arg])
                 ->andReturn($response);
         }
 
         return $userSerializer;
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        \Mockery::close();
     }
 }
