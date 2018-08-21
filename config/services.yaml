@@ -292,3 +292,5 @@ services:
       class: App\Services\UrlMatcher
       arguments:
         $urlPathProvider: '@simplytestable.web_client.requires_completed_test_url_path_provider'
+
+    webignition\SimplyTestableUserHydrator\UserHydrator:

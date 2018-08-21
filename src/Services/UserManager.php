@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use webignition\SimplyTestableUserHydrator\UserHydrator;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
