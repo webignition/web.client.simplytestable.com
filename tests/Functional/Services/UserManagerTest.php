@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Services;
 
 use App\Services\SystemUserService;
+use App\Services\UserHydrator;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,11 +45,13 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
             $session->set(UserManager::SESSION_USER_KEY, $userSerializer->serialize($sessionUser));
         }
 
+        $userHydrator = new UserHydrator($requestStack, $userSerializer, $session);
+
         $userManager = new UserManager(
-            $requestStack,
             $userSerializer,
             $session,
-            self::$container->get(SystemUserService::class)
+            self::$container->get(SystemUserService::class),
+            $userHydrator
         );
 
         $user = $userManager->getUser();
@@ -120,12 +123,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
      */
     public function testIsLoggedIn(User $user, $expectedIsLoggedIn)
     {
-        $userManager = new UserManager(
-            self::$container->get(RequestStack::class),
-            self::$container->get(UserSerializer::class),
-            self::$container->get(SessionInterface::class),
-            self::$container->get(SystemUserService::class)
-        );
+        $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
 
@@ -158,12 +156,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         $session = self::$container->get(SessionInterface::class);
         $userSerializer = self::$container->get(UserSerializer::class);
 
-        $userManager = new UserManager(
-            self::$container->get(RequestStack::class),
-            $userSerializer,
-            self::$container->get(SessionInterface::class),
-            self::$container->get(SystemUserService::class)
-        );
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_PASSWORD);
         $serializedUser = $userSerializer->serializeToString($user);
@@ -181,12 +174,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
     {
         $userSerializer = self::$container->get(UserSerializer::class);
 
-        $userManager = new UserManager(
-            self::$container->get(RequestStack::class),
-            $userSerializer,
-            self::$container->get(SessionInterface::class),
-            self::$container->get(SystemUserService::class)
-        );
+        $userManager = self::$container->get(UserManager::class);
 
         $user = new User(self::USER_EMAIL, self::USER_PASSWORD);
         $userManager->setUser($user);

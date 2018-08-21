@@ -3,10 +3,8 @@
 namespace App\Services;
 
 use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use webignition\SimplyTestableUserModel\User;
-use webignition\SimplyTestableUserSerializer\InvalidCipherTextException;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
 class UserManager
@@ -39,45 +37,22 @@ class UserManager
     private $user;
 
     /**
-     * @param RequestStack $requestStack
      * @param UserSerializer $userSerializer
      * @param SessionInterface $session
      * @param SystemUserService $systemUserService
+     * @param UserHydrator $userHydrator
      */
     public function __construct(
-        RequestStack $requestStack,
         UserSerializer $userSerializer,
         SessionInterface $session,
-        SystemUserService $systemUserService
+        SystemUserService $systemUserService,
+        UserHydrator $userHydrator
     ) {
         $this->userSerializer = $userSerializer;
         $this->session = $session;
         $this->systemUserService = $systemUserService;
 
-        $user = null;
-        $request = $requestStack->getCurrentRequest();
-
-        if (!empty($request)) {
-            if ($request->cookies->has(self::USER_COOKIE_KEY)) {
-                try {
-                    $user = $this->userSerializer->deserializeFromString(
-                        $request->cookies->get(self::USER_COOKIE_KEY)
-                    );
-                } catch (InvalidCipherTextException $invalidHmacException) {
-                }
-            }
-        }
-
-        if (empty($user)) {
-            $sessionUser = $this->session->get(self::SESSION_USER_KEY);
-
-            if (!empty($sessionUser)) {
-                try {
-                    $user = $this->userSerializer->deserialize($sessionUser);
-                } catch (InvalidCipherTextException $invalidHmacException) {
-                }
-            }
-        }
+        $user = $userHydrator->getUser();
 
         if (empty($user)) {
             $user = SystemUserService::getPublicUser();
