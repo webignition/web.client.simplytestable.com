@@ -562,18 +562,18 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertStandardViewData($viewName, $parameters);
 
-                            $expectedError1Url = 'http://help.simplytestable.com/errors/html-validation/an-img-'
+                            $expectedError1Url = 'https://help.simplytestable.com/errors/html-validation/an-img-'
                                 .'element-must-have-an-alt-attribute-except-under-certain-conditions-for-details-'
                                 .'consult-guidance-on-providing-text-alternatives-for-images/';
 
-                            $expectedError2Url = 'http://help.simplytestable.com/errors/html-validation/ampersand-did-'
+                            $expectedError2Url = 'https://help.simplytestable.com/errors/html-validation/ampersand-did-'
                                 .'not-start-a-character-reference-ampersand-probably-should-have-been-'
                                 .'escaped-as-amp/';
 
-                            $expectedError3Url = 'http://help.simplytestable.com/errors/html-validation/required-'
+                            $expectedError3Url = 'https://help.simplytestable.com/errors/html-validation/required-'
                                 .'attribute-x-not-specified/required-attribute-alt-not-specified/';
 
-                            $expectedError4Url = 'http://help.simplytestable.com/errors/html-validation/forbidden-'
+                            $expectedError4Url = 'https://help.simplytestable.com/errors/html-validation/forbidden-'
                                 .'code-point-x/';
 
                             $expectedFixes = [

@@ -46,7 +46,7 @@ class DocumentationUrlCheckerServiceTest extends AbstractBaseTestCase
                 'expectedExists' => false,
             ],
             'does exist' => [
-                'url' => 'http://help.simplytestable.com/errors/html-validation/index/',
+                'url' => 'https://help.simplytestable.com/errors/html-validation/index/',
                 'expectedExists' => true,
             ],
         ];
