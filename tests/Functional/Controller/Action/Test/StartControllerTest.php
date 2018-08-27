@@ -598,7 +598,6 @@ class StartControllerTest extends AbstractControllerTest
     {
         $router = self::$container->get('router');
         $testOptionsRequestAdapterFactory = self::$container->get(TestOptionsRequestAdapterFactory::class);
-        $userManager = self::$container->get(UserManager::class);
         $linkIntegrityTestConfiguration = self::$container->get(LinkIntegrityTestConfiguration::class);
         $testOptionsConfiguration = self::$container->get(TestOptionsConfiguration::class);
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -621,7 +620,6 @@ class StartControllerTest extends AbstractControllerTest
             $router,
             $remoteTestService,
             $testOptionsRequestAdapterFactory,
-            $userManager,
             $linkIntegrityTestConfiguration,
             $testOptionsConfiguration,
             $flashBag
