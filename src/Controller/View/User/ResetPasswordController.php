@@ -6,7 +6,7 @@ use App\Controller\Action\User\ResetPasswordController as ResetPasswordActionCon
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
 use App\Services\UserService;
@@ -22,23 +22,15 @@ class ResetPasswordController extends AbstractUserController
      */
     private $userService;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param UserService $userService
-     * @param FlashBagValues $flashBagValues
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         UserService $userService,
         FlashBagValues $flashBagValues
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory, $flashBagValues);
 
         $this->userService = $userService;
     }
@@ -57,9 +49,9 @@ class ResetPasswordController extends AbstractUserController
             'user_reset_password_confirmation',
         ]));
 
-        $response = $this->cacheValidator->createResponse($request, $viewData);
+        $response = $this->cacheableResponseFactory->createResponse($request, $viewData);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 
@@ -94,9 +86,9 @@ class ResetPasswordController extends AbstractUserController
             'user_reset_password_error' => $userResetPasswordError,
         ];
 
-        $response = $this->cacheValidator->createResponse($request, $viewData);
+        $response = $this->cacheableResponseFactory->createResponse($request, $viewData);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

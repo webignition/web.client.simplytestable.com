@@ -5,7 +5,7 @@ namespace App\Controller\View\Test\Results;
 use App\Controller\AbstractBaseViewController;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\SystemUserService;
 use App\Services\TestService;
@@ -34,25 +34,16 @@ class FailedNoUrlsDetectedController extends AbstractBaseViewController
      */
     private $userManager;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param TestService $testService
-     * @param UrlViewValuesService $urlViewValues
-     * @param UserManager $userManager
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         TestService $testService,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->urlViewValues = $urlViewValues;
@@ -80,12 +71,12 @@ class FailedNoUrlsDetectedController extends AbstractBaseViewController
 
         $redirectParametersAsString = base64_encode(json_encode($viewRedirectParameters));
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
             'redirect' => $redirectParametersAsString
         ]);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

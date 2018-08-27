@@ -8,7 +8,7 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\Task\ErrorTaskMapCollection;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
@@ -67,23 +67,11 @@ class ByTaskTypeController extends AbstractResultsController
         self::FILTER_BY_ERROR
     ];
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param UrlViewValuesService $urlViewValues
-     * @param UserManager $userManager
-     * @param TestService $testService
-     * @param RemoteTestService $remoteTestService
-     * @param TaskService $taskService
-     * @param TaskCollectionFilterService $taskCollectionFilterService
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
         TestService $testService,
@@ -91,12 +79,7 @@ class ByTaskTypeController extends AbstractResultsController
         TaskService $taskService,
         TaskCollectionFilterService $taskCollectionFilterService
     ) {
-        parent::__construct(
-            $router,
-            $twig,
-            $defaultViewParameters,
-            $cacheValidator
-        );
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
@@ -165,14 +148,14 @@ class ByTaskTypeController extends AbstractResultsController
             ));
         }
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'task_type' => $selectedTaskType,
             'filter' => $filter
         ]);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

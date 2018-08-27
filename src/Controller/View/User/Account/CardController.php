@@ -5,7 +5,7 @@ namespace App\Controller\View\User\Account;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
 use App\Services\Configuration\StripeConfiguration;
@@ -26,22 +26,11 @@ class CardController extends AbstractUserAccountController
      */
     private $stripeConfiguration;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param UserService $userService
-     * @param UserManager $userManager
-     * @param TeamService $teamService
-     * @param FlashBagValues $flashBagValues
-     * @param StripeConfiguration $stripeConfiguration
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         UserService $userService,
         UserManager $userManager,
         TeamService $teamService,
@@ -52,7 +41,7 @@ class CardController extends AbstractUserAccountController
             $router,
             $twig,
             $defaultViewParameters,
-            $cacheValidator,
+            $cacheableResponseFactory,
             $userService,
             $userManager,
             $teamService,

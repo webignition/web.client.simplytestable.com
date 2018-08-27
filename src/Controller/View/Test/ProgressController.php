@@ -7,7 +7,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
 use App\Services\Configuration\JsStaticAnalysisTestConfiguration;
@@ -85,25 +85,11 @@ class ProgressController extends AbstractBaseViewController
         'failed-no-sitemap' => 'Finding URLs to test: preparing to crawl'
     );
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param UrlViewValuesService $urlViewValues
-     * @param UserManager $userManager
-     * @param TestService $testService
-     * @param RemoteTestService $remoteTestService
-     * @param TaskTypeService $taskTypeService
-     * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
-     * @param CssValidationTestConfiguration $cssValidationTestConfiguration
-     * @param JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
         TestService $testService,
@@ -113,12 +99,7 @@ class ProgressController extends AbstractBaseViewController
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
     ) {
-        parent::__construct(
-            $router,
-            $twig,
-            $defaultViewParameters,
-            $cacheValidator
-        );
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
@@ -185,7 +166,7 @@ class ProgressController extends AbstractBaseViewController
         $requestTimeStamp = $request->query->get('timestamp');
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'is_public' => $remoteTest->getIsPublic(),
@@ -194,7 +175,7 @@ class ProgressController extends AbstractBaseViewController
             'state' => $test->getState()
         ]);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

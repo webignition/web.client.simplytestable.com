@@ -5,7 +5,7 @@ namespace App\Controller\View\Test\Results;
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
@@ -25,23 +25,15 @@ class PreparingStatsController extends AbstractBaseViewController
      */
     private $remoteTestService;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param TestService $testService
-     * @param RemoteTestService $remoteTestService
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         TestService $testService,
         RemoteTestService $remoteTestService
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;

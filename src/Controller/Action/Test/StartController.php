@@ -13,7 +13,6 @@ use App\Services\Configuration\LinkIntegrityTestConfiguration;
 use App\Services\RemoteTestService;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\Configuration\TestOptionsConfiguration;
-use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,11 +38,6 @@ class StartController extends AbstractController
     private $testOptionsRequestAdapterFactory;
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var LinkIntegrityTestConfiguration
      */
     private $linkIntegrityTestConfiguration;
@@ -62,7 +56,6 @@ class StartController extends AbstractController
         RouterInterface $router,
         RemoteTestService $remoteTestService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
-        UserManager $userManager,
         LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration,
         TestOptionsConfiguration $testOptionsConfiguration,
         FlashBagInterface $flashBag
@@ -71,7 +64,6 @@ class StartController extends AbstractController
 
         $this->remoteTestService = $remoteTestService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
-        $this->userManager = $userManager;
         $this->linkIntegrityTestConfiguration = $linkIntegrityTestConfiguration;
         $this->testOptionsConfiguration = $testOptionsConfiguration;
         $this->router = $router;

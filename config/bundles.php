@@ -9,4 +9,5 @@ return [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
     Symfony\Bundle\TwigBundle\TwigBundle::class => ['all' => true],
     ResqueBundle\Resque\ResqueBundle::class => ['all' => true],
+    SimplyTestable\PageCacheBundle\SimplyTestablePageCacheBundle::class => ['all' => true],
 ];

@@ -6,7 +6,7 @@ use App\Controller\Action\User\UserController;
 use App\Controller\View\User\AbstractUserController;
 use App\Model\User\Plan;
 use App\Request\User\SignUpRequest;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\CouponService;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
@@ -31,25 +31,16 @@ class RequestController extends AbstractUserController
      */
     private $plansService;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param FlashBagValues $flashBagValues
-     * @param CouponService $couponService
-     * @param PlansService $plansService
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         FlashBagValues $flashBagValues,
         CouponService $couponService,
         PlansService $plansService
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory, $flashBagValues);
 
         $this->couponService = $couponService;
         $this->plansService = $plansService;
@@ -94,9 +85,9 @@ class RequestController extends AbstractUserController
             'selected_field' => $selectedField,
         ];
 
-        $response = $this->cacheValidator->createResponse($request, $viewData);
+        $response = $this->cacheableResponseFactory->createResponse($request, $viewData);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\Tests\Factory;
 
-use App\Entity\CacheValidatorHeaders;
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
 use App\Model\TaskOutput\CssTextFileMessage;
@@ -10,6 +9,7 @@ use App\Model\TaskOutput\HtmlTextFileMessage;
 use App\Model\TaskOutput\JsTextFileMessage;
 use App\Model\TaskOutput\LinkIntegrityMessage;
 use App\Model\TestOptions;
+use SimplyTestable\PageCacheBundle\Entity\CacheValidatorHeaders;
 
 class ModelFactory
 {

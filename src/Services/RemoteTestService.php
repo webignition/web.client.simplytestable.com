@@ -10,7 +10,7 @@ use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\TestList;
 use App\Model\TestOptions;
-use webignition\SimplyTestableUserModel\User;
+use webignition\SimplyTestableUserInterface\UserInterface;
 
 class RemoteTestService
 {
@@ -140,12 +140,13 @@ class RemoteTestService
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
+     *
      * @return bool
      *
      * @throws CoreApplicationRequestException
      */
-    public function owns(User $user)
+    public function owns(UserInterface $user)
     {
         if ($user->getUsername() == $this->test->getUser()) {
             return true;

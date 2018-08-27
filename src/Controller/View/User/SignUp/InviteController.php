@@ -5,7 +5,7 @@ namespace App\Controller\View\User\SignUp;
 use App\Controller\View\User\AbstractUserController;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
 use App\Services\TeamInviteService;
@@ -22,23 +22,15 @@ class InviteController extends AbstractUserController
      */
     private $teamInviteService;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param FlashBagValues $flashBagValues
-     * @param TeamInviteService $teamInviteService
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         FlashBagValues $flashBagValues,
         TeamInviteService $teamInviteService
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory, $flashBagValues);
 
         $this->teamInviteService = $teamInviteService;
     }
@@ -62,7 +54,7 @@ class InviteController extends AbstractUserController
             ActionInviteController::FLASH_BAG_INVITE_ACCEPT_FAILURE_KEY,
         ]);
 
-        $response = $this->cacheValidator->createResponse($request, array_merge(
+        $response = $this->cacheableResponseFactory->createResponse($request, array_merge(
             [
                 'token' => $token,
                 'invite' => json_encode($invite),
@@ -71,7 +63,7 @@ class InviteController extends AbstractUserController
             $flashBagValues
         ));
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

@@ -4,7 +4,7 @@ namespace App\Controller\View\User\SignUp;
 
 use App\Controller\View\User\AbstractUserController;
 use App\Exception\InvalidAdminCredentialsException;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
 use App\Services\UserService;
@@ -20,23 +20,15 @@ class ConfirmController extends AbstractUserController
      */
     private $userService;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param FlashBagValues $flashBagValues
-     * @param UserService $userService
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         FlashBagValues $flashBagValues,
         UserService $userService
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator, $flashBagValues);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory, $flashBagValues);
 
         $this->userService = $userService;
     }
@@ -79,9 +71,9 @@ class ConfirmController extends AbstractUserController
             $viewData['user_error'] = 'invalid-user';
         }
 
-        $response = $this->cacheValidator->createResponse($request, $viewData);
+        $response = $this->cacheableResponseFactory->createResponse($request, $viewData);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 
