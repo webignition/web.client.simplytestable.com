@@ -7,7 +7,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\Task\Collection as TaskCollection;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\TaskService;
 use App\Services\TestService;
@@ -29,23 +29,15 @@ class TestTaskListController extends AbstractBaseViewController
      */
     private $taskService;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param TestService $testService
-     * @param TaskService $taskService
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         TestService $testService,
         TaskService $taskService
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->taskService = $taskService;
@@ -80,13 +72,13 @@ class TestTaskListController extends AbstractBaseViewController
             return new Response('');
         }
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'task_collection_hash' => $taskCollection->getHash(),
         ]);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

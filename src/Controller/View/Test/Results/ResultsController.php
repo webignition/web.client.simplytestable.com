@@ -7,7 +7,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
 use App\Services\Configuration\JsStaticAnalysisTestConfiguration;
@@ -97,27 +97,11 @@ class ResultsController extends AbstractResultsController
         self::FILTER_CANCELLED,
     ];
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param UrlViewValuesService $urlViewValues
-     * @param UserManager $userManager
-     * @param TestService $testService
-     * @param RemoteTestService $remoteTestService
-     * @param TaskService $taskService
-     * @param TaskTypeService $taskTypeService
-     * @param TaskCollectionFilterService $taskCollectionFilterService
-     * @param TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
-     * @param CssValidationTestConfiguration $cssValidationTestConfiguration
-     * @param JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
         TestService $testService,
@@ -129,12 +113,7 @@ class ResultsController extends AbstractResultsController
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
     ) {
-        parent::__construct(
-            $router,
-            $twig,
-            $defaultViewParameters,
-            $cacheValidator
-        );
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
@@ -224,7 +203,7 @@ class ResultsController extends AbstractResultsController
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'is_public' => $remoteTest->getIsPublic(),
@@ -233,7 +212,7 @@ class ResultsController extends AbstractResultsController
             'filter' => $filter,
         ]);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

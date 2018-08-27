@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -21,27 +21,21 @@ abstract class AbstractBaseViewController extends AbstractController
     private $twig;
 
     /**
-     * @var CacheValidatorService
+     * @var CacheableResponseFactory
      */
-    protected $cacheValidator;
+    protected $cacheableResponseFactory;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator
+        CacheableResponseFactory $cacheableResponseFactory
     ) {
         parent::__construct($router);
 
         $this->twig = $twig;
         $this->defaultViewParameters = $defaultViewParameters;
-        $this->cacheValidator = $cacheValidator;
+        $this->cacheableResponseFactory = $cacheableResponseFactory;
     }
 
     /**

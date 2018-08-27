@@ -374,14 +374,23 @@
     "webignition/resque-bundle": {
         "version": "dev-master"
     },
+    "webignition/simplytestable-pagecache-bundle": {
+        "version": "dev-import"
+    },
     "webignition/simplytestable-user-hydrator": {
         "version": "0.1"
+    },
+    "webignition/simplytestable-user-interface": {
+        "version": "0.2"
     },
     "webignition/simplytestable-user-model": {
         "version": "0.1"
     },
     "webignition/simplytestable-user-serializer": {
         "version": "1.1"
+    },
+    "webignition/simplytestable-usermanager-interface": {
+        "version": "0.1"
     },
     "webignition/url": {
         "version": "2.1"

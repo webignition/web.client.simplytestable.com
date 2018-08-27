@@ -3,7 +3,7 @@
 namespace App\Controller\View\Dashboard;
 
 use App\Controller\AbstractBaseViewController;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
@@ -63,20 +63,6 @@ class DashboardController extends AbstractBaseViewController
      */
     private $jsStaticAnalysisTestConfiguration;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param TaskTypeService $taskTypeService
-     * @param TestOptionsRequestAdapterFactory $testOptionsAdapterFactory
-     * @param UrlViewValuesService $urlViewValuesService
-     * @param CacheValidatorService $cacheValidator
-     * @param FlashBagValues $flashBagValues
-     * @param UserManager $userManager
-     * @param TestOptionsConfiguration $testOptionsConfiguration
-     * @param CssValidationTestConfiguration $cssValidationTestConfiguration
-     * @param JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
@@ -84,14 +70,14 @@ class DashboardController extends AbstractBaseViewController
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsAdapterFactory,
         UrlViewValuesService $urlViewValuesService,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         FlashBagValues $flashBagValues,
         UserManager $userManager,
         TestOptionsConfiguration $testOptionsConfiguration,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->taskTypeService = $taskTypeService;
         $this->testOptionsAdapterFactory = $testOptionsAdapterFactory;
@@ -128,7 +114,7 @@ class DashboardController extends AbstractBaseViewController
         $cssValidationExcludedDomains = $this->cssValidationTestConfiguration->getExcludedDomains();
         $jsStaticAnalysisExcludedDomains = $this->jsStaticAnalysisTestConfiguration->getExcludedDomains();
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $response = $this->cacheableResponseFactory->createResponse($request, [
             'test_start_error' => $testStartError,
             'website' => $website,
             'available_task_types' => json_encode($availableTaskTypes),
@@ -139,7 +125,7 @@ class DashboardController extends AbstractBaseViewController
             'is_logged_in' => !SystemUserService::isPublicUser($user),
         ]);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

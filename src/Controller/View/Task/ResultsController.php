@@ -10,7 +10,7 @@ use App\Exception\InvalidCredentialsException;
 use App\Model\TaskOutput\CssTextFileMessage;
 use App\Model\TaskOutput\JsTextFileMessage;
 use App\Model\TaskOutput\LinkIntegrityMessage;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\Configuration\DocumentationSiteUrls;
 use App\Services\DocumentationUrlCheckerService;
@@ -72,25 +72,11 @@ class ResultsController extends AbstractBaseViewController
      */
     private $userManager;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param UrlViewValuesService $urlViewValues
-     * @param UserManager $userManager
-     * @param TestService $testService
-     * @param RemoteTestService $remoteTestService
-     * @param TaskService $taskService
-     * @param DocumentationUrlCheckerService $documentationUrlChecker
-     * @param LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap
-     * @param DocumentationSiteUrls $documentationSiteUrls
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
         TestService $testService,
@@ -100,12 +86,7 @@ class ResultsController extends AbstractBaseViewController
         LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap,
         DocumentationSiteUrls $documentationSiteUrls
     ) {
-        parent::__construct(
-            $router,
-            $twig,
-            $defaultViewParameters,
-            $cacheValidator
-        );
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
@@ -162,14 +143,14 @@ class ResultsController extends AbstractBaseViewController
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
             'task_id' => $task_id,
             'is_public_user_test' => $isPublicUserTest,
         ]);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

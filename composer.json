@@ -5,6 +5,10 @@
       {
         "type": "vcs",
         "url": "https://github.com/webignition/resque"
+      },
+      {
+        "type": "vcs",
+        "url": "https://github.com/webignition/simplytestable-pagecache-bundle"
       }
     ],
     "require": {
@@ -39,9 +43,12 @@
         "webignition/php-ie-detector": ">=0.2,<1",
         "webignition/php-stripe-models": ">=0.2.6,<1.0",
         "webignition/resque-bundle": "dev-master",
+        "webignition/simplytestable-pagecache-bundle": "^0.1",
         "webignition/simplytestable-user-hydrator": "^0.1",
+        "webignition/simplytestable-user-interface": "^0.2",
         "webignition/simplytestable-user-model": ">=0.1,<1",
         "webignition/simplytestable-user-serializer": ">=1.1,<2",
+        "webignition/simplytestable-usermanager-interface": "^0.1",
         "webignition/url": ">=2.1, <3",
         "wildbit/postmark-php": "^2"
     },

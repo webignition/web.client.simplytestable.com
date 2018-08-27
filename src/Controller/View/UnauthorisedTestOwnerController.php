@@ -3,7 +3,7 @@
 namespace App\Controller\View;
 
 use App\Controller\AbstractBaseViewController;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
@@ -39,13 +39,13 @@ class UnauthorisedTestOwnerController extends AbstractBaseViewController
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         UserManager $userManager,
         TestService $testService,
         RemoteTestService $remoteTestService,
         UrlViewValuesService $urlViewValues
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->userManager = $userManager;
         $this->testService = $testService;

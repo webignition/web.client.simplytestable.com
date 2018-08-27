@@ -3,13 +3,13 @@
 namespace App\Tests\Functional\Controller\User;
 
 use App\Controller\User\SignInController;
-use App\Services\CacheValidatorService;
 use App\Services\FlashBagValues;
 use App\Services\UserManager;
 use App\Services\ViewRenderService;
 use App\Tests\Factory\MockFactory;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use ReflectionClass;
+use SimplyTestable\PageCacheBundle\Services\CacheableResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,11 +55,11 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
         /* @var FlashBagValues $flashBagValues */
         $flashBagValues = \Mockery::mock(FlashBagValues::class);
 
-        /* @var CacheValidatorService $cacheValidatorService */
-        $cacheValidatorService = \Mockery::mock(CacheValidatorService::class);
+        /* @var CacheableResponseFactory $cacheableResponseFactory */
+        $cacheableResponseFactory = \Mockery::mock(CacheableResponseFactory::class);
 
         /* @var RedirectResponse $response */
-        $response = $signInController->renderAction($flashBagValues, $cacheValidatorService, new Request());
+        $response = $signInController->renderAction($flashBagValues, $cacheableResponseFactory, new Request());
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals('/', $response->getTargetUrl());
@@ -89,7 +89,7 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
 
         $signInController->renderAction(
             self::$container->get(FlashBagValues::class),
-            self::$container->get(CacheValidatorService::class),
+            self::$container->get(CacheableResponseFactory::class),
             $request
         );
     }
@@ -190,7 +190,7 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
 
         $response = $signInController->renderAction(
             self::$container->get(FlashBagValues::class),
-            self::$container->get(CacheValidatorService::class),
+            self::$container->get(CacheableResponseFactory::class),
             $request
         );
         $this->assertInstanceOf(Response::class, $response);
@@ -204,7 +204,7 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
         $newResponse = $signInController->renderAction(
             self::$container->get(FlashBagValues::class),
-            self::$container->get(CacheValidatorService::class),
+            self::$container->get(CacheableResponseFactory::class),
             $newRequest
         );
 

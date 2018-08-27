@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3984b0f5913544bab1d76e33a349450b",
+    "content-hash": "6fe5d0c024f29e94ad336f76ae7f8357",
     "packages": [
         {
             "name": "chrisboulton/php-resque",
@@ -4271,6 +4271,71 @@
             "time": "2018-07-17T08:32:09+00:00"
         },
         {
+            "name": "webignition/simplytestable-pagecache-bundle",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/simplytestable-pagecache-bundle.git",
+                "reference": "545e4b92988ccf5a04fe250333e58ed4052cca8b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/simplytestable-pagecache-bundle/zipball/545e4b92988ccf5a04fe250333e58ed4052cca8b",
+                "reference": "545e4b92988ccf5a04fe250333e58ed4052cca8b",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/doctrine-bundle": "^1.6",
+                "doctrine/orm": "^2.6",
+                "php": ">=7.2.0",
+                "symfony/config": "^4.1",
+                "symfony/dependency-injection": "^4.1",
+                "symfony/framework-bundle": "^4.1",
+                "symfony/http-kernel": "^4.1",
+                "symfony/yaml": "^4.1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "phpunit/phpunit": "~7.0",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "SimplyTestable\\PageCacheBundle\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "SimplyTestable\\PageCacheBundle\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test-unit": [
+                    "./vendor/bin/phpunit --colors tests/Unit/"
+                ],
+                "test-functional": [
+                    "./vendor/bin/phpunit --colors tests/Functional/"
+                ],
+                "test": [
+                    "@composer test-unit",
+                    "@composer test-functional"
+                ],
+                "cs": [
+                    "./vendor/bin/phpcs --colors --standard=PSR2 --extensions=php --ignore=tests/Functional/cache src tests/"
+                ],
+                "ci": [
+                    "@composer cs",
+                    "@composer test"
+                ]
+            },
+            "support": {
+                "source": "https://github.com/webignition/simplytestable-pagecache-bundle/tree/0.1",
+                "issues": "https://github.com/webignition/simplytestable-pagecache-bundle/issues"
+            },
+            "time": "2018-08-27T15:16:15+00:00"
+        },
+        {
             "name": "webignition/simplytestable-user-hydrator",
             "version": "0.1",
             "source": {
@@ -4316,21 +4381,58 @@
             "time": "2018-08-21T15:40:14+00:00"
         },
         {
-            "name": "webignition/simplytestable-user-model",
-            "version": "0.1",
+            "name": "webignition/simplytestable-user-interface",
+            "version": "0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/webignition/simplytestable-user-model.git",
-                "reference": "1f9adafebbb249a210ba955c94eeeb680373aa68"
+                "url": "https://github.com/webignition/simplytestable-user-interface.git",
+                "reference": "5caab6ca08fe4b0d2a88bab6aba63ede098818f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/simplytestable-user-model/zipball/1f9adafebbb249a210ba955c94eeeb680373aa68",
-                "reference": "1f9adafebbb249a210ba955c94eeeb680373aa68",
+                "url": "https://api.github.com/repos/webignition/simplytestable-user-interface/zipball/5caab6ca08fe4b0d2a88bab6aba63ede098818f6",
+                "reference": "5caab6ca08fe4b0d2a88bab6aba63ede098818f6",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0"
+                "php": ">=7.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\SimplyTestableUserInterface\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net"
+                }
+            ],
+            "homepage": "https://github.com/webignition/simplytestable-user-interface",
+            "time": "2018-08-24T17:17:44+00:00"
+        },
+        {
+            "name": "webignition/simplytestable-user-model",
+            "version": "0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/simplytestable-user-model.git",
+                "reference": "d4c23c8aa0f2e737c9c70b4d6e0f2e75c96e3450"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/simplytestable-user-model/zipball/d4c23c8aa0f2e737c9c70b4d6e0f2e75c96e3450",
+                "reference": "d4c23c8aa0f2e737c9c70b4d6e0f2e75c96e3450",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0",
+                "webignition/simplytestable-user-interface": "^0.2"
             },
             "require-dev": {
                 "phpunit/phpunit": "~5.0",
@@ -4355,7 +4457,7 @@
             ],
             "description": "Model for a SimplyTestable user",
             "homepage": "https://github.com/webignition/simplytestable-user-model",
-            "time": "2018-02-28T17:51:54+00:00"
+            "time": "2018-08-24T17:43:18+00:00"
         },
         {
             "name": "webignition/simplytestable-user-serializer",
@@ -4399,6 +4501,43 @@
             "description": "Serializes a SimplyTestable user to a string",
             "homepage": "https://github.com/webignition/simplytestable-user-serializer",
             "time": "2018-03-01T12:09:29+00:00"
+        },
+        {
+            "name": "webignition/simplytestable-usermanager-interface",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/simplytestable-usermanager-interface.git",
+                "reference": "8d80e479e1c5443a5fbb30023d273a4ecf6f4a6f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/simplytestable-usermanager-interface/zipball/8d80e479e1c5443a5fbb30023d273a4ecf6f4a6f",
+                "reference": "8d80e479e1c5443a5fbb30023d273a4ecf6f4a6f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2.0",
+                "webignition/simplytestable-user-interface": "^0.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\SimplyTestableUserManagerInterface\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net"
+                }
+            ],
+            "homepage": "https://github.com/webignition/simplytestable-usermanager-interface",
+            "time": "2018-08-24T17:48:35+00:00"
         },
         {
             "name": "webignition/url",

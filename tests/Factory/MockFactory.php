@@ -3,63 +3,16 @@
 namespace App\Tests\Factory;
 
 use Mockery\MockInterface;
-use MZ\PostmarkBundle\Postmark\Message as PostmarkMessage;
 use App\Repository\TaskOutputRepository;
 use App\Services\CacheValidatorHeadersService;
 use App\Services\Factory\TaskOutputFactory;
-use App\Services\UserManager;
 use App\Services\UserService;
+use SimplyTestable\PageCacheBundle\Services\CacheableResponseFactory as BaseCacheableResponseFactory;
 use Twig_Environment;
+use webignition\SimplyTestableUserManagerInterface\UserManagerInterface;
 
 class MockFactory
 {
-    /**
-     * @param array $calls
-     *
-     * @return MockInterface|PostmarkMessage
-     */
-    public static function createPostmarkMessage(array $calls = [])
-    {
-        /* @var PostmarkMessage|MockInterface $message */
-        $message = \Mockery::mock(PostmarkMessage::class);
-
-        if (isset($calls['setFrom'])) {
-            $message
-                ->shouldReceive('setFrom');
-        }
-
-        if (isset($calls['setSubject'])) {
-            $message
-                ->shouldReceive('setSubject')
-                ->with($calls['setSubject']['with']);
-        }
-
-        if (isset($calls['setTextMessage'])) {
-            if ($calls['setTextMessage'] === true) {
-                $message
-                    ->shouldReceive('setTextMessage');
-            } else {
-                $message
-                    ->shouldReceive('setTextMessage')
-                    ->with($calls['setTextMessage']['with']);
-            }
-        }
-
-        if (isset($calls['addTo'])) {
-            $message
-                ->shouldReceive('addTo')
-                ->with($calls['addTo']['with']);
-        }
-
-        if (isset($calls['send'])) {
-            $message
-                ->shouldReceive('send')
-                ->andReturn($calls['send']['return']);
-        }
-
-        return $message;
-    }
-
     /**
      * @param array $calls
      *
@@ -125,11 +78,11 @@ class MockFactory
     /**
      * @param array $calls
      *
-     * @return MockInterface|UserManager
+     * @return MockInterface|UserManagerInterface
      */
     public static function createUserManager($calls = [])
     {
-        $userService = \Mockery::mock(UserManager::class);
+        $userService = \Mockery::mock(UserManagerInterface::class);
 
         if (isset($calls['getUser'])) {
             $userService
@@ -144,6 +97,25 @@ class MockFactory
         }
 
         return $userService;
+    }
+
+    /**
+     * @param array $calls
+     *
+     * @return MockInterface|BaseCacheableResponseFactory
+     */
+    public static function createBaseCacheableResponseFactory($calls = [])
+    {
+        $baseCacheableResponseFactory = \Mockery::mock(BaseCacheableResponseFactory::class);
+
+        if (isset($calls['createResponse'])) {
+            $baseCacheableResponseFactory
+                ->shouldReceive('createResponse')
+                ->withArgs($calls['createResponse']['withArgs'])
+                ->andReturn($calls['createResponse']['return']);
+        }
+
+        return $baseCacheableResponseFactory;
     }
 
     /**

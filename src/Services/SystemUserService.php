@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use webignition\SimplyTestableUserInterface\UserInterface;
 use webignition\SimplyTestableUserModel\User;
 
 class SystemUserService
@@ -20,7 +21,6 @@ class SystemUserService
      */
     private $adminUserPassword;
 
-
     /**
      * @param string $adminUserUsername
      * @param string $adminUserPassword
@@ -31,28 +31,17 @@ class SystemUserService
         $this->adminUserPassword = $adminUserPassword;
     }
 
-    /**
-     * @return User
-     */
-    public static function getPublicUser()
+    public static function getPublicUser(): UserInterface
     {
         return new User(self::PUBLIC_USER_USERNAME, self::PUBLIC_USER_PASSWORD);
     }
 
-    /**
-     * @return User
-     */
-    public function getAdminUser()
+    public function getAdminUser(): UserInterface
     {
         return new User($this->adminUserUsername, $this->adminUserPassword);
     }
 
-    /**
-     * @param User $user
-     *
-     * @return bool
-     */
-    public static function isPublicUser(User $user)
+    public static function isPublicUser(UserInterface $user): bool
     {
         $comparatorUsername = strtolower($user->getUsername());
 

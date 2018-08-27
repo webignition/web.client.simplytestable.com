@@ -8,7 +8,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\PlansService;
 use App\Services\RemoteTestService;
@@ -48,34 +48,18 @@ class RejectedController extends AbstractBaseViewController
      */
     private $urlViewValues;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param UrlViewValuesService $urlViewValues
-     * @param TestService $testService
-     * @param RemoteTestService $remoteTestService
-     * @param UserService $userService
-     * @param PlansService $plansService
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
         TestService $testService,
         RemoteTestService $remoteTestService,
         UserService $userService,
         PlansService $plansService
     ) {
-        parent::__construct(
-            $router,
-            $twig,
-            $defaultViewParameters,
-            $cacheValidator
-        );
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
@@ -117,9 +101,9 @@ class RejectedController extends AbstractBaseViewController
             $cacheValidatorParameters['credits_remaining'] = $planCredits['limit'] - $planCredits['used'];
         }
 
-        $response = $this->cacheValidator->createResponse($request, $cacheValidatorParameters);
+        $response = $this->cacheableResponseFactory->createResponse($request, $cacheValidatorParameters);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

@@ -7,7 +7,6 @@ use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Request\User\SignInRequest;
-use App\Services\CacheValidatorService;
 use App\Services\FlashBagValues;
 use App\Services\Mailer;
 use App\Services\RedirectResponseFactory;
@@ -18,6 +17,7 @@ use App\Services\UserManager;
 use App\Services\UserService;
 use App\Services\ViewRenderService;
 use Postmark\Models\PostmarkException;
+use SimplyTestable\PageCacheBundle\Services\CacheableResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,7 +60,7 @@ class SignInController
 
     /**
      * @param FlashBagValues $flashBagValues
-     * @param CacheValidatorService $cacheValidator
+     * @param CacheableResponseFactory $cacheableResponseFactory
      * @param Request $request
      *
      * @return RedirectResponse|Response
@@ -70,7 +70,7 @@ class SignInController
      */
     public function renderAction(
         FlashBagValues $flashBagValues,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         Request $request
     ) {
         $user = $this->userManager->getUser();
@@ -103,9 +103,9 @@ class SignInController
             'selected_field' => $selectedField,
         ];
 
-        $response = $cacheValidator->createResponse($request, $viewData);
+        $response = $cacheableResponseFactory->createResponse($request, $viewData);
 
-        if ($cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

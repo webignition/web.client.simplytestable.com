@@ -5,10 +5,12 @@ namespace App\Services;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use webignition\SimplyTestableUserHydrator\UserHydrator;
+use webignition\SimplyTestableUserInterface\UserInterface;
+use webignition\SimplyTestableUserManagerInterface\UserManagerInterface;
 use webignition\SimplyTestableUserModel\User;
 use webignition\SimplyTestableUserSerializer\UserSerializer;
 
-class UserManager
+class UserManager implements UserManagerInterface
 {
     const USER_COOKIE_KEY = 'simplytestable-user';
     const USER_COOKIE_DOMAIN = '.simplytestable.com';
@@ -71,18 +73,12 @@ class UserManager
         $this->session->set(self::SESSION_USER_KEY, $this->userSerializer->serialize($user));
     }
 
-    /**
-     * @return User
-     */
-    public function getUser()
+    public function getUser(): UserInterface
     {
         return $this->user;
     }
 
-    /**
-     * @return bool
-     */
-    public function isLoggedIn()
+    public function isLoggedIn(): bool
     {
         $user = $this->user;
 

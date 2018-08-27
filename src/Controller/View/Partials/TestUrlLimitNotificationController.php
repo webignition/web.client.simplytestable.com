@@ -5,7 +5,7 @@ namespace App\Controller\View\Partials;
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
@@ -27,23 +27,15 @@ class TestUrlLimitNotificationController extends AbstractBaseViewController
      */
     private $remoteTestService;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param TestService $testService
-     * @param RemoteTestService $remoteTestService
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         TestService $testService,
         RemoteTestService $remoteTestService
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
@@ -73,12 +65,12 @@ class TestUrlLimitNotificationController extends AbstractBaseViewController
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
 
-        $response = $this->cacheValidator->createResponse($request, [
+        $response = $this->cacheableResponseFactory->createResponse($request, [
             'test_id' => $test_id,
             'is_public_user_test' => $isPublicUserTest,
         ]);
 
-        if ($this->cacheValidator->isNotModified($response)) {
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 

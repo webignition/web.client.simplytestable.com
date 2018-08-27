@@ -3,7 +3,7 @@
 namespace App\Controller\View\User;
 
 use App\Controller\AbstractBaseViewController;
-use App\Services\CacheValidatorService;
+use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
 use Symfony\Component\Routing\RouterInterface;
@@ -16,21 +16,14 @@ abstract class AbstractUserController extends AbstractBaseViewController
      */
     protected $flashBagValues;
 
-    /**
-     * @param RouterInterface $router
-     * @param Twig_Environment $twig
-     * @param DefaultViewParameters $defaultViewParameters
-     * @param CacheValidatorService $cacheValidator
-     * @param FlashBagValues $flashBagValues
-     */
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
-        CacheValidatorService $cacheValidator,
+        CacheableResponseFactory $cacheableResponseFactory,
         FlashBagValues $flashBagValues
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheValidator);
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->flashBagValues = $flashBagValues;
     }
