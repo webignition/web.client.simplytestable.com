@@ -39,10 +39,6 @@
                         <p class="sr-only">What tests do you want to carry out?</p>
                         {% include 'Partials/Dashboard/TaskTypes/task-types.html.twig' %}
 
-                        {% if 'js-static-analysis' not in available_task_types|keys %}
-                            {% include 'Modal/Notification/AccountRequired/js-static-analysis.html.twig' %}
-                        {% endif %}
-
                         {% if 'link-integrity' not in available_task_types|keys %}
                             {% include 'Modal/Notification/AccountRequired/link-integrity.html.twig' %}
                         {% endif %}

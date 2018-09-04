@@ -32,12 +32,6 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
             'description' => 'Check CSS rules defined in linked stylesheets and inline',
             'access-level' => TaskTypeService::ACCESS_LEVEL_PUBLIC,
         ],
-        'js-static-analysis' => [
-            'name' => 'JS static analysis',
-            'description' =>
-                'Analyse the quality of your JavaScript with <a href="http://www.jslint.com/lint.html">JSLint</a>',
-            'access-level' => TaskTypeService::ACCESS_LEVEL_AUTHENTICATED,
-        ],
         'link-integrity' => [
             'name' => 'Link integrity',
             'description' => 'Check all links, report those that do not work',
@@ -119,7 +113,6 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
                 'expectedAvailableTaskTypes' => [
                     'html-validation' => $this->defaultTaskTypes['html-validation'],
                     'css-validation' => $this->defaultTaskTypes['css-validation'],
-                    'js-static-analysis' => $this->defaultTaskTypes['js-static-analysis'],
                     'link-integrity' => $this->defaultTaskTypes['link-integrity'],
                 ],
             ],
@@ -128,7 +121,6 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
                 'expectedAvailableTaskTypes' => [
                     'html-validation' => $this->defaultTaskTypes['html-validation'],
                     'css-validation' => $this->defaultTaskTypes['css-validation'],
-                    'js-static-analysis' => $this->defaultTaskTypes['js-static-analysis'],
                     'link-integrity' => $this->defaultTaskTypes['link-integrity'],
                     'early-access-test' => $this->testEarlyAccessTaskType['early-access-test'],
                 ],

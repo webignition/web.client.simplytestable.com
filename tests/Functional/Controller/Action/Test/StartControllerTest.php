@@ -377,27 +377,6 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
-                    'test-type-options' => [
-                        'JS static analysis' => [
-                            'jslint-option-bitwise' => 1,
-                            'jslint-option-continue' => 1,
-                            'jslint-option-debug' => 1,
-                            'jslint-option-evil' => 1,
-                            'jslint-option-eqeq' => 1,
-                            'jslint-option-forin' => 1,
-                            'jslint-option-newcap' => 1,
-                            'jslint-option-nomen' => 1,
-                            'jslint-option-plusplus' => 1,
-                            'jslint-option-regexp' => 1,
-                            'jslint-option-unparam' => 1,
-                            'jslint-option-sloppy' => 1,
-                            'jslint-option-stupid' => 1,
-                            'jslint-option-sub' => 1,
-                            'jslint-option-vars' => 1,
-                            'jslint-option-white' => 1,
-                            'jslint-option-anon' => 1,
-                        ],
-                    ],
                 ],
             ],
             'success; private user; link integrity' => [
@@ -421,25 +400,6 @@ class StartControllerTest extends AbstractControllerTest
                         'Link integrity',
                     ],
                     'test-type-options' => [
-                        'JS static analysis' => [
-                            'jslint-option-bitwise' => 1,
-                            'jslint-option-continue' => 1,
-                            'jslint-option-debug' => 1,
-                            'jslint-option-evil' => 1,
-                            'jslint-option-eqeq' => 1,
-                            'jslint-option-forin' => 1,
-                            'jslint-option-newcap' => 1,
-                            'jslint-option-nomen' => 1,
-                            'jslint-option-plusplus' => 1,
-                            'jslint-option-regexp' => 1,
-                            'jslint-option-unparam' => 1,
-                            'jslint-option-sloppy' => 1,
-                            'jslint-option-stupid' => 1,
-                            'jslint-option-sub' => 1,
-                            'jslint-option-vars' => 1,
-                            'jslint-option-white' => 1,
-                            'jslint-option-anon' => 1,
-                        ],
                         'Link integrity' => [
                             'excluded-domains' => [
                                 'instagram.com',
