@@ -408,7 +408,6 @@ class ProgressControllerTest extends AbstractViewControllerTest
                             $this->assertAvailableTaskTypes($parameters, [
                                 'html-validation',
                                 'css-validation',
-                                'js-static-analysis',
                                 'link-integrity',
                             ]);
                             $this->assertInternalType('array', $parameters['test_options']);
