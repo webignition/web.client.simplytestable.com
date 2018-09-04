@@ -756,7 +756,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                     'available_task_types' => [
                                         'html-validation',
                                         'css-validation',
-                                        'js-static-analysis',
                                         'link-integrity',
                                     ],
                                     'taskIds' => [1, 3],
@@ -810,7 +809,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                     'available_task_types' => [
                                         'html-validation',
                                         'css-validation',
-                                        'js-static-analysis',
                                         'link-integrity',
                                     ],
                                     'taskIds' => [2],
@@ -936,7 +934,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertEquals([
             'html-validation',
             'css-validation',
-            'js-static-analysis',
             'link-integrity',
         ], array_keys($parameters['task_types']));
 
