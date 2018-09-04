@@ -140,10 +140,6 @@
                             {% include 'Partials/Test/Options/results-test-options.html.twig' %}
                         </div>
 
-                        {% if 'js-static-analysis' not in available_task_types|keys %}
-                            {% include 'Modal/Notification/AccountRequired/js-static-analysis.html.twig' %}
-                        {% endif %}
-
                         {% if 'link-integrity' not in available_task_types|keys %}
                             {% include 'Modal/Notification/AccountRequired/link-integrity.html.twig' %}
                         {% endif %}
