@@ -65,65 +65,38 @@ class RequestAdapterTest extends AbstractBaseTestCase
                 'requestData' =>  [],
                 'expectedTestTypes' => [],
             ],
-            'html-validation: 0, css-validation: 0, js-static-analysis: 0, link-integrity: 0' => [
+            'html-validation: 0, css-validation: 0, link-integrity: 0' => [
                 'requestData' =>  [
                     'html-validation' => 0,
                     'css-validation' => 0,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 0,
                 ],
                 'expectedTestTypes' => [],
             ],
-            'html-validation: 0, css-validation: 0, js-static-analysis: 0, link-integrity: 1' => [
+            'html-validation: 0, css-validation: 0, link-integrity: 1' => [
                 'requestData' =>  [
                     'html-validation' => 0,
                     'css-validation' => 0,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 1,
                 ],
                 'expectedTestTypes' => [
                     'Link integrity',
                 ],
             ],
-            'html-validation: 0, css-validation: 0, js-static-analysis: 1, link-integrity: 0' => [
-                'requestData' =>  [
-                    'html-validation' => 0,
-                    'css-validation' => 0,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 0,
-                ],
-                'expectedTestTypes' => [
-                    'JS static analysis',
-                ],
-            ],
-            'html-validation: 0, css-validation: 0, js-static-analysis: 1, link-integrity: 1' => [
-                'requestData' =>  [
-                    'html-validation' => 0,
-                    'css-validation' => 0,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 1,
-                ],
-                'expectedTestTypes' => [
-                    'JS static analysis',
-                    'Link integrity',
-                ],
-            ],
-            'html-validation: 0, css-validation: 1, js-static-analysis: 0, link-integrity: 0' => [
+            'html-validation: 0, css-validation: 1, link-integrity: 0' => [
                 'requestData' =>  [
                     'html-validation' => 0,
                     'css-validation' => 1,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 0,
                 ],
                 'expectedTestTypes' => [
                     'CSS validation',
                 ],
             ],
-            'html-validation: 0, css-validation: 1, js-static-analysis: 0, link-integrity: 1' => [
+            'html-validation: 0, css-validation: 1, link-integrity: 1' => [
                 'requestData' =>  [
                     'html-validation' => 0,
                     'css-validation' => 1,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 1,
                 ],
                 'expectedTestTypes' => [
@@ -131,47 +104,20 @@ class RequestAdapterTest extends AbstractBaseTestCase
                     'Link integrity',
                 ],
             ],
-            'html-validation: 0, css-validation: 1, js-static-analysis: 1, link-integrity: 0' => [
-                'requestData' =>  [
-                    'html-validation' => 0,
-                    'css-validation' => 1,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 0,
-                ],
-                'expectedTestTypes' => [
-                    'CSS validation',
-                    'JS static analysis',
-                ],
-            ],
-            'html-validation: 0, css-validation: 1, js-static-analysis: 1, link-integrity: 1' => [
-                'requestData' =>  [
-                    'html-validation' => 0,
-                    'css-validation' => 1,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 1,
-                ],
-                'expectedTestTypes' => [
-                    'CSS validation',
-                    'JS static analysis',
-                    'Link integrity',
-                ],
-            ],
-            'html-validation: 1, css-validation: 0, js-static-analysis: 0, link-integrity: 0' => [
+            'html-validation: 1, css-validation: 0, link-integrity: 0' => [
                 'requestData' =>  [
                     'html-validation' => 1,
                     'css-validation' => 0,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 0,
                 ],
                 'expectedTestTypes' => [
                     'HTML validation',
                 ],
             ],
-            'html-validation: 1, css-validation: 0, js-static-analysis: 0, link-integrity: 1' => [
+            'html-validation: 1, css-validation: 0, link-integrity: 1' => [
                 'requestData' =>  [
                     'html-validation' => 1,
                     'css-validation' => 0,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 1,
                 ],
                 'expectedTestTypes' => [
@@ -179,36 +125,10 @@ class RequestAdapterTest extends AbstractBaseTestCase
                     'Link integrity',
                 ],
             ],
-            'html-validation: 1, css-validation: 0, js-static-analysis: 1, link-integrity: 0' => [
-                'requestData' =>  [
-                    'html-validation' => 1,
-                    'css-validation' => 0,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 0,
-                ],
-                'expectedTestTypes' => [
-                    'HTML validation',
-                    'JS static analysis',
-                ],
-            ],
-            'html-validation: 1, css-validation: 0, js-static-analysis: 1, link-integrity: 1' => [
-                'requestData' =>  [
-                    'html-validation' => 1,
-                    'css-validation' => 0,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 1,
-                ],
-                'expectedTestTypes' => [
-                    'HTML validation',
-                    'JS static analysis',
-                    'Link integrity',
-                ],
-            ],
-            'html-validation: 1, css-validation: 1, js-static-analysis: 0, link-integrity: 0' => [
+            'html-validation: 1, css-validation: 1, link-integrity: 0' => [
                 'requestData' =>  [
                     'html-validation' => 1,
                     'css-validation' => 1,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 0,
                 ],
                 'expectedTestTypes' => [
@@ -216,43 +136,15 @@ class RequestAdapterTest extends AbstractBaseTestCase
                     'CSS validation',
                 ],
             ],
-            'html-validation: 1, css-validation: 1, js-static-analysis: 0, link-integrity: 1' => [
+            'html-validation: 1, css-validation: 1, link-integrity: 1' => [
                 'requestData' =>  [
                     'html-validation' => 1,
                     'css-validation' => 1,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 1,
                 ],
                 'expectedTestTypes' => [
                     'HTML validation',
                     'CSS validation',
-                    'Link integrity',
-                ],
-            ],
-            'html-validation: 1, css-validation: 1, js-static-analysis: 1, link-integrity: 0' => [
-                'requestData' =>  [
-                    'html-validation' => 1,
-                    'css-validation' => 1,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 0,
-                ],
-                'expectedTestTypes' => [
-                    'HTML validation',
-                    'CSS validation',
-                    'JS static analysis',
-                ],
-            ],
-            'html-validation: 1, css-validation: 1, js-static-analysis: 1, link-integrity: 1' => [
-                'requestData' =>  [
-                    'html-validation' => 1,
-                    'css-validation' => 1,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 1,
-                ],
-                'expectedTestTypes' => [
-                    'HTML validation',
-                    'CSS validation',
-                    'JS static analysis',
                     'Link integrity',
                 ],
             ],
@@ -435,7 +327,6 @@ class RequestAdapterTest extends AbstractBaseTestCase
                     'css-validation-ignore-common-cdns' => 0,
                     'css-validation-vendor-extensions' => 'warn',
                     'css-validation-domains-to-ignore' => [],
-                    'js-static-analysis-domains-to-ignore' => 'one.example.com',
                 ],
                 'expectedTestTypeOptionsCollection' => [
                     'html-validation' => [],
@@ -444,150 +335,6 @@ class RequestAdapterTest extends AbstractBaseTestCase
                         'css-validation-ignore-common-cdns' => 0,
                         'css-validation-vendor-extensions' => 'warn',
                         'css-validation-domains-to-ignore' => [],
-                    ],
-                    'js-static-analysis' => [
-                        'js-static-analysis-domains-to-ignore' => [
-                            'one.example.com',
-                        ],
-                    ],
-                    'link-integrity' => [],
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider getTestOptionsInvertInvertableOptionsDataProvider
-     *
-     * @param array $requestData
-     * @param array $expectedTestTypeOptionsCollection
-     */
-    public function testGetTestOptionsInvertInvertableOptions(
-        array $requestData,
-        array $expectedTestTypeOptionsCollection
-    ) {
-        $this->requestAdapter->setRequestData(new ParameterBag($requestData));
-        $this->requestAdapter->setInvertInvertableOptions(true);
-
-        $testOptions = $this->requestAdapter->getTestOptions();
-
-        foreach ($expectedTestTypeOptionsCollection as $testTypeKey => $expectedTestTypeOptions) {
-            $testTypeOptions = $testOptions->getTestTypeOptions($testTypeKey);
-
-            $this->assertEquals($expectedTestTypeOptions, $testTypeOptions);
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getTestOptionsInvertInvertableOptionsDataProvider()
-    {
-        return [
-            'empty request' => [
-                'requestData' =>  [],
-                'expectedTestTypeOptionsCollection' => [
-                    'html-validation' => [],
-                    'css-validation' => [],
-                    'js-static-analysis' => [
-                        'js-static-analysis-jslint-option-bitwise' => 1,
-                        'js-static-analysis-jslint-option-continue' => 1,
-                        'js-static-analysis-jslint-option-debug' => 1,
-                        'js-static-analysis-jslint-option-evil' => 1,
-                        'js-static-analysis-jslint-option-eqeq' => 1,
-                        'js-static-analysis-jslint-option-forin' => 1,
-                        'js-static-analysis-jslint-option-newcap' => 1,
-                        'js-static-analysis-jslint-option-nomen' => 1,
-                        'js-static-analysis-jslint-option-plusplus' => 1,
-                        'js-static-analysis-jslint-option-regexp' => 1,
-                        'js-static-analysis-jslint-option-unparam' => 1,
-                        'js-static-analysis-jslint-option-sloppy' => 1,
-                        'js-static-analysis-jslint-option-stupid' => 1,
-                        'js-static-analysis-jslint-option-sub' => 1,
-                        'js-static-analysis-jslint-option-vars' => 1,
-                        'js-static-analysis-jslint-option-white' => 1,
-                        'js-static-analysis-jslint-option-anon' => 1,
-                    ],
-                    'link-integrity' => [],
-                ],
-            ],
-            'no test type options' => [
-                'requestData' =>  [
-                    'html-validation' => 1,
-                    'css-validation' => 1,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 1,
-                ],
-                'expectedTestTypeOptionsCollection' => [
-                    'html-validation' => [],
-                    'css-validation' => [],
-                    'js-static-analysis' => [
-                        'js-static-analysis-jslint-option-bitwise' => 1,
-                        'js-static-analysis-jslint-option-continue' => 1,
-                        'js-static-analysis-jslint-option-debug' => 1,
-                        'js-static-analysis-jslint-option-evil' => 1,
-                        'js-static-analysis-jslint-option-eqeq' => 1,
-                        'js-static-analysis-jslint-option-forin' => 1,
-                        'js-static-analysis-jslint-option-newcap' => 1,
-                        'js-static-analysis-jslint-option-nomen' => 1,
-                        'js-static-analysis-jslint-option-plusplus' => 1,
-                        'js-static-analysis-jslint-option-regexp' => 1,
-                        'js-static-analysis-jslint-option-unparam' => 1,
-                        'js-static-analysis-jslint-option-sloppy' => 1,
-                        'js-static-analysis-jslint-option-stupid' => 1,
-                        'js-static-analysis-jslint-option-sub' => 1,
-                        'js-static-analysis-jslint-option-vars' => 1,
-                        'js-static-analysis-jslint-option-white' => 1,
-                        'js-static-analysis-jslint-option-anon' => 1,
-                    ],
-                    'link-integrity' => [],
-                ],
-            ],
-            'has test type options' => [
-                'requestData' =>  [
-                    'html-validation' => 1,
-                    'css-validation' => 1,
-                    'js-static-analysis' => 1,
-                    'link-integrity' => 1,
-                    'js-static-analysis-jslint-option-bitwise' => 1,
-                    'js-static-analysis-jslint-option-continue' => 1,
-                    'js-static-analysis-jslint-option-debug' => 1,
-                    'js-static-analysis-jslint-option-evil' => 1,
-                    'js-static-analysis-jslint-option-eqeq' => 1,
-                    'js-static-analysis-jslint-option-forin' => 1,
-                    'js-static-analysis-jslint-option-newcap' => 1,
-                    'js-static-analysis-jslint-option-nomen' => 1,
-                    'js-static-analysis-jslint-option-plusplus' => 1,
-                    'js-static-analysis-jslint-option-regexp' => 1,
-                    'js-static-analysis-jslint-option-unparam' => 1,
-                    'js-static-analysis-jslint-option-sloppy' => 1,
-                    'js-static-analysis-jslint-option-stupid' => 1,
-                    'js-static-analysis-jslint-option-sub' => 1,
-                    'js-static-analysis-jslint-option-vars' => 1,
-                    'js-static-analysis-jslint-option-white' => 1,
-                    'js-static-analysis-jslint-option-anon' => 1,
-                ],
-                'expectedTestTypeOptionsCollection' => [
-                    'html-validation' => [],
-                    'css-validation' => [],
-                    'js-static-analysis' => [
-                        'js-static-analysis-jslint-option-bitwise' => 0,
-                        'js-static-analysis-jslint-option-continue' => 0,
-                        'js-static-analysis-jslint-option-debug' => 0,
-                        'js-static-analysis-jslint-option-evil' => 0,
-                        'js-static-analysis-jslint-option-eqeq' => 0,
-                        'js-static-analysis-jslint-option-forin' => 0,
-                        'js-static-analysis-jslint-option-newcap' => 0,
-                        'js-static-analysis-jslint-option-nomen' => 0,
-                        'js-static-analysis-jslint-option-plusplus' => 0,
-                        'js-static-analysis-jslint-option-regexp' => 0,
-                        'js-static-analysis-jslint-option-unparam' => 0,
-                        'js-static-analysis-jslint-option-sloppy' => 0,
-                        'js-static-analysis-jslint-option-stupid' => 0,
-                        'js-static-analysis-jslint-option-sub' => 0,
-                        'js-static-analysis-jslint-option-vars' => 0,
-                        'js-static-analysis-jslint-option-white' => 0,
-                        'js-static-analysis-jslint-option-anon' => 0,
                     ],
                     'link-integrity' => [],
                 ],
