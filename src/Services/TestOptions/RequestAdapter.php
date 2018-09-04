@@ -33,16 +33,6 @@ class RequestAdapter
     private $namesAndDefaultValues= [];
 
     /**
-     * @var array
-     */
-    private $invertOptionKeys = [];
-
-    /**
-     * @var boolean
-     */
-    private $invertInvertableOptions = false;
-
-    /**
      * @var TestOptions
      */
     private $testOptions = null;
@@ -93,22 +83,6 @@ class RequestAdapter
     }
 
     /**
-     * @param array $invertOptionKeys
-     */
-    public function setInvertOptionKeys($invertOptionKeys)
-    {
-        $this->invertOptionKeys = $invertOptionKeys;
-    }
-
-    /**
-     * @param boolean $invertInvertableOptions
-     */
-    public function setInvertInvertableOptions($invertInvertableOptions)
-    {
-        $this->invertInvertableOptions = $invertInvertableOptions;
-    }
-
-    /**
      * @return TestOptions
      */
     public function getTestOptions()
@@ -117,49 +91,7 @@ class RequestAdapter
             $this->populateTestOptionsFromRequestData();
         }
 
-        if ($this->invertInvertableOptions) {
-            $this->invertInvertableOptions();
-        }
-
         return $this->testOptions;
-    }
-
-    private function invertInvertableOptions()
-    {
-        foreach ($this->invertOptionKeys as $invertOptionKey) {
-            $taskTypeKey = $this->getTaskTypeKeyFromTaskTypeOption($invertOptionKey);
-            $testTypeOptions = $this->testOptions->getTestTypeOptions($taskTypeKey);
-
-            if (isset($testTypeOptions[$invertOptionKey])) {
-                $testTypeOptions[$invertOptionKey] = ($testTypeOptions[$invertOptionKey]) ? 0 : 1;
-            } else {
-                $testTypeOptions[$invertOptionKey] = 1;
-            }
-
-            $this->testOptions->addTestTypeOptions($taskTypeKey, $testTypeOptions);
-        }
-    }
-
-    /**
-     * @param string $taskTypeOption
-     *
-     * @return null|string
-     */
-    private function getTaskTypeKeyFromTaskTypeOption($taskTypeOption)
-    {
-        $matchingTaskTypeKey = null;
-
-        foreach ($this->availableTaskTypes as $taskTypeKey => $taskTypeName) {
-            if (!empty($matchingTaskTypeKey)) {
-                continue;
-            }
-
-            if (substr($taskTypeOption, 0, strlen($taskTypeKey)) == $taskTypeKey) {
-                $matchingTaskTypeKey = $taskTypeKey;
-            }
-        }
-
-        return $matchingTaskTypeKey;
     }
 
     private function populateTestOptionsFromRequestData()

@@ -45,7 +45,6 @@ class RequestAdapterFactory
 
         $adapter->setNamesAndDefaultValues($this->parameters['names_and_default_values']);
         $adapter->setAvailableTaskTypes($this->taskTypeService->getAvailable());
-        $adapter->setInvertOptionKeys($this->parameters['invert_option_keys']);
 
         if (isset($this->parameters['features'])) {
             $adapter->setAvailableFeatures($this->parameters['features']);

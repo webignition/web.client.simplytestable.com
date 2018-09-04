@@ -225,7 +225,6 @@ class ResultsController extends AbstractResultsController
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
-        $testOptionsAdapter->setInvertInvertableOptions(true);
 
         $isOwner = $this->remoteTestService->owns($user);
 

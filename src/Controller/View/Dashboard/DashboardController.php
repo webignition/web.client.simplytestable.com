@@ -103,13 +103,12 @@ class DashboardController extends AbstractBaseViewController
         $testOptionsAdapter->setRequestData($requestData);
 
         $testStartError = $this->flashBagValues->getSingle('test_start_error');
-        $hasTestStartError = !empty($testStartError);
 
         $website = $requestData->get('website');
         $availableTaskTypes = $this->taskTypeService->getAvailable();
 
         $taskTypes = $this->taskTypeService->get();
-        $testOptions = $this->getTestOptionsArray($testOptionsAdapter, $requestData, $hasTestStartError);
+        $testOptions = $this->getTestOptionsArray($testOptionsAdapter, $requestData);
 
         $cssValidationExcludedDomains = $this->cssValidationTestConfiguration->getExcludedDomains();
         $jsStaticAnalysisExcludedDomains = $this->jsStaticAnalysisTestConfiguration->getExcludedDomains();
@@ -147,15 +146,11 @@ class DashboardController extends AbstractBaseViewController
     /**
      * @param TestOptionsRequestAdapter $testOptionsAdapter
      * @param ParameterBag $requestData
-     * @param bool $hasTestStartError
      *
      * @return array
      */
-    private function getTestOptionsArray(
-        TestOptionsRequestAdapter $testOptionsAdapter,
-        ParameterBag $requestData,
-        $hasTestStartError
-    ) {
+    private function getTestOptionsArray(TestOptionsRequestAdapter $testOptionsAdapter, ParameterBag $requestData)
+    {
         $testOptionsConfiguration = $this->testOptionsConfiguration->getConfiguration();
 
         $testOptionsData = array_merge(
@@ -164,10 +159,6 @@ class DashboardController extends AbstractBaseViewController
         );
 
         $testOptionsAdapter->setRequestData(new ParameterBag($testOptionsData));
-
-        if ($hasTestStartError) {
-            $testOptionsAdapter->setInvertInvertableOptions(true);
-        }
 
         $testOptions = $testOptionsAdapter->getTestOptions()->__toKeyArray();
 
