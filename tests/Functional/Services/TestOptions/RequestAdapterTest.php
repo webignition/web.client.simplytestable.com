@@ -35,7 +35,6 @@ class RequestAdapterTest extends AbstractBaseTestCase
         $testOptionsParameters = self::$container->getParameter('test_options');
 
         $this->requestAdapter->setNamesAndDefaultValues($testOptionsParameters['names_and_default_values']);
-        $this->requestAdapter->setInvertOptionKeys($testOptionsParameters['invert_option_keys']);
         $this->requestAdapter->setAvailableTaskTypes($taskTypeService->getAvailable());
         $this->requestAdapter->setAvailableFeatures($testOptionsParameters['features']);
     }
@@ -307,13 +306,11 @@ class RequestAdapterTest extends AbstractBaseTestCase
                 'requestData' =>  [
                     'html-validation' => 1,
                     'css-validation' => 1,
-                    'js-static-analysis' => 1,
                     'link-integrity' => 1,
                 ],
                 'expectedTestTypeOptionsCollection' => [
                     'html-validation' => [],
                     'css-validation' => [],
-                    'js-static-analysis' => [],
                     'link-integrity' => [],
                 ],
             ],
@@ -321,7 +318,6 @@ class RequestAdapterTest extends AbstractBaseTestCase
                 'requestData' =>  [
                     'html-validation' => 1,
                     'css-validation' => 1,
-                    'js-static-analysis' => 1,
                     'link-integrity' => 1,
                     'css-validation-ignore-warnings' => 1,
                     'css-validation-ignore-common-cdns' => 0,

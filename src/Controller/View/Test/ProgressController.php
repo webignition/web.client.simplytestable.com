@@ -181,7 +181,6 @@ class ProgressController extends AbstractBaseViewController
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
-        $testOptionsAdapter->setInvertInvertableOptions(true);
 
         $commonViewData = [
             'test' => $test,
