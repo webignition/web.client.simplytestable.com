@@ -122,6 +122,16 @@ class ByTaskTypeController extends AbstractResultsController
             ));
         }
 
+        if (Task::TYPE_JS_STATIC_ANALYSIS === $selectedTaskType) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
         $hasValidFilter = in_array($filter, $this->allowedFilters);
 
         if (!$hasValidFilter) {
