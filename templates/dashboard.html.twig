@@ -113,11 +113,6 @@
                         {% if 'css-validation' in available_task_types|keys %}
                             {% include 'Partials/Test/Options/css-validation/advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
                         {% endif %}
-
-                        {% if 'js-static-analysis' in available_task_types|keys %}
-                            {% include 'Partials/Test/Options/js-static-analysis/advanced-options.html.twig' with {'is_disabled': false, 'container_classes': ['test-options-set']} %}
-                        {% endif %}
-
                     </div>
                 </div>
             </form>
