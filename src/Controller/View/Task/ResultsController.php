@@ -128,6 +128,16 @@ class ResultsController extends AbstractBaseViewController
             ));
         }
 
+        if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
+            return new RedirectResponse($this->generateUrl(
+                'redirect_website_test',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
         $taskOutput = $task->getOutput();
         $taskHasErrorsOrWarnings = $taskOutput->getErrorCount() > 0 || $taskOutput->getWarningCount() > 0;
 
