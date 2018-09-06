@@ -10,7 +10,6 @@ use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
-use App\Services\Configuration\JsStaticAnalysisTestConfiguration;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskCollectionFilterService;
@@ -71,11 +70,6 @@ class ResultsController extends AbstractResultsController
     private $cssValidationTestConfiguration;
 
     /**
-     * @var JsStaticAnalysisTestConfiguration
-     */
-    private $jsStaticAnalysisTestConfiguration;
-
-    /**
      * @var UrlViewValuesService
      */
     private $urlViewValues;
@@ -110,8 +104,7 @@ class ResultsController extends AbstractResultsController
         TaskTypeService $taskTypeService,
         TaskCollectionFilterService $taskCollectionFilterService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
-        CssValidationTestConfiguration $cssValidationTestConfiguration,
-        JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
+        CssValidationTestConfiguration $cssValidationTestConfiguration
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -122,7 +115,6 @@ class ResultsController extends AbstractResultsController
         $this->taskCollectionFilterService = $taskCollectionFilterService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
-        $this->jsStaticAnalysisTestConfiguration = $jsStaticAnalysisTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
     }
@@ -246,8 +238,6 @@ class ResultsController extends AbstractResultsController
                 'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
                 'css_validation_ignore_common_cdns' =>
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
-                'js_static_analysis_ignore_common_cdns' =>
-                    $this->jsStaticAnalysisTestConfiguration->getExcludedDomains(),
                 'tasks' => $tasks,
                 'filtered_task_counts' => $filteredTaskCounts,
                 'domain_test_count' => $this->remoteTestService->getFinishedCount($website),
