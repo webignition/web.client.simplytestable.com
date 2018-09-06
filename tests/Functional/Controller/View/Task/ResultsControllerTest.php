@@ -326,6 +326,29 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
                 ],
             ],
+            'js static analysis task' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'task_types' => [
+                            [
+                                'name' => Task::TYPE_JS_STATIC_ANALYSIS,
+                            ],
+                        ],
+                    ])),
+                    HttpResponseFactory::createJsonResponse([
+                        array_merge($this->remoteTaskData, [
+                            'type' => Task::TYPE_JS_STATIC_ANALYSIS,
+                        ]),
+                    ]),
+                ],
+                'user' => SystemUserService::getPublicUser(),
+                'request' => new Request(),
+                'expectedRedirectUrl' => '/http://example.com//1/',
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                ],
+            ],
         ];
     }
 
@@ -706,113 +729,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(['http://example.com/foo.css', ''], array_keys($warningsByRef));
                             $this->assertCount(1, $warningsByRef['http://example.com/foo.css']);
                             $this->assertCount(1, $warningsByRef['']);
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'js static analysis; view keys' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([
-                        array_merge($this->remoteTaskData, [
-                            'type' => Task::TYPE_JS_STATIC_ANALYSIS,
-                        ]),
-                    ]),
-                ],
-                'user' => new User(self::USER_EMAIL),
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertArrayHasKey('errors_by_js_context', $parameters);
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'js static analysis; has errors' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([
-                        array_merge($this->remoteTaskData, [
-                            'type' => Task::TYPE_JS_STATIC_ANALYSIS,
-                            'output' => [
-                                'output' => json_encode([
-                                    'http://example.com/foo.js' => [
-                                        'statusLine' => 'http://example.com/foo.js',
-                                        'entries' => [
-                                            [
-                                                'headerLine' => [
-                                                    'errorNumber' => 1,
-                                                    'errorMessage' => "'$' was used before it was defined.",
-                                                ],
-                                                'fragmentLine' => [
-                                                    'fragment' => '$(function(){',
-                                                    'lineNumber' => 1,
-                                                    'columnNumber' => 1,
-                                                ],
-                                            ],
-                                            [
-                                                'headerLine' => [
-                                                    'errorNumber' => 1,
-                                                    'errorMessage' => "Expected ';' and instead saw '}'.",
-                                                ],
-                                                'fragmentLine' => [
-                                                    'fragment' => '                })',
-                                                    'lineNumber' => 1,
-                                                    'columnNumber' => 1,
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                    'http://example.com/bar.js' => [
-                                        'entries' => [
-                                            [
-                                                'headerLine' => [
-                                                    'errorNumber' => 1,
-                                                    'errorMessage' => "'_gaq' used out of scope.",
-                                                ],
-                                                'fragmentLine' => [
-                                                    'fragment' => 'var _gaq = _gaq || [];',
-                                                    'lineNumber' => 1,
-                                                    'columnNumber' => 1,
-                                                ],
-                                            ],
-                                        ],
-                                    ],
-                                ]),
-                                'content-type' => 'application/json',
-                                'error_count' => 2,
-                                'warning_count' => 1,
-                            ],
-                        ]),
-                    ]),
-                ],
-                'user' => new User(self::USER_EMAIL),
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertArrayHasKey('errors_by_js_context', $parameters);
-
-                            $errorsByJsContext = $parameters['errors_by_js_context'];
-                            $this->assertEquals(
-                                [
-                                    'http://example.com/foo.js',
-                                    'http://example.com/bar.js',
-                                ],
-                                array_keys($errorsByJsContext)
-                            );
-
-                            $this->assertCount(2, $errorsByJsContext['http://example.com/foo.js']);
-                            $this->assertCount(1, $errorsByJsContext['http://example.com/bar.js']);
 
                             return true;
                         },
