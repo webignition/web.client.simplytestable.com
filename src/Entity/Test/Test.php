@@ -137,15 +137,15 @@ class Test implements \JsonSerializable
      */
     public function getCompletionPercent()
     {
-        if ($this->getState() == 'new') {
+        if ($this->getState() === self::STATE_STARTING) {
             return 0;
         }
 
-        if ($this->getState() == 'completed') {
+        if ($this->getState() === self::STATE_COMPLETED) {
             return 100;
         }
 
-        if ($this->getTaskCount() == 0) {
+        if ($this->getTaskCount() === 0) {
             return 100;
         }
 
@@ -158,11 +158,11 @@ class Test implements \JsonSerializable
     private function getFinishedTaskCount()
     {
         $finishedTaskStates = array(
-            'completed',
-            'failed',
-            'failed-no-retry-available',
-            'failed-retry-available',
-            'failed-retry-limit-reached'
+            Task::STATE_COMPLETED,
+            Task::STATE_FAILED,
+            Task::STATE_FAILED_NO_RETRY_AVAILABLE,
+            Task::STATE_FAILED_RETRY_AVAILABLE,
+            Task::STATE_FAILED_RETRY_LIMIT_REACHED,
         );
 
         $finishedTaskCount = 0;
@@ -195,6 +195,10 @@ class Test implements \JsonSerializable
 
         $total = 0;
         foreach ($this->getTasks() as $task) {
+            if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
+                continue;
+            }
+
             if ($task->getState() == $state) {
                 $total++;
             }
@@ -505,6 +509,10 @@ class Test implements \JsonSerializable
         $errorCount = 0;
 
         foreach ($this->getTasks() as $task) {
+            if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
+                continue;
+            }
+
             /* @var $task Task */
             if ($task->hasOutput()) {
                 $errorCount += $task->getOutput()->getErrorCount();
@@ -538,6 +546,10 @@ class Test implements \JsonSerializable
         $warningCount = 0;
 
         foreach ($this->getTasks() as $task) {
+            if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
+                continue;
+            }
+
             /* @var $task Task */
             if ($task->hasOutput()) {
                 $warningCount += $task->getOutput()->getWarningCount();
@@ -557,6 +569,10 @@ class Test implements \JsonSerializable
         $count = 0;
 
         foreach ($this->getTasks() as $task) {
+            if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
+                continue;
+            }
+
             /* @var $task Task */
             if ($task->hasOutput() && $task->getType() == $type) {
                 $count += $task->getOutput()->getErrorCount();
@@ -576,6 +592,10 @@ class Test implements \JsonSerializable
         $count = 0;
 
         foreach ($this->getTasks() as $task) {
+            if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
+                continue;
+            }
+
             /* @var $task Task */
             if ($task->hasOutput() && $task->getType() == $type) {
                 $count += $task->getOutput()->getWarningCount();
