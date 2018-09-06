@@ -1,5 +1,9 @@
+{% set excluded_task_types = 'JS static analysis' %}
+
 {% for task in tasks %}
-    <div class="task {{ task.stateLabel }}" data-state="{{ task.state }}" data-task-id="{{ task.taskId }}">
-        {% include 'Partials/Test/TaskList/Task/task.html.twig' %}
-    </div>
+    {% if task.type not in excluded_task_types %}
+        <div class="task {{ task.stateLabel }}" data-state="{{ task.state }}" data-task-id="{{ task.taskId }}">
+            {% include 'Partials/Test/TaskList/Task/task.html.twig' %}
+        </div>
+    {% endif %}
 {% endfor %}
