@@ -90,7 +90,6 @@ class StartController extends AbstractController
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($requestData);
-        $testOptionsAdapter->setInvertInvertableOptions(true);
 
         $testOptions = $testOptionsAdapter->getTestOptions();
 

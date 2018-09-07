@@ -175,10 +175,6 @@ services:
       arguments:
         - '%css-validation-ignore-common-cdns%'
 
-    App\Services\Configuration\JsStaticAnalysisTestConfiguration:
-      arguments:
-        - '%js-static-analysis-ignore-common-cdns%'
-
     App\Services\Configuration\LinkIntegrityTestConfiguration:
       arguments:
         - '%link-integrity-excluded-domains%'

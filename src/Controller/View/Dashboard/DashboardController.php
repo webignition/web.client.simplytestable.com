@@ -7,7 +7,6 @@ use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
-use App\Services\Configuration\JsStaticAnalysisTestConfiguration;
 use App\Services\SystemUserService;
 use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapter as TestOptionsRequestAdapter;
@@ -58,11 +57,6 @@ class DashboardController extends AbstractBaseViewController
      */
     private $cssValidationTestConfiguration;
 
-    /**
-     * @var JsStaticAnalysisTestConfiguration
-     */
-    private $jsStaticAnalysisTestConfiguration;
-
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
@@ -74,8 +68,7 @@ class DashboardController extends AbstractBaseViewController
         FlashBagValues $flashBagValues,
         UserManager $userManager,
         TestOptionsConfiguration $testOptionsConfiguration,
-        CssValidationTestConfiguration $cssValidationTestConfiguration,
-        JsStaticAnalysisTestConfiguration $jsStaticAnalysisTestConfiguration
+        CssValidationTestConfiguration $cssValidationTestConfiguration
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -86,7 +79,6 @@ class DashboardController extends AbstractBaseViewController
         $this->userManager = $userManager;
         $this->testOptionsConfiguration = $testOptionsConfiguration;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
-        $this->jsStaticAnalysisTestConfiguration = $jsStaticAnalysisTestConfiguration;
     }
 
     /**
@@ -103,16 +95,14 @@ class DashboardController extends AbstractBaseViewController
         $testOptionsAdapter->setRequestData($requestData);
 
         $testStartError = $this->flashBagValues->getSingle('test_start_error');
-        $hasTestStartError = !empty($testStartError);
 
         $website = $requestData->get('website');
         $availableTaskTypes = $this->taskTypeService->getAvailable();
 
         $taskTypes = $this->taskTypeService->get();
-        $testOptions = $this->getTestOptionsArray($testOptionsAdapter, $requestData, $hasTestStartError);
+        $testOptions = $this->getTestOptionsArray($testOptionsAdapter, $requestData);
 
         $cssValidationExcludedDomains = $this->cssValidationTestConfiguration->getExcludedDomains();
-        $jsStaticAnalysisExcludedDomains = $this->jsStaticAnalysisTestConfiguration->getExcludedDomains();
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'test_start_error' => $testStartError,
@@ -121,7 +111,6 @@ class DashboardController extends AbstractBaseViewController
             'task_types' => json_encode($taskTypes),
             'test_options' => json_encode($testOptions),
             'css_validation_ignore_common_cdns' => json_encode($cssValidationExcludedDomains),
-            'js_static_analysis_ignore_common_cdns' => json_encode($jsStaticAnalysisExcludedDomains),
             'is_logged_in' => !SystemUserService::isPublicUser($user),
         ]);
 
@@ -136,7 +125,6 @@ class DashboardController extends AbstractBaseViewController
                 'task_types' => $taskTypes,
                 'test_options' => $testOptions,
                 'css_validation_ignore_common_cdns' => $cssValidationExcludedDomains,
-                'js_static_analysis_ignore_common_cdns' => $jsStaticAnalysisExcludedDomains,
                 'test_start_error' => $testStartError,
                 'website' => $this->urlViewValuesService->create($website),
             ],
@@ -147,15 +135,11 @@ class DashboardController extends AbstractBaseViewController
     /**
      * @param TestOptionsRequestAdapter $testOptionsAdapter
      * @param ParameterBag $requestData
-     * @param bool $hasTestStartError
      *
      * @return array
      */
-    private function getTestOptionsArray(
-        TestOptionsRequestAdapter $testOptionsAdapter,
-        ParameterBag $requestData,
-        $hasTestStartError
-    ) {
+    private function getTestOptionsArray(TestOptionsRequestAdapter $testOptionsAdapter, ParameterBag $requestData)
+    {
         $testOptionsConfiguration = $this->testOptionsConfiguration->getConfiguration();
 
         $testOptionsData = array_merge(
@@ -164,10 +148,6 @@ class DashboardController extends AbstractBaseViewController
         );
 
         $testOptionsAdapter->setRequestData(new ParameterBag($testOptionsData));
-
-        if ($hasTestStartError) {
-            $testOptionsAdapter->setInvertInvertableOptions(true);
-        }
 
         $testOptions = $testOptionsAdapter->getTestOptions()->__toKeyArray();
 

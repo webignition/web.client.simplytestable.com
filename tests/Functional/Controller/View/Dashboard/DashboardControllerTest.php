@@ -163,7 +163,6 @@ class DashboardControllerTest extends AbstractViewControllerTest
                             $this->assertAvailableTaskTypeKeys($parameters, [
                                 'html-validation',
                                 'css-validation',
-                                'js-static-analysis',
                                 'link-integrity',
                             ]);
 
@@ -191,7 +190,6 @@ class DashboardControllerTest extends AbstractViewControllerTest
                             $this->assertAvailableTaskTypeKeys($parameters, [
                                 'html-validation',
                                 'css-validation',
-                                'js-static-analysis',
                                 'link-integrity',
                             ]);
 
@@ -244,7 +242,6 @@ class DashboardControllerTest extends AbstractViewControllerTest
                 'task_types',
                 'test_options',
                 'css_validation_ignore_common_cdns',
-                'js_static_analysis_ignore_common_cdns',
                 'test_start_error',
                 'website',
             ],
