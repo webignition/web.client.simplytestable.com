@@ -332,4 +332,188 @@ class TestTest extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider getErrorCountByTaskTypeDataProvider
+     *
+     * @param Test $test
+     * @param string $taskType
+     * @param int $expectedErrorCount
+     */
+    public function testGetErrorCountByTaskType(Test $test, string $taskType, int $expectedErrorCount)
+    {
+        $this->assertEquals($expectedErrorCount, $test->getErrorCountByTaskType($taskType));
+    }
+
+    public function getErrorCountByTaskTypeDataProvider(): array
+    {
+        return [
+            'no tasks' => [
+                'test' => ModelFactory::createTest(),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, no output' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask(),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, has output, no errors' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_ERROR_COUNT => 0,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, has output, has errors, no errors for selected type' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_ERROR_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_CSS_VALIDATION,
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, has output, has errors, has errors for selected type' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_ERROR_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'expectedErrorCount' => 3,
+            ],
+            'has tasks, has output, has errors, is excluded' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_JS_STATIC_ANALYSIS,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_ERROR_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_JS_STATIC_ANALYSIS,
+                'expectedErrorCount' => 0,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getWarningCountByTaskTypeDataProvider
+     *
+     * @param Test $test
+     * @param string $taskType
+     * @param int $expectedWarningCount
+     */
+    public function testGetWarningCountByTaskType(Test $test, string $taskType, int $expectedWarningCount)
+    {
+        $this->assertEquals($expectedWarningCount, $test->getWarningCountByTaskType($taskType));
+    }
+
+    public function getWarningCountByTaskTypeDataProvider(): array
+    {
+        return [
+            'no tasks' => [
+                'test' => ModelFactory::createTest(),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'expectedWarningCount' => 0,
+            ],
+            'has tasks, no output' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask(),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'expectedWarningCount' => 0,
+            ],
+            'has tasks, has output, no warnings' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_WARNING_COUNT => 0,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'expectedWarningCount' => 0,
+            ],
+            'has tasks, has output, has warnings, no warnings for selected type' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_WARNING_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_CSS_VALIDATION,
+                'expectedWarningCount' => 0,
+            ],
+            'has tasks, has output, has warnings, has warnings for selected type' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_WARNING_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'expectedWarningCount' => 3,
+            ],
+            'has tasks, has output, has warnings, is excluded' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_JS_STATIC_ANALYSIS,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_WARNING_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'taskType' => Task::TYPE_JS_STATIC_ANALYSIS,
+                'expectedWarningCount' => 0,
+            ],
+        ];
+    }
 }
