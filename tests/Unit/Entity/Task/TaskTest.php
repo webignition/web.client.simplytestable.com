@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Entity\Task;
 
 use App\Entity\Task\Task;
+use App\Tests\Factory\ModelFactory;
 
 class TaskTest extends \PHPUnit\Framework\TestCase
 {
@@ -69,6 +70,41 @@ class TaskTest extends \PHPUnit\Framework\TestCase
             Task::STATE_FAILED => [
                 'state' => Task::STATE_FAILED,
                 'expectedStateLabel' => Task::STATE_FAILED,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider hasOutputDataProvider
+     *
+     * @param Task $task
+     * @param bool $expectedHasOutput
+     */
+    public function testHasOutput(Task $task, bool $expectedHasOutput)
+    {
+        $this->assertEquals($expectedHasOutput, $task->hasOutput());
+    }
+
+    public function hasOutputDataProvider(): array
+    {
+        return [
+            'no output' => [
+                'task' => ModelFactory::createTask(),
+                'expectedHasOutput' => false,
+            ],
+            'has output' => [
+                'task' => ModelFactory::createTask([
+                    ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                    ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput(),
+                ]),
+                'expectedHasOutput' => true,
+            ],
+            'has output, has excluded type' => [
+                'task' => ModelFactory::createTask([
+                    ModelFactory::TASK_TYPE => Task::TYPE_JS_STATIC_ANALYSIS,
+                    ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput(),
+                ]),
+                'expectedHasOutput' => false,
             ],
         ];
     }
