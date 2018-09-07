@@ -247,6 +247,10 @@ class Task
      */
     public function getOutput()
     {
+        if (self::TYPE_JS_STATIC_ANALYSIS === $this->type) {
+            return null;
+        }
+
         return $this->output;
     }
 

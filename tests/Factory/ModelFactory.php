@@ -4,6 +4,7 @@ namespace App\Tests\Factory;
 
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
+use App\Entity\Test\Test;
 use App\Model\TaskOutput\CssTextFileMessage;
 use App\Model\TaskOutput\HtmlTextFileMessage;
 use App\Model\TaskOutput\JsTextFileMessage;
@@ -15,6 +16,8 @@ class ModelFactory
 {
     const TASK_OUTPUT_CONTENT = 'content';
     const TASK_OUTPUT_TYPE = 'type';
+    const TASK_OUTPUT_ERROR_COUNT = 'error-count';
+    const TASK_OUTPUT_WARNING_COUNT = 'warning-count';
 
     const HTML_TEXT_FILE_MESSAGE_COLUMN_NUMBER = 'column_number';
     const HTML_TEXT_FILE_MESSAGE_LINE_NUMBER = 'line_number';
@@ -49,9 +52,13 @@ class ModelFactory
     const TASK_OUTPUT = 'output';
     const TASK_TASK_ID = 'id';
     const TASK_STATE = 'state';
+    const TASK_TYPE = 'type';
 
     const CACHE_VALIDATOR_HEADERS_IDENTIFIER = 'identifier';
     const CACHE_VALIDATOR_HEADERS_LAST_MODIFIED_DATE = 'last-modified-date';
+
+    const TEST_STATE = 'state';
+    const TEST_TASKS = 'tasks';
 
     /**
      * @param array $taskOutputValues
@@ -68,6 +75,14 @@ class ModelFactory
 
         if (isset($taskOutputValues[self::TASK_OUTPUT_TYPE])) {
             $output->setType($taskOutputValues[self::TASK_OUTPUT_TYPE]);
+        }
+
+        if (isset($taskOutputValues[self::TASK_OUTPUT_ERROR_COUNT])) {
+            $output->setErrorCount($taskOutputValues[self::TASK_OUTPUT_ERROR_COUNT]);
+        }
+
+        if (isset($taskOutputValues[self::TASK_OUTPUT_WARNING_COUNT])) {
+            $output->setWarningCount($taskOutputValues[self::TASK_OUTPUT_WARNING_COUNT]);
         }
 
         return $output;
@@ -306,6 +321,10 @@ class ModelFactory
             $task->setState($taskValues[self::TASK_STATE]);
         }
 
+        if (isset($taskValues[self::TASK_TYPE])) {
+            $task->setType($taskValues[self::TASK_TYPE]);
+        }
+
         return $task;
     }
 
@@ -324,5 +343,22 @@ class ModelFactory
         );
 
         return $cacheValidatorHeaders;
+    }
+
+    public static function createTest(array $testValues = []): Test
+    {
+        $test = new Test();
+
+        if (isset($testValues[self::TEST_STATE])) {
+            $test->setState($testValues[self::TEST_STATE]);
+        }
+
+        if (isset($testValues[self::TEST_TASKS])) {
+            foreach ($testValues[self::TEST_TASKS] as $task) {
+                $test->addTask($task);
+            }
+        }
+
+        return $test;
     }
 }
