@@ -16,6 +16,8 @@ class ModelFactory
 {
     const TASK_OUTPUT_CONTENT = 'content';
     const TASK_OUTPUT_TYPE = 'type';
+    const TASK_OUTPUT_ERROR_COUNT = 'error-count';
+    const TASK_OUTPUT_WARNING_COUNT = 'warning-count';
 
     const HTML_TEXT_FILE_MESSAGE_COLUMN_NUMBER = 'column_number';
     const HTML_TEXT_FILE_MESSAGE_LINE_NUMBER = 'line_number';
@@ -73,6 +75,14 @@ class ModelFactory
 
         if (isset($taskOutputValues[self::TASK_OUTPUT_TYPE])) {
             $output->setType($taskOutputValues[self::TASK_OUTPUT_TYPE]);
+        }
+
+        if (isset($taskOutputValues[self::TASK_OUTPUT_ERROR_COUNT])) {
+            $output->setErrorCount($taskOutputValues[self::TASK_OUTPUT_ERROR_COUNT]);
+        }
+
+        if (isset($taskOutputValues[self::TASK_OUTPUT_WARNING_COUNT])) {
+            $output->setWarningCount($taskOutputValues[self::TASK_OUTPUT_WARNING_COUNT]);
         }
 
         return $output;

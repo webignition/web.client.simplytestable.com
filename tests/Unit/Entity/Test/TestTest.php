@@ -190,4 +190,146 @@ class TestTest extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider getErrorCountDataProvider
+     *
+     * @param Test $test
+     * @param int $expectedErrorCount
+     */
+    public function testGetErrorCount(Test $test, int $expectedErrorCount)
+    {
+        $this->assertEquals($expectedErrorCount, $test->getErrorCount());
+    }
+
+    public function getErrorCountDataProvider(): array
+    {
+        return [
+            'no tasks' => [
+                'test' => ModelFactory::createTest(),
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, no output' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask(),
+                    ],
+                ]),
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, has output, no errors' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_ERROR_COUNT => 0,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, has output, has errors' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_ERROR_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'expectedErrorCount' => 3,
+            ],
+            'has tasks, has output, has errors, is excluded' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_JS_STATIC_ANALYSIS,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_ERROR_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'expectedErrorCount' => 0,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getWarningCountDataProvider
+     *
+     * @param Test $test
+     * @param int $expectedWarningCount
+     */
+    public function testGetWarningCount(Test $test, int $expectedWarningCount)
+    {
+        $this->assertEquals($expectedWarningCount, $test->getWarningCount());
+    }
+
+    public function getWarningCountDataProvider(): array
+    {
+        return [
+            'no tasks' => [
+                'test' => ModelFactory::createTest(),
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, no output' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask(),
+                    ],
+                ]),
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, has output, no warnings' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_WARNING_COUNT => 0,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'expectedErrorCount' => 0,
+            ],
+            'has tasks, has output, has warnings' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_HTML_VALIDATION,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_WARNING_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'expectedErrorCount' => 3,
+            ],
+            'has tasks, has output, has warnings, is excluded' => [
+                'test' => ModelFactory::createTest([
+                    ModelFactory::TEST_TASKS => [
+                        ModelFactory::createTask([
+                            ModelFactory::TASK_TYPE => Task::TYPE_JS_STATIC_ANALYSIS,
+                            ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
+                                ModelFactory::TASK_OUTPUT_WARNING_COUNT => 3,
+                                ModelFactory::TASK_OUTPUT_CONTENT => json_encode([]),
+                            ]),
+                        ]),
+                    ],
+                ]),
+                'expectedErrorCount' => 0,
+            ],
+        ];
+    }
 }

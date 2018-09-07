@@ -509,10 +509,6 @@ class Test implements \JsonSerializable
         $errorCount = 0;
 
         foreach ($this->getTasks() as $task) {
-            if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
-                continue;
-            }
-
             /* @var $task Task */
             if ($task->hasOutput()) {
                 $errorCount += $task->getOutput()->getErrorCount();
@@ -546,10 +542,6 @@ class Test implements \JsonSerializable
         $warningCount = 0;
 
         foreach ($this->getTasks() as $task) {
-            if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
-                continue;
-            }
-
             /* @var $task Task */
             if ($task->hasOutput()) {
                 $warningCount += $task->getOutput()->getWarningCount();
