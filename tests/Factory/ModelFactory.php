@@ -4,6 +4,7 @@ namespace App\Tests\Factory;
 
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
+use App\Entity\Test\Test;
 use App\Model\TaskOutput\CssTextFileMessage;
 use App\Model\TaskOutput\HtmlTextFileMessage;
 use App\Model\TaskOutput\JsTextFileMessage;
@@ -49,9 +50,13 @@ class ModelFactory
     const TASK_OUTPUT = 'output';
     const TASK_TASK_ID = 'id';
     const TASK_STATE = 'state';
+    const TASK_TYPE = 'type';
 
     const CACHE_VALIDATOR_HEADERS_IDENTIFIER = 'identifier';
     const CACHE_VALIDATOR_HEADERS_LAST_MODIFIED_DATE = 'last-modified-date';
+
+    const TEST_STATE = 'state';
+    const TEST_TASKS = 'tasks';
 
     /**
      * @param array $taskOutputValues
@@ -306,6 +311,10 @@ class ModelFactory
             $task->setState($taskValues[self::TASK_STATE]);
         }
 
+        if (isset($taskValues[self::TASK_TYPE])) {
+            $task->setType($taskValues[self::TASK_TYPE]);
+        }
+
         return $task;
     }
 
@@ -324,5 +333,22 @@ class ModelFactory
         );
 
         return $cacheValidatorHeaders;
+    }
+
+    public static function createTest(array $testValues = []): Test
+    {
+        $test = new Test();
+
+        if (isset($testValues[self::TEST_STATE])) {
+            $test->setState($testValues[self::TEST_STATE]);
+        }
+
+        if (isset($testValues[self::TEST_TASKS])) {
+            foreach ($testValues[self::TEST_TASKS] as $task) {
+                $test->addTask($task);
+            }
+        }
+
+        return $test;
     }
 }
