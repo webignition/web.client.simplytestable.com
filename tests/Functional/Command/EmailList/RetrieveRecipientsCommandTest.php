@@ -8,9 +8,15 @@ use App\Entity\MailChimp\ListRecipients;
 use App\Services\MailChimp\ListRecipientsService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Functional\AbstractBaseTestCase;
+use Mockery\MockInterface;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\NullOutput;
 use App\Tests\Services\HttpMockHandler;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
 {
@@ -100,5 +106,49 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
                 ],
             ],
         ];
+    }
+
+    public function testRunWithEmptyListName()
+    {
+        $listRecipientsService = self::$container->get(ListRecipientsService::class);
+
+        $input = new ArrayInput([]);
+        $output = new NullOutput();
+
+        /* @var QuestionHelper|MockInterface $questionHelper */
+        $questionHelper = \Mockery::mock(QuestionHelper::class);
+        $questionHelper
+            ->shouldReceive('ask')
+            ->once()
+            ->withArgs(function (
+                InputInterface $inputArg,
+                OutputInterface $outputArg,
+                ChoiceQuestion $question
+            ) use (
+                $input,
+                $output,
+                $listRecipientsService
+            ) {
+                $this->assertEquals($input, $inputArg);
+                $this->assertEquals($output, $outputArg);
+                $this->assertEquals($listRecipientsService->getListNames(), $question->getChoices());
+
+                return true;
+            });
+
+
+        /* @var HelperSet|MockInterface $helperSet */
+        $helperSet = \Mockery::mock(HelperSet::class);
+        $helperSet
+            ->shouldReceive('get')
+            ->once()
+            ->with('question')
+            ->andReturn($questionHelper);
+
+        $this->retrieveRecipientsCommand->setHelperSet($helperSet);
+
+        $returnValue = $this->retrieveRecipientsCommand->run($input, $output);
+
+        $this->assertEquals(0, $returnValue);
     }
 }
