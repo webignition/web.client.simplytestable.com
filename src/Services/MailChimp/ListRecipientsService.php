@@ -119,4 +119,12 @@ class ListRecipientsService
 
         return $listRecipients;
     }
+
+    /**
+     * @return string[]
+     */
+    public function getListNames()
+    {
+        return array_keys($this->listNameToListIdMap);
+    }
 }
