@@ -10,7 +10,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class RetrieveListRecipientsCommand extends AbstractRetrieveRecipientsCommand
 {
-    const NAME = 'simplytestable:emaillist:retrieve-list-recipients';
+    const NAME = 'simplytestable:emaillist:retrieve:list';
     const ARG_LIST_NAME = 'listName';
 
     /**
@@ -36,11 +36,7 @@ class RetrieveListRecipientsCommand extends AbstractRetrieveRecipientsCommand
             return 0;
         }
 
-        $output->write('Getting recipients for "' . $listName . '" ... ');
-
-        $memberEmails = $this->retrieveAndStoreMemberEmails($listName);
-
-        $output->writeln(count($memberEmails) . ' recipients retrieved');
+        $this->processListRetrieval($listName, $output);
 
         return 0;
     }
