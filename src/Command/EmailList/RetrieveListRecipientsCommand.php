@@ -2,47 +2,16 @@
 
 namespace App\Command\EmailList;
 
-use Doctrine\ORM\EntityManagerInterface;
-use App\Services\MailChimp\ListRecipientsService;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\Services\MailChimp\Service as MailChimpService;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
-class RetrieveListRecipientsCommand extends AbstractEmailListCommand
+class RetrieveListRecipientsCommand extends AbstractRetrieveRecipientsCommand
 {
     const NAME = 'simplytestable:emaillist:retrieve-list-recipients';
     const ARG_LIST_NAME = 'listName';
-
-    /**
-     * @var ListRecipientsService
-     */
-    private $listRecipientsService;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @param ListRecipientsService $listRecipientsService
-     * @param MailChimpService $mailChimpService
-     * @param EntityManagerInterface $entityManager
-     * @param string|null $name
-     */
-    public function __construct(
-        ListRecipientsService $listRecipientsService,
-        EntityManagerInterface $entityManager,
-        MailChimpService $mailChimpService,
-        $name = null
-    ) {
-        parent::__construct($mailChimpService, $name);
-
-        $this->listRecipientsService = $listRecipientsService;
-        $this->entityManager = $entityManager;
-    }
 
     /**
      * {@inheritdoc}
@@ -69,19 +38,9 @@ class RetrieveListRecipientsCommand extends AbstractEmailListCommand
 
         $output->write('Getting recipients for "' . $listName . '" ... ');
 
-        $listRecipients = $this->listRecipientsService->get($listName);
-        $listRecipients->setRecipients([]);
-
-        $memberEmails = $this->mailChimpService->retrieveMemberEmails($listName);
+        $memberEmails = $this->retrieveAndStoreMemberEmails($listName);
 
         $output->writeln(count($memberEmails) . ' recipients retrieved');
-
-        foreach ($memberEmails as $memberEmail) {
-            $listRecipients->addRecipient($memberEmail);
-        }
-
-        $this->entityManager->persist($listRecipients);
-        $this->entityManager->flush();
 
         return 0;
     }
