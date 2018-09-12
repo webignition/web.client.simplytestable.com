@@ -11,9 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use App\Services\MailChimp\Service as MailChimpService;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
-class RetrieveRecipientsCommand extends AbstractEmailListCommand
+class RetrieveListRecipientsCommand extends AbstractEmailListCommand
 {
-    const NAME = 'simplytestable:emaillist:retrieve-recipients';
+    const NAME = 'simplytestable:emaillist:retrieve-list-recipients';
     const ARG_LIST_NAME = 'listName';
 
     /**
