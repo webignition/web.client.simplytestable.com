@@ -3,7 +3,7 @@
 namespace App\Tests\Functional\Command\EmailList;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Command\EmailList\RetrieveRecipientsCommand;
+use App\Command\EmailList\RetrieveListRecipientsCommand;
 use App\Entity\MailChimp\ListRecipients;
 use App\Services\MailChimp\ListRecipientsService;
 use App\Tests\Factory\HttpResponseFactory;
@@ -18,12 +18,12 @@ use App\Tests\Services\HttpMockHandler;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
-class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
+class RetrieveListRecipientsCommandTest extends AbstractBaseTestCase
 {
     /**
-     * @var RetrieveRecipientsCommand
+     * @var RetrieveListRecipientsCommand
      */
-    protected $retrieveRecipientsCommand;
+    private $retrieveListRecipientsCommand;
 
     /**
      * {@inheritdoc}
@@ -32,7 +32,7 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->retrieveRecipientsCommand = self::$container->get(RetrieveRecipientsCommand::class);
+        $this->retrieveListRecipientsCommand = self::$container->get(RetrieveListRecipientsCommand::class);
     }
 
     /**
@@ -60,10 +60,10 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
         $httpMockHandler->appendFixtures($httpFixtures);
 
         $input = new ArrayInput([
-            RetrieveRecipientsCommand::ARG_LIST_NAME => $listName,
+            RetrieveListRecipientsCommand::ARG_LIST_NAME => $listName,
         ]);
 
-        $returnValue = $this->retrieveRecipientsCommand->run($input, new NullOutput());
+        $returnValue = $this->retrieveListRecipientsCommand->run($input, new NullOutput());
 
         $this->assertEquals($expectedReturnValue, $returnValue);
 
@@ -145,9 +145,9 @@ class RetrieveRecipientsCommandTest extends AbstractBaseTestCase
             ->with('question')
             ->andReturn($questionHelper);
 
-        $this->retrieveRecipientsCommand->setHelperSet($helperSet);
+        $this->retrieveListRecipientsCommand->setHelperSet($helperSet);
 
-        $returnValue = $this->retrieveRecipientsCommand->run($input, $output);
+        $returnValue = $this->retrieveListRecipientsCommand->run($input, $output);
 
         $this->assertEquals(0, $returnValue);
     }
