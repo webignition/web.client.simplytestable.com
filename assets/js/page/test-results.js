@@ -4,6 +4,7 @@ let CookieOptionsFactory = require('../services/cookie-options-factory');
 let TestLockUnlock = require('../model/element/test-lock-unlock');
 let FormButton = require('../model/element/form-button');
 let BadgeCollection = require('../model/badge-collection');
+let HttpAuthenticationOptionsModal = require('../http-authentication-options-modal');
 
 class TestResults {
     /**
@@ -19,6 +20,10 @@ class TestResults {
 
         let testLockUnlockElement = document.querySelector('.btn-lock-unlock');
         this.testLockUnlock = testLockUnlockElement ? new TestLockUnlock(testLockUnlockElement) : null;
+
+        this.httpAuthenticationOptionsModal = new HttpAuthenticationOptionsModal(
+            this.document.querySelector('#http-authentication-options-modal')
+        );
     }
 
     init () {
@@ -35,6 +40,8 @@ class TestResults {
             this.retestButton.deEmphasize();
             this.retestButton.markAsBusy();
         });
+
+        this.httpAuthenticationOptionsModal.init();
     };
 }
 
