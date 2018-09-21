@@ -8,7 +8,7 @@
 
         {% for task_type in remote_test.tasktypes %}
             {% if task_type_details.name == task_type %}
-                {% set task_type_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+                {% set task_type_error_count = test.getErrorCountByTaskType(task_type) %}
             {% endif %}
         {% endfor %}
 
@@ -16,7 +16,7 @@
 
         {% for task_type in remote_test.tasktypes %}
             {% if task_type_details.name == task_type %}
-                {% set task_type_warning_count = test.getWarningCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+                {% set task_type_warning_count = test.getWarningCountByTaskType(task_type) %}
             {% endif %}
         {% endfor %}
 
