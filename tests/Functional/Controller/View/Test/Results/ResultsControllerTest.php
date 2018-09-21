@@ -940,7 +940,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertInternalType('array', $parameters['test_options']);
         $this->assertInternalType('array', $parameters['css_validation_ignore_common_cdns']);
         $this->assertInternalType('array', $parameters['default_css_validation_options']);
-        $this->assertInternalType('array', $parameters['default_js_static_analysis_options']);
     }
 
     /**
@@ -970,7 +969,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'filtered_task_counts',
                 'domain_test_count',
                 'default_css_validation_options',
-                'default_js_static_analysis_options',
             ],
             array_keys($parameters)
         );

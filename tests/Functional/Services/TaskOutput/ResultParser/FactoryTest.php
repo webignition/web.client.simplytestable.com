@@ -6,7 +6,6 @@ use App\Entity\Task\Output;
 use App\Services\TaskOutput\ResultParser\CssValidationResultParser;
 use App\Services\TaskOutput\ResultParser\Factory as ResultParserFactory;
 use App\Services\TaskOutput\ResultParser\HtmlValidationResultParser;
-use App\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser;
 use App\Services\TaskOutput\ResultParser\LinkIntegrityResultParser;
 use App\Tests\Factory\ModelFactory;
 use App\Tests\Functional\AbstractBaseTestCase;
@@ -58,12 +57,6 @@ class FactoryTest extends AbstractBaseTestCase
                     ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_CSS_VALIDATION,
                 ]),
                 'expectedResultParserClassName' => CssValidationResultParser::class,
-            ],
-            'JS static analysis' => [
-                'output' => ModelFactory::createTaskOutput([
-                    ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
-                ]),
-                'expectedResultParserClassName' => JsStaticAnalysisResultParser::class,
             ],
             'Link integrity' => [
                 'output' => ModelFactory::createTaskOutput([

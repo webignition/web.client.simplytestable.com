@@ -6,7 +6,6 @@ use App\Entity\Task\Output;
 use App\Entity\Task\Task;
 use App\Model\TaskOutput\CssTextFileMessage;
 use App\Model\TaskOutput\HtmlTextFileMessage;
-use App\Model\TaskOutput\JsTextFileMessage;
 use App\Model\TaskOutput\LinkIntegrityMessage;
 use App\Model\TestOptions;
 use SimplyTestable\PageCacheBundle\Entity\CacheValidatorHeaders;
@@ -161,60 +160,6 @@ class ModelFactory
         }
 
         return $cssTextFileMessage;
-    }
-
-    /**
-     * @param array $jsTextFileMessageValues
-     *
-     * @return JsTextFileMessage
-     */
-    public static function createJsTextFileMessage($jsTextFileMessageValues = [])
-    {
-        $jsTextFileMessage = new JsTextFileMessage();
-
-        if (isset($jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_CONTEXT])) {
-            $jsTextFileMessage->setContext(
-                $jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_CONTEXT]
-            );
-        }
-
-        if (isset($jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_COLUMN_NUMBER])) {
-            $jsTextFileMessage->setColumnNumber(
-                $jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_COLUMN_NUMBER]
-            );
-        }
-
-        if (isset($jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_FRAGMENT])) {
-            $jsTextFileMessage->setFragment(
-                $jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_FRAGMENT]
-            );
-        }
-
-        if (isset($jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_LINE_NUMBER])) {
-            $jsTextFileMessage->setLineNumber(
-                $jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_LINE_NUMBER]
-            );
-        }
-
-        if (isset($jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_MESSAGE])) {
-            $jsTextFileMessage->setMessage(
-                $jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_MESSAGE]
-            );
-        }
-
-        if (isset($jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_TYPE])) {
-            $jsTextFileMessage->setType(
-                $jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_TYPE]
-            );
-        }
-
-        if (isset($jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_CLASS])) {
-            $jsTextFileMessage->setClass(
-                $jsTextFileMessageValues[self::JS_TEXT_FILE_MESSAGE_CLASS]
-            );
-        }
-
-        return $jsTextFileMessage;
     }
 
     /**

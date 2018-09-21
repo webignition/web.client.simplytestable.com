@@ -9,8 +9,8 @@
     {% if test.errorCount > 0 or test.warningCount > 0 %}
 
         {% for task_type in remote_test.tasktypes %}
-            {% set task_error_count = test.getErrorCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
-            {% set task_warning_count = test.getWarningCountByTaskType(task_type | replace({'JavaScript static analysis': "JS static analysis"})) %}
+            {% set task_error_count = test.getErrorCountByTaskType(task_type) %}
+            {% set task_warning_count = test.getWarningCountByTaskType(task_type) %}
 
             {% if task_error_count or task_warning_count %}
                     <div class="row {% if task_error_count and task_warning_count %}multiple{% endif %}">

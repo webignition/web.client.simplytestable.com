@@ -39,44 +39,8 @@
   }
 }
 
-.js-static-analysis-jslint-options {
-  margin-top: 20px;
-
-  h3 {
-    span {
-      font-weight: normal;
-    }
-  }
-}
-
-.jslint-option-set-group {
-  margin-top: 20px;
-}
-
 .full-single-option {
   padding-left: 0;
-}
-
-.jslint-limits {
-  .inline-short {
-    display: inline;
-    width: 50px;
-  }
-
-  .stop-when-reaching {
-    input[type=radio] {
-      margin-top: 10px;
-    }
-  }
-}
-
-.jslint-predef {
-  margin-top: 10px;
-  width: 80%;
-
-  @media (min-width: 768px) {
-    width: 100%;
-  }
 }
 
 .css-validator-option-set {

@@ -8,7 +8,6 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\TaskOutput\CssTextFileMessage;
-use App\Model\TaskOutput\JsTextFileMessage;
 use App\Model\TaskOutput\LinkIntegrityMessage;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
@@ -185,10 +184,6 @@ class ResultsController extends AbstractBaseViewController
             $viewData['warnings_by_ref'] = $this->getCssValidationIssuesGroupedByRef($warnings);
         }
 
-        if (Task::TYPE_JS_STATIC_ANALYSIS === $task->getType()) {
-            $viewData['errors_by_js_context'] = $this->getJsStaticAnalysisErrorsGroupedByContext($task);
-        }
-
         if (Task::TYPE_LINK_INTEGRITY === $task->getType()) {
             $viewData['errors_by_link_state'] = $this->getLinkIntegrityErrorsGroupedByLinkState($task);
             $viewData['link_class_labels'] = [
@@ -343,31 +338,6 @@ class ResultsController extends AbstractBaseViewController
         }
 
         return $groupedByRef;
-    }
-
-    /**
-     * @param Task $task
-     *
-     * @return array
-     */
-    private function getJsStaticAnalysisErrorsGroupedByContext(Task $task)
-    {
-        $errorsGroupedByContext = [];
-
-        /* @var JsTextFileMessage[] $errors */
-        $errors = $task->getOutput()->getResult()->getErrors();
-
-        foreach ($errors as $error) {
-            $context = rawurldecode($error->getContext());
-
-            if (!isset($errorsGroupedByContext[$context])) {
-                $errorsGroupedByContext[$context] = [];
-            }
-
-            $errorsGroupedByContext[$context][] = $error;
-        }
-
-        return $errorsGroupedByContext;
     }
 
     /**

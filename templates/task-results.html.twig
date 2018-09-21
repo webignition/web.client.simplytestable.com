@@ -5,7 +5,6 @@
 {% set filter_selectors = {
     'html-validation':'p',
     'css-validation':'.message',
-    'js-static-analysis':'.message',
     'link-integrity':'.raw-error-message'
 } %}
 {% set fix_count = distinct_fixes is defined ? distinct_fixes|length : 0 %}

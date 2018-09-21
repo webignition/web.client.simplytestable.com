@@ -49,10 +49,6 @@ class LinkIntegrityResultParserTest extends \PHPUnit\Framework\TestCase
                 'taskType' => Output::TYPE_CSS_VALIDATION,
                 'expectedHandles' => false,
             ],
-            Output::TYPE_JS_STATIC_ANALYSIS => [
-                'taskType' => Output::TYPE_JS_STATIC_ANALYSIS,
-                'expectedHandles' => false,
-            ],
             Output::TYPE_LINK_INTEGRITY => [
                 'taskType' => Output::TYPE_LINK_INTEGRITY,
                 'expectedHandles' => true,

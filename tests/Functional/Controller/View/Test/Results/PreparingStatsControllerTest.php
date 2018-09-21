@@ -183,11 +183,6 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
                             TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
                         ],
                         [
-                            TaskFactory::KEY_TASK_ID => 3,
-                            TaskFactory::KEY_URL => 'http://example.com/',
-                            TaskFactory::KEY_TYPE => Task::TYPE_JS_STATIC_ANALYSIS,
-                        ],
-                        [
                             TaskFactory::KEY_TASK_ID => 4,
                             TaskFactory::KEY_URL => 'http://example.com/',
                             TaskFactory::KEY_TYPE => Task::TYPE_LINK_INTEGRITY,
@@ -196,9 +191,9 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
                 ],
                 'expectedResponseData' => [
                     'id' => 1,
-                    'completion_percent' => 33,
-                    'remaining_tasks_to_retrieve_count' => 8,
-                    'local_task_count' => 4,
+                    'completion_percent' => 25,
+                    'remaining_tasks_to_retrieve_count' => 9,
+                    'local_task_count' => 3,
                     'remote_task_count' => 12,
                 ],
             ],

@@ -58,24 +58,10 @@ class TaskServiceSetParsedOutputTest extends AbstractTaskServiceTest
                 ]),
                 'expectedHasOutput' => true,
             ],
-            'js static analysis output' => [
-                'task' => ModelFactory::createTask([
-                    ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
-                        ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
-                        ModelFactory::TASK_OUTPUT_CONTENT => json_encode([
-                            '2be27b536970c6988a1f387359237529' => [
-                                'statusLine' => '',
-                                'entries' => [],
-                            ],
-                        ]),
-                    ]),
-                ]),
-                'expectedHasOutput' => true,
-            ],
             'link integrity output' => [
                 'task' => ModelFactory::createTask([
                     ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
-                        ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
+                        ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_LINK_INTEGRITY,
                         ModelFactory::TASK_OUTPUT_CONTENT => '[]',
                     ]),
                 ]),

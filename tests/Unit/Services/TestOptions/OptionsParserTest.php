@@ -47,9 +47,6 @@ class OptionsParserTest extends \PHPUnit\Framework\TestCase
             'css-validation-domains-to-ignore' => [
                 '',
             ],
-            'js-static-analysis-domains-to-ignore' => [
-                '',
-            ],
         ]);
 
         $options = $this->optionsParser->getOptions();
@@ -85,7 +82,6 @@ class OptionsParserTest extends \PHPUnit\Framework\TestCase
                             'a', null, '',
                         ]
                     ],
-                    'js-static-analysis-domains-to-ignore' => "js-foo.com\njs-bar.com"
                 ]),
                 'formKey' => '',
                 'expectedOptions' => [
@@ -103,10 +99,6 @@ class OptionsParserTest extends \PHPUnit\Framework\TestCase
                         [
                             'a', null, null,
                         ]
-                    ],
-                    'js-static-analysis-domains-to-ignore' => [
-                        'js-foo.com',
-                        'js-bar.com',
                     ],
                 ],
             ],
