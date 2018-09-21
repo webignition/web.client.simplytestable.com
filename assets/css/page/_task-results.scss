@@ -189,31 +189,6 @@ h1 {
       padding-left: 0;
     }
   }
-
-  &.js-static-analysis-issue-list {
-    .prettyprint {
-      opacity: 0.8;
-      border-left: 3px solid #ccc;
-    }
-
-    .issue {
-      .meta {
-        width: 200px;
-      }
-
-      .content {
-        @media (min-width: 992px) {
-          margin-left: 210px;
-        }
-      }
-
-      &:hover {
-        .prettyprint {
-          opacity: 1;
-        }
-      }
-    }
-  }
 }
 
 .error-list {
