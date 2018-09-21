@@ -583,7 +583,6 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'is_public_user_test',
                 'css_validation_ignore_common_cdns',
                 'default_css_validation_options',
-                'default_js_static_analysis_options',
             ],
             array_keys($parameters)
         );

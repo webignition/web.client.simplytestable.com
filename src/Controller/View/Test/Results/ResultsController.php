@@ -246,12 +246,6 @@ class ResultsController extends AbstractResultsController
                     'vendor-extensions' => 'warn',
                     'ignore-common-cdns' => 1
                 ],
-                'default_js_static_analysis_options' => [
-                    'ignore-common-cdns' => 1,
-                    'jslint-option-maxerr' => 50,
-                    'jslint-option-indent' => 4,
-                    'jslint-option-maxlen' => 256
-                ],
             ],
             $response
         );
