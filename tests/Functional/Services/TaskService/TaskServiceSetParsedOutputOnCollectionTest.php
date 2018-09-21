@@ -78,29 +78,11 @@ class TaskServiceSetParsedOutputOnCollectionTest extends AbstractTaskServiceTest
                     true,
                 ],
             ],
-            'single js static analysis output' => [
-                'tasks' => [
-                    ModelFactory::createTask([
-                        ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
-                            ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
-                            ModelFactory::TASK_OUTPUT_CONTENT => json_encode([
-                                '2be27b536970c6988a1f387359237529' => [
-                                    'statusLine' => '',
-                                    'entries' => [],
-                                ],
-                            ]),
-                        ]),
-                    ]),
-                ],
-                'expectedHasOutput' => [
-                    true,
-                ],
-            ],
             'single link integrity output' => [
                 'tasks' => [
                     ModelFactory::createTask([
                         ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
-                            ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
+                            ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_LINK_INTEGRITY,
                             ModelFactory::TASK_OUTPUT_CONTENT => '[]',
                         ]),
                     ]),
@@ -121,23 +103,6 @@ class TaskServiceSetParsedOutputOnCollectionTest extends AbstractTaskServiceTest
                     ModelFactory::createTask([
                         ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
                             ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_CSS_VALIDATION,
-                            ModelFactory::TASK_OUTPUT_CONTENT => '[]',
-                        ]),
-                    ]),
-                    ModelFactory::createTask([
-                        ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
-                            ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
-                            ModelFactory::TASK_OUTPUT_CONTENT => json_encode([
-                                '2be27b536970c6988a1f387359237529' => [
-                                    'statusLine' => '',
-                                    'entries' => [],
-                                ],
-                            ]),
-                        ]),
-                    ]),
-                    ModelFactory::createTask([
-                        ModelFactory::TASK_OUTPUT => ModelFactory::createTaskOutput([
-                            ModelFactory::TASK_OUTPUT_TYPE => Output::TYPE_JS_STATIC_ANALYSIS,
                             ModelFactory::TASK_OUTPUT_CONTENT => '[]',
                         ]),
                     ]),
