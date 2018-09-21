@@ -69,9 +69,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         'css-validation' => [
             'name' => 'CSS validation',
         ],
-        'js-static-analysis' => [
-            'name' => 'JavaScript static analysis',
-        ],
         'link-integrity' => [
             'name' => 'Link integrity',
         ],
@@ -546,7 +543,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
                 'expectedAbsoluteTestTypes' => [
                     'html-validation' => 0,
                     'css-validation' => 0,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 0,
                 ],
             ],
@@ -559,7 +555,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
                 'expectedAbsoluteTestTypes' => [
                     'html-validation' => 0,
                     'css-validation' => 0,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 0,
                 ],
             ],
@@ -572,7 +567,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
                 'expectedAbsoluteTestTypes' => [
                     'html-validation' => 1,
                     'css-validation' => 0,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 0,
                 ],
             ],
@@ -588,7 +582,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
                 'expectedAbsoluteTestTypes' => [
                     'html-validation' => 1,
                     'css-validation' => 1,
-                    'js-static-analysis' => 0,
                     'link-integrity' => 0,
                 ],
             ],
@@ -736,7 +729,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
                         'CSS validation' => [
                             'ignore-warnings' => 1,
                         ],
-                        'JavaScript static analysis' => [],
                         'Link integrity' => [],
                     ],
                     'parameters' => [
