@@ -299,8 +299,8 @@ class ResultsController extends AbstractResultsController
         }
 
         $taskTypeLabel = str_replace(
-            ['css', 'html', 'js', 'link'],
-            ['CSS', 'HTML', 'JS', 'Link'],
+            ['css', 'html', 'link'],
+            ['CSS', 'HTML', 'Link'],
             $taskType
         );
 
