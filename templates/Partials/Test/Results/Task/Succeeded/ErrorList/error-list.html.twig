@@ -22,10 +22,6 @@
             {% include 'Partials/Test/Results/Task/Succeeded/ErrorList/css-validation/list.html.twig' %}
         {% endif %}
 
-        {% if task_type_key == 'js-static-analysis' %}
-            {% include 'Partials/Test/Results/Task/Succeeded/ErrorList/js-static-analysis/list.html.twig' %}
-        {% endif %}
-
         {% if task_type_key == 'link-integrity' %}
             {% include 'Partials/Test/Results/Task/Succeeded/ErrorList/link-integrity/list.html.twig' %}
         {% endif %}
