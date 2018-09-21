@@ -130,7 +130,6 @@ services:
       calls:
         - [addResultParser, ['@App\Services\TaskOutput\ResultParser\HtmlValidationResultParser']]
         - [addResultParser, ['@App\Services\TaskOutput\ResultParser\CssValidationResultParser']]
-        - [addResultParser, ['@App\Services\TaskOutput\ResultParser\JsStaticAnalysisResultParser']]
         - [addResultParser, ['@App\Services\TaskOutput\ResultParser\LinkIntegrityResultParser']]
 
     App\Services\CoreApplicationRouter:
