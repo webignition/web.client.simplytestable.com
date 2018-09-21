@@ -28,7 +28,6 @@ class Task
 
     const TYPE_HTML_VALIDATION = 'HTML validation';
     const TYPE_CSS_VALIDATION = 'CSS validation';
-    const TYPE_JS_STATIC_ANALYSIS = 'JS static analysis';
     const TYPE_LINK_INTEGRITY = 'Link integrity';
 
     const TYPE_KEY_HTML_VALIDATION = 'html-validation';

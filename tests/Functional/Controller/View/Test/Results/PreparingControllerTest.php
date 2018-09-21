@@ -277,11 +277,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
                         ],
                         [
-                            TaskFactory::KEY_TASK_ID => 3,
-                            TaskFactory::KEY_URL => 'http://example.com/',
-                            TaskFactory::KEY_TYPE => Task::TYPE_JS_STATIC_ANALYSIS,
-                        ],
-                        [
                             TaskFactory::KEY_TASK_ID => 4,
                             TaskFactory::KEY_URL => 'http://example.com/',
                             TaskFactory::KEY_TYPE => Task::TYPE_LINK_INTEGRITY,
@@ -294,7 +289,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $this->assertEquals(33, $parameters['completion_percent']);
+                            $this->assertEquals(25, $parameters['completion_percent']);
                             $this->assertInternalType('array', $parameters['website']);
 
                             /* @var Test $test */
@@ -303,9 +298,9 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
                             $this->assertEquals(self::WEBSITE, (string)$test->getWebsite());
 
-                            $this->assertEquals(4, $parameters['local_task_count']);
+                            $this->assertEquals(3, $parameters['local_task_count']);
                             $this->assertEquals(12, $parameters['remote_task_count']);
-                            $this->assertEquals(8, $parameters['remaining_tasks_to_retrieve_count']);
+                            $this->assertEquals(9, $parameters['remaining_tasks_to_retrieve_count']);
 
                             return true;
                         },
