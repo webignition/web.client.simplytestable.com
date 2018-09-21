@@ -97,17 +97,6 @@
                                     <span class="content">Advanced CSS validation options</span>
                                 </span>
                             {% endif %}
-
-
-                            {% if 'js-static-analysis' in available_task_types|keys %}
-                                <span class="collapse-control collapsed link"
-                                      data-toggle="collapse"
-                                      data-target="#js-static-analysis-options-advanced"
-                                      data-icon-additional-classes="fa-fw"
-                                >
-                                    <span class="content">Advanced JavaScript static analysis (and JSLint) options</span>
-                                </span>
-                            {% endif %}
                         </div>
 
                         {% if 'css-validation' in available_task_types|keys %}
