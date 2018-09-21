@@ -1,10 +1,14 @@
 let FormButton = require('../model/element/form-button');
+let HttpAuthenticationOptionsModal = require('../http-authentication-options-modal');
 
 class TestStartForm {
     constructor (element) {
         this.document = element.ownerDocument;
         this.element = element;
         this.submitButtons = [];
+        this.httpAuthenticationOptionsModal = new HttpAuthenticationOptionsModal(
+            this.document.querySelector('#http-authentication-options-modal')
+        );
 
         [].forEach.call(this.element.querySelectorAll('[type=submit]'), (submitButton) => {
             this.submitButtons.push(new FormButton(submitButton));
@@ -17,6 +21,8 @@ class TestStartForm {
         this.submitButtons.forEach((submitButton) => {
             submitButton.element.addEventListener('click', this._submitButtonEventListener);
         });
+
+        this.httpAuthenticationOptionsModal.init();
     };
 
     _submitEventListener (event) {

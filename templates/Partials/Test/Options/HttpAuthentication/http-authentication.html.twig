@@ -59,10 +59,12 @@
                     <div class="col-lg-10 col-md-10">
                         <input id="http-auth-username"
                                name="http-auth-username"
-                               class="form-control credential"
+                               class="form-control credential js-disable-readonly"
                                type="text"
                                placeholder="Enter required username"
-                               value="{{ http_auth_username }}">
+                               value="{{ http_auth_username }}"
+                               readonly
+                        >
                     </div>
                 </div>
 
@@ -72,10 +74,12 @@
                         <input
                                 id="http-auth-password"
                                 name="http-auth-password"
-                                class="form-control credential"
+                                class="form-control credential js-disable-readonly"
                                 type="password"
                                 placeholder="Enter required password"
-                                value="{{ http_auth_password }}">
+                                value="{{ http_auth_password }}"
+                                readonly
+                        >
                     </div>
                 </div>
             </div>
