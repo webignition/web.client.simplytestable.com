@@ -12,9 +12,6 @@ class Result
      */
     private $messages = [];
 
-    /**
-     * @param Message $message
-     */
     public function addMessage(Message $message)
     {
         $this->messages[] = $message;
@@ -23,17 +20,12 @@ class Result
     /**
      * @return Message[]
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         return $this->getMessagesOfType(Message::TYPE_ERROR);
     }
 
-    /**
-     * @param string $message
-     *
-     * @return int
-     */
-    public function getCountByMessage($message)
+    public function getCountByMessage(string $message): int
     {
         $comparator = strtolower($message);
         $count = 0;
@@ -50,17 +42,17 @@ class Result
     /**
      * @return Message[]
      */
-    public function getWarnings()
+    public function getWarnings(): array
     {
         return $this->getMessagesOfType(Message::TYPE_WARNING);
     }
 
     /**
-     * @param string
+     * @param string $type
      *
      * @return Message[]
      */
-    private function getMessagesOfType($type)
+    private function getMessagesOfType(string $type): array
     {
         $messages = array();
 
@@ -74,166 +66,111 @@ class Result
         return $messages;
     }
 
-    /**
-     * @return Message
-     */
-    public function getFirstError()
+    public function getFirstError(): ?Message
     {
         $errors = $this->getErrors();
 
         return $errors[0];
     }
 
-    /**
-     * @return int
-     */
-    public function getErrorCount()
+    public function getErrorCount(): int
     {
         return count($this->getErrors());
     }
 
-    /**
-     * @return int
-     */
-    public function getWarningCount()
+    public function getWarningCount(): int
     {
         return count($this->getWarnings());
     }
 
-    /**
-     * @return bool
-     */
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return $this->getErrorCount() > 0;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasWarnings()
+    public function hasWarnings(): bool
     {
         return $this->getWarningCount() > 0;
     }
 
-    /**
-     * @return string
-     */
-    public function getOutcome()
+    public function getOutcome(): string
     {
         return $this->hasErrors()
             ? self::OUTCOME_FAILED
             : self::OUTCOME_PASSED;
     }
 
-    /**
-     * @return bool
-     */
-    public function isHtmlMissingDocumentTypeFailure()
+    public function isHtmlMissingDocumentTypeFailure(): bool
     {
         return $this->isOfErrorClass('/document-type-missing/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isHtmlInvalidDocumentTypeFailure()
+    public function isHtmlInvalidDocumentTypeFailure(): bool
     {
         return $this->isOfErrorClass('/document-type-invalid/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isMarkuplessTextHtmlFailure()
+    public function isMarkuplessTextHtmlFailure(): bool
     {
         return $this->isOfErrorClass('/document-is-not-markup/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isHttpRedirectLoopFailure()
+    public function isHttpRedirectLoopFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-redirect-loop/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isHttpRedirectLimitFailure()
+    public function isHttpRedirectLimitFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-redirect-limit-reached/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isCharacterEncodingFailure()
+    public function isInvalidCharacterEncodingFailure(): bool
+    {
+        return $this->isOfErrorClass('/invalid-character-encoding/');
+    }
+
+    public function isCharacterEncodingFailure(): bool
     {
         return $this->isOfErrorClass('/character-encoding/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isCurlTimeoutFailure()
+    public function isCurlTimeoutFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-curl-code-28/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isCurlDnsResolutionFailure()
+    public function isCurlDnsResolutionFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-curl-code-6/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isCurlUrlFormatFailure()
+    public function isCurlUrlFormatFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-curl-code-3$/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isCurlSslFailure()
+    public function isCurlSslFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-curl-code-35$/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isHttpClientErrorFailure()
+    public function isHttpClientErrorFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-4\d\d/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isHttpServerErrorFailure()
+    public function isHttpServerErrorFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-5\d\d/');
     }
 
-    /**
-     * @return bool
-     */
-    public function isHttpClientOrServerErrorFailure()
+    public function isHttpClientOrServerErrorFailure(): bool
     {
         return $this->isHttpClientErrorFailure() || $this->isHttpServerErrorFailure();
     }
 
-    /**
-     * @return bool
-     */
-    public function isValidatorServerErrorFailure()
+    public function isValidatorServerErrorFailure(): bool
     {
         $errors = $this->getErrors();
         if (empty($errors)) {
@@ -243,10 +180,7 @@ class Result
         return $errors[0]->getClass() == 'validator-internal-server-error';
     }
 
-    /**
-     * @return bool
-     */
-    public function isCssValidationUnknownExceptionError()
+    public function isCssValidationUnknownExceptionError(): bool
     {
         $errors = $this->getErrors();
         if (empty($errors)) {
@@ -256,10 +190,7 @@ class Result
         return $errors[0]->getMessage() == 'Unknown error';
     }
 
-    /**
-     * @return bool
-     */
-    public function isCssValidationSslExceptionError()
+    public function isCssValidationSslExceptionError(): bool
     {
         $errors = $this->getErrors();
         if (empty($errors)) {
@@ -269,12 +200,7 @@ class Result
         return $errors[0]->getMessage() == 'SSL Error';
     }
 
-    /**
-     * @param string $errorClassPattern
-     *
-     * @return bool
-     */
-    private function isOfErrorClass($errorClassPattern)
+    private function isOfErrorClass(string $errorClassPattern): bool
     {
         foreach ($this->getErrors() as $error) {
             if (preg_match($errorClassPattern, $error->getClass()) > 0) {
