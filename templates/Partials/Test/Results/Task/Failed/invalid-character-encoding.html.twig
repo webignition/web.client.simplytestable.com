@@ -1,0 +1,20 @@
+{% set heading = 'Character Encoding Confusion!' %}
+
+{% set content %}
+<p id="reason">
+    The character encoding used for the page at <a href="{{ task.url }}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a>
+    is not quite right.
+</p>
+
+<p>
+    The page stated that it is encoded in the <code>{{ task.output.result.getFirstError.message }}</code> character set but one or
+    more bytes could not be interpreted as such.
+</p>
+
+<p>
+    Either the provided character encoding is wrong or there are one or more
+    characters in the page that are wrongly encoded.
+</p>
+{% endset %}
+
+{% include 'Abstract/Partials/Test/Results/Task/Failed/failure-message.html.twig' %}
