@@ -20,10 +20,6 @@
         {% include 'Partials/Test/Results/Task/Failed/invalid-character-encoding.html.twig' %}
         {% endif %}
 
-        {% if task.output.result.isCharacterEncodingFailure and not task.output.result.isInvalidCharacterEncodingFailure %}
-        {% include 'Partials/Test/Results/Task/Failed/character-encoding.html.twig' %}
-        {% endif %}
-
         {% if task.output.result.isCurlTimeoutFailure %}
         {% include 'Partials/Test/Results/Task/Failed/curl-timeout.html.twig' %}
         {% endif %}
