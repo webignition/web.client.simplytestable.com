@@ -243,24 +243,4 @@ class ByTaskTypeController extends AbstractResultsController
 
         return null;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request)
-    {
-        $remoteTest = $this->remoteTestService->get();
-        $filter = trim($request->attributes->get('filter'));
-        $hasValidFilter = in_array($filter, $this->allowedFilters);
-
-        return new RedirectResponse($this->generateUrl(
-            'view_test_results_by_task_type_filter',
-            [
-                'website' => $remoteTest->getWebsite(),
-                'test_id' => $request->attributes->get('test_id'),
-                'task_type' => str_replace(' ', '+', $request->attributes->get('task_type')),
-                'filter' => $hasValidFilter ? $filter : self::DEFAULT_FILTER
-            ]
-        ));
-    }
 }

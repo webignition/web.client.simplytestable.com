@@ -120,20 +120,6 @@ class ResultsController extends AbstractResultsController
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getRequestWebsiteMismatchResponse(RouterInterface $router, Request $request)
-    {
-        return new RedirectResponse($this->generateUrl(
-            'redirect_website_test',
-            [
-                'website' => $request->attributes->get('website'),
-                'test_id' => $request->attributes->get('test_id')
-            ]
-        ));
-    }
-
-    /**
      * @param Request $request
      * @param string $website
      * @param int $test_id
