@@ -918,8 +918,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'outputContent' => [
                     'messages' => [
                         [
-                            'message' => 'foo',
-                            'messageId' => 'character-encoding',
+                            'message' => 'utf-8',
+                            'messageId' => 'invalid-character-encoding',
                             'type' => 'error',
                         ],
                     ],
