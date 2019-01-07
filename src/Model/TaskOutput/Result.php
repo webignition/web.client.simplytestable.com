@@ -130,11 +130,6 @@ class Result
         return $this->isOfErrorClass('/invalid-character-encoding/');
     }
 
-    public function isCharacterEncodingFailure(): bool
-    {
-        return $this->isOfErrorClass('/character-encoding/');
-    }
-
     public function isCurlTimeoutFailure(): bool
     {
         return $this->isOfErrorClass('/http-retrieval-curl-code-28/');
