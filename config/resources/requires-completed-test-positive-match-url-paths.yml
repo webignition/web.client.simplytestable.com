@@ -1,7 +1,3 @@
-#- /results/$
-#- /results/.+/by-error/$
-#- /results/.+/by-page/$
-#- /null/
 - /website/.+/test_id/[0-9]+/results/$
 - /.+/[0-9]+/results/$
 - /.+/[0-9]+/results/.+/by-error/$

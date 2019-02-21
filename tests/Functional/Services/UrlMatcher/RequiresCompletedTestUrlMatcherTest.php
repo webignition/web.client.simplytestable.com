@@ -57,35 +57,35 @@ class RequiresCompletedTestUrlMatcherTest extends AbstractBaseTestCase
         ];
     }
 
-//    /**
-//     * @dataProvider matchNotExpectedDataProvider
-//     */
-//    public function testMatchNotExpected(string $path)
-//    {
-//        $this->assertFalse($this->urlMatcher->match($path));
-//    }
-//
-//    public function matchNotExpectedDataProvider(): array
-//    {
-//        return [
-//            'action test task results by url' => [
-//                'path' => '/http://example.com/1/http://example.com/foo//html%20validation/results/',
-//            ],
-//            'view test results preparing stats' => [
-//                'path' => '/http://example.com//1234/results/preparing/stats/',
-//            ],
-//            'task results retrieve' => [
-//                'path' => '/http://example.com//1234/results/retrieve/',
-//            ],
-//            'view test results by task type, no filter' => [
-//                'path' => '/http://example.com//1234/results/html+validation/',
-//            ],
-//            'view task results verbose' => [
-//                'path' => '/website//http://example.com//test_id/1234/task_id/5678/results/',
-//            ],
-//            'view task results' => [
-//                'path' => '//http://example.com//1234/5678/results/',
-//            ],
-//        ];
-//    }
+    /**
+     * @dataProvider matchNotExpectedDataProvider
+     */
+    public function testMatchNotExpected(string $path)
+    {
+        $this->assertFalse($this->urlMatcher->match($path));
+    }
+
+    public function matchNotExpectedDataProvider(): array
+    {
+        return [
+            'action test task results by url' => [
+                'path' => '/http://example.com/1/http://example.com/foo//html%20validation/results/',
+            ],
+            'view test results preparing stats' => [
+                'path' => '/http://example.com//1234/results/preparing/stats/',
+            ],
+            'task results retrieve' => [
+                'path' => '/http://example.com//1234/results/retrieve/',
+            ],
+            'view test results by task type, no filter' => [
+                'path' => '/http://example.com//1234/results/html+validation/',
+            ],
+            'view task results verbose' => [
+                'path' => '/website//http://example.com//test_id/1234/task_id/5678/results/',
+            ],
+            'view task results' => [
+                'path' => '//http://example.com//1234/5678/results/',
+            ],
+        ];
+    }
 }

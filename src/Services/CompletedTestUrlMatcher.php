@@ -24,6 +24,14 @@ class CompletedTestUrlMatcher implements UrlMatcherInterface
 
     public function match(string $urlPath): bool
     {
+        foreach ($this->negativeMatchPatterns as $pattern) {
+            $regex = '/'. str_replace('/', '\\/', $pattern) .'/i';
+
+            if (preg_match($regex, $urlPath)) {
+                return false;
+            }
+        }
+
         foreach ($this->positiveMatchPatterns as $pattern) {
             $regex = '/'. str_replace('/', '\\/', $pattern) .'/i';
 
