@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\Services\UrlMatcher;
 
-use App\Services\UrlMatcher;
+use App\Services\UrlMatcherInterface;
 use App\Tests\Functional\AbstractBaseTestCase;
 
 class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
@@ -13,7 +13,7 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
     use ValidUserUrlMatcherMatchNotExpectedDataProviderTrait;
 
     /**
-     * @var UrlMatcher
+     * @var UrlMatcherInterface
      */
     private $urlMatcher;
 

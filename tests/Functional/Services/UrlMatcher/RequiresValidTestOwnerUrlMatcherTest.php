@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\Services\UrlMatcher;
 
-use App\Services\UrlMatcher;
+use App\Services\UrlMatcherInterface;
 use App\Tests\Functional\AbstractBaseTestCase;
 
 class RequiresValidTestOwnerUrlMatcherTest extends AbstractBaseTestCase
@@ -11,7 +11,7 @@ class RequiresValidTestOwnerUrlMatcherTest extends AbstractBaseTestCase
     const SERVICE_ID = 'simplytestable.web_client.requires_valid_test_owner_url_matcher';
 
     /**
-     * @var UrlMatcher
+     * @var UrlMatcherInterface
      */
     private $urlMatcher;
 
