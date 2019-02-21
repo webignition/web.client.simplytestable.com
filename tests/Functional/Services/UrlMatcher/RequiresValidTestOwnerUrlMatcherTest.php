@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Services\UrlMatcher;
 use App\Services\UrlMatcher;
 use App\Tests\Functional\AbstractBaseTestCase;
 
-class UrlMatcherTest extends AbstractBaseTestCase
+class RequiresValidTestOwnerUrlMatcherTest extends AbstractBaseTestCase
 {
     /**
      * @var UrlMatcher
