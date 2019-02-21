@@ -4,40 +4,21 @@ namespace App\EventListener;
 
 use App\Services\RequiresValidTestOwnerResponseProvider;
 use App\Services\TestService;
-use App\Services\UrlMatcher;
+use App\Services\UrlMatcherInterface;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 class RequiresValidTestOwnerRequestListener
 {
-    /**
-     * @var UrlMatcher
-     */
     private $urlMatcher;
-
-    /**
-     * @var RequiresValidTestOwnerResponseProvider
-     */
     private $requiresValidTestOwnerResponseProvider;
-
-    /**
-     * @var UserManager
-     */
     private $userManager;
-
-    /**
-     * @var FlashBagInterface
-     */
     private $flashBag;
-
-    /**
-     * @var TestService
-     */
     private $testService;
 
     public function __construct(
-        UrlMatcher $urlMatcher,
+        UrlMatcherInterface $urlMatcher,
         RequiresValidTestOwnerResponseProvider $requiresValidTestOwnerResponseProvider,
         UserManager $userManager,
         FlashBagInterface $flashBag,

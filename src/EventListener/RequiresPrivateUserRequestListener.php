@@ -3,7 +3,7 @@
 namespace App\EventListener;
 
 use App\Services\RequiresPrivateUserResponseProvider;
-use App\Services\UrlMatcher;
+use App\Services\UrlMatcherInterface;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -11,36 +11,17 @@ use Symfony\Component\Routing\RouterInterface;
 
 class RequiresPrivateUserRequestListener
 {
-    /**
-     * @var UserManager
-     */
     private $userManager;
-
-    /**
-     * @var FlashBagInterface
-     */
     private $flashBag;
-
-    /**
-     * @var RouterInterface
-     */
     private $router;
-
-    /**
-     * @var UrlMatcher
-     */
     private $urlMatcher;
-
-    /**
-     * @var RequiresPrivateUserResponseProvider
-     */
     private $requiresPrivateUserResponseProvider;
 
     public function __construct(
         UserManager $userManager,
         FlashBagInterface $flashBag,
         RouterInterface $router,
-        UrlMatcher $urlMatcher,
+        UrlMatcherInterface $urlMatcher,
         RequiresPrivateUserResponseProvider $requiresPrivateUserResponseProvider
     ) {
         $this->userManager = $userManager;

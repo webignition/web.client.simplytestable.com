@@ -3,7 +3,7 @@
 namespace App\EventListener;
 
 use App\Services\TestService;
-use App\Services\UrlMatcher;
+use App\Services\UrlMatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Entity\Test\Test;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -11,22 +11,11 @@ use Symfony\Component\Routing\RouterInterface;
 
 class RequiresCompletedTestRequestListener
 {
-    /**
-     * @var UrlMatcher
-     */
     private $urlMatcher;
-
-    /**
-     * @var TestService
-     */
     private $testService;
-
-    /**
-     * @var RouterInterface
-     */
     private $router;
 
-    public function __construct(UrlMatcher $urlMatcher, TestService $testService, RouterInterface $router)
+    public function __construct(UrlMatcherInterface $urlMatcher, TestService $testService, RouterInterface $router)
     {
         $this->urlMatcher = $urlMatcher;
         $this->testService = $testService;
