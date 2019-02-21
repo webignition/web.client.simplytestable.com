@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -22,9 +23,6 @@ class UrlMatcherTest extends AbstractBaseTestCase
      */
     private $requiresValidTestOwnerUrlMatcher;
 
-    /**
-     * {@inheritdoc}
-     */
     protected function setUp()
     {
         parent::setUp();
@@ -44,18 +42,13 @@ class UrlMatcherTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requiresValidUserUrlMatcherMatchExpectedDataProvider
-     *
-     * @param string $path
      */
-    public function testRequiresValidUserUrlMatcherMatchExpected($path)
+    public function testRequiresValidUserUrlMatcherMatchExpected(string $path)
     {
         $this->assertTrue($this->requiresValidUserUrlMatcher->match($path));
     }
 
-    /**
-     * @return array
-     */
-    public function requiresValidUserUrlMatcherMatchExpectedDataProvider()
+    public function requiresValidUserUrlMatcherMatchExpectedDataProvider(): array
     {
         return [
             '/account/* [1]' => [
@@ -123,18 +116,13 @@ class UrlMatcherTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requiresValidUserUrlMatcherMatchNotExpectedDataProvider
-     *
-     * @param string $path
      */
-    public function testRequiresValidUserUrlMatcherMatchNotExpected($path)
+    public function testRequiresValidUserUrlMatcherMatchNotExpected(string $path)
     {
         $this->assertFalse($this->requiresValidUserUrlMatcher->match($path));
     }
 
-    /**
-     * @return array
-     */
-    public function requiresValidUserUrlMatcherMatchNotExpectedDataProvider()
+    public function requiresValidUserUrlMatcherMatchNotExpectedDataProvider(): array
     {
         return [
             '/signout/' => [
@@ -196,18 +184,13 @@ class UrlMatcherTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requiresPrivateUserUrlMatcherMatchExpectedDataProvider
-     *
-     * @param string $path
      */
-    public function testRequiresPrivateUserUrlMatcherMatchExpected($path)
+    public function testRequiresPrivateUserUrlMatcherMatchExpected(string $path)
     {
         $this->assertTrue($this->requiresPrivateUserUrlMatcher->match($path));
     }
 
-    /**
-     * @return array
-     */
-    public function requiresPrivateUserUrlMatcherMatchExpectedDataProvider()
+    public function requiresPrivateUserUrlMatcherMatchExpectedDataProvider(): array
     {
         return [
             '/account/* [1]' => [
@@ -221,46 +204,21 @@ class UrlMatcherTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requiresValidUserUrlMatcherMatchNotExpectedDataProvider
-     *
-     * @param string $path
      */
-    public function testRequiresPrivateUserUrlMatcherMatchNotExpected($path)
+    public function testRequiresPrivateUserUrlMatcherMatchNotExpected(string $path)
     {
         $this->assertFalse($this->requiresPrivateUserUrlMatcher->match($path));
     }
 
     /**
-     * @return array
-     */
-    public function requiresPrivateUserUrlMatcherMatchNotExpectedDataProvider()
-    {
-        return [
-            '/signout/' => [
-                'path' => '/signout/',
-            ],
-            '/test/../cancel/' => [
-                'path' => '/test/http://example.com//1234/cancel/',
-            ],
-            '/test/../cancel-crawl/' => [
-                'path' => '/test/http://example.com//1234/cancel-crawl/',
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider requiresValidTestOwnerUrlMatcherMatchExpectedDataProvider
-     *
-     * @param string $path
      */
-    public function testRequiresValidTestOwnerUrlMatcherMatchExpected($path)
+    public function testRequiresValidTestOwnerUrlMatcherMatchExpected(string $path)
     {
         $this->assertTrue($this->requiresValidTestOwnerUrlMatcher->match($path));
     }
 
-    /**
-     * @return array
-     */
-    public function requiresValidTestOwnerUrlMatcherMatchExpectedDataProvider()
+    public function requiresValidTestOwnerUrlMatcherMatchExpectedDataProvider(): array
     {
         return [
             '*/finished-summary/' => [
@@ -307,18 +265,13 @@ class UrlMatcherTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requiresValidTestOwnerUrlMatcherMatchNotExpectedDataProvider
-     *
-     * @param string $path
      */
-    public function testRequiresValidTestOwnerUrlMatcherMatchNotExpected($path)
+    public function testRequiresValidTestOwnerUrlMatcherMatchNotExpected(string $path)
     {
         $this->assertFalse($this->requiresValidTestOwnerUrlMatcher->match($path));
     }
 
-    /**
-     * @return array
-     */
-    public function requiresValidTestOwnerUrlMatcherMatchNotExpectedDataProvider()
+    public function requiresValidTestOwnerUrlMatcherMatchNotExpectedDataProvider(): array
     {
         return [
             '/' => [
