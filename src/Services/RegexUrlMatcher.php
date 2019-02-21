@@ -2,16 +2,13 @@
 
 namespace App\Services;
 
-class UrlMatcher implements UrlMatcherInterface
+class RegexUrlMatcher implements UrlMatcherInterface
 {
     /**
      * @var string[]
      */
     private $patterns = [];
 
-    /**
-     * @param CachedDataProvider $urlPathProvider
-     */
     public function __construct(CachedDataProvider $urlPathProvider)
     {
         $this->patterns = $urlPathProvider->getData();
