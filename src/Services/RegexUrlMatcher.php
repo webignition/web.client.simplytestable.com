@@ -7,16 +7,35 @@ class RegexUrlMatcher implements UrlMatcherInterface
     /**
      * @var string[]
      */
-    private $patterns = [];
+    private $positiveMatchPatterns = [];
 
-    public function __construct(CachedDataProvider $urlPathProvider)
-    {
-        $this->patterns = $urlPathProvider->getData();
+    /**
+     * @var string[]
+     */
+    private $negativeMatchPatterns = [];
+
+    public function __construct(
+        CachedDataProvider $positiveMatchUrlPathProvider,
+        ?CachedDataProvider $negativeMatchUrlPathProvider = null
+    ) {
+        $this->positiveMatchPatterns = $positiveMatchUrlPathProvider->getData();
+
+        if ($negativeMatchUrlPathProvider) {
+            $this->negativeMatchPatterns = $negativeMatchUrlPathProvider->getData();
+        }
     }
 
     public function match(string $urlPath): bool
     {
-        foreach ($this->patterns as $pattern) {
+        foreach ($this->negativeMatchPatterns as $pattern) {
+            $regex = '/'. str_replace('/', '\\/', $pattern) .'/i';
+
+            if (preg_match($regex, $urlPath)) {
+                return false;
+            }
+        }
+
+        foreach ($this->positiveMatchPatterns as $pattern) {
             $regex = '/'. str_replace('/', '\\/', $pattern) .'/i';
 
             if (preg_match($regex, $urlPath)) {
