@@ -1,7 +1,4 @@
-/var/
 !var/cache/.gitkeep
-/phpunit.xml
-/vendor/
 /node_modules
 /yarn-error.log
 
@@ -20,8 +17,9 @@ data/queue/test/*
 ###< symfony/phpunit-bridge ###
 
 ###> symfony/framework-bundle ###
-/.env
 /public/bundles/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+/.env*local
