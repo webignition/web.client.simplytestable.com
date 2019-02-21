@@ -37,7 +37,7 @@
         "symfony/yaml": "^4.1",
         "twig/twig": "^2.0",
         "webignition/guzzle-curl-exception": ">=1,<2",
-        "webignition/guzzle-http-authentication-middleware": ">=0.2,<1",
+        "webignition/guzzle-http-authentication-middleware": ">=0.4,<1",
         "webignition/html-validation-error-linkifier": "^0.1",
         "webignition/html-validation-error-normaliser": "^1",
         "webignition/php-ie-detector": ">=0.2,<1",
