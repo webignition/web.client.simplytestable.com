@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class UrlMatcher
+class UrlMatcher implements UrlMatcherInterface
 {
     /**
      * @var string[]
@@ -17,12 +17,7 @@ class UrlMatcher
         $this->patterns = $urlPathProvider->getData();
     }
 
-    /**
-     * @param string $urlPath
-     *
-     * @return bool
-     */
-    public function match($urlPath)
+    public function match(string $urlPath): bool
     {
         foreach ($this->patterns as $pattern) {
             $regex = '/'. str_replace('/', '\\/', $pattern) .'/i';
