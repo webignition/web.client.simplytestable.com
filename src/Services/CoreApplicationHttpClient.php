@@ -19,6 +19,7 @@ use webignition\Guzzle\Middleware\HttpAuthentication\AuthorizationType;
 use webignition\Guzzle\Middleware\HttpAuthentication\CredentialsFactory;
 use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
 use webignition\GuzzleHttp\Exception\CurlException\Factory as CurlExceptionFactory;
+use webignition\SimplyTestableUserInterface\UserInterface;
 use webignition\SimplyTestableUserModel\User;
 
 class CoreApplicationHttpClient
@@ -271,7 +272,10 @@ class CoreApplicationHttpClient
      */
     private function getResponse(RequestInterface $request, User $user, array $requestOptions)
     {
-        $credentials = CredentialsFactory::createBasicCredentials($user->getUsername(), $user->getPassword());
+        $credentials = CredentialsFactory::createBasicCredentials(
+            (string) $user->getUsername(),
+            (string) $user->getPassword()
+        );
 
         $this->httpAuthenticationMiddleware->setType(AuthorizationType::BASIC);
         $this->httpAuthenticationMiddleware->setHost($this->router->getHost());
