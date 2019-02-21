@@ -8,6 +8,8 @@ use App\Tests\Functional\AbstractBaseTestCase;
 
 class RequiresValidTestOwnerUrlMatcherTest extends AbstractBaseTestCase
 {
+    const SERVICE_ID = 'simplytestable.web_client.requires_valid_test_owner_url_matcher';
+
     /**
      * @var UrlMatcher
      */
@@ -17,7 +19,7 @@ class RequiresValidTestOwnerUrlMatcherTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->urlMatcher = self::$container->get('simplytestable.web_client.requires_valid_test_owner_url_matcher');
+        $this->urlMatcher = self::$container->get(self::SERVICE_ID);
     }
 
     /**

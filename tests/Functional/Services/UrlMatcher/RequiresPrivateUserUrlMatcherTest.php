@@ -8,6 +8,8 @@ use App\Tests\Functional\AbstractBaseTestCase;
 
 class RequiresPrivateUserUrlMatcherTest extends AbstractBaseTestCase
 {
+    const SERVICE_ID = 'simplytestable.web_client.requires_private_user_url_matcher';
+
     use ValidUserUrlMatcherMatchNotExpectedDataProviderTrait;
 
     /**
@@ -19,7 +21,7 @@ class RequiresPrivateUserUrlMatcherTest extends AbstractBaseTestCase
     {
         parent::setUp();
 
-        $this->urlMatcher = self::$container->get('simplytestable.web_client.requires_private_user_url_matcher');
+        $this->urlMatcher = self::$container->get(self::SERVICE_ID);
     }
 
     /**
