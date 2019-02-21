@@ -34,6 +34,8 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
      * @param string $expectedRedirectUrl
      */
     public function testOnKernelController(
+        string $route,
+        array $routeParameters,
         array $httpFixtures,
         array $testValues,
         $expectedHasResponse,
@@ -48,21 +50,17 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
             $testFactory->create($testValues);
         }
 
-        $url = $router->generate(
-            'view_test_results',
-            [
-                'website' => self::WEBSITE,
-                'test_id' => self::TEST_ID,
-            ]
-        );
+        $url = $router->generate($route, $routeParameters);
 
         $event = $this->createGetResponseEvent(new Request(
             [],
             [],
-            [
-                'website' => self::WEBSITE,
-                'test_id' => self::TEST_ID,
-            ],
+            array_merge(
+                [
+                    '_route' => $route,
+                ],
+                $routeParameters
+            ),
             [],
             [],
             [
@@ -89,7 +87,12 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
     public function dataProvider()
     {
         return [
-            'state: failed no sitemap' => [
+            'view_test_results, state: failed no sitemap' => [
+                'route' => 'view_test_results',
+                'routeParameters' => [
+                    'website' => self::WEBSITE,
+                    'test_id' => self::TEST_ID,
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
@@ -107,7 +110,34 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
                 'expectedHasResponse' => true,
                 'expectedRedirectUrl' => '/http://example.com//1/results/failed/no-urls-detected/',
             ],
-            'state: rejected' => [
+            'view_test_results_failed_no_urls_detected, state: failed no sitemap' => [
+                'route' => 'view_test_results_failed_no_urls_detected',
+                'routeParameters' => [
+                    'website' => self::WEBSITE,
+                    'test_id' => self::TEST_ID,
+                ],
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => self::TEST_ID,
+                        'website' => self::WEBSITE,
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_FAILED_NO_SITEMAP,
+                    ]),
+                ],
+                'testValues' => [
+                    TestFactory::KEY_WEBSITE => self::WEBSITE,
+                    TestFactory::KEY_TEST_ID => self::TEST_ID,
+                    TestFactory::KEY_STATE => Test::STATE_FAILED_NO_SITEMAP,
+                ],
+                'expectedHasResponse' => false,
+            ],
+            'view_test_results, state: rejected' => [
+                'route' => 'view_test_results',
+                'routeParameters' => [
+                    'website' => self::WEBSITE,
+                    'test_id' => self::TEST_ID,
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
@@ -125,7 +155,34 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
                 'expectedHasResponse' => true,
                 'expectedRedirectUrl' => '/http://example.com//1/results/rejected/',
             ],
-            'state: in progress' => [
+            'view_test_results_rejected, state: rejected' => [
+                'route' => 'view_test_results_rejected',
+                'routeParameters' => [
+                    'website' => self::WEBSITE,
+                    'test_id' => self::TEST_ID,
+                ],
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => self::TEST_ID,
+                        'website' => self::WEBSITE,
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_REJECTED,
+                    ]),
+                ],
+                'testValues' => [
+                    TestFactory::KEY_WEBSITE => self::WEBSITE,
+                    TestFactory::KEY_TEST_ID => self::TEST_ID,
+                    TestFactory::KEY_STATE => Test::STATE_REJECTED,
+                ],
+                'expectedHasResponse' => false,
+            ],
+            'view_test_results, state: in progress' => [
+                'route' => 'view_test_results',
+                'routeParameters' => [
+                    'website' => self::WEBSITE,
+                    'test_id' => self::TEST_ID,
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
@@ -143,7 +200,34 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
                 'expectedHasResponse' => true,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
-            'state: completed' => [
+            'view_test_progress, state: in progress' => [
+                'route' => 'view_test_progress',
+                'routeParameters' => [
+                    'website' => self::WEBSITE,
+                    'test_id' => self::TEST_ID,
+                ],
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => self::TEST_ID,
+                        'website' => self::WEBSITE,
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_IN_PROGRESS,
+                    ]),
+                ],
+                'testValues' => [
+                    TestFactory::KEY_WEBSITE => self::WEBSITE,
+                    TestFactory::KEY_TEST_ID => self::TEST_ID,
+                    TestFactory::KEY_STATE => Test::STATE_IN_PROGRESS,
+                ],
+                'expectedHasResponse' => false,
+            ],
+            'view_test_results, state: completed' => [
+                'route' => 'view_test_results',
+                'routeParameters' => [
+                    'website' => self::WEBSITE,
+                    'test_id' => self::TEST_ID,
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'id' => self::TEST_ID,
