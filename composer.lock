@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fe5d0c024f29e94ad336f76ae7f8357",
+    "content-hash": "17630900e74b6dc99f4829cceda6a670",
     "packages": [
         {
             "name": "chrisboulton/php-resque",
@@ -60,6 +60,7 @@
                 "redis",
                 "resque"
             ],
+            "abandoned": "resque/php-resque",
             "time": "2017-04-12T21:58:19+00:00"
         },
         {
@@ -1072,12 +1073,12 @@
             "version": "v2.6.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/doctrine/doctrine2.git",
+                "url": "https://github.com/doctrine/orm.git",
                 "reference": "d2b4dd71d2a276edd65d0c170375b445f8a4a4a8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/doctrine2/zipball/d2b4dd71d2a276edd65d0c170375b445f8a4a4a8",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/d2b4dd71d2a276edd65d0c170375b445f8a4a4a8",
                 "reference": "d2b4dd71d2a276edd65d0c170375b445f8a4a4a8",
                 "shasum": ""
             },
@@ -3296,7 +3297,8 @@
             ],
             "description": "Enforces Long Term Supported versions of Symfony components",
             "homepage": "https://symfony.com",
-            "time": "2018-04-03T05:04:16+00:00"
+            "abandoned": "symfony/flex",
+            "time": "2018-10-03T12:03:19+00:00"
         },
         {
             "name": "symfony/monolog-bridge",
@@ -3951,25 +3953,25 @@
         },
         {
             "name": "webignition/guzzle-http-authentication-middleware",
-            "version": "0.2",
+            "version": "0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/guzzle-http-authentication-middleware.git",
-                "reference": "bfa9d46cf92b7f85a5a33def44261ea673efd441"
+                "reference": "2f3d4570988b5e4e26f2db99e7f062188d24d727"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/guzzle-http-authentication-middleware/zipball/bfa9d46cf92b7f85a5a33def44261ea673efd441",
-                "reference": "bfa9d46cf92b7f85a5a33def44261ea673efd441",
+                "url": "https://api.github.com/repos/webignition/guzzle-http-authentication-middleware/zipball/2f3d4570988b5e4e26f2db99e7f062188d24d727",
+                "reference": "2f3d4570988b5e4e26f2db99e7f062188d24d727",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0",
+                "php": ">=7.2.0",
                 "psr/http-message": "~1.0"
             },
             "require-dev": {
                 "mockery/mockery": "~1",
-                "phpunit/phpunit": "^5",
+                "phpunit/phpunit": "^7",
                 "squizlabs/php_codesniffer": "3.*"
             },
             "type": "library",
@@ -3996,7 +3998,7 @@
                 "middleware",
                 "psr7"
             ],
-            "time": "2018-06-25T09:43:50+00:00"
+            "time": "2018-12-19T09:06:43+00:00"
         },
         {
             "name": "webignition/html-validation-error-linkifier",

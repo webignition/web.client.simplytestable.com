@@ -14,7 +14,8 @@ use App\Exception\MailChimp\ResourceNotFoundException;
 use App\Exception\MailChimp\UnknownException;
 use App\Model\MailChimp\ApiError;
 use App\Model\MailChimp\ListMembers;
-use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationCredentials;
+use webignition\Guzzle\Middleware\HttpAuthentication\AuthorizationType;
+use webignition\Guzzle\Middleware\HttpAuthentication\CredentialsFactory;
 use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
 
 class Client
@@ -46,7 +47,7 @@ class Client
     private $httpAuthenticationMiddleware;
 
     /**
-     * @var HttpAuthenticationCredentials
+     * @var string
      */
     private $httpAuthenticationCredentials;
 
@@ -68,10 +69,9 @@ class Client
         $this->baseUrl = sprintf(self::BASE_URL, $dataCenterName);
         $this->httpClient = $httpClient;
         $this->httpAuthenticationMiddleware = $httpAuthenticationMiddleware;
-        $this->httpAuthenticationCredentials = new HttpAuthenticationCredentials(
-            'anystring',
-            $this->apiKey,
-            'api.mailchimp.com'
+        $this->httpAuthenticationCredentials = CredentialsFactory::createBasicCredentials(
+            '',
+            $this->apiKey
         );
     }
 
@@ -176,10 +176,19 @@ class Client
      */
     private function sendRequest(RequestInterface $request)
     {
-        $this->httpAuthenticationMiddleware->setHttpAuthenticationCredentials($this->httpAuthenticationCredentials);
-        $this->httpAuthenticationMiddleware->setIsSingleUse(true);
+        $this->httpAuthenticationMiddleware->setType(AuthorizationType::BASIC);
+        $this->httpAuthenticationMiddleware->setHost('us5.api.mailchimp.com');
+        $this->httpAuthenticationMiddleware->setCredentials($this->httpAuthenticationCredentials);
 
-        return $this->httpClient->send($request);
+        try {
+            return $this->httpClient->send($request);
+        } catch (GuzzleException $guzzleException) {
+            throw $guzzleException;
+        } finally {
+            $this->httpAuthenticationMiddleware->clearType();
+            $this->httpAuthenticationMiddleware->setHost('');
+            $this->httpAuthenticationMiddleware->clearCredentials();
+        }
     }
 
     /**
