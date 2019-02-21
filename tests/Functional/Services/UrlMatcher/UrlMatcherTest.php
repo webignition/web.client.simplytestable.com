@@ -1,7 +1,7 @@
 <?php
 /** @noinspection PhpDocSignatureInspection */
 
-namespace App\Tests\Functional\Services;
+namespace App\Tests\Functional\Services\UrlMatcher;
 
 use App\Services\UrlMatcher;
 use App\Tests\Functional\AbstractBaseTestCase;
