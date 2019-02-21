@@ -293,9 +293,6 @@
     "symfony/http-kernel": {
         "version": "v4.1.1"
     },
-    "symfony/lts": {
-        "version": "4-dev"
-    },
     "symfony/monolog-bridge": {
         "version": "v4.1.1"
     },
@@ -316,6 +313,9 @@
             "version": "4.1",
             "ref": "2955e26d3818b803d82b5de05d91805df5994d3a"
         }
+    },
+    "symfony/polyfill-ctype": {
+        "version": "v1.10.0"
     },
     "symfony/polyfill-mbstring": {
         "version": "v1.8.0"
