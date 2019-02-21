@@ -242,6 +242,9 @@
             "ref": "e3868d2f4a5104f19f844fe551099a00c6562527"
         }
     },
+    "symfony/contracts": {
+        "version": "v1.0.2"
+    },
     "symfony/css-selector": {
         "version": "v4.1.1"
     },
@@ -343,6 +346,9 @@
             "version": "3.3",
             "ref": "f75ac166398e107796ca94cc57fa1edaa06ec47f"
         }
+    },
+    "symfony/var-exporter": {
+        "version": "v4.2.3"
     },
     "symfony/yaml": {
         "version": "v4.1.1"
