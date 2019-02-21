@@ -96,14 +96,13 @@ class RequestController extends AbstractUserController
         $response = $this->renderWithDefaultViewParameters('user-sign-up.html.twig', $viewData, $response);
 
         if (!empty($redirect)) {
-            $cookie = new Cookie(
+            $cookie = Cookie::create(
                 'simplytestable-redirect',
                 $redirect,
                 time() + self::ONE_YEAR_IN_SECONDS,
                 '/',
                 '.simplytestable.com',
-                false,
-                true
+                false
             );
 
             $response->headers->setCookie($cookie);
