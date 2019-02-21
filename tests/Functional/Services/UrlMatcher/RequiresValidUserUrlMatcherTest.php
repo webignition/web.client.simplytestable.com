@@ -13,26 +13,24 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
     /**
      * @var UrlMatcher
      */
-    private $requiresValidUserUrlMatcher;
+    private $urlMatcher;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->requiresValidUserUrlMatcher = self::$container->get(
-            'simplytestable.web_client.requires_valid_user_url_matcher'
-        );
+        $this->urlMatcher = self::$container->get('simplytestable.web_client.requires_valid_user_url_matcher');
     }
 
     /**
-     * @dataProvider requiresValidUserUrlMatcherMatchExpectedDataProvider
+     * @dataProvider matchExpectedDataProvider
      */
-    public function testRequiresValidUserUrlMatcherMatchExpected(string $path)
+    public function testMatchExpected(string $path)
     {
-        $this->assertTrue($this->requiresValidUserUrlMatcher->match($path));
+        $this->assertTrue($this->urlMatcher->match($path));
     }
 
-    public function requiresValidUserUrlMatcherMatchExpectedDataProvider(): array
+    public function matchExpectedDataProvider(): array
     {
         return [
             '/account/* [1]' => [
@@ -101,8 +99,8 @@ class RequiresValidUserUrlMatcherTest extends AbstractBaseTestCase
     /**
      * @dataProvider requiresValidUserUrlMatcherMatchNotExpectedDataProvider
      */
-    public function testRequiresValidUserUrlMatcherMatchNotExpected(string $path)
+    public function testMatchNotExpected(string $path)
     {
-        $this->assertFalse($this->requiresValidUserUrlMatcher->match($path));
+        $this->assertFalse($this->urlMatcher->match($path));
     }
 }

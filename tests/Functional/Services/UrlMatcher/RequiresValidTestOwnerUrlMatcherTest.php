@@ -11,26 +11,24 @@ class RequiresValidTestOwnerUrlMatcherTest extends AbstractBaseTestCase
     /**
      * @var UrlMatcher
      */
-    private $requiresValidTestOwnerUrlMatcher;
+    private $urlMatcher;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->requiresValidTestOwnerUrlMatcher = self::$container->get(
-            'simplytestable.web_client.requires_valid_test_owner_url_matcher'
-        );
+        $this->urlMatcher = self::$container->get('simplytestable.web_client.requires_valid_test_owner_url_matcher');
     }
 
     /**
-     * @dataProvider requiresValidTestOwnerUrlMatcherMatchExpectedDataProvider
+     * @dataProvider matchExpectedDataProvider
      */
-    public function testRequiresValidTestOwnerUrlMatcherMatchExpected(string $path)
+    public function testMatchExpected(string $path)
     {
-        $this->assertTrue($this->requiresValidTestOwnerUrlMatcher->match($path));
+        $this->assertTrue($this->urlMatcher->match($path));
     }
 
-    public function requiresValidTestOwnerUrlMatcherMatchExpectedDataProvider(): array
+    public function matchExpectedDataProvider(): array
     {
         return [
             '*/finished-summary/' => [
@@ -76,14 +74,14 @@ class RequiresValidTestOwnerUrlMatcherTest extends AbstractBaseTestCase
     }
 
     /**
-     * @dataProvider requiresValidTestOwnerUrlMatcherMatchNotExpectedDataProvider
+     * @dataProvider matchNotExpectedDataProvider
      */
-    public function testRequiresValidTestOwnerUrlMatcherMatchNotExpected(string $path)
+    public function testMatchNotExpected(string $path)
     {
-        $this->assertFalse($this->requiresValidTestOwnerUrlMatcher->match($path));
+        $this->assertFalse($this->urlMatcher->match($path));
     }
 
-    public function requiresValidTestOwnerUrlMatcherMatchNotExpectedDataProvider(): array
+    public function matchNotExpectedDataProvider(): array
     {
         return [
             '/' => [
