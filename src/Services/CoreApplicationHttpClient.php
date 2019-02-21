@@ -15,7 +15,8 @@ use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
 use App\Exception\InvalidCredentialsException;
-use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationCredentials;
+use webignition\Guzzle\Middleware\HttpAuthentication\AuthorizationType;
+use webignition\Guzzle\Middleware\HttpAuthentication\CredentialsFactory;
 use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
 use webignition\GuzzleHttp\Exception\CurlException\Factory as CurlExceptionFactory;
 use webignition\SimplyTestableUserModel\User;
@@ -270,11 +271,11 @@ class CoreApplicationHttpClient
      */
     private function getResponse(RequestInterface $request, User $user, array $requestOptions)
     {
-        $this->httpAuthenticationMiddleware->setHttpAuthenticationCredentials(new HttpAuthenticationCredentials(
-            $user->getUsername(),
-            $user->getPassword(),
-            $this->router->getHost()
-        ));
+        $credentials = CredentialsFactory::createBasicCredentials($user->getUsername(), $user->getPassword());
+
+        $this->httpAuthenticationMiddleware->setType(AuthorizationType::BASIC);
+        $this->httpAuthenticationMiddleware->setHost($this->router->getHost());
+        $this->httpAuthenticationMiddleware->setCredentials($credentials);
 
         $response = $this->responseCache->get($request);
 
