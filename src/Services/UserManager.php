@@ -103,14 +103,13 @@ class UserManager implements UserManagerInterface
      */
     public function createUserCookie()
     {
-        return new Cookie(
+        return Cookie::create(
             self::USER_COOKIE_KEY,
             $this->userSerializer->serializeToString($this->user),
             time() + self::ONE_YEAR_IN_SECONDS,
             self::USER_COOKIE_PATH,
             self::USER_COOKIE_DOMAIN,
-            false,
-            true
+            false
         );
     }
 }
