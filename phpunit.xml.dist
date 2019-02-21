@@ -9,7 +9,6 @@
     convertNoticesToExceptions  = "true"
     convertWarningsToExceptions = "true"
     processIsolation            = "false"
-    stopOnFailure               = "true"
     bootstrap                   = "vendor/autoload.php" >
 
     <testsuites>
