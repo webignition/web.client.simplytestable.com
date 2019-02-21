@@ -2,7 +2,7 @@
 
 namespace App\EventListener;
 
-use App\Services\UrlMatcher;
+use App\Services\UrlMatcherInterface;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -10,30 +10,14 @@ use Symfony\Component\Routing\RouterInterface;
 
 class RequiresValidUserRequestListener
 {
-    /**
-     * @var UserService
-     */
     private $userService;
-
-    /**
-     * @var RouterInterface
-     */
     private $router;
-
-    /**
-     * @var UrlMatcher
-     */
     private $urlMatcher;
 
-    /**
-     * @param UserService $userService
-     * @param RouterInterface $router
-     * @param UrlMatcher $urlMatcher
-     */
     public function __construct(
         UserService $userService,
         RouterInterface $router,
-        UrlMatcher $urlMatcher
+        UrlMatcherInterface $urlMatcher
     ) {
         $this->userService = $userService;
         $this->router = $router;

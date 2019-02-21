@@ -3,7 +3,7 @@
 namespace App\EventListener;
 
 use App\Services\TestService;
-use App\Services\UrlMatcher;
+use App\Services\UrlMatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Entity\Test\Test;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -11,22 +11,15 @@ use Symfony\Component\Routing\RouterInterface;
 
 class RequiresCompletedTestRequestListener
 {
-    /**
-     * @var UrlMatcher
-     */
+    const ROUTE_FAILED_NO_URLS_DETECTED = 'view_test_results_failed_no_urls_detected';
+    const ROUTE_REJECTED = 'view_test_results_rejected';
+    const ROUTE_PROGRESS = 'view_test_progress';
+
     private $urlMatcher;
-
-    /**
-     * @var TestService
-     */
     private $testService;
-
-    /**
-     * @var RouterInterface
-     */
     private $router;
 
-    public function __construct(UrlMatcher $urlMatcher, TestService $testService, RouterInterface $router)
+    public function __construct(UrlMatcherInterface $urlMatcher, TestService $testService, RouterInterface $router)
     {
         $this->urlMatcher = $urlMatcher;
         $this->testService = $testService;
@@ -49,13 +42,18 @@ class RequiresCompletedTestRequestListener
         }
 
         $requestAttributes = $request->attributes;
+        $route = $requestAttributes->get('_route');
 
         $website = $requestAttributes->get('website');
         $testId = $requestAttributes->get('test_id');
 
         $test = $this->testService->get($website, $testId);
 
-        if (Test::STATE_FAILED_NO_SITEMAP === $test->getState()) {
+        $isFailedNoUrlsDetectedRequest = self::ROUTE_FAILED_NO_URLS_DETECTED === $route;
+        $isRejectedRequest = self::ROUTE_REJECTED === $route;
+        $isProgressRequest = self::ROUTE_PROGRESS === $route;
+
+        if (Test::STATE_FAILED_NO_SITEMAP === $test->getState() && !$isFailedNoUrlsDetectedRequest) {
             $event->setResponse(new RedirectResponse($this->router->generate(
                 'view_test_results_failed_no_urls_detected',
                 [
@@ -67,7 +65,7 @@ class RequiresCompletedTestRequestListener
             return;
         }
 
-        if (Test::STATE_REJECTED === $test->getState()) {
+        if (Test::STATE_REJECTED === $test->getState() && !$isRejectedRequest) {
             $event->setResponse(new RedirectResponse($this->router->generate(
                 'view_test_results_rejected',
                 [
@@ -79,7 +77,7 @@ class RequiresCompletedTestRequestListener
             return;
         }
 
-        if (!$this->testService->isFinished($test)) {
+        if (!$this->testService->isFinished($test) && !$isProgressRequest) {
             $event->setResponse(new RedirectResponse($this->router->generate(
                 'view_test_progress',
                 [

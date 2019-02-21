@@ -42,7 +42,8 @@ services:
           - '@simplytestable.web_client.requires_private_user_url_path_provider'
           - '@simplytestable.web_client.requires_private_user_redirect_route_map_provider'
           - '@simplytestable.web_client.requires_valid_test_owner_url_path_provider'
-          - '@simplytestable.web_client.requires_completed_test_url_path_provider'
+          - '@simplytestable.web_client.requires_completed_test_positive_match_url_path_provider'
+          - '@simplytestable.web_client.requires_completed_test_negative_match_url_path_provider'
       tags:
         - { name: kernel.cache_warmer, priority: 0 }
 
@@ -221,9 +222,9 @@ services:
         $cacheName: 'SimplyTestableWebClientRequiresValidUserUrlPathProvider'
 
     simplytestable.web_client.requires_valid_user_url_matcher:
-      class: App\Services\UrlMatcher
+      class: App\Services\RegexUrlMatcher
       arguments:
-        $urlPathProvider: '@simplytestable.web_client.requires_valid_user_url_path_provider'
+        $positiveMatchUrlPathProvider: '@simplytestable.web_client.requires_valid_user_url_path_provider'
 
     simplytestable.web_client.requires_private_user_url_path_provider:
       class: App\Services\CachedDataProvider
@@ -234,9 +235,9 @@ services:
         $cacheName: 'SimplyTestableWebClientRequiresPrivateUserUrlPathProvider'
 
     simplytestable.web_client.requires_private_user_url_matcher:
-      class: App\Services\UrlMatcher
+      class: App\Services\RegexUrlMatcher
       arguments:
-        $urlPathProvider: '@simplytestable.web_client.requires_private_user_url_path_provider'
+        $positiveMatchUrlPathProvider: '@simplytestable.web_client.requires_private_user_url_path_provider'
 
     simplytestable.web_client.requires_private_user_redirect_route_map_provider:
       class: App\Services\CachedDataProvider
@@ -259,9 +260,9 @@ services:
         $cacheName: 'SimplyTestableWebClientRequiresValidTestOwnerUrlPathProvider'
 
     simplytestable.web_client.requires_valid_test_owner_url_matcher:
-      class: App\Services\UrlMatcher
+      class: App\Services\RegexUrlMatcher
       arguments:
-        $urlPathProvider: '@simplytestable.web_client.requires_valid_test_owner_url_path_provider'
+        $positiveMatchUrlPathProvider: '@simplytestable.web_client.requires_valid_test_owner_url_path_provider'
 
     simplytestable.web_client.requires_valid_test_owner_redirect_response_map_provider:
       class: App\Services\CachedDataProvider
@@ -275,18 +276,27 @@ services:
       arguments:
         $dataProvider: '@simplytestable.web_client.requires_valid_test_owner_redirect_response_map_provider'
 
-    simplytestable.web_client.requires_completed_test_url_path_provider:
+    simplytestable.web_client.requires_completed_test_positive_match_url_path_provider:
       class: App\Services\CachedDataProvider
       arguments:
         $kernelProjectDirectory: '%kernel.project_dir%'
         $cacheDir: '%kernel.cache_dir%'
-        $resource: '/requires-completed-test-url-paths.yml'
-        $cacheName: 'SimplyTestableWebClientRequiresCompletedTestUrlPathProvider'
+        $resource: '/requires-completed-test-positive-match-url-paths.yml'
+        $cacheName: 'SimplyTestableWebClientRequiresCompletedTestPositiveMatchUrlPathProvider'
+
+    simplytestable.web_client.requires_completed_test_negative_match_url_path_provider:
+      class: App\Services\CachedDataProvider
+      arguments:
+        $kernelProjectDirectory: '%kernel.project_dir%'
+        $cacheDir: '%kernel.cache_dir%'
+        $resource: '/requires-completed-test-negative-match-url-paths.yml'
+        $cacheName: 'SimplyTestableWebClientRequiresCompletedTestNegativeMatchUrlPathProvider'
 
     simplytestable.web_client.requires_completed_test_url_matcher:
-      class: App\Services\UrlMatcher
+      class: App\Services\RegexUrlMatcher
       arguments:
-        $urlPathProvider: '@simplytestable.web_client.requires_completed_test_url_path_provider'
+        $positiveMatchUrlPathProvider: '@simplytestable.web_client.requires_completed_test_positive_match_url_path_provider'
+        $negativeMatchUrlPathProvider: '@simplytestable.web_client.requires_completed_test_negative_match_url_path_provider'
 
     webignition\SimplyTestableUserHydrator\UserHydrator:
 
