@@ -13,16 +13,9 @@ class RefreshCommand extends Command
     const RETURN_CODE_OK = 0;
     const RETURN_CODE_FAILURE = 1;
 
-    /**
-     * @var RulesRetriever
-     */
     private $rulesRetriever;
 
-    /**
-     * @param RulesRetriever $rulesRetriever
-     * @param string|null $name
-     */
-    public function __construct(RulesRetriever $rulesRetriever, $name = null)
+    public function __construct(RulesRetriever $rulesRetriever, ?string $name = null)
     {
         parent::__construct($name);
 
