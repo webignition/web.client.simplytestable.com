@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Command\PdpPslData;
 
@@ -13,11 +14,8 @@ class RefreshCommandTest extends AbstractBaseTestCase
 {
     /**
      * @dataProvider runDataProvider
-     *
-     * @param RulesRetriever $rulesRetriever
-     * @param int $expectedReturnCode
      */
-    public function testRun(RulesRetriever $rulesRetriever, $expectedReturnCode)
+    public function testRun(RulesRetriever $rulesRetriever, int $expectedReturnCode)
     {
         $refreshCommand = new RefreshCommand($rulesRetriever);
 
@@ -26,10 +24,7 @@ class RefreshCommandTest extends AbstractBaseTestCase
         $this->assertSame($expectedReturnCode, $returnCode);
     }
 
-    /**
-     * @return array
-     */
-    public function runDataProvider()
+    public function runDataProvider(): array
     {
         return [
             'failed' => [

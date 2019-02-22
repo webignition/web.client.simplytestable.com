@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Command\Migrate;
 
@@ -31,18 +32,11 @@ class MigrateRemoteUnusedOutputCommandTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider runDataProvider
-     *
-     * @param array $taskValuesCollection
-     * @param array $outputValuesCollection
-     * @param int|bool $dryRun
-     * @param int[] $expectedOutputIndices
-     *
-     * @throws \Exception
      */
     public function testRun(
         array $taskValuesCollection,
         array $outputValuesCollection,
-        $dryRun,
+        ?bool $dryRun,
         array $expectedOutputIndices
     ) {
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -107,10 +101,7 @@ class MigrateRemoteUnusedOutputCommandTest extends AbstractBaseTestCase
         $this->assertEquals($expectedOutputIds, $outputIds);
     }
 
-    /**
-     * @return array
-     */
-    public function runDataProvider()
+    public function runDataProvider(): array
     {
         return [
             'no task outputs' => [

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Command\EmailList;
 
@@ -37,20 +37,12 @@ class RetrieveListRecipientsCommandTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider runDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $listName
-     * @param bool $expectedHasList
-     * @param int $expectedReturnValue
-     * @param string[] $expectedRetrievedEmails
-     *
-     * @throws \Exception
      */
     public function testRun(
         array $httpFixtures,
-        $listName,
-        $expectedHasList,
-        $expectedReturnValue,
+        string $listName,
+        bool $expectedHasList,
+        int $expectedReturnValue,
         array $expectedRetrievedEmails
     ) {
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -81,10 +73,7 @@ class RetrieveListRecipientsCommandTest extends AbstractBaseTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function runDataProvider()
+    public function runDataProvider(): array
     {
         return [
             'invalid list name' => [

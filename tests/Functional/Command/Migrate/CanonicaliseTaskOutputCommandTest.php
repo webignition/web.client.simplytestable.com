@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Command\Migrate;
 
@@ -31,20 +32,12 @@ class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider runDataProvider
-     *
-     * @param array $taskValuesCollection
-     * @param array $outputValuesCollection
-     * @param int|null $limit
-     * @param int|bool $dryRun
-     * @param array $expectedOutputHashes
-     *
-     * @throws \Exception
      */
     public function testRun(
         array $taskValuesCollection,
         array $outputValuesCollection,
-        $limit,
-        $dryRun,
+        ?int $limit,
+        ?bool $dryRun,
         array $expectedOutputHashes
     ) {
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -104,10 +97,7 @@ class MigrateCanonicaliseTaskOutputCommandTest extends AbstractBaseTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function runDataProvider()
+    public function runDataProvider(): array
     {
         return [
             'no task outputs, no limit, no dry-run' => [
