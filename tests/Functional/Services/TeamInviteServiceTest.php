@@ -1,12 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TeamInvite;
 
-use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\Team\Invite;
 use App\Services\TeamInviteService;
 use App\Tests\Factory\ConnectExceptionFactory;
@@ -37,22 +35,12 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider getRemoteFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param string $expectedExceptionCode
-     *
-     * @throws CoreApplicationRequestException
-     * @throws TeamServiceException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testGetRemoteFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -63,10 +51,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $this->teamInviteService->get(self::USERNAME);
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteFailureDataProvider()
+    public function getRemoteFailureDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
@@ -170,14 +155,8 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider booleanResponseDataProvider
-     *
-     * @param array $httpFixtures
-     * @param bool $expectedReturnValue
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws InvalidCredentialsException
      */
-    public function testDeclineInvite(array $httpFixtures, $expectedReturnValue)
+    public function testDeclineInvite(array $httpFixtures, bool $expectedReturnValue)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -200,14 +179,8 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider booleanResponseDataProvider
-     *
-     * @param array $httpFixtures
-     * @param bool $expectedReturnValue
-     *
-     * @throws InvalidCredentialsException
-     * @throws CoreApplicationReadOnlyException
      */
-    public function testAcceptInvite(array $httpFixtures, $expectedReturnValue)
+    public function testAcceptInvite(array $httpFixtures, bool $expectedReturnValue)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -255,14 +228,8 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider booleanResponseDataProvider
-     *
-     * @param array $httpFixtures
-     * @param bool $expectedReturnValue
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws InvalidCredentialsException
      */
-    public function testRemoveForUser(array $httpFixtures, $expectedReturnValue)
+    public function testRemoveForUser(array $httpFixtures, bool $expectedReturnValue)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -282,14 +249,8 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider getForTokenDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Invite|null $expectedReturnValue
-     *
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
-    public function testGetForTokenSuccess(array $httpFixtures, $expectedReturnValue)
+    public function testGetForTokenSuccess(array $httpFixtures, ?Invite $expectedReturnValue)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -298,10 +259,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedReturnValue, $invite);
     }
 
-    /**
-     * @return array
-     */
-    public function getForTokenDataProvider()
+    public function getForTokenDataProvider(): array
     {
         return [
             'valid response data' => [
@@ -338,10 +296,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
         $this->teamInviteService->getForToken(self::TOKEN);
     }
 
-    /**
-     * @return array
-     */
-    public function booleanResponseDataProvider()
+    public function booleanResponseDataProvider(): array
     {
         return [
             'failure' => [

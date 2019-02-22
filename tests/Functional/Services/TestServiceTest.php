@@ -1,11 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 use App\Entity\TimePeriod;
-use App\Exception\CoreApplicationRequestException;
 use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
@@ -31,17 +31,14 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider hasDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param string $canonicalUrl
-     * @param int $testId
-     * @param bool $expectedHas
-     *
-     * @throws CoreApplicationRequestException
      */
-    public function testHas($httpFixtures, $testValues, $canonicalUrl, $testId, $expectedHas)
-    {
+    public function testHas(
+        array $httpFixtures,
+        array $testValues,
+        string $canonicalUrl,
+        int $testId,
+        bool $expectedHas
+    ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
@@ -54,10 +51,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedHas, $has);
     }
 
-    /**
-     * @return array
-     */
-    public function hasDataProvider()
+    public function hasDataProvider(): array
     {
         return [
             'has locally' => [
@@ -99,17 +93,14 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider getDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param string $canonicalUrl
-     * @param int $testId
-     * @param array $expectedTestValues
-     *
-     * @throws CoreApplicationRequestException
      */
-    public function testGet($httpFixtures, $testValues, $canonicalUrl, $testId, $expectedTestValues)
-    {
+    public function testGet(
+        array $httpFixtures,
+        array $testValues,
+        string $canonicalUrl,
+        int $testId,
+        ?array $expectedTestValues
+    ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         if (!empty($testValues)) {
@@ -137,10 +128,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getDataProvider()
+    public function getDataProvider(): array
     {
         return [
             'has locally, update, is finished' => [
@@ -276,11 +264,8 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider isFinishedDataProvider
-     *
-     * @param string $state
-     * @param bool $expectedIsFinished
      */
-    public function testIsFinished($state, $expectedIsFinished)
+    public function testIsFinished(string $state, bool $expectedIsFinished)
     {
         $test = new Test();
         $test->setState($state);
@@ -288,10 +273,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedIsFinished, $this->testService->isFinished($test));
     }
 
-    /**
-     * @return array
-     */
-    public function isFinishedDataProvider()
+    public function isFinishedDataProvider(): array
     {
         return [
             Test::STATE_STARTING => [
