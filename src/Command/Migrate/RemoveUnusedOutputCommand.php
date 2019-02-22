@@ -1,11 +1,11 @@
 <?php
+
 namespace App\Command\Migrate;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Task\Output;
 use App\Repository\TaskOutputRepository;
 use App\Repository\TaskRepository;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -27,11 +27,7 @@ class RemoveUnusedOutputCommand extends AbstractMigrationCommand
      */
     private $taskOutputRepository;
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param string|null $name
-     */
-    public function __construct(EntityManagerInterface $entityManager, $name = null)
+    public function __construct(EntityManagerInterface $entityManager, ?string $name = null)
     {
         parent::__construct($entityManager, $name);
 

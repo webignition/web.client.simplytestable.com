@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Command\Migrate;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,11 +26,7 @@ class CanonicaliseTaskOutputCommand extends AbstractMigrationCommand
      */
     private $taskOutputRepository;
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     * @param string|null $name
-     */
-    public function __construct(EntityManagerInterface $entityManager, $name = null)
+    public function __construct(EntityManagerInterface $entityManager, ?string $name = null)
     {
         parent::__construct($entityManager, $name);
 
@@ -85,6 +82,7 @@ class CanonicaliseTaskOutputCommand extends AbstractMigrationCommand
                 $updatedTaskCount = 0;
 
                 foreach ($duplicatesToRemove as $taskOutput) {
+                    /* @var Task[] $tasks */
                     $tasks = $this->taskRepository->findBy([
                         'output' => $taskOutput,
                     ]);
@@ -123,12 +121,7 @@ class CanonicaliseTaskOutputCommand extends AbstractMigrationCommand
         return 0;
     }
 
-    /**
-     * @param InputInterface $input
-     *
-     * @return int
-     */
-    private function getLimit(InputInterface $input)
+    private function getLimit(InputInterface $input): int
     {
         if (false === $input->getOption(self::OPT_LIMIT)) {
             return 0;
