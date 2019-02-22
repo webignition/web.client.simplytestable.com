@@ -7,14 +7,8 @@ use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
 class CoreApplicationRouterCacheWarmer implements CacheWarmerInterface
 {
-    /**
-     * @var CoreApplicationRouter
-     */
     private $coreApplicationRouter;
 
-    /**
-     * @param CoreApplicationRouter $coreApplicationRouter
-     */
     public function __construct(CoreApplicationRouter $coreApplicationRouter)
     {
         $this->coreApplicationRouter = $coreApplicationRouter;

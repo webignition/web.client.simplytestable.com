@@ -9,14 +9,14 @@ use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 class UrlMatcherCacheWarmer extends CacheWarmer implements CacheWarmerInterface
 {
     /**
-     * @var CachedDataProvider
+     * @var CachedDataProvider[]
      */
     private $urlPathProviders;
 
     /**
      * @param CachedDataProvider[] $urlPathProviders
      */
-    public function __construct($urlPathProviders)
+    public function __construct(array $urlPathProviders)
     {
         $this->urlPathProviders = $urlPathProviders;
     }
