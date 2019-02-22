@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TaskService;
 
@@ -8,19 +9,13 @@ class TaskServiceIsIncompleteTest extends AbstractTaskServiceTest
 {
     /**
      * @dataProvider isIncompleteDataProvider
-     *
-     * @param Task $task
-     * @param bool $expectedIsIncomplete
      */
-    public function testIsIncomplete(Task $task, $expectedIsIncomplete)
+    public function testIsIncomplete(Task $task, bool $expectedIsIncomplete)
     {
         $this->assertEquals($expectedIsIncomplete, $this->taskService->isIncomplete($task));
     }
 
-    /**
-     * @return array
-     */
-    public function isIncompleteDataProvider()
+    public function isIncompleteDataProvider(): array
     {
         return [
             'cancelled' => [

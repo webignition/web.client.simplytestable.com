@@ -1,9 +1,8 @@
-<?php
+<?php /** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TaskService;
 
 use App\Entity\Task\Output;
-use App\Entity\Task\Task;
 use App\Model\TaskOutput\Result;
 use App\Tests\Factory\ModelFactory;
 
@@ -11,9 +10,6 @@ class TaskServiceSetParsedOutputOnCollectionTest extends AbstractTaskServiceTest
 {
     /**
      * @dataProvider setParsedOutputOnCollectionDataProvider
-     *
-     * @param Task[] $tasks
-     * @param bool[] $expectedHasOutput
      */
     public function testSetParsedOutputOnCollection(array $tasks, array $expectedHasOutput)
     {
@@ -38,10 +34,7 @@ class TaskServiceSetParsedOutputOnCollectionTest extends AbstractTaskServiceTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function setParsedOutputOnCollectionDataProvider()
+    public function setParsedOutputOnCollectionDataProvider(): array
     {
         return [
             'no output' => [
