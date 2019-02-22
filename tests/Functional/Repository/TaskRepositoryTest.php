@@ -900,10 +900,10 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
         $remoteTaskIdCount = $this->taskRepository->getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
             $test,
-            $issueCount,
-            $issueType,
+            $states,
             $taskType,
-            $states
+            $issueCount,
+            $issueType
         );
 
         $this->assertEquals($expectedRemoteIdCount, $remoteTaskIdCount);

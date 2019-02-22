@@ -215,19 +215,19 @@ class TaskRepository extends EntityRepository
 
     /**
      * @param Test $test
+     * @param string[] $excludeStates
+     * @param string|null $taskType
      * @param string|null $issueCount
      * @param string|null $issueType
-     * @param string|null $taskType
-     * @param string[] $excludeStates
      *
      * @return int
      */
     public function getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
         Test $test,
+        array $excludeStates,
+        $taskType = null,
         $issueCount = null,
-        $issueType = null,
-        $taskType,
-        array $excludeStates
+        $issueType = null
     ) {
         $queryBuilder = $this->createTestAndIssueCountAndTaskTypeExcludingStatesQueryBuilder(
             $test,
