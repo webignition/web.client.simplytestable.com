@@ -33,11 +33,6 @@ abstract class AbstractRemoteTestServiceTest extends AbstractCoreApplicationServ
         $this->user = new User('user@example.com');
     }
 
-    /**
-     * @param Test $test
-     *
-     * @throws \ReflectionException
-     */
     protected function setRemoteTestServiceTest(Test $test)
     {
         $reflectionClass = new ReflectionClass(RemoteTestService::class);
@@ -47,12 +42,7 @@ abstract class AbstractRemoteTestServiceTest extends AbstractCoreApplicationServ
         $reflectionProperty->setValue($this->remoteTestService, $test);
     }
 
-    /**
-     * @return RemoteTest $test
-     *
-     * @throws \ReflectionException
-     */
-    protected function getRemoteTestServiceRemoteTest()
+    protected function getRemoteTestServiceRemoteTest(): ?RemoteTest
     {
         $reflectionClass = new ReflectionClass(RemoteTestService::class);
 

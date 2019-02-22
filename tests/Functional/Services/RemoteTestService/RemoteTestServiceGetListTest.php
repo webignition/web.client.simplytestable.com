@@ -1,10 +1,8 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\TestList;
 use App\Tests\Factory\HttpResponseFactory;
 
@@ -12,31 +10,17 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
 {
     /**
      * @dataProvider getFinishedDataProvider
-     *
-     * @param array $httpFixtures
-     * @param int $limit
-     * @param int $offset
-     * @param string $filter
-     * @param int $expectedMaxResults
-     * @param int $expectedLimit
-     * @param int $expectedOffset
-     * @param int $expectedTestCount
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testGetFinished(
         array $httpFixtures,
-        $limit,
-        $offset,
-        $filter,
-        $expectedMaxResults,
-        $expectedLimit,
-        $expectedOffset,
-        $expectedTestCount,
-        $expectedRequestUrl
+        int $limit,
+        int $offset,
+        ?string $filter,
+        int $expectedMaxResults,
+        int $expectedLimit,
+        int $expectedOffset,
+        int $expectedTestCount,
+        string $expectedRequestUrl
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -51,10 +35,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function getFinishedDataProvider()
+    public function getFinishedDataProvider(): array
     {
         return [
             'none; default' => [
@@ -129,27 +110,15 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
 
     /**
      * @dataProvider getRecentDataProvider
-     *
-     * @param array $httpFixtures
-     * @param int $limit
-     * @param int $expectedMaxResults
-     * @param int $expectedLimit
-     * @param int $expectedOffset
-     * @param int $expectedTestCount
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testGetRecent(
         array $httpFixtures,
-        $limit,
-        $expectedMaxResults,
-        $expectedLimit,
-        $expectedOffset,
-        $expectedTestCount,
-        $expectedRequestUrl
+        int $limit,
+        int $expectedMaxResults,
+        int $expectedLimit,
+        int $expectedOffset,
+        int $expectedTestCount,
+        string $expectedRequestUrl
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -164,10 +133,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function getRecentDataProvider()
+    public function getRecentDataProvider(): array
     {
         return [
             'none; limit: 10' => [
