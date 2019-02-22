@@ -9,27 +9,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class AbstractRetrieveRecipientsCommand extends AbstractEmailListCommand
 {
-    /**
-     * @var ListRecipientsService
-     */
     protected $listRecipientsService;
-
-    /**
-     * @var EntityManagerInterface
-     */
     protected $entityManager;
 
-    /**
-     * @param ListRecipientsService $listRecipientsService
-     * @param MailChimpService $mailChimpService
-     * @param EntityManagerInterface $entityManager
-     * @param string|null $name
-     */
     public function __construct(
         ListRecipientsService $listRecipientsService,
         EntityManagerInterface $entityManager,
         MailChimpService $mailChimpService,
-        $name = null
+        ?string $name = null
     ) {
         parent::__construct($mailChimpService, $name);
 

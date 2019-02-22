@@ -41,13 +41,7 @@ class RetrieveListRecipientsCommand extends AbstractRetrieveRecipientsCommand
         return 0;
     }
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
-     * @return string
-     */
-    private function getListName(InputInterface $input, OutputInterface $output)
+    private function getListName(InputInterface $input, OutputInterface $output): string
     {
         $listName = $input->getArgument(self::ARG_LIST_NAME);
 
