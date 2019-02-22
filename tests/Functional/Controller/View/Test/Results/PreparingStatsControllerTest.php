@@ -1,12 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\PreparingStatsController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;
@@ -21,17 +20,11 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -104,13 +97,6 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param array $expectedResponseData
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(array $httpFixtures, array $testValues, array $expectedResponseData)
     {
@@ -131,10 +117,7 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedResponseData, $responseData);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'no remote tasks' => [
