@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Repository;
 
@@ -33,15 +34,10 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getCollectionExistsByTestAndRemoteIdDataProvider
-     *
-     * @param array $testValuesCollection
-     * @param int $testIndex
-     * @param int[] $taskRemoteIds
-     * @param array $expectedResult
      */
     public function testGetCollectionExistsByTestAndRemoteId(
         array $testValuesCollection,
-        $testIndex,
+        int $testIndex,
         array $taskRemoteIds,
         array $expectedResult
     ) {
@@ -66,10 +62,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    /**
-     * @return array
-     */
-    public function getCollectionExistsByTestAndRemoteIdDataProvider()
+    public function getCollectionExistsByTestAndRemoteIdDataProvider(): array
     {
         return [
             'single test, no tasks, no remote task ids' => [
@@ -160,15 +153,10 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getCollectionByTestAndRemoteIdDataProvider
-     *
-     * @param array $testValuesCollection
-     * @param int $testIndex
-     * @param int[] $taskRemoteIds
-     * @param array $expectedTaskRemoteIds
      */
     public function testGetCollectionByTestAndRemoteId(
         array $testValuesCollection,
-        $testIndex,
+        int $testIndex,
         array $taskRemoteIds,
         array $expectedTaskRemoteIds
     ) {
@@ -199,10 +187,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedTaskRemoteIds, $retrievedTaskRemoteIds);
     }
 
-    /**
-     * @return array
-     */
-    public function getCollectionByTestAndRemoteIdDataProvider()
+    public function getCollectionByTestAndRemoteIdDataProvider(): array
     {
         return [
             'single test, no tasks, no remote task ids' => [
@@ -291,10 +276,6 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider findUsedTaskOutputIdsDataProvider
-     *
-     * @param array $outputValuesCollection
-     * @param array $testValuesCollection
-     * @param array $expectedOutputIndices
      */
     public function testFindUsedTaskOutputIds(
         array $outputValuesCollection,
@@ -331,10 +312,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedOutputIds, $usedOutputIds);
     }
 
-    /**
-     * @return array
-     */
-    public function findUsedTaskOutputIdsDataProvider()
+    public function findUsedTaskOutputIdsDataProvider(): array
     {
         return [
             'no output, no tasks' => [
@@ -408,11 +386,8 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider findRetrievedRemoteTaskIdsDataProvider
-     *
-     * @param int $testIndex
-     * @param array $expectedRemoteTaskIds
      */
-    public function testFindRetrievedRemoteTaskIds($testIndex, array $expectedRemoteTaskIds)
+    public function testFindRetrievedRemoteTaskIds(int $testIndex, array $expectedRemoteTaskIds)
     {
         $testValuesCollection = [
             [
@@ -459,10 +434,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
     }
 
-    /**
-     * @return array
-     */
-    public function findRetrievedRemoteTaskIdsDataProvider()
+    public function findRetrievedRemoteTaskIdsDataProvider(): array
     {
         return [
             'test 0' => [
@@ -486,16 +458,11 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getRemoteIdByTestAndTaskTypeIncludingStatesDataProvider
-     *
-     * @param int $testIndex
-     * @param string $taskType
-     * @param string[] $states
-     * @param array $expectedRemoteTaskIds
      */
     public function testGetRemoteIdByTestAndTaskTypeIncludingStates(
-        $testIndex,
-        $taskType,
-        $states,
+        int $testIndex,
+        ?string $taskType,
+        array $states,
         array $expectedRemoteTaskIds
     ) {
         $testValuesCollection = [
@@ -549,10 +516,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteIdByTestAndTaskTypeIncludingStatesDataProvider()
+    public function getRemoteIdByTestAndTaskTypeIncludingStatesDataProvider(): array
     {
         return [
             'testId 1; states: completed' => [
@@ -611,20 +575,13 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider
-     *
-     * @param int $testIndex
-     * @param string $issueCount
-     * @param string $issueType
-     * @param string $taskType
-     * @param string[] $states
-     * @param array $expectedRemoteTaskIds
      */
     public function testGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
-        $testIndex,
-        $issueCount,
-        $issueType,
-        $taskType,
-        $states,
+        int $testIndex,
+        string $issueCount,
+        string $issueType,
+        ?string $taskType,
+        array $states,
         array $expectedRemoteTaskIds
     ) {
         $outputValuesCollection = [
@@ -719,10 +676,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider()
+    public function getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider(): array
     {
         return [
             'test 0 without errors; tasktype=null' => [
@@ -801,21 +755,14 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider
-     *
-     * @param int $testIndex
-     * @param string $issueCount
-     * @param string $issueType
-     * @param string $taskType
-     * @param string[] $states
-     * @param int $expectedRemoteIdCount
      */
     public function testGetRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
-        $testIndex,
-        $issueCount,
-        $issueType,
-        $taskType,
-        $states,
-        $expectedRemoteIdCount
+        int $testIndex,
+        string $issueCount,
+        string $issueType,
+        ?string $taskType,
+        array $states,
+        int $expectedRemoteIdCount
     ) {
         $outputValuesCollection = [
             [
@@ -909,10 +856,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedRemoteIdCount, $remoteTaskIdCount);
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider()
+    public function getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStatesDataProvider(): array
     {
         return [
             'test 0 without errors; taskType=null' => [
@@ -981,17 +925,12 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getRemoteIdCountByTestAndTaskTypeIncludingStatesDataProvider
-     *
-     * @param int $testIndex
-     * @param string $taskType
-     * @param string[] $states
-     * @param int $expectedRemoteTaskCount
      */
     public function testGetRemoteIdCountByTestAndTaskTypeIncludingStates(
-        $testIndex,
-        $taskType,
-        $states,
-        $expectedRemoteTaskCount
+        int $testIndex,
+        ?string $taskType,
+        array $states,
+        int $expectedRemoteTaskCount
     ) {
         $testValuesCollection = [
             [
@@ -1044,10 +983,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedRemoteTaskCount, $remoteTaskIdCount);
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteIdCountByTestAndTaskTypeIncludingStatesDataProvider()
+    public function getRemoteIdCountByTestAndTaskTypeIncludingStatesDataProvider(): array
     {
         return [
             'testId 1; states: completed' => [
@@ -1094,13 +1030,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         ];
     }
 
-    /**
-     * @param array $testValuesCollection
-     * @param array $outputs
-     *
-     * @return array
-     */
-    private function populateTestValuesCollectionWithTaskOutputs(array $testValuesCollection, array $outputs)
+    private function populateTestValuesCollectionWithTaskOutputs(array $testValuesCollection, array $outputs): array
     {
         foreach ($testValuesCollection as $testValuesIndex => $testValues) {
             if (isset($testValues[TestFactory::KEY_TASKS])) {

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TaskService;
 
@@ -11,11 +12,8 @@ class TaskServiceSetParsedOutputTest extends AbstractTaskServiceTest
 {
     /**
      * @dataProvider setParsedOutputDataProvider
-     *
-     * @param Task $task
-     * @param bool $expectedHasOutput
      */
-    public function testSetParsedOutput(Task $task, $expectedHasOutput)
+    public function testSetParsedOutput(Task $task, bool $expectedHasOutput)
     {
         if ($expectedHasOutput) {
             $this->assertNull($task->getOutput()->getResult());
@@ -30,10 +28,7 @@ class TaskServiceSetParsedOutputTest extends AbstractTaskServiceTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function setParsedOutputDataProvider()
+    public function setParsedOutputDataProvider(): array
     {
         return [
             'no output' => [

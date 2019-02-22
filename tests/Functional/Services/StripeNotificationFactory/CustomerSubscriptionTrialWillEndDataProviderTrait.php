@@ -7,18 +7,12 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 trait CustomerSubscriptionTrialWillEndDataProviderTrait
 {
-    /**
-     * @var array
-     */
     private $customerSubscriptionTrialWillEndDefaultEventData = [
         'event' => 'customer.subscription.trial_will_end',
         'user' => 'user@example.com',
         'plan_name' => 'Personal',
     ];
 
-    /**
-     * @return array
-     */
     public function customerSubscriptionTrialWillEndDataProvider()
     {
         return [

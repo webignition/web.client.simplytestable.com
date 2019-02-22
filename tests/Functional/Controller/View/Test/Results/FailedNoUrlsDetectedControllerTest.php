@@ -1,10 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\FailedNoUrlsDetectedController;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -24,17 +24,11 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -86,23 +80,14 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionBadRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param Request $request
-     * @param string $website
-     * @param string $expectedRedirectUrl
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
      */
     public function testIndexActionBadRequest(
         array $httpFixtures,
         User $user,
         Request $request,
-        $website,
-        $expectedRedirectUrl,
-        $expectedRequestUrl
+        string $website,
+        string $expectedRedirectUrl,
+        string $expectedRequestUrl
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -119,10 +104,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionBadRequestDataProvider()
+    public function indexActionBadRequestDataProvider(): array
     {
         return [
             'website mismatch' => [
@@ -162,9 +144,6 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param Twig_Environment $twig
-     * @throws CoreApplicationRequestException
      */
     public function testIndexActionRender(Twig_Environment $twig)
     {
@@ -180,10 +159,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'default' => [
@@ -234,9 +210,6 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertEquals(

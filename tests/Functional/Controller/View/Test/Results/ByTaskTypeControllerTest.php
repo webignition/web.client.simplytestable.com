@@ -1,13 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\ByTaskTypeController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\Test\Task\ErrorTaskMapCollection;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
@@ -31,18 +29,12 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $defaultRouteParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
         'task_type' => Task::TYPE_HTML_VALIDATION,
     ];
 
-    /**
-     * @var array
-     */
     private $filterRouteParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
@@ -50,9 +42,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         'filter' => 'by-error',
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -67,9 +56,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         'task_count' => 12,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTasksData = [
         [
             'id' => 1,
@@ -139,11 +125,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedRedirectUrl
      */
-    public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
+    public function testIndexActionInvalidGetRequest(array $httpFixtures, string $expectedRedirectUrl)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -158,10 +141,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionInvalidGetRequestDataProvider()
+    public function indexActionInvalidGetRequestDataProvider(): array
     {
         return [
             'invalid user' => [
@@ -262,27 +242,15 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRedirectDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param Request $request
-     * @param string $taskType
-     * @param string $filter
-     * @param string $expectedRedirectUrl
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRedirect(
         array $httpFixtures,
         User $user,
         Request $request,
-        $taskType,
-        $filter,
-        $expectedRedirectUrl,
-        $expectedRequestUrl
+        string $taskType,
+        string $filter,
+        string $expectedRedirectUrl,
+        string $expectedRequestUrl
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -313,10 +281,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRedirectDataProvider()
+    public function indexActionRedirectDataProvider(): array
     {
         return [
             'empty task type' => [
@@ -381,24 +346,13 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param array $testValues
-     * @param string $taskType
-     * @param string $filter
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
         User $user,
         array $testValues,
-        $taskType,
-        $filter,
+        string $taskType,
+        string $filter,
         Twig_Environment $twig
     ) {
         $userManager = self::$container->get(UserManager::class);
@@ -426,10 +380,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'public user, private test, no tasks' => [
@@ -688,12 +639,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-
-    /**
-     * @param array $expectedParameterData
-     * @param array $parameters
-     */
-    private function assertParameterData($expectedParameterData, $parameters)
+    private function assertParameterData(array $expectedParameterData, array $parameters)
     {
         $this->assertEquals($expectedParameterData['task_type'], $parameters['task_type']);
         $this->assertEquals($expectedParameterData['is_owner'], $parameters['is_owner']);
@@ -715,11 +661,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedParameterData['taskIds'], $taskIds);
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertStandardViewData($viewName, array $parameters)
+    private function assertStandardViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
@@ -733,9 +675,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $this->assertEquals(self::WEBSITE, (string)$test->getWebsite());
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertEquals(

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -26,22 +27,15 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider generateDataProvider
-     *
-     * @param string $route
-     * @param array $parameters
-     * @param string $expectedUrl
      */
-    public function testGenerate($route, array $parameters, $expectedUrl)
+    public function testGenerate(string $route, array $parameters, string $expectedUrl)
     {
         $url = $this->coreApplicationRouter->generate($route, $parameters);
 
         $this->assertEquals($expectedUrl, $url);
     }
 
-    /**
-     * @return array
-     */
-    public function generateDataProvider()
+    public function generateDataProvider(): array
     {
         return [
             'test_start, no test type, no test options' => [
@@ -152,12 +146,7 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
         $this->assertEquals('null', $this->coreApplicationRouter->getHost());
     }
 
-    /**
-     * @param array $parameters
-     *
-     * @return string
-     */
-    private function createHttpQuery(array $parameters)
+    private function createHttpQuery(array $parameters): string
     {
         return http_build_query($parameters, null, '&', PHP_QUERY_RFC3986);
     }

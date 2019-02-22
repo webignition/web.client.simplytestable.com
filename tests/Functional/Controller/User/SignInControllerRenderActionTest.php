@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\User;
 
@@ -67,10 +68,6 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
 
     /**
      * @dataProvider renderActionRenderDataProvider
-     *
-     * @param array $flashBagMessages
-     * @param Request $request
-     * @param Twig_Environment $twig
      */
     public function testRenderActionRender(
         array $flashBagMessages,
@@ -94,10 +91,7 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
         );
     }
 
-    /**
-     * @return array
-     */
-    public function renderActionRenderDataProvider()
+    public function renderActionRenderDataProvider(): array
     {
         return [
             'no request data, no flash error messages' => [
@@ -212,19 +206,12 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertCommonViewData($viewName, $parameters)
+    private function assertCommonViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertArraySubset(
@@ -244,11 +231,6 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
         );
     }
 
-    /**
-     * @param Twig_Environment $twig
-     *
-     * @throws \ReflectionException
-     */
     private function setTwigInViewRenderService(Twig_Environment $twig)
     {
         $viewRenderService = self::$container->get(ViewRenderService::class);

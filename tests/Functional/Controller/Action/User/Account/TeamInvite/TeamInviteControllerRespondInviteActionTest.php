@@ -1,9 +1,8 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account\TeamInvite;
 
-use App\Exception\CoreApplicationReadOnlyException;
-use App\Exception\InvalidCredentialsException;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -66,11 +65,6 @@ class TeamInviteControllerRespondInviteActionTest extends AbstractTeamInviteCont
 
     /**
      * @dataProvider respondInviteSuccessDataProvider
-     *
-     * @param Request $request
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws InvalidCredentialsException
      */
     public function testRespondInviteActionSuccess(Request $request)
     {
@@ -85,10 +79,7 @@ class TeamInviteControllerRespondInviteActionTest extends AbstractTeamInviteCont
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function respondInviteSuccessDataProvider()
+    public function respondInviteSuccessDataProvider(): array
     {
         return [
             'accept' => [

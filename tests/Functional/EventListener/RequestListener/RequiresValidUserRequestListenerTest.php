@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
@@ -21,15 +22,12 @@ class RequiresValidUserRequestListenerTest extends AbstractKernelRequestListener
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param array $httpFixtures
-     * @param $expectedHasResponse
-     * @param string null $expectedRedirectUrl
-     *
-     * @throws \Exception
      */
-    public function testOnKernelRequest(array $httpFixtures, $expectedHasResponse, $expectedRedirectUrl = null)
-    {
+    public function testOnKernelRequest(
+        array $httpFixtures,
+        bool $expectedHasResponse,
+        ?string $expectedRedirectUrl = null
+    ) {
         $this->assertTrue(true);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -51,10 +49,7 @@ class RequiresValidUserRequestListenerTest extends AbstractKernelRequestListener
         }
     }
 
-    /**
-     * @return array
-     */
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
             'not authenticated' => [

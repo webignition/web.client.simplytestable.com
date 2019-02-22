@@ -1,12 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\User\ResetPassword;
 
 use App\Controller\Action\User\ResetPasswordController as ResetPasswordActionController;
 use App\Controller\View\User\ResetPasswordController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
@@ -29,9 +27,6 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
     const USER_EMAIL = 'user@example.com';
     const TOKEN = 'token-value';
 
-    /**
-     * @var array
-     */
     private $chooseActionRouteParameters = [
         'email' => self::USER_EMAIL,
         'token' => self::TOKEN,
@@ -69,22 +64,12 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider chooseActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $flashBagMessages
-     * @param Request $request
-     * @param string $token
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testChooseActionRender(
         array $httpFixtures,
         array $flashBagMessages,
         Request $request,
-        $token,
+        string $token,
         Twig_Environment $twig
     ) {
         $userManager = self::$container->get(UserManager::class);
@@ -104,10 +89,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function chooseActionRenderDataProvider()
+    public function chooseActionRenderDataProvider(): array
     {
         return [
             'invalid token' => [
@@ -288,10 +270,6 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider requestActionRenderDataProvider
-     *
-     * @param array $flashBagMessages
-     * @param Request $request
-     * @param Twig_Environment $twig
      */
     public function testRequestActionRender(array $flashBagMessages, Request $request, Twig_Environment $twig)
     {
@@ -309,10 +287,7 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function requestActionRenderDataProvider()
+    public function requestActionRenderDataProvider(): array
     {
         return [
             'no email' => [
@@ -435,19 +410,13 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param array $parameters
-     */
-    private function assertCommonChooseViewData($parameters)
+    private function assertCommonChooseViewData(array $parameters)
     {
         $this->assertChooseViewParameterKeys($parameters);
 
         $this->assertEquals(self::USER_EMAIL, $parameters['email']);
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertChooseViewParameterKeys(array $parameters)
     {
         $this->assertEquals(
@@ -463,19 +432,12 @@ class ResetPasswordControllerTest extends AbstractViewControllerTest
         );
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertRequestCommonViewData($viewName, $parameters)
+    private function assertRequestCommonViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::REQUEST_VIEW_NAME, $viewName);
         $this->assertRequestViewParameterKeys($parameters);
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertRequestViewParameterKeys(array $parameters)
     {
         $this->assertArraySubset(

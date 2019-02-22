@@ -7,18 +7,12 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 trait CustomerSubscriptionCreatedDataProviderTrait
 {
-    /**
-     * @var array
-     */
     private $customerSubscriptionCreatedDefaultEventData = [
         'event' => 'customer.subscription.created',
         'plan_name' => 'Personal',
         'user' => 'user@example.com',
     ];
 
-    /**
-     * @return array
-     */
     public function customerSubscriptionCreatedDataProvider()
     {
         return [

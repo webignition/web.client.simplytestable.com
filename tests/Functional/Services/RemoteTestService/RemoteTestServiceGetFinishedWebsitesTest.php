@@ -1,10 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
 use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
 
@@ -12,21 +11,12 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
 {
     /**
      * @dataProvider getFinishedWebsitesFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testGetFinishedWebsitesFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -37,10 +27,7 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
         $this->remoteTestService->getFinishedWebsites();
     }
 
-    /**
-     * @return array
-     */
-    public function getFinishedWebsitesFailureDataProvider()
+    public function getFinishedWebsitesFailureDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
@@ -77,17 +64,12 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
 
     /**
      * @dataProvider getFinishedWebsitesSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $expectedResponse
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
-    public function testGetFinishedWebsitesSuccess(array $httpFixtures, $expectedResponse, $expectedRequestUrl)
-    {
+    public function testGetFinishedWebsitesSuccess(
+        array $httpFixtures,
+        array $expectedResponse,
+        string $expectedRequestUrl
+    ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->remoteTestService->getFinishedWebsites();
@@ -96,10 +78,7 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function getFinishedWebsitesSuccessDataProvider()
+    public function getFinishedWebsitesSuccessDataProvider(): array
     {
         $websites = [
             'http://foo.example.com',

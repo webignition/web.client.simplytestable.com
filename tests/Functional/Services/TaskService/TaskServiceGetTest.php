@@ -1,12 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TaskService;
 
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;
@@ -15,21 +13,12 @@ class TaskServiceGetTest extends AbstractTaskServiceTest
 {
     /**
      * @dataProvider getCollectionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param int $remoteTaskId
-     * @param array $expectedTaskData
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testGet(
         array $httpFixtures,
         array $testValues,
-        $remoteTaskId,
-        $expectedTaskData
+        int $remoteTaskId,
+        ?array $expectedTaskData
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -52,10 +41,7 @@ class TaskServiceGetTest extends AbstractTaskServiceTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getCollectionDataProvider()
+    public function getCollectionDataProvider(): array
     {
         return [
             'not exist locally, not exist remotely' => [

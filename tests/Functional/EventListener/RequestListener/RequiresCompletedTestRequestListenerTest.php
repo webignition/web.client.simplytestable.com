@@ -32,8 +32,8 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
     public function testOnKernelRequest(
         string $route,
         string $testState,
-        $expectedHasResponse,
-        $expectedRedirectUrl = null
+        bool $expectedHasResponse,
+        ?string $expectedRedirectUrl = null
     ) {
         $httpFixture = HttpResponseFactory::createJsonResponse([
             'id' => self::TEST_ID,

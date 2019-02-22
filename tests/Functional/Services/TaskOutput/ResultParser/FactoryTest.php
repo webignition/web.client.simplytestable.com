@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TaskOutput\ResultParser;
 
@@ -29,21 +30,15 @@ class FactoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getParserDataProvider
-     *
-     * @param Output $output
-     * @param string $expectedResultParserClassName
      */
-    public function testGetParser(Output $output, $expectedResultParserClassName)
+    public function testGetParser(Output $output, string $expectedResultParserClassName)
     {
         $resultParser = $this->factory->getParser($output);
 
         $this->assertInstanceOf($expectedResultParserClassName, $resultParser);
     }
 
-    /**
-     * @return array
-     */
-    public function getParserDataProvider()
+    public function getParserDataProvider(): array
     {
         return [
             'HTML validation' => [

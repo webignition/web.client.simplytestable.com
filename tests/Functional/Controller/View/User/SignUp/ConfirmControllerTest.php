@@ -1,10 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\User\SignUp;
 
 use App\Controller\Action\User\UserController;
 use App\Controller\View\User\SignUp\ConfirmController;
-use App\Exception\InvalidAdminCredentialsException;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
@@ -22,9 +22,6 @@ class ConfirmControllerTest extends AbstractViewControllerTest
     const ROUTE_NAME = 'view_user_sign_up_confirm';
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'email' => self::USER_EMAIL,
     ];
@@ -53,13 +50,6 @@ class ConfirmControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $flashBagMessages
-     * @param Request $request
-     * @param Twig_Environment $twig
-     *
-     * @throws InvalidAdminCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -84,10 +74,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'user does not exist' => [
@@ -334,11 +321,7 @@ class ConfirmControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertCommonViewData($viewName, $parameters)
+    private function assertCommonViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
@@ -346,9 +329,6 @@ class ConfirmControllerTest extends AbstractViewControllerTest
         $this->assertEquals(self::USER_EMAIL, $parameters['email']);
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertArraySubset(

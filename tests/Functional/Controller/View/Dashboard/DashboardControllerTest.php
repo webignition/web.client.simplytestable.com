@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Dashboard;
 
@@ -90,12 +91,6 @@ class DashboardControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param array $flashBagMessages
-     * @param Request $request
-     * @param Twig_Environment $twig
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -119,10 +114,7 @@ class DashboardControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'public user' => [
@@ -229,9 +221,6 @@ class DashboardControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertEquals(
@@ -249,10 +238,6 @@ class DashboardControllerTest extends AbstractViewControllerTest
         );
     }
 
-    /**
-     * @param array $parameters
-     * @param array $expectedAvailableTaskTypeKeys
-     */
     private function assertAvailableTaskTypeKeys(array $parameters, array $expectedAvailableTaskTypeKeys)
     {
         $availableTaskTypes = $parameters['available_task_types'];

@@ -1,11 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TaskService;
 
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 
@@ -13,15 +11,6 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
 {
     /**
      * @dataProvider getRemoteTaskIdsDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param array $expectedRemoteTaskIds
-     * @param string[] $expectedRequestUrls
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testGetRemoteTaskIds(
         array $httpFixtures,
@@ -41,10 +30,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
         $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteTaskIdsDataProvider()
+    public function getRemoteTaskIdsDataProvider(): array
     {
         return [
             'state: new' => [

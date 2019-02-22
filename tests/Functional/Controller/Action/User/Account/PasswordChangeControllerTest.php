@@ -1,12 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account;
 
 use App\Controller\Action\User\Account\PasswordChangeController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Services\UserManager;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
@@ -106,22 +103,12 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
 
     /**
      * @dataProvider requestActionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     * @param array $expectedFlashBagValues
-     * @param string $expectedUserPassword
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testRequestActionSuccess(
         array $httpFixtures,
         Request $request,
         array $expectedFlashBagValues,
-        $expectedUserPassword
+        string $expectedUserPassword
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
         $userManager = self::$container->get(UserManager::class);
@@ -145,10 +132,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
         $this->assertEquals($expectedUserPassword, $user->getPassword());
     }
 
-    /**
-     * @return array
-     */
-    public function requestActionDataProvider()
+    public function requestActionDataProvider(): array
     {
         return [
             'current password missing' => [

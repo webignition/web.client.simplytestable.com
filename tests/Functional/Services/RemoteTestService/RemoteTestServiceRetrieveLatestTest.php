@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
@@ -12,15 +13,11 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
 
     /**
      * @dataProvider retrieveLatestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string|null $expectedRequestUrl
-     * @param RemoteTest $expectedLatestTest
      */
     public function testRetrieveLatest(
         array $httpFixtures,
-        $expectedRequestUrl,
-        $expectedLatestTest
+        ?string $expectedRequestUrl,
+        ?RemoteTest $expectedLatestTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -36,10 +33,7 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function retrieveLatestDataProvider()
+    public function retrieveLatestDataProvider(): array
     {
         $remoteTest = new RemoteTest([
             'id' => 1,

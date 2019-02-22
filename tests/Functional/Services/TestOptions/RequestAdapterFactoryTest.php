@@ -2,12 +2,10 @@
 
 namespace App\Tests\Functional\Services\TestOptions;
 
-use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapter;
 use App\Services\TestOptions\RequestAdapterFactory;
 use App\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use webignition\SimplyTestableUserModel\User;
 
 class RequestAdapterFactoryTest extends AbstractBaseTestCase
 {

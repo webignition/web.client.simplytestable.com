@@ -35,12 +35,6 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
         $this->httpMockHandler = self::$container->get(HttpMockHandler::class);
     }
 
-    /**
-     * @param Twig_Environment $twig
-     * @param AbstractBaseViewController $controller
-     *
-     * @throws \ReflectionException
-     */
     protected function setTwigOnController(Twig_Environment $twig, AbstractBaseViewController $controller)
     {
         $reflectionClass = new ReflectionClass(AbstractBaseViewController::class);

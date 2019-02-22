@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account\EmailChange;
 
@@ -6,13 +7,9 @@ use App\Services\Mailer;
 use App\Tests\Factory\PostmarkExceptionFactory;
 use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\Account\EmailChangeController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
@@ -82,14 +79,6 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
 
     /**
      * @dataProvider resendActionSendConfirmationTokenFailureDataProvider
-     *
-     * @param PostmarkException $postmarkException
-     * @param array $expectedFlashBagValues
-     *
-     * @throws InvalidAdminCredentialsException
-     * @throws MailConfigurationException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      */
     public function testResendActionSendConfirmationTokenFailure(
         PostmarkException $postmarkException,
@@ -124,10 +113,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function resendActionSendConfirmationTokenFailureDataProvider()
+    public function resendActionSendConfirmationTokenFailureDataProvider(): array
     {
         return [
             'postmark not allowed to send to user email' => [
@@ -199,17 +185,7 @@ class EmailChangeControllerResendActionTest extends AbstractEmailChangeControlle
         ], $flashBag->peekAll());
     }
 
-    /**
-     * @param Mailer $mailer
-     *
-     * @return RedirectResponse
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
-     */
-    private function callResendAction(Mailer $mailer = null)
+    private function callResendAction(Mailer $mailer = null): RedirectResponse
     {
         $mailer = empty($mailer)
             ? \Mockery::mock($mailer)

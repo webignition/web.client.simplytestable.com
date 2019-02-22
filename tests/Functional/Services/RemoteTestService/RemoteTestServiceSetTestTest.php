@@ -1,10 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Tests\Factory\HttpResponseFactory;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -40,17 +39,10 @@ class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
 
     /**
      * @dataProvider setTestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param bool $expectedHasRemoteTest
-     *
-     * @throws \ReflectionException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testSetTest(
         array $httpFixtures,
-        $expectedHasRemoteTest
+        bool $expectedHasRemoteTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -63,10 +55,7 @@ class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function setTestDataProvider()
+    public function setTestDataProvider(): array
     {
         return [
             'remote test matches local test' => [

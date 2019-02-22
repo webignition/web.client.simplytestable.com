@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TaskService;
 
@@ -6,9 +7,6 @@ use App\Entity\Task\Output;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 use App\Entity\TimePeriod;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;
@@ -17,21 +15,11 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
 {
     /**
      * @dataProvider getCollectionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param int[] $remoteTaskIds
-     * @param array $expectedTaskDataCollection
-     * @param string[] $expectedRequestUrls
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testGetCollection(
         array $httpFixtures,
         array $testValues,
-        $remoteTaskIds,
+        ?array $remoteTaskIds,
         array $expectedTaskDataCollection,
         array $expectedRequestUrls
     ) {
@@ -94,10 +82,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
         $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
     }
 
-    /**
-     * @return array
-     */
-    public function getCollectionDataProvider()
+    public function getCollectionDataProvider(): array
     {
         return [
             'no remote task ids, none exist locally' => [

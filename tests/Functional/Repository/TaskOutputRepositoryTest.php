@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Repository;
 
@@ -30,12 +31,8 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider findHashlessOutputIdsDataProvider
-     *
-     * @param array $outputValuesCollection
-     * @param int|null $limit
-     * @param int[] $expectedOutputIndices
      */
-    public function testFindHashlessOutputIds(array $outputValuesCollection, $limit, array $expectedOutputIndices)
+    public function testFindHashlessOutputIds(array $outputValuesCollection, ?int $limit, array $expectedOutputIndices)
     {
         $outputs = $this->createOutputCollection($outputValuesCollection);
         $outputIds = [];
@@ -56,10 +53,7 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedOutputIds, $hashlessOutputIds);
     }
 
-    /**
-     * @return array
-     */
-    public function findHashlessOutputIdsDataProvider()
+    public function findHashlessOutputIdsDataProvider(): array
     {
         return [
             'no outputs' => [
@@ -190,12 +184,8 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider findDuplicateHashesDataProvider
-     *
-     * @param array $outputValuesCollection
-     * @param int|null $limit
-     * @param array $expectedDuplicateHashes
      */
-    public function testFindDuplicateHashes(array $outputValuesCollection, $limit, array $expectedDuplicateHashes)
+    public function testFindDuplicateHashes(array $outputValuesCollection, ?int $limit, array $expectedDuplicateHashes)
     {
         $this->createOutputCollection($outputValuesCollection);
 
@@ -204,10 +194,7 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedDuplicateHashes, $duplicateHashes);
     }
 
-    /**
-     * @return array
-     */
-    public function findDuplicateHashesDataProvider()
+    public function findDuplicateHashesDataProvider(): array
     {
         return [
             'no outputs' => [
@@ -364,9 +351,6 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider findIdsNotInDataProvider
-     *
-     * @param int[] $excludeIndices
-     * @param int[] $expectedOutputIndices
      */
     public function testFindIdsNotIn(array $excludeIndices, array $expectedOutputIndices)
     {
@@ -413,10 +397,7 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
         $this->assertEquals($expectedOutputIds, $hashlessOutputIds);
     }
 
-    /**
-     * @return array
-     */
-    public function findIdsNotInDataProvider()
+    public function findIdsNotInDataProvider(): array
     {
         return [
             'no exclusions' => [
@@ -443,7 +424,7 @@ class TaskOutputRepositoryTest extends AbstractBaseTestCase
      *
      * @return Output[]
      */
-    private function createOutputCollection(array $outputValuesCollection)
+    private function createOutputCollection(array $outputValuesCollection): array
     {
         $outputs = [];
 

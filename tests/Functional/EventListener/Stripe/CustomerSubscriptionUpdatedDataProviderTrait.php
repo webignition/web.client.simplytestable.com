@@ -7,17 +7,11 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 trait CustomerSubscriptionUpdatedDataProviderTrait
 {
-    /**
-     * @var array
-     */
     private $defaultCustomerSubscriptionUpdatedEventData = [
         'event' => 'customer.subscription.updated',
     ];
 
-    /**
-     * @return array
-     */
-    public function customerSubscriptionUpdatedDataProvider()
+    public function customerSubscriptionUpdatedDataProvider(): array
     {
         $listenerMethod = 'onCustomerSubscriptionUpdated';
 

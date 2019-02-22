@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\EventListener\MailChimp;
 
@@ -39,9 +40,6 @@ class ListenerTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider onSubscribeDataProvider
-     *
-     * @param MailChimpEvent $event
-     * @param string[] $expectedListRecipients
      */
     public function testOnSubscribe(MailChimpEvent $event, array $expectedListRecipients = [])
     {
@@ -54,10 +52,7 @@ class ListenerTest extends AbstractBaseTestCase
         $this->assertEquals($expectedListRecipients, $retrievedListRecipients->getRecipients());
     }
 
-    /**
-     * @return array
-     */
-    public function onSubscribeDataProvider()
+    public function onSubscribeDataProvider(): array
     {
         return [
             'no event email' => [
@@ -84,10 +79,6 @@ class ListenerTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider onUnSubscribeDataProvider
-     *
-     * @param string[] $existingListRecipients
-     * @param MailChimpEvent $event
-     * @param string[] $expectedListRecipients
      */
     public function testOnUnSubscribe(
         array $existingListRecipients,
@@ -109,10 +100,7 @@ class ListenerTest extends AbstractBaseTestCase
         $this->assertEquals($expectedListRecipients, $retrievedListRecipients->getRecipients());
     }
 
-    /**
-     * @return array
-     */
-    public function onUnSubscribeDataProvider()
+    public function onUnSubscribeDataProvider(): array
     {
         return [
             'no existing recipients, no event email' => [
@@ -154,10 +142,6 @@ class ListenerTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider onUpEmailDataProvider
-     *
-     * @param string[] $existingListRecipients
-     * @param MailChimpEvent $event
-     * @param string[] $expectedListRecipients
      */
     public function testOnUpEmail(
         array $existingListRecipients,
@@ -179,10 +163,7 @@ class ListenerTest extends AbstractBaseTestCase
         $this->assertEquals($expectedListRecipients, array_values($retrievedListRecipients->getRecipients()));
     }
 
-    /**
-     * @return array
-     */
-    public function onUpEmailDataProvider()
+    public function onUpEmailDataProvider(): array
     {
         return [
             'no existing recipients, no event old_email, no event new_email' => [
@@ -247,10 +228,6 @@ class ListenerTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider onCleanedDataProvider
-     *
-     * @param string[] $existingListRecipients
-     * @param MailChimpEvent $event
-     * @param string[] $expectedListRecipients
      */
     public function testOnCleaned(
         array $existingListRecipients,
@@ -272,10 +249,7 @@ class ListenerTest extends AbstractBaseTestCase
         $this->assertEquals($expectedListRecipients, $retrievedListRecipients->getRecipients());
     }
 
-    /**
-     * @return array
-     */
-    public function onCleanedDataProvider()
+    public function onCleanedDataProvider(): array
     {
         return [
             'no existing recipients, no event email' => [
@@ -315,9 +289,6 @@ class ListenerTest extends AbstractBaseTestCase
         ];
     }
 
-    /**
-     * @param array $existingListRecipients
-     */
     private function createExistingListRecipients(array $existingListRecipients)
     {
         /* @var EntityManagerInterface $entityManager */

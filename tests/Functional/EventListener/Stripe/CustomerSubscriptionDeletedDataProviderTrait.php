@@ -7,18 +7,12 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 trait CustomerSubscriptionDeletedDataProviderTrait
 {
-    /**
-     * @var array
-     */
     private $defaultCustomerSubscriptionDeletedEventData = [
         'event' => 'customer.subscription.deleted',
         'plan_name' => 'Personal',
     ];
 
-    /**
-     * @return array
-     */
-    public function customerSubscriptionDeletedDataProvider()
+    public function customerSubscriptionDeletedDataProvider(): array
     {
         $listenerMethod = 'onCustomerSubscriptionDeleted';
 

@@ -1,10 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
-use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidCredentialsException;
 use App\Exception\UserAccountCardException;
 use App\Services\UserAccountCardService;
 use App\Tests\Factory\ConnectExceptionFactory;
@@ -39,19 +38,11 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider associateStripeErrorDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedExceptionParam
-     * @param string $expectedExceptionStripeCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testAssociateStripeError(
         array $httpFixtures,
-        $expectedExceptionParam,
-        $expectedExceptionStripeCode
+        string $expectedExceptionParam,
+        string $expectedExceptionStripeCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -64,10 +55,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function associateStripeErrorDataProvider()
+    public function associateStripeErrorDataProvider(): array
     {
         return [
             'invalid address zip' => [
@@ -86,22 +74,12 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider associateFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
-     * @throws UserAccountCardException
      */
     public function testAssociateFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -112,10 +90,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
         $this->userAccountCardService->associate($this->user, self::STRIPE_CARD_TOKEN);
     }
 
-    /**
-     * @return array
-     */
-    public function associateFailureDataProvider()
+    public function associateFailureDataProvider(): array
     {
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
 

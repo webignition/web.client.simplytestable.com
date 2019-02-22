@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\MailChimp;
 
@@ -26,11 +27,8 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider hasListIdentifierDataProvider
-     *
-     * @param string $name
-     * @param bool $expectedHasListIdentifier
      */
-    public function testHasListIdentifier($name, $expectedHasListIdentifier)
+    public function testHasListIdentifier(string $name, bool $expectedHasListIdentifier)
     {
         $this->assertEquals(
             $expectedHasListIdentifier,
@@ -38,10 +36,7 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
         );
     }
 
-    /**
-     * @return array
-     */
-    public function hasListIdentifierDataProvider()
+    public function hasListIdentifierDataProvider(): array
     {
         return [
             'has announcements' => [
@@ -74,19 +69,13 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getListIdDataProvider
-     *
-     * @param string $name
-     * @param string $expectedListId
      */
-    public function testGetListIdSuccess($name, $expectedListId)
+    public function testGetListIdSuccess(string $name, string $expectedListId)
     {
         $this->assertEquals($expectedListId, $this->listRecipientsService->getListId($name));
     }
 
-    /**
-     * @return array
-     */
-    public function getListIdDataProvider()
+    public function getListIdDataProvider(): array
     {
         return [
             'announcements' => [
@@ -115,19 +104,13 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getListNameDataProvider
-     *
-     * @param string $listId
-     * @param string $expectedListName
      */
-    public function testGetListNameSuccess($listId, $expectedListName)
+    public function testGetListNameSuccess(string $listId, string $expectedListName)
     {
         $this->assertEquals($expectedListName, $this->listRecipientsService->getListName($listId));
     }
 
-    /**
-     * @return array
-     */
-    public function getListNameDataProvider()
+    public function getListNameDataProvider(): array
     {
         return [
             'announcements' => [
@@ -156,10 +139,8 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getNewDataProvider
-     *
-     * @param string $name
      */
-    public function testGetNew($name)
+    public function testGetNew(string $name)
     {
         $listRecipients = $this->listRecipientsService->get($name);
 
@@ -168,10 +149,7 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
         $this->assertEquals([], $listRecipients->getRecipients());
     }
 
-    /**
-     * @return array
-     */
-    public function getNewDataProvider()
+    public function getNewDataProvider(): array
     {
         return [
             'announcements' => [
@@ -188,11 +166,8 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getExistingDataProvider
-     *
-     * @param string[] $recipients
-     * @param string $name
      */
-    public function testGetExisting($recipients, $name)
+    public function testGetExisting(array $recipients, string $name)
     {
         /* @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -213,10 +188,7 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
         $this->assertEquals($recipients, $retrievedListRecipients->getRecipients());
     }
 
-    /**
-     * @return array
-     */
-    public function getExistingDataProvider()
+    public function getExistingDataProvider(): array
     {
         return [
             'announcements' => [

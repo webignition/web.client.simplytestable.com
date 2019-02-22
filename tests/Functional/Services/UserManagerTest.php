@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -19,16 +20,9 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider getUserDataProvider
-     *
-     * @param Request $request
-     * @param User|null $sessionUser
-     * @param User $expectedUser
      */
-    public function testGetUser(
-        Request $request,
-        $sessionUser,
-        User $expectedUser
-    ) {
+    public function testGetUser(Request $request, ?User $sessionUser, User $expectedUser)
+    {
         $requestStack = self::$container->get(RequestStack::class);
         $session = self::$container->get(SessionInterface::class);
         $userSerializer = self::$container->get(UserSerializer::class);
@@ -59,10 +53,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedUser, $user);
     }
 
-    /**
-     * @return array
-     */
-    public function getUserDataProvider()
+    public function getUserDataProvider(): array
     {
         $user = new User(self::USER_EMAIL, self::USER_PASSWORD);
 
@@ -117,11 +108,8 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider isLoggedInDataProvider
-     *
-     * @param User|null $user
-     * @param bool $expectedIsLoggedIn
      */
-    public function testIsLoggedIn(User $user, $expectedIsLoggedIn)
+    public function testIsLoggedIn(User $user, bool $expectedIsLoggedIn)
     {
         $userManager = self::$container->get(UserManager::class);
 
@@ -130,10 +118,7 @@ class UserManagerTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedIsLoggedIn, $userManager->isLoggedIn());
     }
 
-    /**
-     * @return array
-     */
-    public function isLoggedInDataProvider()
+    public function isLoggedInDataProvider(): array
     {
         return [
             'public user' => [

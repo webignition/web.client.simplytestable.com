@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
@@ -26,12 +27,8 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param bool $expectedHasResponse
      */
-    public function testOnKernelController(array $httpFixtures, array $testValues, $expectedHasResponse)
+    public function testOnKernelController(array $httpFixtures, array $testValues, bool $expectedHasResponse)
     {
         $router = self::$container->get(RouterInterface::class);
 
@@ -69,10 +66,7 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
         $this->assertEquals($expectedHasResponse, $event->hasResponse());
     }
 
-    /**
-     * @return array
-     */
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
             'invalid test' => [

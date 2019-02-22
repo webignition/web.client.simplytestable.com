@@ -1,10 +1,8 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TaskService;
 
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 
@@ -12,20 +10,11 @@ class TaskServiceGetUnretrievedRemoteTaskIdsTest extends AbstractTaskServiceTest
 {
     /**
      * @dataProvider getUnretrievedRemoteTaskIdsDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param int $limit
-     * @param int[] $expectedUnretrievedRemoteTaskIds
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testGetUnretrievedRemoteTaskIds(
         array $httpFixtures,
         array $testValues,
-        $limit,
+        int $limit,
         array $expectedUnretrievedRemoteTaskIds
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -39,10 +28,7 @@ class TaskServiceGetUnretrievedRemoteTaskIdsTest extends AbstractTaskServiceTest
         $this->assertEquals($expectedUnretrievedRemoteTaskIds, $unretrievedRemoteTaskIds);
     }
 
-    /**
-     * @return array
-     */
-    public function getUnretrievedRemoteTaskIdsDataProvider()
+    public function getUnretrievedRemoteTaskIdsDataProvider(): array
     {
         return [
             'none retrieved, limit not reached' => [

@@ -1,12 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account\EmailChange;
 
 use App\Controller\Action\User\Account\EmailChangeController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Services\ResqueQueueService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -122,14 +119,6 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
 
     /**
      * @dataProvider confirmActionChangeFailureDataProvider
-     *
-     * @param array $confirmEmailChangeRequestHttpFixtures
-     * @param array $expectedFlashBagValues
-     *
-     * @throws \CredisException
-     * @throws \Exception
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidCredentialsException
      */
     public function testConfirmActionChangeFailure(
         array $confirmEmailChangeRequestHttpFixtures,
@@ -155,10 +144,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function confirmActionChangeFailureDataProvider()
+    public function confirmActionChangeFailureDataProvider(): array
     {
         return [
             'email taken' => [
@@ -252,17 +238,7 @@ class EmailChangeControllerConfirmActionTest extends AbstractEmailChangeControll
         $this->assertNotEquals($rememberUserCookie->getValue(), $serializerUser);
     }
 
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     *
-     * @throws \CredisException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     */
-    private function callConfirmAction(Request $request)
+    private function callConfirmAction(Request $request): RedirectResponse
     {
         return $this->emailChangeController->confirmAction(
             self::$container->get(ResqueQueueService::class),
