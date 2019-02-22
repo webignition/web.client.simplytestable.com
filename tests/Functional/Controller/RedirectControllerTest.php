@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller;
 
@@ -10,7 +11,6 @@ use App\Services\RemoteTestService;
 use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
-use App\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Tests\Services\HttpMockHandler;
@@ -112,22 +112,15 @@ class RedirectControllerTest extends AbstractControllerTest
     }
 
     /**
-     * @dataProvider dataProviderForTestAction
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param Request $request
-     * @param string $website
-     * @param int $testId
-     * @param string $expectedRedirectUrl
+     * @dataProvider testActionDataProvider
      */
     public function testTestAction(
         array $httpFixtures,
         array $testValues,
         Request $request,
-        $website,
-        $testId,
-        $expectedRedirectUrl
+        ?string $website,
+        ?int $testId,
+        string $expectedRedirectUrl
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -151,10 +144,7 @@ class RedirectControllerTest extends AbstractControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function dataProviderForTestAction()
+    public function testActionDataProvider(): array
     {
         return [
             'task results url without trailing slash' => [
