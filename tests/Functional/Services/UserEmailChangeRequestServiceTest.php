@@ -1,10 +1,8 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Exception\UserEmailChangeException;
 use App\Services\UserEmailChangeRequestService;
@@ -40,15 +38,8 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
 
     /**
      * @dataProvider getEmailChangeRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array|null $expectedEmailChangeRequest
-     *
-     * @throws InvalidAdminCredentialsException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      */
-    public function testGetEmailChangeRequest(array $httpFixtures, $expectedEmailChangeRequest)
+    public function testGetEmailChangeRequest(array $httpFixtures, ?array $expectedEmailChangeRequest)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -63,10 +54,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         );
     }
 
-    /**
-     * @return array
-     */
-    public function getEmailChangeRequestDataProvider()
+    public function getEmailChangeRequestDataProvider(): array
     {
         $emailChangeRequestValues = [
             'new_email' => 'foo@example.com',
@@ -91,13 +79,8 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
 
     /**
      * @dataProvider modifyEmailChangeRequestSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param bool $expectedRequestIsMade
-     *
-     * @throws InvalidCredentialsException
      */
-    public function testCancelEmailChangeRequest(array $httpFixtures, $expectedRequestIsMade)
+    public function testCancelEmailChangeRequest(array $httpFixtures, bool $expectedRequestIsMade)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -118,18 +101,11 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
 
     /**
      * @dataProvider modifyEmailChangeRequestUserEmailChangeExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws InvalidCredentialsException
-     * @throws UserEmailChangeException
      */
     public function testConfirmEmailChangeRequestUserEmailChangeException(
         array $httpFixtures,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -146,14 +122,8 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
 
     /**
      * @dataProvider modifyEmailChangeRequestSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param bool $expectedRequestIsMade
-     *
-     * @throws InvalidCredentialsException
-     * @throws UserEmailChangeException
      */
-    public function testConfirmEmailChangeRequest(array $httpFixtures, $expectedRequestIsMade)
+    public function testConfirmEmailChangeRequest(array $httpFixtures, bool $expectedRequestIsMade)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -177,18 +147,11 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
 
     /**
      * @dataProvider modifyEmailChangeRequestUserEmailChangeExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws InvalidCredentialsException
-     * @throws UserEmailChangeException
      */
     public function testCreateEmailChangeRequestUserEmailChangeException(
         array $httpFixtures,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -202,14 +165,8 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
 
     /**
      * @dataProvider modifyEmailChangeRequestSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param $expectedRequestIsMade
-     *
-     * @throws InvalidCredentialsException
-     * @throws UserEmailChangeException
      */
-    public function testCreateEmailChangeRequestSuccess(array $httpFixtures, $expectedRequestIsMade)
+    public function testCreateEmailChangeRequestSuccess(array $httpFixtures, bool $expectedRequestIsMade)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -228,10 +185,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         }
     }
 
-    /**
-     * @return array
-     */
-    public function modifyEmailChangeRequestSuccessDataProvider()
+    public function modifyEmailChangeRequestSuccessDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
@@ -268,10 +222,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function modifyEmailChangeRequestUserEmailChangeExceptionDataProvider()
+    public function modifyEmailChangeRequestUserEmailChangeExceptionDataProvider(): array
     {
         return [
             'email address taken' => [
