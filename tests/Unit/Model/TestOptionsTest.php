@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Model;
 
@@ -6,9 +7,6 @@ use App\Model\TestOptions;
 
 class TestOptionsTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var array
-     */
     private $setFeatureOptionsCalls = [
         [
             'name' => 'http-authentication',
@@ -36,9 +34,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         ],
     ];
 
-    /**
-     * @var array
-     */
     private $addTestTypeOptionsCalls = [
         [
             'name' => 'html-validation',
@@ -59,9 +54,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         ],
     ];
 
-    /**
-     * @var array
-     */
     private $availableTaskTypes = [
         'html-validation' => [
             'name' => 'HTML validation',
@@ -74,9 +66,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         ],
     ];
 
-    /**
-     * @var array
-     */
     private $availableFeatures = [
         'http-authentication' => [
             'enabled' => true,
@@ -105,16 +94,11 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider addRemoveHasGetTestTypesDataProvider
-     *
-     * @param array $testTypesToAdd
-     * @param array $testTypesToRemove
-     * @param bool $expectedHasTestTypes
-     * @param array $expectedTestTypes
      */
     public function testAddRemoveHasGetTestTypes(
         array $testTypesToAdd,
         array $testTypesToRemove,
-        $expectedHasTestTypes,
+        bool $expectedHasTestTypes,
         array $expectedTestTypes
     ) {
         $this->buildTestTypes($testTypesToAdd);
@@ -127,10 +111,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTestTypes, $this->testOptions->getTestTypes());
     }
 
-    /**
-     * @return array
-     */
-    public function addRemoveHasGetTestTypesDataProvider()
+    public function addRemoveHasGetTestTypesDataProvider(): array
     {
         return [
             'none' => [
@@ -199,14 +180,10 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider setRemoveGetFeatureOptionsDataProvider
-     *
-     * @param array $removeFeatureOptionsCalls
-     * @param string $getFeatureOptionsFeature
-     * @param array $expectedFeatureOptions
      */
     public function testSetRemoveGetFeatureOptions(
         array $removeFeatureOptionsCalls,
-        $getFeatureOptionsFeature,
+        string $getFeatureOptionsFeature,
         array $expectedFeatureOptions
     ) {
         $this->buildFeatureOptions($this->setFeatureOptionsCalls);
@@ -220,10 +197,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedFeatureOptions, $featureOptions);
     }
 
-    /**
-     * @return array
-     */
-    public function setRemoveGetFeatureOptionsDataProvider()
+    public function setRemoveGetFeatureOptionsDataProvider(): array
     {
         return [
             'none' => [
@@ -259,14 +233,9 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider hasFeatureOptionsDataProvider
-     *
-     * @param string $featureKey
-     * @param bool $expectedHasFeatureOptions
      */
-    public function testHasFeatureOptions(
-        $featureKey,
-        $expectedHasFeatureOptions
-    ) {
+    public function testHasFeatureOptions(string $featureKey, bool $expectedHasFeatureOptions)
+    {
         $this->buildFeatureOptions($this->setFeatureOptionsCalls);
 
         $hasFeatureOptions = $this->testOptions->hasFeatureOptions($featureKey);
@@ -274,10 +243,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedHasFeatureOptions, $hasFeatureOptions);
     }
 
-    /**
-     * @return array
-     */
-    public function hasFeatureOptionsDataProvider()
+    public function hasFeatureOptionsDataProvider(): array
     {
         return [
             'has http-authentication' => [
@@ -329,11 +295,8 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getTestTypeOptionsDataProvider
-     *
-     * @param string $testTypeName
-     * @param array $expectedTestTypeOptions
      */
-    public function testGetTestTypeOptions($testTypeName, array $expectedTestTypeOptions)
+    public function testGetTestTypeOptions(string $testTypeName, array $expectedTestTypeOptions)
     {
         $this->buildTestTypeOptions($this->addTestTypeOptionsCalls);
 
@@ -342,10 +305,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTestTypeOptions, $testTypeOptions);
     }
 
-    /**
-     * @return array
-     */
-    public function getTestTypeOptionsDataProvider()
+    public function getTestTypeOptionsDataProvider(): array
     {
         return [
             'html-validation' => [
@@ -370,11 +330,8 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider hasTestTypeOptionsDataProvider
-     *
-     * @param string $testTypeName
-     * @param bool $expectedHasTestTypeOptions
      */
-    public function testHasTestTypeOptions($testTypeName, $expectedHasTestTypeOptions)
+    public function testHasTestTypeOptions(string $testTypeName, bool $expectedHasTestTypeOptions)
     {
         $this->buildTestTypeOptions($this->addTestTypeOptionsCalls);
 
@@ -383,10 +340,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedHasTestTypeOptions, $hasTestTypeOptions);
     }
 
-    /**
-     * @return array
-     */
-    public function hasTestTypeOptionsDataProvider()
+    public function hasTestTypeOptionsDataProvider(): array
     {
         return [
             'has css-validation' => [
@@ -410,13 +364,12 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getAbsoluteTestTypeOptionsDataProvider
-     *
-     * @param string $testType
-     * @param bool $useFullOptionKey
-     * @param array $expectedAbsoluteTestTypeOptions
      */
-    public function testGetAbsoluteTestTypeOptions($testType, $useFullOptionKey, array $expectedAbsoluteTestTypeOptions)
-    {
+    public function testGetAbsoluteTestTypeOptions(
+        string $testType,
+        bool $useFullOptionKey,
+        array $expectedAbsoluteTestTypeOptions
+    ) {
         $this->buildTestTypeOptions($this->addTestTypeOptionsCalls);
 
         $absoluteTestTypeOptions = $this->testOptions->getAbsoluteTestTypeOptions($testType, $useFullOptionKey);
@@ -424,10 +377,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedAbsoluteTestTypeOptions, $absoluteTestTypeOptions);
     }
 
-    /**
-     * @return array
-     */
-    public function getAbsoluteTestTypeOptionsDataProvider()
+    public function getAbsoluteTestTypeOptionsDataProvider(): array
     {
         return [
             'html-validation; useFullOptionKey=true' => [
@@ -470,11 +420,8 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getAbsoluteFeatureOptionsDataProvider
-     *
-     * @param string $featureKey
-     * @param array $expectedAbsoluteFeatureOptions
      */
-    public function testGetAbsoluteFeatureOptions($featureKey, array $expectedAbsoluteFeatureOptions)
+    public function testGetAbsoluteFeatureOptions(string $featureKey, array $expectedAbsoluteFeatureOptions)
     {
         $this->buildFeatureOptions($this->setFeatureOptionsCalls);
 
@@ -483,10 +430,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedAbsoluteFeatureOptions, $absoluteFeatureOptions);
     }
 
-    /**
-     * @return array
-     */
-    public function getAbsoluteFeatureOptionsDataProvider()
+    public function getAbsoluteFeatureOptionsDataProvider(): array
     {
         return [
             'http-authentication' => [
@@ -518,24 +462,16 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getAbsoluteTestTypesDataProvider
-     *
-     * @param array $testTypesToAdd
-     * @param array $expectedAbsoluteTestTypes
      */
-    public function testGetAbsoluteTestTypes(
-        array $testTypesToAdd,
-        array $expectedAbsoluteTestTypes
-    ) {
+    public function testGetAbsoluteTestTypes(array $testTypesToAdd, array $expectedAbsoluteTestTypes)
+    {
         $this->testOptions->setAvailableTaskTypes($this->availableTaskTypes);
         $this->buildTestTypes($testTypesToAdd);
 
         $this->assertEquals($expectedAbsoluteTestTypes, $this->testOptions->getAbsoluteTestTypes());
     }
 
-    /**
-     * @return array
-     */
-    public function getAbsoluteTestTypesDataProvider()
+    public function getAbsoluteTestTypesDataProvider(): array
     {
         return [
             'no test types added' => [
@@ -590,9 +526,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getAbsoluteFeaturesDataProvider
-     *
-     * @param array $setFeatureOptionsCalls
-     * @param array $expectedAbsoluteFeatures
      */
     public function testGetAbsoluteFeatures(array $setFeatureOptionsCalls, array $expectedAbsoluteFeatures)
     {
@@ -602,10 +535,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedAbsoluteFeatures, $this->testOptions->getAbsoluteFeatures());
     }
 
-    /**
-     * @return array
-     */
-    public function getAbsoluteFeaturesDataProvider()
+    public function getAbsoluteFeaturesDataProvider(): array
     {
         return [
             'none' => [
@@ -649,11 +579,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider toArrayDataProvider
-     *
-     * @param array $testTypesToAdd
-     * @param array $addTestTypeOptionsCalls
-     * @param array $setFeatureOptionsCalls
-     * @param array $expectedArray
      */
     public function testToArray(
         array $testTypesToAdd,
@@ -671,10 +596,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedArray, $array);
     }
 
-    /**
-     * @return array
-     */
-    public function toArrayDataProvider()
+    public function toArrayDataProvider(): array
     {
         return [
             'none' => [
@@ -743,11 +665,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider toKeyArrayDataProvider
-     *
-     * @param array $testTypesToAdd
-     * @param array $addTestTypeOptionsCalls
-     * @param array $setFeatureOptionsCalls
-     * @param array $expectedArray
      */
     public function testToKeyArray(
         array $testTypesToAdd,
@@ -765,10 +682,7 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedArray, $array);
     }
 
-    /**
-     * @return array
-     */
-    public function toKeyArrayDataProvider()
+    public function toKeyArrayDataProvider(): array
     {
         return [
             'none' => [
@@ -826,9 +740,6 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    /**
-     * @param array $setFeatureOptionsCalls
-     */
     private function buildFeatureOptions(array $setFeatureOptionsCalls)
     {
         foreach ($setFeatureOptionsCalls as $setFeatureOptionsCall) {
@@ -836,16 +747,13 @@ class TestOptionsTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    private function buildTestTypeOptions($addTestTypeOptionsCalls)
+    private function buildTestTypeOptions(array $addTestTypeOptionsCalls)
     {
         foreach ($addTestTypeOptionsCalls as $addTestTypeOptionsCall) {
             $this->testOptions->addTestTypeOptions($addTestTypeOptionsCall['name'], $addTestTypeOptionsCall['options']);
         }
     }
 
-    /**
-     * @param array $testTypesToAdd
-     */
     private function buildTestTypes(array $testTypesToAdd)
     {
         foreach ($testTypesToAdd as $testTypeKey => $testTypeDetails) {

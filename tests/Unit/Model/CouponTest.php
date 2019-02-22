@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Model;
 
@@ -11,9 +11,6 @@ class CouponTest extends \PHPUnit\Framework\TestCase
      */
     private $coupon;
 
-    /**
-     * @var array
-     */
     private $emptyCouponValues = [
         'code' => null,
         'isActive' => null,
@@ -21,9 +18,6 @@ class CouponTest extends \PHPUnit\Framework\TestCase
         'percentOff' => null,
     ];
 
-    /**
-     * @var array
-     */
     private $nonEmptyCouponValues = [
         'code' => 'foo',
         'isActive' => true,
@@ -43,24 +37,20 @@ class CouponTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider jsonSerializeDataProvider
-     *
-     * @param string $code
-     * @param bool $isActive
-     * @param string $intro
-     * @param string $percentOff
-     * @param array $expectedSerializedCoupon
      */
-    public function testJsonSerialize($code, $isActive, $intro, $percentOff, $expectedSerializedCoupon)
-    {
+    public function testJsonSerialize(
+        ?string $code,
+        ?bool $isActive,
+        ?string $intro,
+        ?string $percentOff,
+        array $expectedSerializedCoupon
+    ) {
         $this->populateCoupon($code, $isActive, $intro, $percentOff);
 
         $this->assertEquals($expectedSerializedCoupon, $this->coupon->jsonSerialize());
     }
 
-    /**
-     * @return array
-     */
-    public function jsonSerializeDataProvider()
+    public function jsonSerializeDataProvider(): array
     {
         return [
             'empty' => array_merge(
@@ -90,24 +80,20 @@ class CouponTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider toStringDataProvider
-     *
-     * @param string $code
-     * @param bool $isActive
-     * @param string $intro
-     * @param string $percentOff
-     * @param array $expectedStringRepresentation
      */
-    public function testToString($code, $isActive, $intro, $percentOff, $expectedStringRepresentation)
-    {
+    public function testToString(
+        ?string $code,
+        ?bool $isActive,
+        ?string $intro,
+        ?string $percentOff,
+        string $expectedStringRepresentation
+    ) {
         $this->populateCoupon($code, $isActive, $intro, $percentOff);
 
         $this->assertEquals($expectedStringRepresentation, $this->coupon->__toString());
     }
 
-    /**
-     * @return array
-     */
-    public function toStringDataProvider()
+    public function toStringDataProvider(): array
     {
         return [
             'empty' => array_merge(
@@ -128,7 +114,7 @@ class CouponTest extends \PHPUnit\Framework\TestCase
                         'code' => 'foo',
                         'active' => true,
                         'intro' => 'Intro',
-                        'percent_off' => 20
+                        'percent_off' => '20'
                     ]),
                 ]
             ),
@@ -137,24 +123,20 @@ class CouponTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getPriceModifierDataProvider
-     *
-     * @param string $code
-     * @param bool $isActive
-     * @param string $intro
-     * @param string $percentOff
-     * @param array $expectedPriceModifier
      */
-    public function testGetPriceModifier($code, $isActive, $intro, $percentOff, $expectedPriceModifier)
-    {
+    public function testGetPriceModifier(
+        ?string $code,
+        ?bool $isActive,
+        ?string $intro,
+        ?string $percentOff,
+        float $expectedPriceModifier
+    ) {
         $this->populateCoupon($code, $isActive, $intro, $percentOff);
 
         $this->assertEquals($expectedPriceModifier, $this->coupon->getPriceModifier());
     }
 
-    /**
-     * @return array
-     */
-    public function getPriceModifierDataProvider()
+    public function getPriceModifierDataProvider(): array
     {
         return [
             'empty' => array_merge(
@@ -172,13 +154,7 @@ class CouponTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    /**
-     * @param string $code
-     * @param bool $isActive
-     * @param string $intro
-     * @param string $percentOff
-     */
-    private function populateCoupon($code, $isActive, $intro, $percentOff)
+    private function populateCoupon(?string $code, ?bool $isActive, ?string $intro, ?string $percentOff)
     {
         if (!is_null($code)) {
             $this->coupon->setCode($code);
