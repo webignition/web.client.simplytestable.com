@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
@@ -24,17 +25,12 @@ class RequiresPrivateUserRequestListenerTest extends AbstractKernelRequestListen
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param $expectedHasResponse
-     * @param string $expectedRedirectUrl
      */
     public function testOnKernelRequest(
         array $httpFixtures,
         User $user,
-        $expectedHasResponse,
-        $expectedRedirectUrl = null
+        bool $expectedHasResponse,
+        ?string $expectedRedirectUrl = null
     ) {
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
@@ -60,10 +56,7 @@ class RequiresPrivateUserRequestListenerTest extends AbstractKernelRequestListen
         }
     }
 
-    /**
-     * @return array
-     */
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
             'public user' => [

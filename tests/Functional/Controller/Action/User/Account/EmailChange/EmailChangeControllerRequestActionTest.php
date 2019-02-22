@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account\EmailChange;
 
@@ -6,15 +7,10 @@ use App\Services\Mailer;
 use App\Tests\Factory\PostmarkExceptionFactory;
 use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\Account\EmailChangeController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use webignition\SimplyTestableUserModel\User;
@@ -85,15 +81,6 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
     /**
      * @dataProvider requestActionBadRequestDataProvider
-     *
-     * @param Request $request
-     * @param array $expectedFlashBagValues
-     *
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidCredentialsException
-     * @throws MailConfigurationException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
      */
     public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues)
     {
@@ -109,10 +96,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function requestActionBadRequestDataProvider()
+    public function requestActionBadRequestDataProvider(): array
     {
         return [
             'empty email' => [
@@ -151,15 +135,6 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
     /**
      * @dataProvider requestActionCreateFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     * @throws MailConfigurationException
      */
     public function testRequestActionCreateFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
@@ -181,10 +156,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function requestActionCreateFailureDataProvider()
+    public function requestActionCreateFailureDataProvider(): array
     {
         return [
             'email taken' => [
@@ -218,15 +190,6 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
 
     /**
      * @dataProvider requestActionSendConfirmationTokenFailureDataProvider
-     *
-     * @param PostmarkException $postmarkException
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     * @throws MailConfigurationException
      */
     public function testRequestActionSendConfirmationTokenFailure(
         PostmarkException $postmarkException,
@@ -267,10 +230,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function requestActionSendConfirmationTokenFailureDataProvider()
+    public function requestActionSendConfirmationTokenFailureDataProvider(): array
     {
         return [
             'postmark not allowed to send to user email' => [
@@ -359,19 +319,7 @@ class EmailChangeControllerRequestActionTest extends AbstractEmailChangeControll
         ], $flashBag->peekAll());
     }
 
-    /**
-     * @param Request $request
-     * @param Mailer $mailer
-     *
-     * @return RedirectResponse
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     * @throws MailConfigurationException
-     */
-    private function callRequestAction(Request $request, Mailer $mailer = null)
+    private function callRequestAction(Request $request, Mailer $mailer = null): RedirectResponse
     {
         $mailer = (empty($mailer))
             ? \Mockery::mock(Mailer::class)

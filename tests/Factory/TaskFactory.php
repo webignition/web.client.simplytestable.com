@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Factory;
 
@@ -20,34 +21,20 @@ class TaskFactory
     const DEFAULT_STATE = Task::STATE_COMPLETED;
     const DEFAULT_TYPE = Task::TYPE_HTML_VALIDATION;
 
-    /**
-     * @var ContainerInterface
-     */
     private $container;
 
-    /**
-     * @var array
-     */
     private $defaultTaskValues = [
         self::KEY_URL => self::DEFAULT_URL,
         self::KEY_STATE => self::DEFAULT_STATE,
         self::KEY_TYPE => self::DEFAULT_TYPE,
     ];
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * @param array $taskValues
-     *
-     * @return Task
-     */
-    public function create(array $taskValues)
+    public function create(array $taskValues): Task
     {
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get(EntityManagerInterface::class);
@@ -77,12 +64,9 @@ class TaskFactory
     }
 
     /**
-     * @param Test $test
-     * @param array $taskValuesCollection
-     *
      * @return Task[]
      */
-    public function createCollection(Test $test, array $taskValuesCollection)
+    public function createCollection(Test $test, array $taskValuesCollection): array
     {
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get(EntityManagerInterface::class);

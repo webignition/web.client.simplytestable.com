@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account;
 
@@ -64,14 +65,6 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
 
     /**
      * @dataProvider updateActionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param array $existingListRecipients
-     * @param Request $request
-     * @param array $expectedFlashBagValues
-     * @param bool $expectedAnnouncementsListRecipientsContains
-     * @param bool $expectedUpdatesListRecipientsContains
      */
     public function testUpdateAction(
         array $httpFixtures,
@@ -79,8 +72,8 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         array $existingListRecipients,
         Request $request,
         array $expectedFlashBagValues,
-        $expectedAnnouncementsListRecipientsContains,
-        $expectedUpdatesListRecipientsContains
+        bool $expectedAnnouncementsListRecipientsContains,
+        bool $expectedUpdatesListRecipientsContains
     ) {
         $mailChimpListRecipientsService = self::$container->get(ListRecipientsService::class);
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -131,10 +124,7 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         );
     }
 
-    /**
-     * @return array
-     */
-    public function updateActionDataProvider()
+    public function updateActionDataProvider(): array
     {
         return [
             'no request data, no existing recipients' => [

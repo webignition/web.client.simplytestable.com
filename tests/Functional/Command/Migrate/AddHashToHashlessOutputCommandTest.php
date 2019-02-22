@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Command\Migrate;
 
@@ -29,15 +30,8 @@ class AddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider runDataProvider
-     *
-     * @param array $outputValuesCollection
-     * @param int|null $limit
-     * @param int|bool $dryRun
-     * @param array $expectedOutputHashes
-     *
-     * @throws \Exception
      */
-    public function testRun(array $outputValuesCollection, $limit, $dryRun, array $expectedOutputHashes)
+    public function testRun(array $outputValuesCollection, ?int $limit, ?bool $dryRun, array $expectedOutputHashes)
     {
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $taskOutputRepository = $entityManager->getRepository(Output::class);
@@ -75,10 +69,7 @@ class AddHashToHashlessOutputCommandTest extends AbstractBaseTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function runDataProvider()
+    public function runDataProvider(): array
     {
         return [
             'no task outputs, no limit, no dry-run' => [

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
@@ -9,14 +10,13 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
 {
     /**
      * @dataProvider getFinishedCountDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $urlFilter
-     * @param array $expectedResponse
-     * @param string $expectedRequestUrl
      */
-    public function testGetFinishedCount(array $httpFixtures, $urlFilter, $expectedResponse, $expectedRequestUrl)
-    {
+    public function testGetFinishedCount(
+        array $httpFixtures,
+        ?string $urlFilter,
+        ?int $expectedResponse,
+        string $expectedRequestUrl
+    ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $response = $this->remoteTestService->getFinishedCount($urlFilter);
@@ -25,10 +25,7 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function getFinishedCountDataProvider()
+    public function getFinishedCountDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');

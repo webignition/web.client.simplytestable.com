@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\Test\Task\Results;
 
@@ -89,13 +90,8 @@ class ByUrlControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider indexActionDataProvider
-     *
-     * @param int $testId
-     * @param string $taskUrl
-     * @param string $taskType
-     * @param string $expectedRedirectUrl
      */
-    public function testIndexAction($testId, $taskUrl, $taskType, $expectedRedirectUrl)
+    public function testIndexAction(int $testId, string $taskUrl, string $taskType, string $expectedRedirectUrl)
     {
         /* @var RedirectResponse $response */
         $response = $this->byUrlController->indexAction(self::WEBSITE_URL, $testId, $taskUrl, $taskType);
@@ -104,10 +100,7 @@ class ByUrlControllerTest extends AbstractControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionDataProvider()
+    public function indexActionDataProvider(): array
     {
         return [
             'invalid test' => [

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account\TeamInvite;
 
@@ -7,11 +8,6 @@ use App\Services\Mailer;
 use App\Tests\Factory\PostmarkExceptionFactory;
 use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\Account\TeamInviteController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
-use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -95,15 +91,6 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
 
     /**
      * @dataProvider resendInviteGetInviteFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $expectedFlashBagValues
-     *
-     * @throws MailConfigurationException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testResendInviteActionGetInviteFailure(array $httpFixtures, array $expectedFlashBagValues)
     {
@@ -121,10 +108,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function resendInviteGetInviteFailureDataProvider()
+    public function resendInviteGetInviteFailureDataProvider(): array
     {
         return [
             'invitee is a team leader' => [
@@ -148,15 +132,6 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
 
     /**
      * @dataProvider resendInviteActionSendInviteFailureDataProvider
-     *
-     * @param PostmarkException $postmarkException
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws MailConfigurationException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testResendInviteActionSendInviteFailure(
         PostmarkException $postmarkException,
@@ -199,10 +174,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function resendInviteActionSendInviteFailureDataProvider()
+    public function resendInviteActionSendInviteFailureDataProvider(): array
     {
         return [
             'Postmark not allowed to send' => [
@@ -221,16 +193,6 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
 
     /**
      * @dataProvider resendInviteActionSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedMailerMethodName
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     * @throws MailConfigurationException
      */
     public function testResendInviteActionSuccess(
         array $httpFixtures,
@@ -276,10 +238,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         $this->assertEquals(self::EXPECTED_REDIRECT_URL, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function resendInviteActionSuccessDataProvider()
+    public function resendInviteActionSuccessDataProvider(): array
     {
         return [
             'user is enabled' => [
@@ -313,19 +272,7 @@ class TeamInviteControllerResendInviteActionTest extends AbstractTeamInviteContr
         ];
     }
 
-    /**
-     * @param Mailer $mailer
-     * @param Request $request
-     *
-     * @return RedirectResponse
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     * @throws MailConfigurationException
-     */
-    private function callResendInviteAction(Request $request, Mailer $mailer = null)
+    private function callResendInviteAction(Request $request, Mailer $mailer = null): RedirectResponse
     {
         $mailer = empty($mailer)
             ? \Mockery::mock(Mailer::class)

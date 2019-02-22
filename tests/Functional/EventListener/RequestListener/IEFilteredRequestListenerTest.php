@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
@@ -55,11 +56,8 @@ class IEFilteredRequestListenerTest extends AbstractKernelRequestListenerTest
 
     /**
      * @dataProvider dataProvider
-     *
-     * @param string $userAgent
-     * @param bool $expectedHasResponse
      */
-    public function testOnKernelRequest($userAgent, $expectedHasResponse)
+    public function testOnKernelRequest(string $userAgent, bool $expectedHasResponse)
     {
         $request = new Request();
         $request->headers->set('user-agent', $userAgent);
@@ -81,10 +79,7 @@ class IEFilteredRequestListenerTest extends AbstractKernelRequestListenerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function dataProvider()
+    public function dataProvider(): array
     {
         return [
             'IE6' => [

@@ -1,13 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Test\Results\Preparing;
 
 use App\Controller\View\Test\Results\PreparingController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -29,17 +27,11 @@ class PreparingControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -128,25 +120,14 @@ class PreparingControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionBadRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param Request $request
-     * @param $website
-     * @param string $expectedRedirectUrl
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionBadRequest(
         array $httpFixtures,
         User $user,
         Request $request,
-        $website,
-        $expectedRedirectUrl,
-        $expectedRequestUrl
+        string $website,
+        string $expectedRedirectUrl,
+        string $expectedRequestUrl
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -163,10 +144,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionBadRequestDataProvider()
+    public function indexActionBadRequestDataProvider(): array
     {
         return [
             'website mismatch' => [
@@ -196,13 +174,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $testValues
-     * @param Twig_Environment $twig
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(array $httpFixtures, array $testValues, Twig_Environment $twig)
     {
@@ -221,10 +192,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'no remote tasks retrieved' => [
@@ -341,9 +309,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertEquals(

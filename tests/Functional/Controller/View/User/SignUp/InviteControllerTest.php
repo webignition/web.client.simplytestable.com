@@ -1,11 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\User\SignUp;
 
 use App\Controller\Action\SignUp\Team\InviteController as ActionInviteController;
 use App\Controller\View\User\SignUp\InviteController;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
 use App\Model\Team\Invite;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
@@ -63,14 +62,6 @@ class InviteControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     * @param array $flashBagMessages
-     * @param Twig_Environment $twig
-     *
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testIndexActionRender(
         array $httpFixtures,
@@ -93,10 +84,7 @@ class InviteControllerTest extends AbstractViewControllerTest
         $inviteController->indexAction($request, self::TOKEN);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         $inviteData = [
             'team' => self::TEAM_NAME,
@@ -263,9 +251,6 @@ class InviteControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertTemplateParameters(array $parameters)
     {
         $publicUser = new User('public', 'public');

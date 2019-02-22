@@ -1,13 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\User\Account;
 
 use App\Controller\Action\User\Account\TeamController as TeamActionController;
 use App\Controller\Action\User\Account\TeamInviteController;
 use App\Controller\View\User\Account\TeamController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\Team\Invite;
 use App\Model\Team\Team;
 use App\Model\User\Summary as UserSummary;
@@ -25,9 +23,6 @@ class TeamControllerTest extends AbstractAccountControllerTest
     const ROUTE_NAME = 'view_user_account_team';
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $userData = [
         'email' => self::USER_EMAIL,
         'user_plan' => [
@@ -55,10 +50,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
         $this->assertIEFilteredRedirectResponse();
     }
 
-    /**
-     * @return array
-     */
-    public function invalidUserGetRequestDataProvider()
+    public function invalidUserGetRequestDataProvider(): array
     {
         return [
             'invalid user' => [
@@ -105,20 +97,9 @@ class TeamControllerTest extends AbstractAccountControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $flashBagMessages
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
-    public function testIndexActionRender(
-        array $httpFixtures,
-        array $flashBagMessages,
-        Twig_Environment $twig
-    ) {
+    public function testIndexActionRender(array $httpFixtures, array $flashBagMessages, Twig_Environment $twig)
+    {
         $userManager = self::$container->get(UserManager::class);
         $flashBag = self::$container->get(FlashBagInterface::class);
 
@@ -136,10 +117,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'not in team, no invites, no flash messages' => [
@@ -428,11 +406,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
         ];
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertCommonViewData($viewName, $parameters)
+    private function assertCommonViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
@@ -441,9 +415,6 @@ class TeamControllerTest extends AbstractAccountControllerTest
         $this->assertInstanceOf(UserSummary::class, $parameters['user_summary']);
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertArraySubset(

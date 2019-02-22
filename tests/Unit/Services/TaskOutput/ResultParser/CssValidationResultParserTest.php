@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\TaskOutput\ResultParser;
 
@@ -26,19 +27,13 @@ class CssValidationResultParserTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider handlesDataProvider
-     *
-     * @param string $taskType
-     * @param bool $expectedHandles
      */
-    public function testHandles($taskType, $expectedHandles)
+    public function testHandles(string $taskType, bool $expectedHandles)
     {
         $this->assertEquals($expectedHandles, $this->cssValidationResultParser->handles($taskType));
     }
 
-    /**
-     * @return array
-     */
-    public function handlesDataProvider()
+    public function handlesDataProvider(): array
     {
         return [
             Output::TYPE_HTML_VALIDATION => [
@@ -58,10 +53,6 @@ class CssValidationResultParserTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getResultDataProvider
-     *
-     * @param Output $output
-     * @param array $expectedResultGetErrors
-     * @param array $expectedResultGetWarnings
      */
     public function testGetResult(
         Output $output,
@@ -77,10 +68,7 @@ class CssValidationResultParserTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedResultGetWarnings, $result->getWarnings());
     }
 
-    /**
-     * @return array
-     */
-    public function getResultDataProvider()
+    public function getResultDataProvider(): array
     {
         return [
             'null output' => [

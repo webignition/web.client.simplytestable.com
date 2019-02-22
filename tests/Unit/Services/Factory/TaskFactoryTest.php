@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\Factory;
 
@@ -27,11 +28,6 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider hydrateDataProvider
-     *
-     * @param TaskOutputFactory $taskOutputFactory
-     * @param Task $task
-     * @param array $taskData
-     * @param array $expectedTaskData
      */
     public function testHydrate(
         TaskOutputFactory $taskOutputFactory,
@@ -56,10 +52,7 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTaskData['timePeriod']['endDateTime'], $timePeriod->getEndDateTime());
     }
 
-    /**
-     * @return array
-     */
-    public function hydrateDataProvider()
+    public function hydrateDataProvider(): array
     {
         return [
             'no output, no time period' => [

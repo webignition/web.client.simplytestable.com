@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller;
 
@@ -6,11 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\TaskController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
-use App\Tests\Functional\AbstractBaseTestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,9 +29,6 @@ class TaskControllerTest extends AbstractControllerTest
      */
     private $httpMockHandler;
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -49,9 +43,6 @@ class TaskControllerTest extends AbstractControllerTest
         'task_count' => 12,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTasksData = [
         [
             'id' => 1,
@@ -120,12 +111,8 @@ class TaskControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider invalidOwnerRequestDataProvider
-     *
-     * @param string $method
-     * @param string $routeName
-     * @param array $routeParameters
      */
-    public function testInvalidOwnerRequest($method, $routeName, array $routeParameters)
+    public function testInvalidOwnerRequest(string $method, string $routeName, array $routeParameters)
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -146,10 +133,7 @@ class TaskControllerTest extends AbstractControllerTest
         $this->assertEquals([], $responseData);
     }
 
-    /**
-     * @return array
-     */
-    public function invalidOwnerRequestDataProvider()
+    public function invalidOwnerRequestDataProvider(): array
     {
         return [
             'idCollectionAction' => [
@@ -201,14 +185,8 @@ class TaskControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider unretrievedIdCollectionActionRenderDataProvider
-     *
-     * @param int $limit
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
-    public function testUnretrievedIdCollectionActionRender($limit)
+    public function testUnretrievedIdCollectionActionRender(?int $limit)
     {
         $taskIds = [1, 2, 3, 4,];
 
@@ -231,10 +209,7 @@ class TaskControllerTest extends AbstractControllerTest
         $this->assertEquals($taskIds, $responseData);
     }
 
-    /**
-     * @return array
-     */
-    public function unretrievedIdCollectionActionRenderDataProvider()
+    public function unretrievedIdCollectionActionRenderDataProvider(): array
     {
         return [
             'no specified limit' => [
@@ -248,13 +223,6 @@ class TaskControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider retrieveActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testRetrieveActionRender(array $httpFixtures, Request $request)
     {
@@ -292,10 +260,7 @@ class TaskControllerTest extends AbstractControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function retrieveActionRenderDataProvider()
+    public function retrieveActionRenderDataProvider(): array
     {
         return [
             'no task ids' => [

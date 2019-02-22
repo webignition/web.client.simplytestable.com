@@ -6,29 +6,16 @@ use Psr\Http\Message\ResponseInterface;
 
 class PostmarkHttpResponseFactory
 {
-    /**
-     * @param $statusCode
-     * @param array $responseData
-     *
-     * @return ResponseInterface
-     */
-    public static function createResponse($statusCode, array $responseData)
+    public static function createResponse(int $statusCode, array $responseData): ResponseInterface
     {
         return HttpResponseFactory::createJsonResponse($responseData, $statusCode);
     }
 
-    /**
-     * @param string $recipient
-     * @param string $submittedAt
-     * @param string $messageId
-     *
-     * @return ResponseInterface
-     */
     public static function createSuccessResponse(
-        $recipient = 'user@example.com',
-        $submittedAt = '2014-02-17T07:25:01.4178645-05:00',
-        $messageId = '0a129aee-e1cd-480d-b08d-4f48548ff48d'
-    ) {
+        string $recipient = 'user@example.com',
+        string $submittedAt = '2014-02-17T07:25:01.4178645-05:00',
+        string $messageId = '0a129aee-e1cd-480d-b08d-4f48548ff48d'
+    ): ResponseInterface {
         return self::createResponse(200, [
             'To' => $recipient,
             'SubmittedAt' => $submittedAt,
@@ -38,12 +25,7 @@ class PostmarkHttpResponseFactory
         ]);
     }
 
-    /**
-     * @param int $errorCode
-     *
-     * @return ResponseInterface
-     */
-    public static function createErrorResponse($errorCode)
+    public static function createErrorResponse(int $errorCode): ResponseInterface
     {
         return self::createResponse(422, [
             'ErrorCode' => $errorCode,

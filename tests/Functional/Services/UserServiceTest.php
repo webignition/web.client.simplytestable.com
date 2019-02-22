@@ -1,11 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Exception\UserAlreadyExistsException;
 use App\Model\Coupon;
@@ -43,21 +43,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider resetPasswordFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testResetPasswordFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -68,10 +59,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->userService->resetPassword('token', 'password');
     }
 
-    /**
-     * @return array
-     */
-    public function resetPasswordFailureDataProvider()
+    public function resetPasswordFailureDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
         $notFoundResponse = HttpResponseFactory::createNotFoundResponse();
@@ -142,11 +130,8 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider authenticateDataProvider
-     *
-     * @param array $httpFixtures
-     * @param bool $expectedAuthenticateReturnValue
      */
-    public function testAuthenticate(array $httpFixtures, $expectedAuthenticateReturnValue)
+    public function testAuthenticate(array $httpFixtures, bool $expectedAuthenticateReturnValue)
     {
         $this->userManager->setUser($this->user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -155,10 +140,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals('http://null/user/user@example.com/authenticate/', $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function authenticateDataProvider()
+    public function authenticateDataProvider(): array
     {
         return [
             'authenticated' => [
@@ -184,22 +166,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider createFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws UserAlreadyExistsException
      */
     public function testCreateFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -214,10 +186,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         );
     }
 
-    /**
-     * @return array
-     */
-    public function createFailureDataProvider()
+    public function createFailureDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
@@ -262,23 +231,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider createSuccessDataProvider
-     *
-     * @param string $email
-     * @param string $password
-     * @param string $plan
-     * @param string|null $coupon
-     * @param array $expectedPostFields
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws UserAlreadyExistsException
      */
     public function testCreateSuccess(
-        $email,
-        $password,
-        $plan,
-        $coupon,
+        string $email,
+        string $password,
+        string $plan,
+        ?Coupon $coupon,
         array $expectedPostFields
     ) {
         $this->httpMockHandler->appendFixtures([
@@ -301,10 +259,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedPostFields, $postedData);
     }
 
-    /**
-     * @return array
-     */
-    public function createSuccessDataProvider()
+    public function createSuccessDataProvider(): array
     {
         $coupon = new Coupon();
         $coupon->setCode('coupon-code');
@@ -338,21 +293,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider activateFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      */
     public function testActivateFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -363,10 +309,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->userService->activate('token-value');
     }
 
-    /**
-     * @return array
-     */
-    public function activateFailureDataProvider()
+    public function activateFailureDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
@@ -429,21 +372,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider activateAndAcceptFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testActivateAndAcceptFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -458,10 +392,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->userService->activateAndAccept($invite, 'password-value');
     }
 
-    /**
-     * @return array
-     */
-    public function activateAndAcceptFailureDataProvider()
+    public function activateAndAcceptFailureDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
@@ -547,21 +478,13 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider existsSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User|null $user
-     * @param string $email
-     * @param int|bool $expectedReturnValue
-     * @param string $expectedRequestUrl
-     *
-     * @throws InvalidAdminCredentialsException
      */
     public function testExistsSuccess(
         array $httpFixtures,
-        $user,
-        $email,
-        $expectedReturnValue,
-        $expectedRequestUrl
+        ?User $user,
+        ?string $email,
+        int $expectedReturnValue,
+        string $expectedRequestUrl
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -574,10 +497,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function existsSuccessDataProvider()
+    public function existsSuccessDataProvider(): array
     {
         return [
             'not exists' => [
@@ -612,14 +532,8 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider isEnabledDataProvider
-     *
-     * @param array $httpFixtures
-     * @param bool $expectedIsEnabled
-     * @param string$expectedLastRequestUrl
-     *
-     * @throws InvalidAdminCredentialsException
      */
-    public function testIsEnabled(array $httpFixtures, $expectedIsEnabled, $expectedLastRequestUrl)
+    public function testIsEnabled(array $httpFixtures, bool $expectedIsEnabled, string $expectedLastRequestUrl)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -627,10 +541,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedLastRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function isEnabledDataProvider()
+    public function isEnabledDataProvider(): array
     {
         $notFoundResponse = HttpResponseFactory::createNotFoundResponse();
         $successResponse = HttpResponseFactory::createSuccessResponse();
@@ -678,21 +589,12 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider getSummaryFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testGetSummaryFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -703,10 +605,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->userService->getSummary();
     }
 
-    /**
-     * @return array
-     */
-    public function getSummaryFailureDataProvider()
+    public function getSummaryFailureDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
@@ -743,15 +642,8 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider getSummarySuccessDataProvider
-     *
-     * @param User|null $user
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
-    public function testGetSummarySuccess($user, $expectedRequestUrl)
+    public function testGetSummarySuccess(User $user, string $expectedRequestUrl)
     {
         $this->userManager->setUser($user);
 
@@ -785,10 +677,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function getSummarySuccessDataProvider()
+    public function getSummarySuccessDataProvider(): array
     {
         return [
             'has user' => [

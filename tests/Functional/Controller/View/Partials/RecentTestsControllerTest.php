@@ -1,13 +1,12 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\RecentTestsController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
+
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\TestList;
 use App\Tests\Factory\HttpResponseFactory;
@@ -71,13 +70,6 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexAction(
         array $httpFixtures,
@@ -93,10 +85,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionDataProvider()
+    public function indexActionDataProvider(): array
     {
         return [
             'no recent tests' => [
@@ -244,10 +233,6 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
         ];
     }
 
-    /**
-     * @param TestList $testList
-     * @param array $expectedValues
-     */
     private function assertTestList(TestList $testList, array $expectedValues)
     {
         $this->assertEquals(RecentTestsController::LIMIT, $testList->getLimit());

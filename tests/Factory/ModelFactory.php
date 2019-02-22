@@ -52,12 +52,7 @@ class ModelFactory
     const CACHE_VALIDATOR_HEADERS_IDENTIFIER = 'identifier';
     const CACHE_VALIDATOR_HEADERS_LAST_MODIFIED_DATE = 'last-modified-date';
 
-    /**
-     * @param array $taskOutputValues
-     *
-     * @return Output
-     */
-    public static function createTaskOutput($taskOutputValues = [])
+    public static function createTaskOutput(array $taskOutputValues = []): Output
     {
         $output = new Output();
 
@@ -72,12 +67,7 @@ class ModelFactory
         return $output;
     }
 
-    /**
-     * @param array $htmlTextFileMessageValues
-     *
-     * @return HtmlTextFileMessage
-     */
-    public static function createHtmlTextFileMessage($htmlTextFileMessageValues = [])
+    public static function createHtmlTextFileMessage(array $htmlTextFileMessageValues = []): HtmlTextFileMessage
     {
         $htmlTextFileMessage = new HtmlTextFileMessage();
 
@@ -114,12 +104,7 @@ class ModelFactory
         return $htmlTextFileMessage;
     }
 
-    /**
-     * @param array $cssTextFileMessageValues
-     *
-     * @return CssTextFileMessage
-     */
-    public static function createCssTextFileMessage($cssTextFileMessageValues = [])
+    public static function createCssTextFileMessage(array $cssTextFileMessageValues = []): CssTextFileMessage
     {
         $cssTextFileMessage = new CssTextFileMessage();
 
@@ -162,12 +147,7 @@ class ModelFactory
         return $cssTextFileMessage;
     }
 
-    /**
-     * @param array $linkIntegrityMessageValues
-     *
-     * @return LinkIntegrityMessage
-     */
-    public static function createLinkIntegrityMessage($linkIntegrityMessageValues = [])
+    public static function createLinkIntegrityMessage(array $linkIntegrityMessageValues = []): LinkIntegrityMessage
     {
         $linkIntegrityMessage = new LinkIntegrityMessage();
 
@@ -210,12 +190,7 @@ class ModelFactory
         return $linkIntegrityMessage;
     }
 
-    /**
-     * @param array $testOptionsValues
-     *
-     * @return TestOptions
-     */
-    public static function createTestOptions($testOptionsValues = [])
+    public static function createTestOptions(array $testOptionsValues = []): TestOptions
     {
         $testOptions = new TestOptions();
 
@@ -230,12 +205,7 @@ class ModelFactory
         return $testOptions;
     }
 
-    /**
-     * @param array $taskValues
-     *
-     * @return Task
-     */
-    public static function createTask($taskValues = [])
+    public static function createTask(array $taskValues = []): Task
     {
         $task = new Task();
 
@@ -254,12 +224,7 @@ class ModelFactory
         return $task;
     }
 
-    /**
-     * @param array $cacheValidatorHeadersValues
-     *
-     * @return CacheValidatorHeaders
-     */
-    public static function createCacheValidatorHeaders($cacheValidatorHeadersValues = [])
+    public static function createCacheValidatorHeaders(array $cacheValidatorHeadersValues = []): CacheValidatorHeaders
     {
         $cacheValidatorHeaders = new CacheValidatorHeaders();
 

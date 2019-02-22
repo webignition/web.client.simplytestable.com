@@ -1,10 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
-use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidCredentialsException;
 use App\Exception\UserAccountCardException;
 use App\Services\UserPlanSubscriptionService;
 use App\Tests\Factory\ConnectExceptionFactory;
@@ -39,19 +38,11 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider subscribeStripeErrorDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedExceptionParam
-     * @param string $expectedExceptionStripeCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testSubscribeStripeError(
         array $httpFixtures,
-        $expectedExceptionParam,
-        $expectedExceptionStripeCode
+        string $expectedExceptionParam,
+        string $expectedExceptionStripeCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -64,10 +55,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function subscribeStripeErrorDataProvider()
+    public function subscribeStripeErrorDataProvider(): array
     {
         return [
             'invalid address zip' => [
@@ -86,22 +74,12 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider subscribeFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
-     * @throws UserAccountCardException
      */
     public function testSubscribeFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -112,10 +90,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
         $this->userPlanSubscriptionService->subscribe($this->user, self::PLAN);
     }
 
-    /**
-     * @return array
-     */
-    public function subscribeFailureDataProvider()
+    public function subscribeFailureDataProvider(): array
     {
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
 

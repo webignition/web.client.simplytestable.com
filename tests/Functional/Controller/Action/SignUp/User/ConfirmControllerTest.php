@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\SignUp\User;
 
@@ -8,13 +9,9 @@ use App\Tests\Factory\PostmarkExceptionFactory;
 use Mockery\MockInterface;
 use Postmark\Models\PostmarkException;
 use App\Controller\Action\SignUp\User\ConfirmController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
@@ -137,14 +134,6 @@ class ConfirmControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider resendActionSendConfirmationTokenFailureDataProvider
-     *
-     * @param PostmarkException $postmarkException
-     * @param array $expectedFlashBagValues
-     *
-     * @throws MailConfigurationException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testResendActionSendConfirmationTokenFailure(
         PostmarkException $postmarkException,
@@ -182,10 +171,7 @@ class ConfirmControllerTest extends AbstractControllerTest
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function resendActionSendConfirmationTokenFailureDataProvider()
+    public function resendActionSendConfirmationTokenFailureDataProvider(): array
     {
         return [
             'postmark not allowed to send to user email' => [

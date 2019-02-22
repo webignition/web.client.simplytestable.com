@@ -7,18 +7,12 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 trait CustomerSubscriptionDeletedDataProviderTrait
 {
-    /**
-     * @var array
-     */
     private $customerSubscriptionDeletedDefaultEventData = [
         'event' => 'customer.subscription.deleted',
         'plan_name' => 'Personal',
         'user' => 'user@example.com',
     ];
 
-    /**
-     * @return array
-     */
     public function customerSubscriptionDeletedDataProvider()
     {
         return [

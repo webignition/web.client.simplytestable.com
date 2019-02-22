@@ -1,11 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Test\Progress;
 
 use App\Controller\View\Test\ProgressController;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
@@ -27,17 +26,11 @@ class ProgressControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -55,11 +48,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedRedirectUrl
      */
-    public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
+    public function testIndexActionInvalidGetRequest(array $httpFixtures, string $expectedRedirectUrl)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -75,10 +65,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionInvalidGetRequestDataProvider()
+    public function indexActionInvalidGetRequestDataProvider(): array
     {
         return [
             'invalid user' => [
@@ -144,24 +131,14 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRedirectDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param string $website
-     * @param int $testId
-     * @param string $expectedRedirectUrl
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionHttpRedirect(
         array $httpFixtures,
         User $user,
-        $website,
-        $testId,
-        $expectedRedirectUrl,
-        $expectedRequestUrl
+        string $website,
+        int $testId,
+        string $expectedRedirectUrl,
+        string $expectedRequestUrl
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -180,24 +157,14 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRedirectDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param string $website
-     * @param int $testId
-     * @param string $expectedRedirectUrl
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionJsRedirect(
         array $httpFixtures,
         User $user,
-        $website,
-        $testId,
-        $expectedRedirectUrl,
-        $expectedRequestUrl
+        string $website,
+        int $testId,
+        string $expectedRedirectUrl,
+        string $expectedRequestUrl
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -219,10 +186,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRedirectDataProvider()
+    public function indexActionRedirectDataProvider(): array
     {
         $publicUser = SystemUserService::getPublicUser();
         $privateUser = new User('user@example.com');
@@ -281,16 +245,9 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderTextHtmlDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param Twig_Environment $twig
      */
-    public function testIndexActionRenderTextHtml(
-        array $httpFixtures,
-        User $user,
-        Twig_Environment $twig
-    ) {
+    public function testIndexActionRenderTextHtml(array $httpFixtures, User $user, Twig_Environment $twig)
+    {
         $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
@@ -305,10 +262,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderTextHtmlDataProvider()
+    public function indexActionRenderTextHtmlDataProvider(): array
     {
         return [
             'public user, in-progress, 79% done' => [
@@ -424,19 +378,9 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderApplicationJsonDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param string $expectedStateLabel
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
-    public function testIndexActionRenderApplicationJson(
-        array $httpFixtures,
-        User $user,
-        $expectedStateLabel
-    ) {
+    public function testIndexActionRenderApplicationJson(array $httpFixtures, User $user, $expectedStateLabel)
+    {
         $userManager = self::$container->get(UserManager::class);
 
         $userManager->setUser($user);
@@ -474,10 +418,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedStateLabel, $responseData['state_label']);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderApplicationJsonDataProvider()
+    public function indexActionRenderApplicationJsonDataProvider(): array
     {
         return [
             'public user, in-progress, 79% done' => [
@@ -564,9 +505,6 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertEquals(
@@ -588,9 +526,6 @@ class ProgressControllerTest extends AbstractViewControllerTest
         );
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertTestAndRemoteTest(array $parameters)
     {
         $this->assertInstanceOf(Test::class, $parameters['test']);
@@ -608,21 +543,13 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $this->assertEquals(self::WEBSITE, $remoteTest->getWebsite());
     }
 
-    /**
-     * @param array $parameters
-     * @param string $expectedStateLabel
-     */
-    private function assertStateLabel(array $parameters, $expectedStateLabel)
+    private function assertStateLabel(array $parameters, string $expectedStateLabel)
     {
         $this->assertInternalType('string', $parameters['state_label']);
         $this->assertEquals($expectedStateLabel, $parameters['state_label']);
     }
 
-    /**
-     * @param array $parameters
-     * @param array $expectedTaskTypeKeys
-     */
-    private function assertAvailableTaskTypes(array $parameters, $expectedTaskTypeKeys)
+    private function assertAvailableTaskTypes(array $parameters, array $expectedTaskTypeKeys)
     {
         $this->assertInternalType('array', $parameters['available_task_types']);
         $this->assertEquals($expectedTaskTypeKeys, array_keys($parameters['available_task_types']));

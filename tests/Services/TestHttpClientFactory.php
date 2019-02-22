@@ -2,7 +2,6 @@
 
 namespace App\Tests\Services;
 
-use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Middleware;
 use App\Services\HttpClientFactory;
 use webignition\Guzzle\Middleware\HttpAuthentication\HttpAuthenticationMiddleware;
@@ -12,14 +11,7 @@ class TestHttpClientFactory extends HttpClientFactory
 {
     const MIDDLEWARE_HISTORY_KEY = 'history';
 
-    /**
-     * @var MockHandler
-     */
     private $mockHandler;
-
-    /**
-     * @var HttpHistoryContainer
-     */
     private $historyContainer;
 
     /**
@@ -39,9 +31,6 @@ class TestHttpClientFactory extends HttpClientFactory
         $this->handlerStack->push(Middleware::history($this->historyContainer), self::MIDDLEWARE_HISTORY_KEY);
     }
 
-    /**
-     * @return MockHandler
-     */
     protected function createInitialHandler()
     {
         parent::createInitialHandler();

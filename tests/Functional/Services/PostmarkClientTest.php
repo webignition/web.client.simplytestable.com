@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -46,9 +47,6 @@ class PostmarkClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider sendEmailFailureDataProvider
-     *
-     * @param ResponseInterface $postmarkResponse
-     * @param int $expectedPostmarkApiErrorCode
      */
     public function testSendEmailFailure(ResponseInterface $postmarkResponse, int $expectedPostmarkApiErrorCode)
     {
@@ -69,10 +67,7 @@ class PostmarkClientTest extends AbstractBaseTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function sendEmailFailureDataProvider()
+    public function sendEmailFailureDataProvider(): array
     {
         return [
             'not allowed to send' => [

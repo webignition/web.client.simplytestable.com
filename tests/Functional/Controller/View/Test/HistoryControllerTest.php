@@ -1,13 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Test\History;
 
 use App\Controller\View\Test\HistoryController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\TestList;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
@@ -74,21 +72,12 @@ class HistoryControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionBadPageNumberDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     * @param string $expectedRedirectUrl
-     * @param string[] $expectedRequestUrls
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionBadPageNumber(
         array $httpFixtures,
         Request $request,
-        $expectedRedirectUrl,
-        $expectedRequestUrls
+        string $expectedRedirectUrl,
+        array $expectedRequestUrls
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -112,10 +101,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionBadPageNumberDataProvider()
+    public function indexActionBadPageNumberDataProvider(): array
     {
         return [
             'no page number' => [
@@ -220,18 +206,9 @@ class HistoryControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param Request $request
-     * @param Twig_Environment $twig
      */
-    public function testIndexActionRender(
-        array $httpFixtures,
-        User $user,
-        Request $request,
-        Twig_Environment $twig
-    ) {
+    public function testIndexActionRender(array $httpFixtures, User $user, Request $request, Twig_Environment $twig)
+    {
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
 
@@ -245,10 +222,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionDataProvider()
+    public function indexActionDataProvider(): array
     {
         return [
             'page_number: 1' => [
@@ -455,9 +429,6 @@ class HistoryControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertEquals(

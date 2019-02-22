@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Entity\Task;
 
@@ -8,11 +9,8 @@ class TaskTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getStateLabelDataProvider
-     *
-     * @param string $state
-     * @param bool $expectedStateLabel
      */
-    public function testGetStateLabel($state, $expectedStateLabel)
+    public function testGetStateLabel(string $state, string $expectedStateLabel)
     {
         $task = new Task();
         $task->setState($state);
@@ -20,10 +18,7 @@ class TaskTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedStateLabel, $task->getStateLabel());
     }
 
-    /**
-     * @return array
-     */
-    public function getStateLabelDataProvider()
+    public function getStateLabelDataProvider(): array
     {
         return [
             Task::STATE_CANCELLED => [

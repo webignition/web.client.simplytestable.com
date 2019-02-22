@@ -1,10 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
@@ -33,20 +33,12 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 
     /**
      * @dataProvider getRemoteFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param string $expectedExceptionCode
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testGetRemoteFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -57,10 +49,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $this->remoteTestService->get();
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteFailureDataProvider()
+    public function getRemoteFailureDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');

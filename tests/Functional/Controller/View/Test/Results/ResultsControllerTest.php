@@ -1,13 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
@@ -30,17 +28,11 @@ class ResultsControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -55,9 +47,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
         'task_count' => 12,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTasksData = [
         [
             'id' => 1,
@@ -127,11 +116,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionInvalidGetRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedRedirectUrl
      */
-    public function testIndexActionInvalidGetRequest(array $httpFixtures, $expectedRedirectUrl)
+    public function testIndexActionInvalidGetRequest(array $httpFixtures, string $expectedRedirectUrl)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -146,10 +132,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionInvalidGetRequestDataProvider()
+    public function indexActionInvalidGetRequestDataProvider(): array
     {
         return [
             'invalid user' => [
@@ -233,14 +216,13 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionPublicUserGetRequestDataProvider
-     *
-     * @param string $website
-     * @param int $testId
-     * @param string $filter
-     * @param array $httpFixtures
      */
-    public function testIndexActionPublicUserGetRequest($website, $testId, $filter, array $httpFixtures)
-    {
+    public function testIndexActionPublicUserGetRequest(
+        string $website,
+        int $testId,
+        string $filter,
+        array $httpFixtures
+    ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         $this->client->request(
@@ -258,10 +240,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertTrue($response->isSuccessful());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionPublicUserGetRequestDataProvider()
+    public function indexActionPublicUserGetRequestDataProvider(): array
     {
         return [
             'default' => [
@@ -319,23 +298,13 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRedirectDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param Request $request
-     * @param string $expectedRedirectUrl
-     * @param string[] $expectedRequestUrls
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRedirect(
         array $httpFixtures,
         User $user,
         Request $request,
-        $expectedRedirectUrl,
-        $expectedRequestUrls
+        string $expectedRedirectUrl,
+        array $expectedRequestUrls
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -362,10 +331,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRedirectDataProvider()
+    public function indexActionRedirectDataProvider(): array
     {
         return [
             'requires preparation' => [
@@ -465,24 +431,13 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param array $testValues
-     * @param string $taskType
-     * @param string $filter
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(
         array $httpFixtures,
         User $user,
         array $testValues,
-        $taskType,
-        $filter,
+        ?string $taskType,
+        string $filter,
         Twig_Environment $twig
     ) {
         $userManager = self::$container->get(UserManager::class);
@@ -512,10 +467,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertNotInstanceOf(RedirectResponse::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'public user, public test, html validation, with errors, null domain test count' => [
@@ -876,12 +828,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-
-    /**
-     * @param array $expectedParameterData
-     * @param array $parameters
-     */
-    private function assertParameterData($expectedParameterData, $parameters)
+    private function assertParameterData(array $expectedParameterData, array $parameters)
     {
         $this->assertEquals($expectedParameterData['is_public'], $parameters['is_public']);
         $this->assertEquals($expectedParameterData['is_public_user_test'], $parameters['is_public_user_test']);
@@ -909,11 +856,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedParameterData['taskIds'], $taskIds);
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertStandardViewData($viewName, array $parameters)
+    private function assertStandardViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
@@ -942,9 +885,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertInternalType('array', $parameters['default_css_validation_options']);
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertEquals(

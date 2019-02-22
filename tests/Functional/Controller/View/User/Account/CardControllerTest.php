@@ -1,11 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\User\Account;
 
 use App\Controller\View\User\Account\CardController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\Team\Team;
 use App\Model\User\Summary as UserSummary;
 use App\Services\UserManager;
@@ -22,9 +20,6 @@ class CardControllerTest extends AbstractAccountControllerTest
     const ROUTE_NAME = 'view_user_account_card';
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $userData = [
         'email' => self::USER_EMAIL,
         'user_plan' => [
@@ -52,10 +47,7 @@ class CardControllerTest extends AbstractAccountControllerTest
         $this->assertIEFilteredRedirectResponse();
     }
 
-    /**
-     * @return array
-     */
-    public function invalidUserGetRequestDataProvider()
+    public function invalidUserGetRequestDataProvider(): array
     {
         return [
             'invalid user' => [
@@ -138,13 +130,6 @@ class CardControllerTest extends AbstractAccountControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(array $httpFixtures, Twig_Environment $twig)
     {
@@ -163,10 +148,7 @@ class CardControllerTest extends AbstractAccountControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'not in team' => [
@@ -224,11 +206,7 @@ class CardControllerTest extends AbstractAccountControllerTest
         ];
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertCommonViewData($viewName, $parameters)
+    private function assertCommonViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
@@ -246,9 +224,6 @@ class CardControllerTest extends AbstractAccountControllerTest
         );
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertArraySubset(

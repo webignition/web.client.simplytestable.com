@@ -12,9 +12,6 @@ class RetrieveTest extends EntityTest
      */
     private $listId = 'foo';
 
-    /**
-     * @var array
-     */
     private $recipients = array(
             'foobar1',
             'foobar2',

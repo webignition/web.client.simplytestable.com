@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\MailChimp;
 
@@ -41,8 +42,6 @@ class EventControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider indexActionBadRequestDataProvider
-     *
-     * @param Request $request
      */
     public function testIndexActionBadRequest(Request $request)
     {
@@ -53,10 +52,7 @@ class EventControllerTest extends AbstractControllerTest
         $this->assertTrue($response->isClientError());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionBadRequestDataProvider()
+    public function indexActionBadRequestDataProvider(): array
     {
         return [
             'missing type' => [
@@ -103,15 +99,10 @@ class EventControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider indexActionSuccessDataProvider
-     *
-     * @param Request $request
-     * @param string $listId
-     * @param string[] $existingListRecipients
-     * @param string[] $expectedListRecipients
      */
     public function testIndexActionSuccess(
         Request $request,
-        $listId,
+        string $listId,
         array $existingListRecipients,
         array $expectedListRecipients
     ) {
@@ -144,10 +135,7 @@ class EventControllerTest extends AbstractControllerTest
         );
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionSuccessDataProvider()
+    public function indexActionSuccessDataProvider(): array
     {
         return [
             'subscribe' => [

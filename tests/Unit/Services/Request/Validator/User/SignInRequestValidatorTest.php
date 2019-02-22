@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\Request\Validator\User;
 
@@ -11,19 +12,13 @@ class SignInRequestValidatorTest extends AbstractUserAccountRequestValidatorTest
 {
     /**
      * @dataProvider validateDataProvider
-     *
-     * @param EmailValidator $emailValidator
-     * @param AbstractUserAccountRequest $userAccountRequest,
-     * @param bool $expectedIsValid
-     * @param string|null $expectedInvalidFieldName
-     * @param string|null $expectedInvalidFieldState
      */
     public function testValidate(
         EmailValidator $emailValidator,
         AbstractUserAccountRequest $userAccountRequest,
-        $expectedIsValid,
-        $expectedInvalidFieldName,
-        $expectedInvalidFieldState
+        bool $expectedIsValid,
+        string $expectedInvalidFieldName,
+        string $expectedInvalidFieldState
     ) {
         $signInRequestValidator = new SignInRequestValidator($emailValidator);
         $signInRequestValidator->validate($userAccountRequest);
@@ -33,10 +28,7 @@ class SignInRequestValidatorTest extends AbstractUserAccountRequestValidatorTest
         $this->assertEquals($expectedInvalidFieldState, $signInRequestValidator->getInvalidFieldState());
     }
 
-    /**
-     * @return array
-     */
-    public function validateDataProvider()
+    public function validateDataProvider(): array
     {
         return [
             'public user' => [

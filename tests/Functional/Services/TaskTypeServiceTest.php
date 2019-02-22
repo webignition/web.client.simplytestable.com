@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -18,9 +19,6 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
      */
     private $taskTypeService;
 
-    /**
-     * @var array
-     */
     private $defaultTaskTypes = [
         'html-validation' => [
             'name' => 'HTML validation',
@@ -39,9 +37,6 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
         ],
     ];
 
-    /**
-     * @var array
-     */
     private $testEarlyAccessTaskType = [
         'early-access-test' => [
             'name' => 'Early access test',
@@ -81,11 +76,8 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getAvailableDataProvider
-     *
-     * @param User $user
-     * @param array $expectedAvailableTaskTypes
      */
-    public function testGetAvailable(User $user, $expectedAvailableTaskTypes)
+    public function testGetAvailable(User $user, array $expectedAvailableTaskTypes)
     {
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
@@ -95,10 +87,7 @@ class TaskTypeServiceTest extends AbstractBaseTestCase
         $this->assertEquals($expectedAvailableTaskTypes, $availableTaskTypes);
     }
 
-    /**
-     * @return array
-     */
-    public function getAvailableDataProvider()
+    public function getAvailableDataProvider(): array
     {
         return [
             'not authenticated, not early access' => [

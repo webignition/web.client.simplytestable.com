@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services;
 
@@ -17,11 +18,6 @@ class CacheableResponseFactoryTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider createResponseDataProvider
-     *
-     * @param array $requestAttributes
-     * @param array $cacheValidatorParameters
-     * @param BaseCacheableResponseFactory $baseCacheableResponseFactory
-     * @param UserManagerInterface $userManager
      */
     public function testCreateResponse(
         array $requestAttributes,
@@ -37,10 +33,7 @@ class CacheableResponseFactoryTest extends \PHPUnit\Framework\TestCase
         $cacheableResponseFactory->createResponse($request, $cacheValidatorParameters);
     }
 
-    /**
-     * @return array
-     */
-    public function createResponseDataProvider()
+    public function createResponseDataProvider(): array
     {
         return [
             'public user, not logged in' => [

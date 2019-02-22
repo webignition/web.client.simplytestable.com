@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\SignUp\Team;
 
@@ -69,22 +70,12 @@ class InviteControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider acceptActionFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $token
-     * @param Request $request
-     * @param string $expectedRedirectUrl
-     * @param array $expectedErrorFlashBagValues
-     * @param array $expectedFailureFlashBagValues
-     *
-     * @throws \CredisException
-     * @throws \Exception
      */
     public function testAcceptActionFailure(
         array $httpFixtures,
-        $token,
+        string $token,
         Request $request,
-        $expectedRedirectUrl,
+        string $expectedRedirectUrl,
         array $expectedErrorFlashBagValues,
         array $expectedFailureFlashBagValues
     ) {
@@ -109,10 +100,7 @@ class InviteControllerTest extends AbstractControllerTest
         );
     }
 
-    /**
-     * @return array
-     */
-    public function acceptActionFailureDataProvider()
+    public function acceptActionFailureDataProvider(): array
     {
         $notFoundResponse = HttpResponseFactory::createNotFoundResponse();
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
@@ -204,17 +192,9 @@ class InviteControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider acceptActionSuccessDataProvider
-     *
-     * @param Request $request
-     * @param bool $expectedHasUserCookie
-     *
-     * @throws \CredisException
-     * @throws \Exception
      */
-    public function testAcceptActionSuccess(
-        Request $request,
-        $expectedHasUserCookie
-    ) {
+    public function testAcceptActionSuccess(Request $request, bool $expectedHasUserCookie)
+    {
         $resqueQueueService = self::$container->get(ResqueQueueService::class);
         $flashBag = self::$container->get(FlashBagInterface::class);
 
@@ -269,10 +249,7 @@ class InviteControllerTest extends AbstractControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function acceptActionSuccessDataProvider()
+    public function acceptActionSuccessDataProvider(): array
     {
         return [
             'stay-signed-in not present' => [

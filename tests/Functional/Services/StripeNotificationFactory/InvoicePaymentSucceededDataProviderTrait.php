@@ -7,17 +7,11 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 trait InvoicePaymentSucceededDataProviderTrait
 {
-    /**
-     * @var array
-     */
     private $invoicePaymentSucceededDefaultEventData = [
         'event' => 'invoice.payment_succeeded',
         'user' => 'user@example.com',
     ];
 
-    /**
-     * @return array
-     */
     public function invoicePaymentSucceededDataProvider()
     {
         return [

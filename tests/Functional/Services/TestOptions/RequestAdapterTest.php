@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\TestOptions;
 
@@ -41,9 +42,6 @@ class RequestAdapterTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getTestOptionsTestTypesDataProvider
-     *
-     * @param array $requestData
-     * @param array $expectedTestTypes
      */
     public function testGetTestOptionsTestTypes(array $requestData, array $expectedTestTypes)
     {
@@ -54,10 +52,7 @@ class RequestAdapterTest extends AbstractBaseTestCase
         $this->assertEquals($expectedTestTypes, $testOptions->getTestTypes());
     }
 
-    /**
-     * @return array
-     */
-    public function getTestOptionsTestTypesDataProvider()
+    public function getTestOptionsTestTypesDataProvider(): array
     {
         return [
             'empty request' => [
@@ -152,9 +147,6 @@ class RequestAdapterTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getTestOptionsFeatureOptionsDataProvider
-     *
-     * @param array $requestData
-     * @param array $expectedFeatureOptionsCollection
      */
     public function testGetTestOptionsFeatureOptions(array $requestData, array $expectedFeatureOptionsCollection)
     {
@@ -179,10 +171,7 @@ class RequestAdapterTest extends AbstractBaseTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getTestOptionsFeatureOptionsDataProvider()
+    public function getTestOptionsFeatureOptionsDataProvider(): array
     {
         return [
             'empty request' => [
@@ -265,9 +254,6 @@ class RequestAdapterTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getTestOptionsTestTypeOptionsDataProvider
-     *
-     * @param array $requestData
-     * @param array $expectedTestTypeOptionsCollection
      */
     public function testGetTestOptionsTestTypeOptions(array $requestData, array $expectedTestTypeOptionsCollection)
     {
@@ -292,10 +278,7 @@ class RequestAdapterTest extends AbstractBaseTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getTestOptionsTestTypeOptionsDataProvider()
+    public function getTestOptionsTestTypeOptionsDataProvider(): array
     {
         return [
             'empty request' => [

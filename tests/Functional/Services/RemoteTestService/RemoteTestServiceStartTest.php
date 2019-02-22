@@ -1,8 +1,8 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use GuzzleHttp\Post\PostBody;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -18,22 +18,12 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
 
     /**
      * @dataProvider startFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param $expectedException
-     * @param $expectedExceptionMessage
-     * @param $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testStartFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -47,10 +37,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
         );
     }
 
-    /**
-     * @return array
-     */
-    public function startFailureDataProvider()
+    public function startFailureDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
@@ -105,19 +92,13 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
 
     /**
      * @dataProvider startSuccessDataProvider
-     *
-     * @param string $url
-     * @param TestOptions $testOptions
-     * @param string $expectedRequestUrl
-     * @param array $expectedPostData
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
-    public function testStartSuccess($url, TestOptions $testOptions, $expectedRequestUrl, array $expectedPostData)
-    {
+    public function testStartSuccess(
+        string $url,
+        TestOptions $testOptions,
+        string $expectedRequestUrl,
+        array $expectedPostData
+    ) {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => 1,
@@ -140,10 +121,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
         $this->assertEquals($expectedPostData, $postedData);
     }
 
-    /**
-     * @return array
-     */
-    public function startSuccessDataProvider()
+    public function startSuccessDataProvider(): array
     {
         return [
             'default' => [

@@ -44,14 +44,10 @@ abstract class AbstractKernelRequestListenerTest extends AbstractBaseTestCase
         $this->assertFalse($event->hasResponse());
     }
 
-    /**
-     * @param Request $request
-     * @param int $requestType
-     *
-     * @return GetResponseEvent
-     */
-    protected function createGetResponseEvent(Request $request, int $requestType = HttpKernelInterface::MASTER_REQUEST)
-    {
+    protected function createGetResponseEvent(
+        Request $request,
+        int $requestType = HttpKernelInterface::MASTER_REQUEST
+    ): GetResponseEvent {
         return new GetResponseEvent(self::$container->get('kernel'), $request, $requestType);
     }
 }

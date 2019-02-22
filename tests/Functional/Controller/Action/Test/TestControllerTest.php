@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\Test;
 
@@ -28,9 +29,6 @@ class TestControllerTest extends AbstractControllerTest
      */
     private $httpMockHandler;
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -58,12 +56,8 @@ class TestControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider lockUnlockActionPostRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $routeName
-     * @param array $routeParameters
      */
-    public function testLockUnlockActionPostRequest(array $httpFixtures, $routeName, array $routeParameters)
+    public function testLockUnlockActionPostRequest(array $httpFixtures, string $routeName, array $routeParameters)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -79,10 +73,7 @@ class TestControllerTest extends AbstractControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function lockUnlockActionPostRequestDataProvider()
+    public function lockUnlockActionPostRequestDataProvider(): array
     {
         return [
             'lock action invalid owner' => [
@@ -134,11 +125,8 @@ class TestControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider cancelActionGetRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedRedirectUrl
      */
-    public function testCancelActionGetRequest(array $httpFixtures, $expectedRedirectUrl)
+    public function testCancelActionGetRequest(array $httpFixtures, string $expectedRedirectUrl)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -157,10 +145,7 @@ class TestControllerTest extends AbstractControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function cancelActionGetRequestDataProvider()
+    public function cancelActionGetRequestDataProvider(): array
     {
         $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
@@ -208,8 +193,6 @@ class TestControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider cancelCrawlActionGetRequestDataProvider
-     *
-     * @param array $httpFixtures
      */
     public function testCancelCrawlActionGetRequest(array $httpFixtures)
     {
@@ -230,10 +213,7 @@ class TestControllerTest extends AbstractControllerTest
         $this->assertEquals('/http://example.com//1/progress/', $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function cancelCrawlActionGetRequestDataProvider()
+    public function cancelCrawlActionGetRequestDataProvider(): array
     {
         $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();

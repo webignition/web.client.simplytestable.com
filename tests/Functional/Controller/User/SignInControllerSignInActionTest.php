@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\User;
 
@@ -9,11 +10,7 @@ use App\Services\UserService;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use Egulias\EmailValidator\EmailValidator;
-use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\UserController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
 use App\Services\Request\Factory\User\SignInRequestFactory;
 use App\Services\Request\Validator\User\SignInRequestValidator;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -21,7 +18,6 @@ use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 class SignInSubmitActionTest extends AbstractControllerTest
@@ -94,14 +90,6 @@ class SignInSubmitActionTest extends AbstractControllerTest
 
     /**
      * @dataProvider signInActionAuthenticationFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
      */
     public function testSignInActionAuthenticationFailure(
         array $httpFixtures,
@@ -126,10 +114,7 @@ class SignInSubmitActionTest extends AbstractControllerTest
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function signInActionAuthenticationFailureDataProvider()
+    public function signInActionAuthenticationFailureDataProvider(): array
     {
         return [
             'user does not exist' => [
@@ -160,14 +145,6 @@ class SignInSubmitActionTest extends AbstractControllerTest
 
     /**
      * @dataProvider signInActionResendConfirmationTokenDataProvider
-     *
-     * @param array $httpFixtures
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
-     * @throws PostmarkException
      */
     public function testSignInActionResendConfirmationToken(array $httpFixtures)
     {
@@ -207,10 +184,7 @@ class SignInSubmitActionTest extends AbstractControllerTest
         );
     }
 
-    /**
-     * @return array
-     */
-    public function signInActionResendConfirmationTokenDataProvider()
+    public function signInActionResendConfirmationTokenDataProvider(): array
     {
         return [
             'authentication failure and user is not enabled' => [
@@ -233,20 +207,11 @@ class SignInSubmitActionTest extends AbstractControllerTest
 
     /**
      * @dataProvider signInActionSuccessDataProvider
-     *
-     * @param Request $request
-     * @param $expectedResponseHasUserCookie
-     * @param string $expectedRedirectUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
      */
     public function testSignInActionSuccess(
         Request $request,
-        $expectedResponseHasUserCookie,
-        $expectedRedirectUrl
+        bool $expectedResponseHasUserCookie,
+        string $expectedRedirectUrl
     ) {
         $httpMockHandler = self::$container->get(HttpMockHandler::class);
 
@@ -271,10 +236,7 @@ class SignInSubmitActionTest extends AbstractControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function signInActionSuccessDataProvider()
+    public function signInActionSuccessDataProvider(): array
     {
         return [
             'stay-signed-in false' => [
@@ -357,18 +319,7 @@ class SignInSubmitActionTest extends AbstractControllerTest
         ];
     }
 
-    /**
-     * @param Request $request
-     * @param array $services
-     *
-     * @return RedirectResponse
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
-     * @throws PostmarkException
-     */
-    private function callSignInAction(Request $request, array $services = [])
+    private function callSignInAction(Request $request, array $services = []): RedirectResponse
     {
         if (!isset($services[Mailer::class])) {
             $services[Mailer::class] = self::$container->get(Mailer::class);

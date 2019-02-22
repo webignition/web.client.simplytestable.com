@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services;
 
@@ -12,14 +13,13 @@ class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createSignInRedirectResponseDataProvider
-     *
-     * @param string $email
-     * @param string $redirect
-     * @param bool $staySignedIn
-     * @param array $expectedRouteParameters
      */
-    public function testCreateSignInRedirectResponse($email, $redirect, $staySignedIn, array $expectedRouteParameters)
-    {
+    public function testCreateSignInRedirectResponse(
+        string $email,
+        string $redirect,
+        bool $staySignedIn,
+        array $expectedRouteParameters
+    ) {
         /* @var MockInterface|RouterInterface $router */
         $router = \Mockery::mock(RouterInterface::class);
         $router
@@ -37,10 +37,7 @@ class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
         $redirectResponseFactory->createSignInRedirectResponse($signInRequest);
     }
 
-    /**
-     * @return array
-     */
-    public function createSignInRedirectResponseDataProvider()
+    public function createSignInRedirectResponseDataProvider(): array
     {
         return [
             'no email, no redirect, stay-signed-in=false' => [
@@ -66,12 +63,8 @@ class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider createSignUpRedirectResponseDataProvider
-     *
-     * @param string $email
-     * @param string $plan
-     * @param array $expectedRouteParameters
      */
-    public function testCreateSignUpRedirectResponse($email, $plan, array $expectedRouteParameters)
+    public function testCreateSignUpRedirectResponse(string $email, string $plan, array $expectedRouteParameters)
     {
         /* @var MockInterface|RouterInterface $router */
         $router = \Mockery::mock(RouterInterface::class);
@@ -90,10 +83,7 @@ class RedirectResponseFactoryTest extends \PHPUnit\Framework\TestCase
         $redirectResponseFactory->createSignUpRedirectResponse($signUpRequest);
     }
 
-    /**
-     * @return array
-     */
-    public function createSignUpRedirectResponseDataProvider()
+    public function createSignUpRedirectResponseDataProvider(): array
     {
         return [
             'no email, plan' => [

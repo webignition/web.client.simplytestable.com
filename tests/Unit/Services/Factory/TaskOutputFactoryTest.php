@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\Factory;
 
@@ -14,15 +15,10 @@ class TaskOutputFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createDataProvider
-     *
-     * @param TaskOutputRepository $taskOutputRepository
-     * @param string $type
-     * @param array $outputData
-     * @param array $expectedOutputData
      */
     public function testCreate(
         TaskOutputRepository $taskOutputRepository,
-        $type,
+        string $type,
         array $outputData,
         array $expectedOutputData
     ) {
@@ -45,10 +41,7 @@ class TaskOutputFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedOutputData['warning_count'], $output->getWarningCount());
     }
 
-    /**
-     * @return array
-     */
-    public function createDataProvider()
+    public function createDataProvider(): array
     {
         $existingOutput = new Output();
         $existingOutput->setType(Task::TYPE_CSS_VALIDATION);

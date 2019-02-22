@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
@@ -37,19 +38,12 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
 
     /**
      * @dataProvider ownsRemoteExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationRequestException
      */
     public function testOwnsRemoteException(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -60,10 +54,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
         $this->remoteTestService->owns($this->user);
     }
 
-    /**
-     * @return array
-     */
-    public function ownsRemoteExceptionDataProvider()
+    public function ownsRemoteExceptionDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
 

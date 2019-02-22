@@ -1,9 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\User;
 
 use App\Controller\Action\User\UserController;
-use App\Exception\InvalidAdminCredentialsException;
 use App\Services\ResqueQueueService;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -43,22 +43,12 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 
     /**
      * @dataProvider signUpConfirmSubmitActionFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     * @param $email
-     * @param string $expectedRedirectLocation
-     * @param array $expectedFlashBagValues
-     *
-     * @throws InvalidAdminCredentialsException
-     * @throws \CredisException
-     * @throws \Exception
      */
     public function testSignUpConfirmSubmitActionFailure(
         array $httpFixtures,
         Request $request,
-        $email,
-        $expectedRedirectLocation,
+        string $email,
+        string $expectedRedirectLocation,
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -71,10 +61,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function signUpConfirmSubmitActionFailureDataProvider()
+    public function signUpConfirmSubmitActionFailureDataProvider(): array
     {
         return [
             'invalid user' => [
@@ -151,14 +138,8 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
 
     /**
      * @dataProvider signUpConfirmSubmitActionSuccessDataProvider
-     *
-     * @param array $requestCookies
-     * @param string $expectedRedirectUrl
-     *
-     * @throws \CredisException
-     * @throws \Exception
      */
-    public function testSignUpConfirmSubmitActionSuccess(array $requestCookies, $expectedRedirectUrl)
+    public function testSignUpConfirmSubmitActionSuccess(array $requestCookies, string $expectedRedirectUrl)
     {
         $flashBag = self::$container->get(FlashBagInterface::class);
 
@@ -185,10 +166,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
         ], $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function signUpConfirmSubmitActionSuccessDataProvider()
+    public function signUpConfirmSubmitActionSuccessDataProvider(): array
     {
         return [
             'without redirect cookie' => [
@@ -204,17 +182,7 @@ class SignUpConfirmSubmitActionTest extends AbstractUserControllerTest
         ];
     }
 
-    /**
-     * @param Request $request
-     * @param string $email
-     *
-     * @return RedirectResponse
-     *
-     * @throws InvalidAdminCredentialsException
-     * @throws \CredisException
-     * @throws \Exception
-     */
-    private function callSignUpConfirmSubmitAction(Request $request, $email)
+    private function callSignUpConfirmSubmitAction(Request $request, $email): RedirectResponse
     {
         return $this->userController->signUpConfirmSubmitAction(
             self::$container->get(ResqueQueueService::class),

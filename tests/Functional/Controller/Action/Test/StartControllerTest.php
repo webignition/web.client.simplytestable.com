@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\Test;
 
@@ -74,25 +75,14 @@ class StartControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider startNewActionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param User $user
-     * @param Request $request
-     * @param string $expectedRedirectUrl
-     * @param array $expectedFlashBagValues
-     * @param string $expectedRequestUrl
-     * @param array $expectedPostData
-     *
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testStartNewAction(
         array $httpFixtures,
         User $user,
         Request $request,
-        $expectedRedirectUrl,
+        string $expectedRedirectUrl,
         array $expectedFlashBagValues,
-        $expectedRequestUrl,
+        ?string $expectedRequestUrl,
         array $expectedPostData = []
     ) {
         $userManager = self::$container->get(UserManager::class);
@@ -125,10 +115,7 @@ class StartControllerTest extends AbstractControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function startNewActionDataProvider()
+    public function startNewActionDataProvider(): array
     {
         $publicUser = SystemUserService::getPublicUser();
         $privateUser = new User(self::USER_EMAIL);
@@ -547,14 +534,8 @@ class StartControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider startNewActionVerifyUrlToTestDataProvider
-     *
-     * @param string $url
-     * @param string $expectedUrlToTest
-     *
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
-    public function testStartNewActionVerifyUrlToTest($url, $expectedUrlToTest)
+    public function testStartNewActionVerifyUrlToTest(string $url, string $expectedUrlToTest)
     {
         $router = self::$container->get('router');
         $testOptionsRequestAdapterFactory = self::$container->get(TestOptionsRequestAdapterFactory::class);
@@ -595,10 +576,7 @@ class StartControllerTest extends AbstractControllerTest
         $testStartController->startNewAction($request);
     }
 
-    /**
-     * @return array
-     */
-    public function startNewActionVerifyUrlToTestDataProvider()
+    public function startNewActionVerifyUrlToTestDataProvider(): array
     {
         return [
             'valid url; http://example.com/' => [
@@ -632,12 +610,7 @@ class StartControllerTest extends AbstractControllerTest
         ];
     }
 
-    /**
-     * @param array $queryStringParameters
-     *
-     * @return string
-     */
-    private function createExpectedStartFailureRedirectUrl(array $queryStringParameters)
+    private function createExpectedStartFailureRedirectUrl(array $queryStringParameters): string
     {
         return '/?' . http_build_query($queryStringParameters);
     }

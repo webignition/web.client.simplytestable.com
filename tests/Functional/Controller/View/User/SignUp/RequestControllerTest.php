@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\User\SignUp;
 
@@ -43,17 +44,12 @@ class RequestControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $flashBagMessages
-     * @param Request $request
-     * @param Twig_Environment $twig
-     * @param bool $expectedHasRedirectCookie
      */
     public function testIndexActionRender(
         array $flashBagMessages,
         Request $request,
         Twig_Environment $twig,
-        $expectedHasRedirectCookie
+        bool $expectedHasRedirectCookie
     ) {
         $session = self::$container->get(SessionInterface::class);
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -81,10 +77,7 @@ class RequestControllerTest extends AbstractViewControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'no request data' => [
@@ -305,11 +298,7 @@ class RequestControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertCommonViewData($viewName, $parameters)
+    private function assertCommonViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
@@ -324,9 +313,6 @@ class RequestControllerTest extends AbstractViewControllerTest
         }
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertArraySubset(

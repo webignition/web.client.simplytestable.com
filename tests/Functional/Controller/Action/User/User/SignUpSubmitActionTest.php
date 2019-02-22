@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\User;
 
@@ -7,10 +8,6 @@ use App\Tests\Factory\PostmarkExceptionFactory;
 use Egulias\EmailValidator\EmailValidator;
 use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\UserController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Request\User\SignUpRequest;
 use App\Services\CouponService;
 use App\Services\Request\Factory\User\SignUpRequestFactory;
@@ -95,19 +92,10 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
     /**
      * @dataProvider signUpSubmitActionUserCreationFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedRedirectLocation
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws MailConfigurationException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testSignUpSubmitActionUserCreationFailure(
         array $httpFixtures,
-        $expectedRedirectLocation,
+        string $expectedRedirectLocation,
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -126,10 +114,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function signUpSubmitActionUserCreationFailureDataProvider()
+    public function signUpSubmitActionUserCreationFailureDataProvider(): array
     {
         return [
             'user already exists' => [
@@ -181,14 +166,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
     /**
      * @dataProvider signUpSubmitActionSendConfirmationTokenFailureDataProvider
-     *
-     * @param PostmarkException $postmarkException
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
      */
     public function testSignUpSubmitActionSendConfirmationTokenFailure(
         PostmarkException $postmarkException,
@@ -228,10 +205,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function signUpSubmitActionSendConfirmationTokenFailureDataProvider()
+    public function signUpSubmitActionSendConfirmationTokenFailureDataProvider(): array
     {
         return [
             'postmark not allowed to send to user email' => [
@@ -272,14 +246,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
     /**
      * @dataProvider signUpSubmitActionSuccessDataProvider
-     *
-     * @param Request $request
-     * @param array $couponData
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
      */
     public function testSignUpSubmitActionSuccess(Request $request, array $couponData)
     {
@@ -321,10 +287,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         );
     }
 
-    /**
-     * @return array
-     */
-    public function signUpSubmitActionSuccessDataProvider()
+    public function signUpSubmitActionSuccessDataProvider(): array
     {
         return [
             'without coupon' => [
@@ -385,18 +348,7 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         ];
     }
 
-    /**
-     * @param Request $request
-     * @param array $services
-     *
-     * @return RedirectResponse
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
-     */
-    private function callSignUpSubmitAction(Request $request, array $services = [])
+    private function callSignUpSubmitAction(Request $request, array $services = []): RedirectResponse
     {
         if (!isset($services[Mailer::class])) {
             $services[Mailer::class] = self::$container->get(Mailer::class);

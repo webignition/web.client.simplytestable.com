@@ -1,10 +1,8 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Services\UserStripeEventService;
 use App\Tests\Factory\HttpResponseFactory;
 use webignition\Model\Stripe\Event\Event as StripeEvent;
@@ -22,9 +20,6 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
      */
     private $user;
 
-    /**
-     * @var array
-     */
     private $event1Data = [
         'id' => 'evt_2c6KUnrLeIFqQv',
         'data' => [
@@ -34,9 +29,6 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
         ],
     ];
 
-    /**
-     * @var array
-     */
     private $event2Data = [
         'id' => 'evt_2c6KUnrLeIFqQw',
         'data' => [
@@ -60,15 +52,8 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
 
     /**
      * @dataProvider getLatestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param StripeEvent $expectedEvent
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
-    public function testGetLatest(array $httpFixtures, $expectedEvent)
+    public function testGetLatest(array $httpFixtures, ?StripeEvent $expectedEvent)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -77,10 +62,7 @@ class UserStripeEventServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedEvent, $event);
     }
 
-    /**
-     * @return array
-     */
-    public function getLatestDataProvider()
+    public function getLatestDataProvider(): array
     {
         $event1 = new StripeEvent(json_encode($this->event1Data));
         $event2 = new StripeEvent(json_encode($this->event2Data));

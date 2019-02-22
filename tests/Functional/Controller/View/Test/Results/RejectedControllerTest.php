@@ -1,12 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\RejectedController;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\User\Summary as UserSummary;
 use App\Services\UserManager;
@@ -28,17 +26,11 @@ class RejectedControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -52,9 +44,6 @@ class RejectedControllerTest extends AbstractViewControllerTest
         ],
     ];
 
-    /**
-     * @var array
-     */
     private $userData = [
         'email' => self::USER_EMAIL,
         'user_plan' => [
@@ -155,12 +144,8 @@ class RejectedControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionGetRequestDataProvider
-     *
-     * @param array $remoteTestData
-     * @param array $userData
-     * @param array $expectedLeadContentContains
      */
-    public function testIndexActionGetRequestFoo(
+    public function testIndexActionGetRequest(
         array $remoteTestData,
         array $userData,
         array $expectedLeadContentContains
@@ -192,10 +177,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         });
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionGetRequestDataProvider()
+    public function indexActionGetRequestDataProvider(): array
     {
         return [
             'personal credit limit reached; agency plan available' => [
@@ -295,23 +277,13 @@ class RejectedControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionBadRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     * @param $website
-     * @param string $expectedRedirectUrl
-     * @param string $expectedRequestUrl
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
-     * @throws InvalidContentTypeException
      */
     public function testIndexActionBadRequest(
         array $httpFixtures,
         Request $request,
-        $website,
-        $expectedRedirectUrl,
-        $expectedRequestUrl
+        string $website,
+        string $expectedRedirectUrl,
+        string $expectedRequestUrl
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -326,10 +298,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionBadRequestDataProvider()
+    public function indexActionBadRequestDataProvider(): array
     {
         return [
             'website mismatch' => [
@@ -357,13 +326,6 @@ class RejectedControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(array $httpFixtures, Twig_Environment $twig)
     {
@@ -382,10 +344,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'unroutable' => [

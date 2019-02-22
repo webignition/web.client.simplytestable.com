@@ -170,7 +170,7 @@ class MailerTest extends AbstractBaseTestCase
         $mailer->sendStripeNotification($stripeNotification);
     }
 
-    private function createMailer(PostmarkClient $postmarkClient, \Twig_Environment $twig)
+    private function createMailer(PostmarkClient $postmarkClient, \Twig_Environment $twig): Mailer
     {
         return new Mailer(
             self::$container->get(MailConfiguration::class),

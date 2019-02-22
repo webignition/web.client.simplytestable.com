@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\EventListener\Stripe;
 
@@ -27,13 +28,6 @@ class ListenerTest extends AbstractBaseTestCase
      * @dataProvider customerSubscriptionUpdatedDataProvider
      * @dataProvider invoicePaymentFailedDataProvider
      * @dataProvider invoicePaymentSucceededDataProvider
-     *
-     * @param StripeEvent $event
-     * @param string $listenerMethod
-     * @param array $expectedStripeNotificationSubjectValueParameters
-     * @param array $expectedStripeNotificationSubjectKeyParameterNames
-     * @param array $expectedStripeNotificationViewNameParameters
-     * @param array $expectedStripeNotificationViewParameters
      */
     public function testOnMethod(
         StripeEvent $event,

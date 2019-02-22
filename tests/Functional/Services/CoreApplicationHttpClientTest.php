@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -53,22 +54,13 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getRequestThrowsExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $options
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testGetThrowsException(
         array $httpFixtures,
         array $options,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -81,22 +73,13 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getAsAdminRequestThrowsExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $options
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      */
     public function testGetAsAdminThrowsException(
         array $httpFixtures,
         array $options,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -109,23 +92,13 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider postRequestThrowsExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $options
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testPostThrowsException(
         array $httpFixtures,
         array $options,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -138,23 +111,13 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider postAsAdminRequestThrowsExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $options
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      */
     public function testPostAsAdminThrowsException(
         array $httpFixtures,
         array $options,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -167,20 +130,12 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getRequestDoesNotThrowExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $userName
-     * @param array $options
-     * @param string $expectedAuthorizationHeaderUser
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testGetDoesNotThrowException(
         array $httpFixtures,
-        $userName,
+        string $userName,
         array $options,
-        $expectedAuthorizationHeaderUser
+        string $expectedAuthorizationHeaderUser
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -199,21 +154,12 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider postRequestDoesNotThrowExceptionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $userName
-     * @param array $options
-     * @param string $expectedAuthorizationHeaderUser
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function testPostDoesNotThrowException(
         array $httpFixtures,
-        $userName,
+        string $userName,
         array $options,
-        $expectedAuthorizationHeaderUser
+        string $expectedAuthorizationHeaderUser
     ) {
         $userManager = self::$container->get(UserManager::class);
 
@@ -232,15 +178,8 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requestSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $options
-     * @param ResponseInterface|null $expectedResponse
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
-    public function testGetSuccess(array $httpFixtures, array $options, $expectedResponse)
+    public function testGetSuccess(array $httpFixtures, array $options, ?ResponseInterface $expectedResponse)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -258,16 +197,8 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requestSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $options
-     *
-     * @param ResponseInterface|null $expectedResponse
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      */
-    public function testGetAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
+    public function testGetAsAdminSuccess(array $httpFixtures, array $options, ?ResponseInterface $expectedResponse)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -285,17 +216,8 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requestSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $options
-     *
-     * @param ResponseInterface|null $expectedResponse
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
-    public function testPostSuccess(array $httpFixtures, array $options, $expectedResponse)
+    public function testPostSuccess(array $httpFixtures, array $options, ?ResponseInterface $expectedResponse)
     {
         $postData = [
             'foo' => 'bar',
@@ -320,17 +242,8 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider requestSuccessDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $options
-     *
-     * @param mixed $expectedResponse
-     *
-     * @throws CoreApplicationReadOnlyException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
      */
-    public function testPostAsAdminSuccess(array $httpFixtures, array $options, $expectedResponse)
+    public function testPostAsAdminSuccess(array $httpFixtures, array $options, ?ResponseInterface $expectedResponse)
     {
         $postData = [
             'foo' => 'bar',
@@ -354,10 +267,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->assertEquals($postData, $postedData);
     }
 
-    /**
-     * @return array
-     */
-    public function requestSuccessDataProvider()
+    public function requestSuccessDataProvider(): array
     {
         $successResponse = HttpResponseFactory::createSuccessResponse([], 'foo');
         $redirectResponse = HttpResponseFactory::createRedirectResponse();
@@ -397,10 +307,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         $this->assertEquals('http://null/user/public/', $this->httpHistory->getLastRequest()->getUri());
     }
 
-    /**
-     * @return array
-     */
-    public function getRequestDoesNotThrowExceptionDataProvider()
+    public function getRequestDoesNotThrowExceptionDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
 
@@ -414,10 +321,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         ], $this->postRequestDoesNotThrowExceptionDataProvider());
     }
 
-    /**
-     * @return array
-     */
-    public function postRequestDoesNotThrowExceptionDataProvider()
+    public function postRequestDoesNotThrowExceptionDataProvider(): array
     {
         return [
             'invalid admin credentials; 401' => [
@@ -439,10 +343,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         ];
     }
 
-    /**
-     * @return array
-     */
-    public function getRequestThrowsExceptionDataProvider()
+    public function getRequestThrowsExceptionDataProvider(): array
     {
         return array_merge([
             'invalid user credentials; 401' => [
@@ -466,10 +367,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         ], $this->requestThrowsExceptionDataProvider());
     }
 
-    /**
-     * @return array
-     */
-    public function getAsAdminRequestThrowsExceptionDataProvider()
+    public function getAsAdminRequestThrowsExceptionDataProvider(): array
     {
         return array_merge([
             'invalid admin credentials; 401' => [
@@ -493,10 +391,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         ], $this->requestThrowsExceptionDataProvider());
     }
 
-    /**
-     * @return array
-     */
-    public function postAsAdminRequestThrowsExceptionDataProvider()
+    public function postAsAdminRequestThrowsExceptionDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
 
@@ -511,10 +406,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         ], $this->getAsAdminRequestThrowsExceptionDataProvider());
     }
 
-    /**
-     * @return array
-     */
-    public function postRequestThrowsExceptionDataProvider()
+    public function postRequestThrowsExceptionDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
 
@@ -529,10 +421,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         ], $this->getRequestThrowsExceptionDataProvider());
     }
 
-    /**
-     * @return array
-     */
-    public function requestThrowsExceptionDataProvider()
+    public function requestThrowsExceptionDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
         $curl28Exception = ConnectExceptionFactory::create('CURL/28 Operation timed out');
@@ -564,13 +453,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
         ];
     }
 
-
-    /**
-     * @param string $userName
-     *
-     * @return User
-     */
-    private function getUserFromUserName($userName)
+    private function getUserFromUserName(string $userName): User
     {
         $systemUserService = self::$container->get(SystemUserService::class);
 

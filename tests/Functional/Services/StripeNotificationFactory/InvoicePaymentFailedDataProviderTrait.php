@@ -7,17 +7,11 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 trait InvoicePaymentFailedDataProviderTrait
 {
-    /**
-     * @var array
-     */
     private $invoicePaymentFailedDefaultEventData = [
         'event' => 'invoice.payment_failed',
         'user' => 'user@example.com',
     ];
 
-    /**
-     * @return array
-     */
     public function invoicePaymentFailedDataProvider()
     {
         return [
