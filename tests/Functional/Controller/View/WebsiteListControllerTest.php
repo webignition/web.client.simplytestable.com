@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View;
 
@@ -9,8 +10,6 @@ use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use App\Tests\Functional\Controller\AbstractControllerTest;
-use App\Tests\Services\HttpMockHandler;
 
 class WebsiteListControllerTest extends AbstractViewControllerTest
 {
@@ -59,14 +58,9 @@ class WebsiteListControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string[] $expectedResponseData
      */
-    public function testIndexAction(
-        array $httpFixtures,
-        array $expectedResponseData
-    ) {
+    public function testIndexAction(array $httpFixtures, array $expectedResponseData)
+    {
         $userManager = self::$container->get(UserManager::class);
 
         $user = SystemUserService::getPublicUser();
@@ -83,10 +77,7 @@ class WebsiteListControllerTest extends AbstractViewControllerTest
         $this->assertEquals($expectedResponseData, json_decode($response->getContent()));
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionDataProvider()
+    public function indexActionDataProvider(): array
     {
         return [
             'empty list' => [
