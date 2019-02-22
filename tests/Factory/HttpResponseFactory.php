@@ -7,25 +7,12 @@ use Psr\Http\Message\ResponseInterface;
 
 class HttpResponseFactory
 {
-    /**
-     * @param int $statusCode
-     * @param array $headers
-     * @param string $body
-     *
-     * @return ResponseInterface
-     */
-    public static function create($statusCode, $headers = [], $body = '')
+    public static function create(int $statusCode, array $headers = [], string $body = ''): ResponseInterface
     {
         return new Response($statusCode, $headers, $body);
     }
 
-    /**
-     * @param mixed $data
-     * @param int $statusCode
-     *
-     * @return ResponseInterface
-     */
-    public static function createJsonResponse($data, $statusCode = 200)
+    public static function createJsonResponse($data, int $statusCode = 200): ResponseInterface
     {
         return self::create(
             $statusCode,
@@ -36,87 +23,47 @@ class HttpResponseFactory
         );
     }
 
-    /**
-     * @param array $headers
-     * @param string $body
-     *
-     * @return ResponseInterface
-     */
-    public static function createNotFoundResponse($headers = [], $body = '')
+    public static function createNotFoundResponse(array $headers = [], string $body = ''): ResponseInterface
     {
         return self::create(404, $headers, $body);
     }
 
-    /**
-     * @param array $headers
-     * @param string $body
-     *
-     * @return ResponseInterface
-     */
-    public static function createSuccessResponse($headers = [], $body = '')
+    public static function createSuccessResponse(array $headers = [], string $body = ''): ResponseInterface
     {
         return self::create(200, $headers, $body);
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function createUnauthorisedResponse()
+    public static function createUnauthorisedResponse(): ResponseInterface
     {
         return self::create(401);
     }
 
-
-    /**
-     * @return ResponseInterface
-     */
-    public static function createForbiddenResponse()
+    public static function createForbiddenResponse(): ResponseInterface
     {
         return self::create(403);
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function createInternalServerErrorResponse()
+    public static function createInternalServerErrorResponse(): ResponseInterface
     {
         return self::create(500);
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function createServiceUnavailableResponse()
+    public static function createServiceUnavailableResponse(): ResponseInterface
     {
         return self::create(503);
     }
 
-    /**
-     * @param array $headers
-     * @param string $body
-     *
-     * @return ResponseInterface
-     */
-    public static function createBadRequestResponse(array $headers = [], $body = '')
+    public static function createBadRequestResponse(array $headers = [], string $body = ''): ResponseInterface
     {
         return self::create(400, $headers, $body);
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function createConflictResponse()
+    public static function createConflictResponse(): ResponseInterface
     {
         return self::create(409);
     }
 
-    /**
-     * @param int $total
-     * @param string[] $memberEmails
-     *
-     * @return ResponseInterface
-     */
-    public static function createMailChimpListMembersResponse($total, $memberEmails)
+    public static function createMailChimpListMembersResponse(int $total, array $memberEmails): ResponseInterface
     {
         $memberRecords = [];
 
@@ -132,21 +79,12 @@ class HttpResponseFactory
         ]);
     }
 
-    /**
-     * @return ResponseInterface
-     */
-    public static function createRedirectResponse()
+    public static function createRedirectResponse(): ResponseInterface
     {
         return self::create(302);
     }
 
-    /**
-     * @param int $statusCode
-     * @param array $responseData
-     *
-     * @return Response
-     */
-    public static function createPostmarkResponse($statusCode, array $responseData)
+    public static function createPostmarkResponse(int $statusCode, array $responseData): Response
     {
         return new Response(
             $statusCode,
