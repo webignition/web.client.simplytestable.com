@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Factory;
 
@@ -12,12 +13,8 @@ class ConnectExceptionFactory
      *
      * Usage example:
      * ConnectExceptionFactory::create('CURL/28 Operation timed out');
-     *
-     * @param string $curlMessage
-     *
-     * @return ConnectException
      */
-    public static function create($curlMessage)
+    public static function create(string $curlMessage): ConnectException
     {
         $curlMessageParts = explode(' ', $curlMessage, 2);
 

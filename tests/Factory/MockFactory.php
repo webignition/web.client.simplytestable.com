@@ -1,10 +1,9 @@
-<?php
+<?php /** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Factory;
 
 use Mockery\MockInterface;
 use App\Repository\TaskOutputRepository;
-use App\Services\CacheValidatorHeadersService;
 use App\Services\Factory\TaskOutputFactory;
 use App\Services\UserService;
 use SimplyTestable\PageCacheBundle\Services\CacheableResponseFactory as BaseCacheableResponseFactory;
@@ -14,11 +13,9 @@ use webignition\SimplyTestableUserManagerInterface\UserManagerInterface;
 class MockFactory
 {
     /**
-     * @param array $calls
-     *
      * @return MockInterface|Twig_Environment
      */
-    public static function createTwig($calls = [])
+    public static function createTwig(array $calls = [])
     {
         $twig = \Mockery::mock(Twig_Environment::class);
 
@@ -33,30 +30,9 @@ class MockFactory
     }
 
     /**
-     * @param array $calls
-     *
-     * @return MockInterface|CacheValidatorHeadersService
-     */
-    public static function createCacheValidatorHeadersService($calls = [])
-    {
-        $cacheValidatorHeadersService = \Mockery::mock(CacheValidatorHeadersService::class);
-
-        if (isset($calls['get'])) {
-            $cacheValidatorHeadersService
-                ->shouldReceive('get')
-                ->withArgs($calls['get']['withArgs'])
-                ->andReturn($calls['get']['return']);
-        }
-
-        return $cacheValidatorHeadersService;
-    }
-
-    /**
-     * @param array $calls
-     *
      * @return MockInterface|UserService
      */
-    public static function createUserService($calls = [])
+    public static function createUserService(array $calls = [])
     {
         $userService = \Mockery::mock(UserService::class);
 
@@ -76,11 +52,9 @@ class MockFactory
     }
 
     /**
-     * @param array $calls
-     *
      * @return MockInterface|UserManagerInterface
      */
-    public static function createUserManager($calls = [])
+    public static function createUserManager(array $calls = [])
     {
         $userService = \Mockery::mock(UserManagerInterface::class);
 
@@ -100,11 +74,9 @@ class MockFactory
     }
 
     /**
-     * @param array $calls
-     *
      * @return MockInterface|BaseCacheableResponseFactory
      */
-    public static function createBaseCacheableResponseFactory($calls = [])
+    public static function createBaseCacheableResponseFactory(array $calls = [])
     {
         $baseCacheableResponseFactory = \Mockery::mock(BaseCacheableResponseFactory::class);
 
@@ -119,11 +91,9 @@ class MockFactory
     }
 
     /**
-     * @param array $calls
-     *
      * @return MockInterface|TaskOutputRepository
      */
-    public static function createTaskOutputRepository($calls = [])
+    public static function createTaskOutputRepository(array $calls = [])
     {
         $taskOutputRepository = \Mockery::mock(TaskOutputRepository::class);
 
@@ -138,11 +108,9 @@ class MockFactory
     }
 
     /**
-     * @param array $calls
-     *
      * @return MockInterface|TaskOutputFactory
      */
-    public static function createTaskOutputFactory($calls = [])
+    public static function createTaskOutputFactory(array $calls = [])
     {
         $taskOutputFactory = \Mockery::mock(TaskOutputFactory::class);
 

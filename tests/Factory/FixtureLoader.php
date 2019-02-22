@@ -4,12 +4,7 @@ namespace App\Tests\Factory;
 
 class FixtureLoader
 {
-    /**
-     * @param string $path
-     *
-     * @return bool|string
-     */
-    public static function load($path)
+    public static function load(string $path): ?string
     {
         return file_get_contents(realpath(__DIR__ . '/../Fixtures' . $path));
     }

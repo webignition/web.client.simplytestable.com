@@ -23,19 +23,9 @@ class TestFactory
     const DEFAULT_STATE = Test::STATE_COMPLETED;
     const DEFAULT_TYPE = Test::TYPE_FULL_SITE;
 
-    /**
-     * @var ContainerInterface
-     */
     private $container;
-
-    /**
-     * @var TaskFactory
-     */
     private $taskFactory;
 
-    /**
-     * @var array
-     */
     private $defaultTestValues = [
         self::KEY_USER => self::DEFAULT_USER,
         self::KEY_WEBSITE => self::DEFAULT_WEBSITE_URL,
@@ -43,21 +33,13 @@ class TestFactory
         self::KEY_TYPE => self::DEFAULT_TYPE,
     ];
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->taskFactory = new TaskFactory($container);
     }
 
-    /**
-     * @param array $testValues
-     *
-     * @return Test
-     */
-    public function create(array $testValues)
+    public function create(array $testValues): Test
     {
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get(EntityManagerInterface::class);
