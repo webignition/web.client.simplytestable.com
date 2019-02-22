@@ -144,7 +144,8 @@ class TestList
     /**
      * @return int
      */
-    public function getPageIndex() {
+    public function getPageIndex()
+    {
         return $this->getOffset() / $this->getLimit();
     }
 
