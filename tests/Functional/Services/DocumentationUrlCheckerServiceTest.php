@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -24,21 +25,15 @@ class DocumentationUrlCheckerServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider existsDataProvider
-     *
-     * @param string $url
-     * @param bool $expectedExists
      */
-    public function testExists($url, $expectedExists)
+    public function testExists(string $url, bool $expectedExists)
     {
         $exists = $this->documentationUrlCheckerService->exists($url);
 
         $this->assertEquals($expectedExists, $exists);
     }
 
-    /**
-     * @return array
-     */
-    public function existsDataProvider()
+    public function existsDataProvider(): array
     {
         return [
             'foo does not exist' => [
