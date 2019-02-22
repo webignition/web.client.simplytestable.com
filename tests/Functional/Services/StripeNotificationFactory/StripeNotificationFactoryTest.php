@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\StripeNotificationFactory;
 
@@ -29,13 +30,6 @@ class StripeNotificationFactoryTest extends AbstractBaseTestCase
      * @dataProvider customerSubscriptionUpdatedDataProvider
      * @dataProvider invoicePaymentFailedDataProvider
      * @dataProvider invoicePaymentSucceededDataProvider
-     *
-     * @param StripeEvent $event
-     * @param array $subjectValueParameters
-     * @param array $subjectKeyParameterNames
-     * @param array $viewNameParameters
-     * @param string $expectedSubjectSuffix
-     * @param string $expectedViewName,
      */
     public function testCreate(
         StripeEvent $event,
