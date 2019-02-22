@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -45,19 +46,13 @@ class SystemUserServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider isPublicUserDataProvider
-     *
-     * @param User $user
-     * @param bool $expectedIsPublicUser
      */
-    public function testIsPublicUser(User $user, $expectedIsPublicUser)
+    public function testIsPublicUser(User $user, bool $expectedIsPublicUser)
     {
         $this->assertEquals($expectedIsPublicUser, SystemUserService::isPublicUser($user));
     }
 
-    /**
-     * @return array
-     */
-    public function isPublicUserDataProvider()
+    public function isPublicUserDataProvider(): array
     {
         return [
             'public user username' => [

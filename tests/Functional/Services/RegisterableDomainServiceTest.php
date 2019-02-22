@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -24,18 +25,13 @@ class RegisterableDomainServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getRegisterableDomainInvalidUrlDataProvider
-     *
-     * @param string $url
      */
-    public function testGetRegisterableDomainInvalidUrl($url)
+    public function testGetRegisterableDomainInvalidUrl(string $url)
     {
         $this->assertNull($this->registerableDomainService->getRegisterableDomain($url));
     }
 
-    /**
-     * @return array
-     */
-    public function getRegisterableDomainInvalidUrlDataProvider()
+    public function getRegisterableDomainInvalidUrlDataProvider(): array
     {
         return [
             'not a url; trailing slash' => [
@@ -58,19 +54,13 @@ class RegisterableDomainServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getRegisterableDomainValidUrlDataProvider
-     *
-     * @param string $url
-     * @param string $expectedRegisterableDomain
      */
-    public function testGetRegisterableDomainValidUrl($url, $expectedRegisterableDomain)
+    public function testGetRegisterableDomainValidUrl(string $url, string $expectedRegisterableDomain)
     {
         $this->assertEquals($expectedRegisterableDomain, $this->registerableDomainService->getRegisterableDomain($url));
     }
 
-    /**
-     * @return array
-     */
-    public function getRegisterableDomainValidUrlDataProvider()
+    public function getRegisterableDomainValidUrlDataProvider(): array
     {
         return [
             '.com; top level' => [

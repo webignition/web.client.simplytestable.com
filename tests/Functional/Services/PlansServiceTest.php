@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services;
 
@@ -24,12 +25,8 @@ class PlansServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getListDataProvider
-     *
-     * @param bool $listPremiumOnly
-     * @param float $priceModifier
-     * @param array $expectedListedPlans
      */
-    public function testGetList($listPremiumOnly, $priceModifier, $expectedListedPlans)
+    public function testGetList(bool $listPremiumOnly, ?float $priceModifier, array $expectedListedPlans)
     {
         if ($listPremiumOnly) {
             $this->plansService->listPremiumOnly();
@@ -52,10 +49,7 @@ class PlansServiceTest extends AbstractBaseTestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getListDataProvider()
+    public function getListDataProvider(): array
     {
         return [
             'listPremiumOnly: false, priceModifier): null' => [
