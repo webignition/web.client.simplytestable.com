@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services;
 
@@ -31,10 +32,6 @@ class FlashBagValuesServiceTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getDataProvider
-     *
-     * @param array $existingFlashBagValues
-     * @param array $keys
-     * @param array $expectedReturnValues
      */
     public function testGet(array $existingFlashBagValues, array $keys, array $expectedReturnValues)
     {
@@ -47,10 +44,7 @@ class FlashBagValuesServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedReturnValues, $returnValues);
     }
 
-    /**
-     * @return array
-     */
-    public function getDataProvider()
+    public function getDataProvider(): array
     {
         return [
             'no existing flash bag values, no keys' => [
@@ -122,12 +116,8 @@ class FlashBagValuesServiceTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getSingleDataProvider
-     *
-     * @param array $existingFlashBagValues
-     * @param string $key
-     * @param string|null $expectedReturnValue
      */
-    public function testGetSingle(array $existingFlashBagValues, $key, $expectedReturnValue)
+    public function testGetSingle(array $existingFlashBagValues, string $key, ?string $expectedReturnValue)
     {
         foreach ($existingFlashBagValues as $key => $value) {
             $this->flashBag->set($key, $value);
@@ -138,10 +128,7 @@ class FlashBagValuesServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedReturnValue, $returnValue);
     }
 
-    /**
-     * @return array
-     */
-    public function getSingleDataProvider()
+    public function getSingleDataProvider(): array
     {
         return [
             'no existing flash bag values, has key' => [

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services;
 
@@ -27,11 +28,8 @@ class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider setDataProvider
-     *
-     * @param RequestInterface $request
-     * @param bool $expectedIsSet
      */
-    public function testSet(RequestInterface $request, $expectedIsSet)
+    public function testSet(RequestInterface $request, bool $expectedIsSet)
     {
         $cachedResponseTestHeaderKey = 'X-Test';
         $cachedResponseTestHeaderValue = 'Foo';
@@ -56,10 +54,7 @@ class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function setDataProvider()
+    public function setDataProvider(): array
     {
         return [
             'GET request' => [
@@ -75,8 +70,6 @@ class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getSetNoCachedResponsesDataProvider
-     *
-     * @param RequestInterface $request
      */
     public function testGetSetNoCachedResponses(RequestInterface $request)
     {
@@ -85,10 +78,7 @@ class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($cacheResponse);
     }
 
-    /**
-     * @return array
-     */
-    public function getSetNoCachedResponsesDataProvider()
+    public function getSetNoCachedResponsesDataProvider(): array
     {
         return [
             'GET request' => [
@@ -102,13 +92,8 @@ class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getSetDataProvider
-     *
-     * @param array $cacheContents
-     * @param RequestInterface $request
-     *
-     * @param string $expectedResponseContent
      */
-    public function testGetSet(array $cacheContents, RequestInterface $request, $expectedResponseContent)
+    public function testGetSet(array $cacheContents, RequestInterface $request, ?string $expectedResponseContent)
     {
         foreach ($cacheContents as $httpTransaction) {
             $this->coreApplicationResponseCache->set($httpTransaction['request'], $httpTransaction['response']);
@@ -123,10 +108,7 @@ class CoreApplicationResponseCacheTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getSetDataProvider()
+    public function getSetDataProvider(): array
     {
         $getRequest1 = new Request('GET', 'http://example.com');
         $getRequest2 = new Request('GET', 'http://example.com/foo');

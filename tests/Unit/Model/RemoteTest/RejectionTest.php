@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Model\RemoteTest;
 
@@ -8,13 +9,12 @@ class RejectionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getReasonGetConstraintDataProvider
-     *
-     * @param array $rejectionData
-     * @param string $expectedReason
-     * @param string $expectedConstraint
      */
-    public function testGetReasonGetConstraint(array $rejectionData, $expectedReason, $expectedConstraint)
-    {
+    public function testGetReasonGetConstraint(
+        array $rejectionData,
+        ?string $expectedReason,
+        ?array $expectedConstraint
+    ) {
         $rejection = new Rejection($rejectionData);
 
         $this->assertEquals($expectedReason, $rejection->getReason());

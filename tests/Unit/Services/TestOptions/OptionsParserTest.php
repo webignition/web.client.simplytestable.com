@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\TestOptions;
 
@@ -24,12 +25,8 @@ class OptionsParserTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getOptionsDataProvider
-     *
-     * @param ParameterBag $requestData
-     * @param string $formKey
-     * @param array $expectedOptions
      */
-    public function testGetOptions(ParameterBag $requestData, $formKey, array $expectedOptions)
+    public function testGetOptions(ParameterBag $requestData, string $formKey, array $expectedOptions)
     {
         $this->optionsParser->setFormKey($formKey);
         $this->optionsParser->setRequestData($requestData);
@@ -54,10 +51,7 @@ class OptionsParserTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedOptions, $options);
     }
 
-    /**
-     * @return array
-     */
-    public function getOptionsDataProvider()
+    public function getOptionsDataProvider(): array
     {
         return [
             'empty request' => [

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Model\RemoteTest;
 
@@ -13,21 +14,15 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getStateDataProvider
-     *
-     * @param array $remoteTestData
-     * @param string $expectedState
      */
-    public function testGetState(array $remoteTestData, $expectedState)
+    public function testGetState(array $remoteTestData, string $expectedState)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
         $this->assertEquals($expectedState, $remoteTest->getState());
     }
 
-    /**
-     * @return array
-     */
-    public function getStateDataProvider()
+    public function getStateDataProvider(): array
     {
         return [
             'non-crawling state' => [
@@ -97,17 +92,12 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getTimePeriodDataProvider
-     *
-     * @param array $remoteTestData
-     * @param bool $expectedHasTimePeriod
-     * @param bool $expectedHasStartDateTime
-     * @param bool $expectedHasEndDateTime
      */
     public function testGetTimePeriod(
         array $remoteTestData,
-        $expectedHasTimePeriod,
-        $expectedHasStartDateTime,
-        $expectedHasEndDateTime
+        bool $expectedHasTimePeriod,
+        bool $expectedHasStartDateTime,
+        bool $expectedHasEndDateTime
     ) {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -135,10 +125,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getTimePeriodDataProvider()
+    public function getTimePeriodDataProvider(): array
     {
         return [
             'no time period' => [
@@ -191,9 +178,6 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getTaskTypesDataProvider
-     *
-     * @param array $remoteTestData
-     * @param array $expectedTaskTypes
      */
     public function testGetTaskTypes(array $remoteTestData, array $expectedTaskTypes)
     {
@@ -202,10 +186,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTaskTypes, $remoteTest->getTaskTypes());
     }
 
-    /**
-     * @return array
-     */
-    public function getTaskTypesDataProvider()
+    public function getTaskTypesDataProvider(): array
     {
         return [
             'no task types' => [
@@ -235,9 +216,6 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getOptionsDataProvider
-     *
-     * @param array $remoteTestData
-     * @param array $expectedOptions
      */
     public function testGetOptions(array $remoteTestData, array $expectedOptions)
     {
@@ -249,10 +227,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedOptions, $options->all());
     }
 
-    /**
-     * @return array
-     */
-    public function getOptionsDataProvider()
+    public function getOptionsDataProvider(): array
     {
         return [
             'no task types, no task type options' => [
@@ -310,12 +285,8 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getParameterDataProvider
-     *
-     * @param array $remoteTestData
-     * @param string $key
-     * @param mixed $expectedValue
      */
-    public function testGetParameter(array $remoteTestData, $key, $expectedValue)
+    public function testGetParameter(array $remoteTestData, string $key, $expectedValue)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -324,10 +295,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedValue, $value);
     }
 
-    /**
-     * @return array
-     */
-    public function getParameterDataProvider()
+    public function getParameterDataProvider(): array
     {
         return [
             'no parameters' => [
@@ -356,12 +324,8 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider hasParameterDataProvider
-     *
-     * @param array $remoteTestData
-     * @param string $key
-     * @param bool $expectedHas
      */
-    public function testHasParameter(array $remoteTestData, $key, $expectedHas)
+    public function testHasParameter(array $remoteTestData, string $key, bool $expectedHas)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -370,10 +334,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedHas, $has);
     }
 
-    /**
-     * @return array
-     */
-    public function hasParameterDataProvider()
+    public function hasParameterDataProvider(): array
     {
         return [
             'no parameters' => [
@@ -395,9 +356,6 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getTaskCountByStateDataProvider
-     *
-     * @param array $remoteTestData
-     * @param array $expectedTaskCountByState
      */
     public function testGetTaskCountByState(array $remoteTestData, array $expectedTaskCountByState)
     {
@@ -408,10 +366,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTaskCountByState, $taskCountByState);
     }
 
-    /**
-     * @return array
-     */
-    public function getTaskCountByStateDataProvider()
+    public function getTaskCountByStateDataProvider(): array
     {
         return [
             'no task counts' => [
@@ -455,11 +410,8 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getCrawlDataProvider
-     *
-     * @param array $remoteTestData
-     * @param array|null $expectedCrawlData
      */
-    public function testGetCrawl(array $remoteTestData, $expectedCrawlData)
+    public function testGetCrawl(array $remoteTestData, ?array $expectedCrawlData)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -468,10 +420,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedCrawlData, $crawlData);
     }
 
-    /**
-     * @return array
-     */
-    public function getCrawlDataProvider()
+    public function getCrawlDataProvider(): array
     {
         return [
             'no crawl data' => [
@@ -493,11 +442,8 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getCompletionPercentDataProvider
-     *
-     * @param array $remoteTestData
-     * @param int $expectedCompletionPercent
      */
-    public function testGetCompletionPercent(array $remoteTestData, $expectedCompletionPercent)
+    public function testGetCompletionPercent(array $remoteTestData, float $expectedCompletionPercent)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -506,10 +452,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedCompletionPercent, $completionPercent);
     }
 
-    /**
-     * @return array
-     */
-    public function getCompletionPercentDataProvider()
+    public function getCompletionPercentDataProvider(): array
     {
         return [
             'no remote test data' => [
@@ -626,11 +569,8 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider toArrayDataProvider
-     *
-     * @param array $remoteTestData
-     * @param array $expectedArray
      */
-    public function testToArray(array $remoteTestData, $expectedArray)
+    public function testToArray(array $remoteTestData, array $expectedArray)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -639,64 +579,61 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedArray, $array);
     }
 
-    /**
-     * @return array
-     */
-    public function toArrayDataProvider()
+    public function toArrayDataProvider(): array
     {
         return [
-//            'no remote test data' => [
-//                'remoteTestData' => [],
-//                'expectedArray' => [
-//                    'task_count_by_state' => [
-//                        'in_progress' => 0,
-//                        Task::STATE_QUEUED => 0,
-//                        Task::STATE_COMPLETED => 0,
-//                        Task::STATE_CANCELLED => 0,
-//                        Task::STATE_FAILED => 0,
-//                        Task::STATE_SKIPPED => 0,
-//                    ],
-//                    'completion_percent' => 0,
-//                ],
-//            ],
-//            'has remote test data; only arbitrary scalar values' => [
-//                'remoteTestData' => [
-//                    'foo' => 'bar',
-//                ],
-//                'expectedArray' => [
-//                    'foo' => 'bar',
-//                    'task_count_by_state' => [
-//                        'in_progress' => 0,
-//                        Task::STATE_QUEUED => 0,
-//                        Task::STATE_COMPLETED => 0,
-//                        Task::STATE_CANCELLED => 0,
-//                        Task::STATE_FAILED => 0,
-//                        Task::STATE_SKIPPED => 0,
-//                    ],
-//                    'completion_percent' => 0,
-//                ],
-//            ],
-//            'has remote test data; only arbitrary object values' => [
-//                'remoteTestData' => [
-//                    'foo' => [
-//                        'key' =>  'value',
-//                    ],
-//                ],
-//                'expectedArray' => [
-//                    'foo' => [
-//                        'key' => 'value',
-//                    ],
-//                    'task_count_by_state' => [
-//                        'in_progress' => 0,
-//                        Task::STATE_QUEUED => 0,
-//                        Task::STATE_COMPLETED => 0,
-//                        Task::STATE_CANCELLED => 0,
-//                        Task::STATE_FAILED => 0,
-//                        Task::STATE_SKIPPED => 0,
-//                    ],
-//                    'completion_percent' => 0,
-//                ],
-//            ],
+            'no remote test data' => [
+                'remoteTestData' => [],
+                'expectedArray' => [
+                    'task_count_by_state' => [
+                        'in_progress' => 0,
+                        Task::STATE_QUEUED => 0,
+                        Task::STATE_COMPLETED => 0,
+                        Task::STATE_CANCELLED => 0,
+                        Task::STATE_FAILED => 0,
+                        Task::STATE_SKIPPED => 0,
+                    ],
+                    'completion_percent' => 0,
+                ],
+            ],
+            'has remote test data; only arbitrary scalar values' => [
+                'remoteTestData' => [
+                    'foo' => 'bar',
+                ],
+                'expectedArray' => [
+                    'foo' => 'bar',
+                    'task_count_by_state' => [
+                        'in_progress' => 0,
+                        Task::STATE_QUEUED => 0,
+                        Task::STATE_COMPLETED => 0,
+                        Task::STATE_CANCELLED => 0,
+                        Task::STATE_FAILED => 0,
+                        Task::STATE_SKIPPED => 0,
+                    ],
+                    'completion_percent' => 0,
+                ],
+            ],
+            'has remote test data; only arbitrary object values' => [
+                'remoteTestData' => [
+                    'foo' => [
+                        'key' =>  'value',
+                    ],
+                ],
+                'expectedArray' => [
+                    'foo' => [
+                        'key' => 'value',
+                    ],
+                    'task_count_by_state' => [
+                        'in_progress' => 0,
+                        Task::STATE_QUEUED => 0,
+                        Task::STATE_COMPLETED => 0,
+                        Task::STATE_CANCELLED => 0,
+                        Task::STATE_FAILED => 0,
+                        Task::STATE_SKIPPED => 0,
+                    ],
+                    'completion_percent' => 0,
+                ],
+            ],
             'has task_type_options' => [
                 'remoteTestData' => [
                     'task_type_options' => [
@@ -768,11 +705,8 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getRejectionDataProvider
-     *
-     * @param array $remoteTestData
-     * @param bool $expectedHasRejection
      */
-    public function testGetRejection(array $remoteTestData, $expectedHasRejection)
+    public function testGetRejection(array $remoteTestData, bool $expectedHasRejection)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -787,11 +721,8 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getRejectionDataProvider
-     *
-     * @param array $remoteTestData
-     * @param bool $expectedHasRejection
      */
-    public function testHasRejection(array $remoteTestData, $expectedHasRejection)
+    public function testHasRejection(array $remoteTestData, bool $expectedHasRejection)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -799,10 +730,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedHasRejection, $hasRejection);
     }
 
-    /**
-     * @return array
-     */
-    public function getRejectionDataProvider()
+    public function getRejectionDataProvider(): array
     {
         return [
             'no rejection' => [
@@ -826,12 +754,8 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider isTypeDataProvider
-     *
-     * @param string $type
-     * @param bool $expectedIsFullSite
-     * @param bool $expectedIsSingleUrl
      */
-    public function testIsType($type, $expectedIsFullSite, $expectedIsSingleUrl)
+    public function testIsType(string $type, bool $expectedIsFullSite, bool $expectedIsSingleUrl)
     {
         $remoteTest = new RemoteTest([
             'type' => $type,
@@ -841,10 +765,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedIsSingleUrl, $remoteTest->isSingleUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function isTypeDataProvider()
+    public function isTypeDataProvider(): array
     {
         return [
             'full site' => [
@@ -862,9 +783,6 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getOwnersDataProvider
-     *
-     * @param array $remoteTestData
-     * @param string[] $expectedOwners
      */
     public function testGetOwners(array $remoteTestData, array $expectedOwners)
     {
@@ -875,10 +793,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedOwners, $owners->toArray());
     }
 
-    /**
-     * @return array
-     */
-    public function getOwnersDataProvider()
+    public function getOwnersDataProvider(): array
     {
         return [
             'no remote test data' => [

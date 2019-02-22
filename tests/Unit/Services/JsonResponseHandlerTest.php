@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services;
 
@@ -33,11 +34,6 @@ class JsonResponseHandlerTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider handleSuccessDataProvider
-     *
-     * @param ResponseInterface $response
-     * @param mixed $expectedResponseData
-     *
-     * @throws InvalidContentTypeException
      */
     public function testHandleSuccess(ResponseInterface $response, $expectedResponseData)
     {
@@ -46,10 +42,7 @@ class JsonResponseHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedResponseData, $responseData);
     }
 
-    /**
-     * @return array
-     */
-    public function handleSuccessDataProvider()
+    public function handleSuccessDataProvider(): array
     {
         return [
             'boolean true' => [

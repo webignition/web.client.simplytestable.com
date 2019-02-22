@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services;
 
@@ -23,19 +24,13 @@ class UrlViewValuesServiceTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider createDataProvider
-     *
-     * @param string $url
-     * @param string[] $expectedViewValues
      */
-    public function testCreate($url, $expectedViewValues)
+    public function testCreate(string $url, array $expectedViewValues)
     {
         $this->assertEquals($expectedViewValues, $this->urlViewValuesService->create($url));
     }
 
-    /**
-     * @return array
-     */
-    public function createDataProvider()
+    public function createDataProvider(): array
     {
         return [
             'empty' => [

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\TestOptions;
 
@@ -24,9 +25,6 @@ class CookieOptionsParserTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getOptionsDataProvider
-     *
-     * @param ParameterBag $requestData
-     * @param array $expectedOptions
      */
     public function testGetOptions(ParameterBag $requestData, array $expectedOptions)
     {
@@ -47,10 +45,7 @@ class CookieOptionsParserTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedOptions, $options);
     }
 
-    /**
-     * @return array
-     */
-    public function getOptionsDataProvider()
+    public function getOptionsDataProvider(): array
     {
         return [
             'empty request' => [

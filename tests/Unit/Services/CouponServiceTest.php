@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services;
 
@@ -25,12 +26,8 @@ class CouponServiceTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getDataProvider
-     *
-     * @param array $couponData
-     * @param Request $request
-     * @param array $expectedSerializedCoupon
      */
-    public function testGet(array $couponData, Request $request, $expectedSerializedCoupon)
+    public function testGet(array $couponData, Request $request, ?array $expectedSerializedCoupon)
     {
         $this->couponService->setCouponData($couponData);
         $this->couponService->setRequest($request);
@@ -44,10 +41,7 @@ class CouponServiceTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getDataProvider()
+    public function getDataProvider(): array
     {
         return [
             'no coupon data, no coupon in request' => [
