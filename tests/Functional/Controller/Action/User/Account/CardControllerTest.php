@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account;
 
@@ -43,9 +44,6 @@ class CardControllerTest extends AbstractUserAccountControllerTest
 
     /**
      * @dataProvider associateActionPrivateUserPostRequestDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $expectedResponseData
      */
     public function testAssociateActionPrivateUserPostRequest(array $httpFixtures, array $expectedResponseData)
     {
@@ -71,10 +69,7 @@ class CardControllerTest extends AbstractUserAccountControllerTest
         $this->assertEquals($expectedResponseData, $responseData);
     }
 
-    /**
-     * @return array
-     */
-    public function associateActionPrivateUserPostRequestDataProvider()
+    public function associateActionPrivateUserPostRequestDataProvider(): array
     {
         return [
             'success' => [

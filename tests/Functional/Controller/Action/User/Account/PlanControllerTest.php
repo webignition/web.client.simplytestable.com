@@ -1,11 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User\Account;
 
 use App\Controller\Action\User\Account\PlanController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Services\UserManager;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
@@ -25,9 +23,6 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
      */
     protected $planController;
 
-    /**
-     * @var array
-     */
     private $userData = [
         'email' => self::USER_EMAIL,
         'user_plan' => [
@@ -71,7 +66,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         ];
     }
 
-    public function testsubscribeActionPrivateUserPostRequest()
+    public function testSubscribeActionPrivateUserPostRequest()
     {
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(new User(self::USER_EMAIL));
@@ -99,14 +94,6 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
 
     /**
      * @dataProvider subscribeActionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testSubscribeAction(
         array $httpFixtures,
@@ -128,10 +115,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function subscribeActionDataProvider()
+    public function subscribeActionDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
         $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
