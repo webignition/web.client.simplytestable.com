@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Model\Task;
 
@@ -10,11 +11,8 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getHashDataProvider
-     *
-     * @param array $taskValuesCollection
-     * @param string $expectedHash
      */
-    public function testGetHash(array $taskValuesCollection, $expectedHash)
+    public function testGetHash(array $taskValuesCollection, string $expectedHash)
     {
         $tasks = [];
 
@@ -28,10 +26,7 @@ class CollectionTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedHash, $hash);
     }
 
-    /**
-     * @return array
-     */
-    public function getHashDataProvider()
+    public function getHashDataProvider(): array
     {
         return [
             'empty' => [
