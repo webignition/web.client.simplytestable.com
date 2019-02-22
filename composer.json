@@ -93,6 +93,11 @@
         "test": [
             "@composer test-unit",
             "@composer test-functional"
+        ],
+        "cs": "./vendor/bin/phpcs",
+        "ci": [
+          "@composer cs",
+          "@composer test"
         ]
     },
     "conflict": {
