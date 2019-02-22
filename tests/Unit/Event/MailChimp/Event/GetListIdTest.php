@@ -2,11 +2,12 @@
 
 namespace App\Tests\Unit\Event\MailChimp\Event;
 
-class GetListIdTest extends EventTest {
-
+class GetListIdTest extends EventTest
+{
     private $listId = 'bar';
 
-    protected function getEventPostData() {
+    protected function getEventPostData()
+    {
         return array(
             'type' => 'foo',
             'data' => array(
@@ -15,9 +16,8 @@ class GetListIdTest extends EventTest {
         );
     }
 
-
-    public function testGetListId() {
+    public function testGetListId()
+    {
         $this->assertEquals($this->listId, $this->event->getListId());
     }
-
 }
