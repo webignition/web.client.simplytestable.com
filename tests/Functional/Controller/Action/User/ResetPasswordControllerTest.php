@@ -1,8 +1,8 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\Action\User;
 
-use App\Exception\InvalidCredentialsException;
 use App\Services\Mailer;
 use App\Services\UserManager;
 use App\Services\UserService;
@@ -10,14 +10,10 @@ use App\Tests\Factory\PostmarkExceptionFactory;
 use Mockery\MockInterface;
 use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\ResetPasswordController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidAdminCredentialsException;
-use App\Exception\InvalidContentTypeException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
@@ -78,18 +74,12 @@ class ResetPasswordControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider requestActionBadRequestDataProvider
-     *
-     * @param Request $request
-     * @param array $expectedFlashBagValues
-     * @param string $expectedRedirectUrl
-     *
-     * @throws MailConfigurationException
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
      */
-    public function testRequestActionBadRequest(Request $request, array $expectedFlashBagValues, $expectedRedirectUrl)
-    {
+    public function testRequestActionBadRequest(
+        Request $request,
+        array $expectedFlashBagValues,
+        string $expectedRedirectUrl
+    ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
 
         /* @var RedirectResponse $response */
@@ -100,10 +90,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    /**
-     * @return array
-     */
-    public function requestActionBadRequestDataProvider()
+    public function requestActionBadRequestDataProvider(): array
     {
         return [
             'empty email' => [
@@ -129,12 +116,6 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         ];
     }
 
-    /**
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
-     */
     public function testRequestActionUserDoesNotExist()
     {
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -162,12 +143,6 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         );
     }
 
-    /**
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
-     */
     public function testRequestActionInvalidAdminCredentials()
     {
         $flashBag = self::$container->get(FlashBagInterface::class);
@@ -212,14 +187,6 @@ class ResetPasswordControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider requestActionSendConfirmationTokenFailureDataProvider
-     *
-     * @param PostmarkException $postmarkException
-     * @param array $expectedFlashBagValues
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws MailConfigurationException
      */
     public function testRequestActionSendConfirmationTokenFailure(
         PostmarkException $postmarkException,
@@ -256,10 +223,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         $this->assertEquals($expectedFlashBagValues, $flashBag->peekAll());
     }
 
-    /**
-     * @return array
-     */
-    public function requestActionSendConfirmationTokenFailureDataProvider()
+    public function requestActionSendConfirmationTokenFailureDataProvider(): array
     {
         return [
             'postmark not allowed to send to user email' => [
@@ -361,24 +325,13 @@ class ResetPasswordControllerTest extends AbstractControllerTest
 
     /**
      * @dataProvider chooseActionDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     * @param string $expectedRedirectLocation
-     * @param array $expectedFlashBagValues
-     * @param bool $expectedResponseHasUserCookie
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidAdminCredentialsException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testChooseAction(
         array $httpFixtures,
         Request $request,
-        $expectedRedirectLocation,
+        string $expectedRedirectLocation,
         array $expectedFlashBagValues,
-        $expectedResponseHasUserCookie
+        bool $expectedResponseHasUserCookie
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
 
@@ -403,10 +356,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function chooseActionDataProvider()
+    public function chooseActionDataProvider(): array
     {
         return [
             'empty email' => [
@@ -555,12 +505,7 @@ class ResetPasswordControllerTest extends AbstractControllerTest
         ];
     }
 
-    /**
-     * @param Mailer $mailer
-     *
-     * @return ResetPasswordController
-     */
-    private function createResetPasswordController(Mailer $mailer)
+    private function createResetPasswordController(Mailer $mailer): ResetPasswordController
     {
         return new ResetPasswordController(
             self::$container->get(RouterInterface::class),
