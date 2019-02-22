@@ -7,9 +7,6 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 
 trait InvoicePaymentFailedDataProviderTrait
 {
-    /**
-     * @var array
-     */
     private $defaultInvoicePaymentFailedEventData = [
         'event' => 'invoice.payment_failed',
         'lines' => [
@@ -26,10 +23,7 @@ trait InvoicePaymentFailedDataProviderTrait
         'invoice_id' => 'in_2nL671LyaO5mbg',
     ];
 
-    /**
-     * @return array
-     */
-    public function invoicePaymentFailedDataProvider()
+    public function invoicePaymentFailedDataProvider(): array
     {
         $listenerMethod = 'onInvoicePaymentFailed';
 
