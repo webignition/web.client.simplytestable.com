@@ -10,7 +10,7 @@ class TaskTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getStateLabelDataProvider
      */
-    public function testGetStateLabel(string $state, bool $expectedStateLabel)
+    public function testGetStateLabel(string $state, string $expectedStateLabel)
     {
         $task = new Task();
         $task->setState($state);
