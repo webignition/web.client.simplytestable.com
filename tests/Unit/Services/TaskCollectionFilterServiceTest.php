@@ -204,9 +204,9 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
+                        null,
                         '= 0',
-                        'error',
-                        null
+                        'error'
                     )
                 ),
                 'test' => $test,
@@ -217,9 +217,9 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
+                        null,
                         '> 0',
-                        'error',
-                        null
+                        'error'
                     )
                 ),
                 'test' => $test,
@@ -230,9 +230,9 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
+                        null,
                         '> 0',
-                        'warning',
-                        null
+                        'warning'
                     )
                 ),
                 'test' => $test,
@@ -244,7 +244,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 
     public function testGetCount()
     {
-        /* @var EntityManagerInterface $entityManager */
+        /* @var EntityManagerInterface|MockInterface $entityManager */
         $entityManager = \Mockery::mock(EntityManagerInterface::class);
         $entityManager
             ->shouldReceive('getRepository')
@@ -324,22 +324,22 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @param Test $test
-     * @param string $issueCount
-     * @param string $issueType
-     * @param string $taskType
+     * @param string $expectedTaskType
+     * @param string $expectedIssueCount
+     * @param string $expectedIssueType
      *
      * @return TaskRepository
      */
     private function createGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
         Test $test,
-        $issueCount,
-        $issueType,
-        $taskType
+        ?string $expectedTaskType,
+        $expectedIssueCount,
+        $expectedIssueType
     ) {
         $taskRepository = $this->createTaskRepository();
         $taskRepository
             ->shouldReceive('getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates')
-            ->with($test, $issueCount, $issueType, $taskType, $this->excludedStates)
+            ->with($test, $this->excludedStates, $expectedTaskType, $expectedIssueCount, $expectedIssueType)
             ->andReturn([]);
 
         return $taskRepository;

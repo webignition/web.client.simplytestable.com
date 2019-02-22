@@ -710,10 +710,10 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
         $remoteTaskIds = $this->taskRepository->getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
             $test,
-            $issueCount,
-            $issueType,
+            $states,
             $taskType,
-            $states
+            $issueCount,
+            $issueType
         );
 
         $this->assertEquals($expectedRemoteTaskIds, $remoteTaskIds);

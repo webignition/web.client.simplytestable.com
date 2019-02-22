@@ -118,15 +118,15 @@ class TaskCollectionFilterService
 
         return $this->taskRepository->getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
             $this->test,
-            $this->createIssueCountFromOutcomeFilter(),
-            $this->createIssueTypeFromOutcomeFilter(),
-            $this->typeFilter,
             [
                 Task::STATE_SKIPPED,
                 Task::STATE_CANCELLED,
                 Task::STATE_IN_PROGRESS,
                 Task::STATE_AWAITING_CANCELLATION,
-            ]
+            ],
+            $this->typeFilter,
+            $this->createIssueCountFromOutcomeFilter(),
+            $this->createIssueTypeFromOutcomeFilter()
         );
     }
 
