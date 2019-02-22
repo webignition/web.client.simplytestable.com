@@ -4,7 +4,8 @@ namespace App\Exception\Team\Service;
 
 use \Exception as BaseException;
 
-class Exception extends BaseException {
+class Exception extends BaseException
+{
 
     const INVITEE_IS_A_TEAM_LEADER = 2;
     const USER_IS_ALREADY_ON_A_TEAM = 3;
@@ -13,7 +14,8 @@ class Exception extends BaseException {
     /**
      * @return bool
      */
-    public function isInviteeIsATeamLeaderException() {
+    public function isInviteeIsATeamLeaderException()
+    {
         return $this->getCode() == self::INVITEE_IS_A_TEAM_LEADER;
     }
 
@@ -21,7 +23,8 @@ class Exception extends BaseException {
     /**
      * @return bool
      */
-    public function isUserIsAlreadyOnATeamException() {
+    public function isUserIsAlreadyOnATeamException()
+    {
         return $this->getCode() == self::USER_IS_ALREADY_ON_A_TEAM;
     }
 
@@ -29,9 +32,8 @@ class Exception extends BaseException {
     /**
      * @return bool
      */
-    public function isInviteeHasAPremiumPlanException() {
+    public function isInviteeHasAPremiumPlanException()
+    {
         return $this->getCode() == self::INVITEE_HAS_A_PREMIUM_PLAN;
     }
-
-
 }
