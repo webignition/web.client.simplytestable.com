@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\MailChimp;
 
@@ -44,9 +45,6 @@ class ClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider getListMembersDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $expectedMemberEmails
      */
     public function testGetListMembers(array $httpFixtures, array $expectedMemberEmails)
     {
@@ -63,10 +61,7 @@ class ClientTest extends AbstractBaseTestCase
         $this->assertLastRequestAuthorizationHeader();
     }
 
-    /**
-     * @return array
-     */
-    public function getListMembersDataProvider()
+    public function getListMembersDataProvider(): array
     {
         return [
             'default' => [
@@ -88,20 +83,12 @@ class ClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider addListMemberFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws MemberExistsException
-     * @throws UnknownException
      */
     public function testAddListMemberFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -117,10 +104,7 @@ class ClientTest extends AbstractBaseTestCase
         $this->assertLastRequestAuthorizationHeader();
     }
 
-    /**
-     * @return array
-     */
-    public function addListMemberFailureDataProvider()
+    public function addListMemberFailureDataProvider(): array
     {
         return [
             'member exists' => [
@@ -164,20 +148,12 @@ class ClientTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider removeListMemberFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws ResourceNotFoundException
-     * @throws UnknownException
      */
     public function testRemoveListMemberFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -193,10 +169,7 @@ class ClientTest extends AbstractBaseTestCase
         $this->assertLastRequestAuthorizationHeader();
     }
 
-    /**
-     * @return array
-     */
-    public function removeListMemberFailureDataProvider()
+    public function removeListMemberFailureDataProvider(): array
     {
         return [
             'member not found' => [

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Services\MailChimp;
 
@@ -65,20 +66,12 @@ class ServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider subscribeFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws MemberExistsException
-     * @throws UnknownException
      */
     public function testSubscribeFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -89,10 +82,7 @@ class ServiceTest extends AbstractBaseTestCase
         $this->mailChimpService->subscribe(self::LIST_NAME, self::USER_EMAIL);
     }
 
-    /**
-     * @return array
-     */
-    public function subscribeFailureDataProvider()
+    public function subscribeFailureDataProvider(): array
     {
         return [
             'member exists' => [
@@ -140,20 +130,12 @@ class ServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider unsubscribeFailureDataProvider
-     *
-     * @param array $httpFixtures
-     * @param string $expectedException
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws ResourceNotFoundException
-     * @throws UnknownException
      */
     public function testUnsubscribeFailure(
         array $httpFixtures,
-        $expectedException,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        string $expectedException,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -174,10 +156,7 @@ class ServiceTest extends AbstractBaseTestCase
         $this->mailChimpService->unsubscribe(self::LIST_NAME, self::USER_EMAIL);
     }
 
-    /**
-     * @return array
-     */
-    public function unsubscribeFailureDataProvider()
+    public function unsubscribeFailureDataProvider(): array
     {
         return [
             'not found' => [
@@ -228,11 +207,8 @@ class ServiceTest extends AbstractBaseTestCase
 
     /**
      * @dataProvider retrieveMembersDataProvider
-     *
-     * @param array[] $httpFixtures
-     * @param string[] $expectedMemberEmails
      */
-    public function testRetrieveMembers($httpFixtures, $expectedMemberEmails)
+    public function testRetrieveMembers(array $httpFixtures, array $expectedMemberEmails)
     {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -241,10 +217,7 @@ class ServiceTest extends AbstractBaseTestCase
         $this->assertEquals($expectedMemberEmails, $memberEmails);
     }
 
-    /**
-     * @return array
-     */
-    public function retrieveMembersDataProvider()
+    public function retrieveMembersDataProvider(): array
     {
         return [
             'single member in single response' => [
