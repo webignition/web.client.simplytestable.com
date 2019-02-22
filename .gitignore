@@ -23,3 +23,8 @@ data/queue/test/*
 ###< symfony/framework-bundle ###
 
 /.env*local
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###
