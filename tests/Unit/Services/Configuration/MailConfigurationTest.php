@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\Configuration;
 
@@ -7,9 +8,6 @@ use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 
 class ConfigurationTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var array
-     */
     private $configurationValues = [
         MailConfiguration::SENDERS_KEY => [
             'default' => [
@@ -26,19 +24,12 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getSenderExceptionDataProvider
-     *
-     * @param array $configurationValues
-     * @param string $senderKey
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws MailConfigurationException
      */
     public function testGetSenderException(
-        $configurationValues,
-        $senderKey,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        array $configurationValues,
+        string $senderKey,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->expectException(MailConfigurationException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -49,10 +40,7 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase
         $configuration->getSender($senderKey);
     }
 
-    /**
-     * @return array
-     */
-    public function getSenderExceptionDataProvider()
+    public function getSenderExceptionDataProvider(): array
     {
         return [
             'no mail senders set' => [
@@ -91,19 +79,12 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getMessagePropertiesExceptionDataProvider
-     *
-     * @param array $configurationValues
-     * @param string $messageKey
-     * @param string $expectedExceptionMessage
-     * @param int $expectedExceptionCode
-     *
-     * @throws MailConfigurationException
      */
     public function testGetMessagePropertiesException(
-        $configurationValues,
-        $messageKey,
-        $expectedExceptionMessage,
-        $expectedExceptionCode
+        array $configurationValues,
+        string $messageKey,
+        string $expectedExceptionMessage,
+        int $expectedExceptionCode
     ) {
         $this->expectException(MailConfigurationException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
@@ -114,10 +95,7 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase
         $configuration->getMessageProperties($messageKey);
     }
 
-    /**
-     * @return array
-     */
-    public function getMessagePropertiesExceptionDataProvider()
+    public function getMessagePropertiesExceptionDataProvider(): array
     {
         return [
             'no message properties set' => [

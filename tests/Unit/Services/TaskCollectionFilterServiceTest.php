@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services;
 
@@ -23,17 +24,12 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getRemoteIdCountDataProvider
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param Test $test
-     * @param string $typeFilter
-     * @param string $outcomeFilter
      */
     public function testGetRemoteIdCount(
         EntityManagerInterface $entityManager,
         Test $test,
-        $typeFilter,
-        $outcomeFilter
+        ?string $typeFilter,
+        string $outcomeFilter
     ) {
         $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
 
@@ -44,10 +40,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(0, $taskCollectionFilterService->getRemoteIdCount());
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteIdCountDataProvider()
+    public function getRemoteIdCountDataProvider(): array
     {
         $test = new Test();
 
@@ -135,17 +128,12 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider getRemoteIdsDataProvider
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param Test $test
-     * @param $typeFilter
-     * @param $outcomeFilter
      */
     public function testGetRemoteIds(
         EntityManagerInterface $entityManager,
         Test $test,
-        $typeFilter,
-        $outcomeFilter
+        ?string $typeFilter,
+        string $outcomeFilter
     ) {
         $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
 
@@ -156,10 +144,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $taskCollectionFilterService->getRemoteIds());
     }
 
-    /**
-     * @return array
-     */
-    public function getRemoteIdsDataProvider()
+    public function getRemoteIdsDataProvider(): array
     {
         $test = new Test();
 
@@ -256,16 +241,12 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param Test $test
-     * @param string $taskType
-     * @param string[] $states
-     *
-     * @return TaskRepository
+     * @return TaskRepository|MockInterface
      */
     private function createGetRemoteIdCountByTestAndTaskTypeIncludingStatesTaskRepository(
         Test $test,
-        $taskType,
-        $states
+        ?string $taskType,
+        array $states
     ) {
         $taskRepository = $this->createTaskRepository();
         $taskRepository
@@ -277,20 +258,14 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param Test $test
-     * @param string[] $excludeStates
-     * @param string $taskType
-     * @param string $issueCount
-     * @param string $issueType
-     *
-     * @return TaskRepository
+     * @return TaskRepository|MockInterface
      */
     private function createGetRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
         Test $test,
-        $excludeStates,
-        $taskType,
-        $issueCount,
-        $issueType
+        array $excludeStates,
+        ?string $taskType,
+        string $issueCount,
+        string $issueType
     ) {
         $taskRepository = $this->createTaskRepository();
         $taskRepository
@@ -302,16 +277,12 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param Test $test
-     * @param string $taskType
-     * @param string[] $states
-     *
-     * @return TaskRepository
+     * @return TaskRepository|MockInterface
      */
     private function createGetRemoteIdByTestAndTaskTypeIncludingStatesTaskRepository(
         Test $test,
-        $taskType,
-        $states
+        ?string $taskType,
+        array $states
     ) {
         $taskRepository = $this->createTaskRepository();
         $taskRepository
@@ -323,18 +294,13 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param Test $test
-     * @param string $expectedTaskType
-     * @param string $expectedIssueCount
-     * @param string $expectedIssueType
-     *
-     * @return TaskRepository
+     * @return TaskRepository|MockInterface
      */
     private function createGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
         Test $test,
         ?string $expectedTaskType,
-        $expectedIssueCount,
-        $expectedIssueType
+        string $expectedIssueCount,
+        string $expectedIssueType
     ) {
         $taskRepository = $this->createTaskRepository();
         $taskRepository
@@ -356,8 +322,6 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @param TaskRepository $taskRepository
-     *
      * @return MockInterface|EntityManagerInterface
      */
     private function createEntityManager(TaskRepository $taskRepository)

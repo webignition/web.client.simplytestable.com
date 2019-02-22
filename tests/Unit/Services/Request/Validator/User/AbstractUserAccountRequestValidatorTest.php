@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\Request\Validator\User;
 
@@ -9,12 +10,9 @@ use App\Request\User\AbstractUserAccountRequest;
 abstract class AbstractUserAccountRequestValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @param string $email
-     * @param string $password
-     *
      * @return MockInterface|AbstractUserAccountRequest
      */
-    protected function createUserAccountRequest($email, $password)
+    protected function createUserAccountRequest(string $email, string $password)
     {
         $userAccountRequest = \Mockery::mock(AbstractUserAccountRequest::class);
 
@@ -30,11 +28,9 @@ abstract class AbstractUserAccountRequestValidatorTest extends \PHPUnit\Framewor
     }
 
     /**
-     * @param bool $isValidReturnValue
-     *
      * @return MockInterface|EmailValidator
      */
-    protected function createEmailValidator($isValidReturnValue)
+    protected function createEmailValidator(bool $isValidReturnValue)
     {
         $emailValidator = \Mockery::mock(EmailValidator::class);
         $emailValidator

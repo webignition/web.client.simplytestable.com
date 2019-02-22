@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Services\Request\Factory\User;
 
@@ -11,17 +12,12 @@ class SignUpRequestFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createDataProvider
-     *
-     * @param RequestStack $requestStack
-     * @param string $expectedEmail
-     * @param string $expectedPassword
-     * @param string $expectedPlan
      */
     public function testCreate(
         RequestStack $requestStack,
-        $expectedEmail,
-        $expectedPassword,
-        $expectedPlan
+        string $expectedEmail,
+        string $expectedPassword,
+        string $expectedPlan
     ) {
         $signUpRequestFactory = new SignUpRequestFactory($requestStack);
 
@@ -32,10 +28,7 @@ class SignUpRequestFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedPlan, $signUpRequest->getPlan());
     }
 
-    /**
-     * @return array
-     */
-    public function createDataProvider()
+    public function createDataProvider(): array
     {
         return [
             'empty request' => [
@@ -57,11 +50,6 @@ class SignUpRequestFactoryTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return RequestStack
-     */
     private function createRequestStack(Request $request)
     {
         $requestStack = new RequestStack();
