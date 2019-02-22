@@ -2,4 +2,6 @@
 
 namespace App\Exception\Mail\Configuration;
 
-class Exception extends \Exception {}
+class Exception extends \Exception
+{
+}

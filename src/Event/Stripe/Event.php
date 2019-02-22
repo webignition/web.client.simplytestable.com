@@ -4,7 +4,8 @@ namespace App\Event\Stripe;
 
 use Symfony\Component\EventDispatcher\Event as BaseEvent;
 
-class Event extends BaseEvent {
+class Event extends BaseEvent
+{
 
     const NAME_KEY = 'event';
     const USER_KEY = 'user';
@@ -22,7 +23,8 @@ class Event extends BaseEvent {
      *
      * @param \Symfony\Component\HttpFoundation\ParameterBag $data
      */
-    public function __construct(\Symfony\Component\HttpFoundation\ParameterBag $data) {
+    public function __construct(\Symfony\Component\HttpFoundation\ParameterBag $data)
+    {
         $this->data = $data;
     }
 
@@ -31,7 +33,8 @@ class Event extends BaseEvent {
      *
      * @return \Symfony\Component\HttpFoundation\ParameterBag
      */
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
@@ -40,7 +43,8 @@ class Event extends BaseEvent {
      *
      * @return string|null
      */
-    public function getName() {
+    public function getName()
+    {
         return $this->data->get(self::NAME_KEY);
     }
 
@@ -49,7 +53,8 @@ class Event extends BaseEvent {
      *
      * @return string
      */
-    public function getUser() {
+    public function getUser()
+    {
         return $this->data->get(self::USER_KEY);
     }
 
@@ -58,8 +63,8 @@ class Event extends BaseEvent {
      *
      * @return boolean
      */
-    public function hasUser() {
+    public function hasUser()
+    {
         return !is_null($this->getUser());
     }
-
 }

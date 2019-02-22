@@ -36,7 +36,8 @@ class ListRecipients
     private $recipients;
 
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->recipients = array();
     }
 
@@ -101,7 +102,8 @@ class ListRecipients
      * @param string $recipient
      * @return boolean
      */
-    public function contains($recipient) {
+    public function contains($recipient)
+    {
         return in_array($recipient, $this->getRecipients());
     }
 
@@ -111,7 +113,8 @@ class ListRecipients
      * @param string $recipient
      * @return \App\Entity\MailChimp\ListRecipients
      */
-    public function addRecipient($recipient) {
+    public function addRecipient($recipient)
+    {
         if (!$this->contains($recipient)) {
             $this->recipients[] = $recipient;
         }
@@ -125,7 +128,8 @@ class ListRecipients
      * @param string $recipient
      * @return \App\Entity\MailChimp\ListRecipients
      */
-    public function removeRecipient($recipient) {
+    public function removeRecipient($recipient)
+    {
         if ($this->contains($recipient)) {
             unset($this->recipients[array_search($recipient, $this->getRecipients())]);
         }
@@ -138,8 +142,8 @@ class ListRecipients
      *
      * @return int
      */
-    public function count() {
+    public function count()
+    {
         return count($this->getRecipients());
     }
-
 }

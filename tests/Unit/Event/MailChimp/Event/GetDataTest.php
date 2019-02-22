@@ -2,22 +2,22 @@
 
 namespace App\Tests\Unit\Event\MailChimp\Event;
 
-class GetDataTest extends EventTest {
-
+class GetDataTest extends EventTest
+{
     private $data = array(
         'key' => 'value'
     );
 
-    protected function getEventPostData() {
+    protected function getEventPostData()
+    {
         return array(
             'type' => 'foo',
             'data' => $this->data
         );
     }
 
-
-    public function testGetData() {
+    public function testGetData()
+    {
         $this->assertEquals($this->data, $this->event->getData());
     }
-
 }

@@ -24,7 +24,8 @@ class UserAccountCardException extends \Exception
      * @param string $param
      * @param string $stripeCode
      */
-    public function __construct($message, $param, $stripeCode) {
+    public function __construct($message, $param, $stripeCode)
+    {
         parent::__construct($message, null, null);
         $this->param = $param;
         $this->stripeCode = $stripeCode;
@@ -35,7 +36,8 @@ class UserAccountCardException extends \Exception
      *
      * @return string
      */
-    public function getParam() {
+    public function getParam()
+    {
         return $this->param;
     }
 
@@ -44,7 +46,8 @@ class UserAccountCardException extends \Exception
      *
      * @return string
      */
-    public function getStripeCode() {
+    public function getStripeCode()
+    {
         return $this->stripeCode;
     }
 }

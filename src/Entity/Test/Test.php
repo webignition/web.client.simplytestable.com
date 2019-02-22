@@ -398,8 +398,12 @@ class Test implements \JsonSerializable
     public function getTask(Task $task)
     {
         foreach ($this->getTasks() as $comparatorTask) {
+            $urlsAreEqual = $comparatorTask->getUrl() == $task->getUrl();
+            $typesAreEqual = $comparatorTask->getType() == $task->getType();
+            $taskIdsAreEqual = $comparatorTask->getTaskId() == $task->getTaskId();
+
             /* @var $comparatorTask Task */
-            if ($comparatorTask->getUrl() == $task->getUrl() && $comparatorTask->getType() == $task->getType() && $comparatorTask->getTaskId() == $task->getTaskId()) {
+            if ($urlsAreEqual && $typesAreEqual && $taskIdsAreEqual) {
                 return $comparatorTask;
             }
         }
