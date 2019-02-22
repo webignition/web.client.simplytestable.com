@@ -1,11 +1,9 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\User\Account;
 
 use App\Controller\View\User\Account\PlanController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\Team\Team;
 use App\Model\User\Plan;
 use App\Model\User\Summary as UserSummary;
@@ -24,9 +22,6 @@ class PlanControllerTest extends AbstractAccountControllerTest
     const ROUTE_NAME = 'view_user_account_plan';
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $userData = [
         'email' => self::USER_EMAIL,
         'user_plan' => [
@@ -59,10 +54,7 @@ class PlanControllerTest extends AbstractAccountControllerTest
         $this->assertIEFilteredRedirectResponse();
     }
 
-    /**
-     * @return array
-     */
-    public function invalidUserGetRequestDataProvider()
+    public function invalidUserGetRequestDataProvider(): array
     {
         return [
             'invalid user' => [
@@ -139,14 +131,6 @@ class PlanControllerTest extends AbstractAccountControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param array $httpFixtures
-     * @param array $flashBagMessages
-     * @param Twig_Environment $twig
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRender(array $httpFixtures, array $flashBagMessages, Twig_Environment $twig)
     {
@@ -167,10 +151,7 @@ class PlanControllerTest extends AbstractAccountControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'not in team, no discount, no flash messages' => [
@@ -307,11 +288,7 @@ class PlanControllerTest extends AbstractAccountControllerTest
         ];
     }
 
-    /**
-     * @param string $viewName
-     * @param array $parameters
-     */
-    private function assertCommonViewData($viewName, $parameters)
+    private function assertCommonViewData(string $viewName, array $parameters)
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
@@ -327,9 +304,6 @@ class PlanControllerTest extends AbstractAccountControllerTest
         $this->assertInternalType('array', $parameters['currency_map']);
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertArraySubset(
