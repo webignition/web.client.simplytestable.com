@@ -1,13 +1,11 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\TestTaskListController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Symfony\Component\DomCrawler\Crawler;
@@ -22,17 +20,11 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -43,9 +35,6 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         'task_count' => 12,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTaskData = [
         'id' => 2,
         'url' => 'http://example.com/',
@@ -126,13 +115,6 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderEmptyContentDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRenderEmptyContent(
         array $httpFixtures,
@@ -153,10 +135,7 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         $this->assertEmpty($response->getContent());
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderEmptyContentDataProvider()
+    public function indexActionRenderEmptyContentDataProvider(): array
     {
         return [
             'no request task ids' => [
@@ -192,20 +171,11 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderContentDataProvider
-     *
-     * @param array $httpFixtures
-     * @param Request $request
-     * @param int $expectedPageIndex
-     * @param array $expectedTaskSetCollection
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function testIndexActionRenderContent(
         array $httpFixtures,
         Request $request,
-        $expectedPageIndex,
+        int $expectedPageIndex,
         array $expectedTaskSetCollection
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -269,10 +239,7 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         });
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderContentDataProvider()
+    public function indexActionRenderContentDataProvider(): array
     {
         return [
             'single task, no errors, no warnings' => [

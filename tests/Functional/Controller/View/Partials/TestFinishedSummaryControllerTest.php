@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Partials;
 
@@ -21,17 +22,11 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
     ];
 
-    /**
-     * @var array
-     */
     private $remoteTestData = [
         'id' => self::TEST_ID,
         'website' => self::WEBSITE,
@@ -102,8 +97,6 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionRenderDataProvider
-     *
-     * @param Twig_Environment $twig
      */
     public function testIndexActionRender(Twig_Environment $twig)
     {
@@ -119,10 +112,7 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionRenderDataProvider()
+    public function indexActionRenderDataProvider(): array
     {
         return [
             'default' => [
@@ -191,9 +181,6 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
         $this->assertEquals(304, $newResponse->getStatusCode());
     }
 
-    /**
-     * @param array $parameters
-     */
     private function assertViewParameterKeys(array $parameters)
     {
         $this->assertEquals(

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Partials;
 
@@ -20,9 +20,6 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
 
-    /**
-     * @var array
-     */
     private $routeParameters = [
         'website' => self::WEBSITE,
         'test_id' => self::TEST_ID,
@@ -72,16 +69,11 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
 
     /**
      * @dataProvider indexActionGetRequestDataProvider
-     *
-     * @param User $user
-     * @param array $remoteTestData
-     * @param bool $expectedResponseHasContent
-     * @param array $expectedContentContains
      */
     public function testIndexActionGetRequest(
         User $user,
         array $remoteTestData,
-        $expectedResponseHasContent,
+        bool $expectedResponseHasContent,
         array $expectedContentContains = []
     ) {
         $userManager = self::$container->get(UserManager::class);
@@ -115,10 +107,7 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
         }
     }
 
-    /**
-     * @return array
-     */
-    public function indexActionGetRequestDataProvider()
+    public function indexActionGetRequestDataProvider(): array
     {
         $publicUser = SystemUserService::getPublicUser();
         $privateUser = new User(self::USER_EMAIL);
