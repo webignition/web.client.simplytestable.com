@@ -52,6 +52,18 @@ class TimePeriod implements \JsonSerializable
     }
 
     /**
+     * @param \DateTime $startDateTime
+     *
+     * @return TimePeriod
+     */
+    public function setStartDateTime($startDateTime)
+    {
+        $this->startDateTime = $startDateTime;
+
+        return $this;
+    }
+
+    /**
      * @return \DateTime
      */
     public function getStartDateTime()
