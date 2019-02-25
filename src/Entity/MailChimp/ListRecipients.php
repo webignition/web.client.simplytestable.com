@@ -65,17 +65,10 @@ class ListRecipients
         }
     }
 
-    /**
-     *
-     * @param string $recipient
-     * @return \App\Entity\MailChimp\ListRecipients
-     */
-    public function removeRecipient($recipient)
+    public function removeRecipient(string $recipient)
     {
         if ($this->contains($recipient)) {
             unset($this->recipients[array_search($recipient, $this->recipients)]);
         }
-
-        return $this;
     }
 }
