@@ -81,7 +81,7 @@ class Service
      *
      * @return string[]
      */
-    public function retrieveMemberEmails($listName)
+    public function retrieveMemberEmails(string $listName): array
     {
         $listLength = null;
         $memberEmails = [];
