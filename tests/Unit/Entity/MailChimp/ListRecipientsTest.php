@@ -52,17 +52,6 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function testCount()
-    {
-        $this->assertEquals(0, $this->listRecipients->count());
-
-        $this->listRecipients->addRecipients(['user1@example.com']);
-        $this->assertEquals(1, $this->listRecipients->count());
-
-        $this->listRecipients->addRecipients(['user2@example.com']);
-        $this->assertEquals(2, $this->listRecipients->count());
-    }
-
     public function testRemoveRecipient()
     {
         $recipient = 'user@example.com';
