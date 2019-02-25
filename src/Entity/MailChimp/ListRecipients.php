@@ -75,6 +75,11 @@ class ListRecipients
         return $this;
     }
 
+    public function clearRecipients()
+    {
+        $this->recipients = [];
+    }
+
     /**
      * Get recipients
      *
