@@ -1,25 +1,21 @@
 <?php
+
 namespace App\Entity\MailChimp;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- *
  * @ORM\Entity
  */
 class ListRecipients
 {
     /**
-     * @var string
-     *
      * @ORM\Id
      * @ORM\Column(type="string", length=16, unique=true)
      */
     private $listId = '';
 
     /**
-     *
-     * @var array
      * @ORM\Column(type="json_array", nullable=true)
      */
     private $recipients = [];
