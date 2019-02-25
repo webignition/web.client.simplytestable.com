@@ -27,8 +27,8 @@ class SubscribeCommand extends AbstractSubscriptionCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $listId = $input->getArgument(self::ARG_LIST_ID) ?? null;
-        $email = $input->getArgument(self::ARG_EMAIL) ?? null;
+        $listId = $this->getListId($input);
+        $email = $this->getEmail($input);
 
         if (!empty($listId) && !empty($email)) {
             $this->mailChimpService->subscribe($listId, $email);
