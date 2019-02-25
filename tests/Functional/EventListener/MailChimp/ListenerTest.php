@@ -294,11 +294,10 @@ class ListenerTest extends AbstractBaseTestCase
         /* @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
-        $listRecipients = new ListRecipients();
-        $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));
-        foreach ($existingListRecipients as $recipient) {
-            $listRecipients->addRecipient($recipient);
-        }
+        $listRecipients = ListRecipients::create(
+            $this->listRecipientsService->getListId(self::LIST_NAME),
+            $existingListRecipients
+        );
 
         $entityManager->persist($listRecipients);
         $entityManager->flush();

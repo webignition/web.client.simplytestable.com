@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Entity\MailChimp;
 
@@ -16,6 +17,35 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         parent::setUp();
 
         $this->listRecipients = new ListRecipients();
+    }
+
+    /**
+     * @dataProvider createDataProvider
+     */
+    public function testCreate(string $listId, array $recipients)
+    {
+        $listRecipients = ListRecipients::create($listId, $recipients);
+
+        $this->assertEquals($listId, $listRecipients->getListId());
+        $this->assertEquals($recipients, $listRecipients->getRecipients());
+    }
+
+    public function createDataProvider(): array
+    {
+        return [
+            'listId only' => [
+                'listId' => 'list-id',
+                'recipients' => [],
+            ],
+            'listId and recipients' => [
+                'listId' => 'list-id',
+                'recipients' => [
+                    'user1@example.com',
+                    'user2@example.com',
+                    'user3@example.com',
+                ],
+            ],
+        ];
     }
 
     public function testAddRecipient()

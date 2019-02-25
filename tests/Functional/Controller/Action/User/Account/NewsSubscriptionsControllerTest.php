@@ -89,12 +89,10 @@ class NewsSubscriptionsControllerTest extends AbstractUserAccountControllerTest
         $listRecipientsCollection = [];
 
         foreach ($existingListRecipients as $listName => $recipients) {
-            $listRecipients = new ListRecipients();
-            $listRecipients->setListId($mailChimpListRecipientsService->getListId($listName));
-
-            foreach ($recipients as $recipient) {
-                $listRecipients->addRecipient($recipient);
-            }
+            $listRecipients = ListRecipients::create(
+                $mailChimpListRecipientsService->getListId($listName),
+                $recipients
+            );
 
             $entityManager->persist($listRecipients);
             $entityManager->flush();
