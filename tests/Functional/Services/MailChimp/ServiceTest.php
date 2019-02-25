@@ -121,9 +121,8 @@ class ServiceTest extends AbstractBaseTestCase
 
     public function testUnsubscribeNotAlreadySubscribedLocally()
     {
-        $result = $this->mailChimpService->unsubscribe(self::LIST_NAME, self::USER_EMAIL);
-
-        $this->assertTrue($result);
+        $this->mailChimpService->unsubscribe(self::LIST_NAME, self::USER_EMAIL);
+        $this->assertTrue(true);
     }
 
     /**
@@ -198,9 +197,8 @@ class ServiceTest extends AbstractBaseTestCase
         $entityManager->persist($listRecipients);
         $entityManager->flush();
 
-        $result = $this->mailChimpService->unsubscribe(self::LIST_NAME, self::USER_EMAIL);
-
-        $this->assertTrue($result);
+        $this->mailChimpService->unsubscribe(self::LIST_NAME, self::USER_EMAIL);
+        $this->assertTrue(true);
     }
 
     /**
