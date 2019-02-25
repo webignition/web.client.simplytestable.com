@@ -40,27 +40,6 @@ class ListRecipients
     }
 
     /**
-     *
-     * @param string $listId
-     * @return ListRecipients
-     */
-    public function setListId($listId)
-    {
-        $this->listId = $listId;
-        return $this;
-    }
-
-    /**
-     *
-     * @return string
-     */
-    public function getListId()
-    {
-        return $this->listId;
-    }
-
-
-    /**
      * Set recipients
      *
      * @param array $recipients
