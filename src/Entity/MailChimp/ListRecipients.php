@@ -78,14 +78,4 @@ class ListRecipients
 
         return $this;
     }
-
-
-    /**
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->recipients);
-    }
 }
