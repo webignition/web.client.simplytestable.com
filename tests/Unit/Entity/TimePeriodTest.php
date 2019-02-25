@@ -23,6 +23,21 @@ class TimePeriodTest extends \PHPUnit\Framework\TestCase
         }
     }
 
+    /**
+     * @dataProvider createDataProvider
+     */
+    public function testFromTimePeriod(\DateTime $startDateTime, ?\DateTime $endDateTime)
+    {
+        $timePeriod = TimePeriod::create($startDateTime, $endDateTime);
+
+        $newTimePeriod = TimePeriod::fromTimePeriod($timePeriod);
+
+        $this->assertNotSame($timePeriod, $newTimePeriod);
+
+        $this->assertEquals($timePeriod->getStartDateTime(), $newTimePeriod->getStartDateTime());
+        $this->assertEquals($timePeriod->getEndDateTime(), $newTimePeriod->getEndDateTime());
+    }
+
     public function createDataProvider(): array
     {
         return [
