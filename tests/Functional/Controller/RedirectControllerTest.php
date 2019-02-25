@@ -112,7 +112,7 @@ class RedirectControllerTest extends AbstractControllerTest
     }
 
     /**
-     * @dataProvider testActionDataProvider
+     * @dataProvider dataProviderForTestAction
      */
     public function testTestAction(
         array $httpFixtures,
@@ -144,7 +144,7 @@ class RedirectControllerTest extends AbstractControllerTest
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    public function testActionDataProvider(): array
+    public function dataProviderForTestAction(): array
     {
         return [
             'task results url without trailing slash' => [
