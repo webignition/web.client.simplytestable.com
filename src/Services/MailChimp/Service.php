@@ -12,11 +12,11 @@ class Service
     const LIST_MEMBERS_MAX_LIMIT = 100;
 
     private $listRecipientsService;
-    private $fooClient;
+    private $mailChimpClient;
 
-    public function __construct(MailChimpClient $fooMailChimpClient, ListRecipientsService $listRecipientsService)
+    public function __construct(MailChimpClient $mailChimpClient, ListRecipientsService $listRecipientsService)
     {
-        $this->fooClient = $fooMailChimpClient;
+        $this->mailChimpClient = $mailChimpClient;
         $this->listRecipientsService = $listRecipientsService;
     }
 
@@ -34,7 +34,7 @@ class Service
             return;
         }
 
-        $this->fooClient->addListMember(
+        $this->mailChimpClient->addListMember(
             $this->listRecipientsService->getListId($listName),
             $email
         );
@@ -56,7 +56,7 @@ class Service
             return true;
         }
 
-        $this->fooClient->removeListMember(
+        $this->mailChimpClient->removeListMember(
             $this->listRecipientsService->getListId($listName),
             $email
         );
@@ -75,7 +75,7 @@ class Service
         $memberEmails = [];
 
         while (is_null($listLength) || count($memberEmails) < $listLength) {
-            $listMembers = $this->fooClient->getListMembers(
+            $listMembers = $this->mailChimpClient->getListMembers(
                 $this->listRecipientsService->getListId($listName),
                 self::LIST_MEMBERS_MAX_LIMIT,
                 count($memberEmails)
