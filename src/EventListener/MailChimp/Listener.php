@@ -41,9 +41,12 @@ class Listener
      */
     public function onSubscribe(MailChimpEvent $event)
     {
-        if (array_key_exists('email', $event->getData())) {
+        $eventData = $event->getData();
+        $email = $eventData['email'] ?? null;
+
+        if (null !== $email) {
             $listRecipients = $this->getListRecipients($event);
-            $listRecipients->addRecipient($event->getData()['email']);
+            $listRecipients->addRecipient($email);
 
             $this->entityManager->persist($listRecipients);
             $this->entityManager->flush();
@@ -63,10 +66,14 @@ class Listener
      */
     public function onUpEmail(MailChimpEvent $event)
     {
-        if (array_key_exists('old_email', $event->getData()) && array_key_exists('new_email', $event->getData())) {
+        $eventData = $event->getData();
+        $oldEmail = $eventData['old_email'] ?? null;
+        $newEmail = $eventData['new_email'] ?? null;
+
+        if (null !== $oldEmail && null !== $newEmail) {
             $listRecipients = $this->getListRecipients($event);
-            $listRecipients->removeRecipient($event->getData()['old_email']);
-            $listRecipients->addRecipient($event->getData()['new_email']);
+            $listRecipients->removeRecipient($oldEmail);
+            $listRecipients->addRecipient($newEmail);
 
             $this->entityManager->persist($listRecipients);
             $this->entityManager->flush();

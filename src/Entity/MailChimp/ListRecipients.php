@@ -101,21 +101,12 @@ class ListRecipients
         return in_array($recipient, $this->getRecipients());
     }
 
-
-    /**
-     *
-     * @param string $recipient
-     * @return \App\Entity\MailChimp\ListRecipients
-     */
-    public function addRecipient($recipient)
+    public function addRecipient(string $recipient)
     {
         if (!$this->contains($recipient)) {
             $this->recipients[] = $recipient;
         }
-
-        return $this;
     }
-
 
     /**
      *
