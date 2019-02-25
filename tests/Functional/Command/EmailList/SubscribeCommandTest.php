@@ -1,15 +1,12 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Command\EmailList;
 
 use App\Command\EmailList\SubscribeCommand;
-use App\Tests\Factory\HttpResponseFactory;
-use App\Tests\Functional\AbstractBaseTestCase;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
-use App\Tests\Services\HttpMockHandler;
 
-class SubscribeCommandTest extends AbstractBaseTestCase
+class SubscribeCommandTest extends AbstractSubscriptionCommandTest
 {
     /**
      * @var SubscribeCommand
@@ -26,19 +23,32 @@ class SubscribeCommandTest extends AbstractBaseTestCase
         $this->subscribeCommand = self::$container->get(SubscribeCommand::class);
     }
 
-    public function testRun()
+    public function testRunSubscribeIsCalled()
     {
-        $httpMockHandler = self::$container->get(HttpMockHandler::class);
-        $httpMockHandler->appendFixtures([
-            HttpResponseFactory::createSuccessResponse(),
+        $listId = 'announcements';
+        $email = 'user@example.com';
+
+        $mailChimpService = $this->createMailChimpServiceWithIsCalledExpectation('subscribe', [
+            $listId,
+            $email,
         ]);
 
-        $input = new ArrayInput([
-            SubscribeCommand::ARG_LIST_ID => 'announcements',
-            SubscribeCommand::ARG_EMAIL => 'user@example.com',
-        ]);
+        $this->setMailChimpServiceOnCommand($this->subscribeCommand, $mailChimpService);
 
-        $returnValue = $this->subscribeCommand->run($input, new NullOutput());
+        $returnValue = $this->subscribeCommand->run($this->createInput($listId, $email), new NullOutput());
+
+        $this->assertEquals(0, $returnValue);
+    }
+
+    /**
+     * @dataProvider runIsNotCalledDataProvider
+     */
+    public function testRunSubscribeIsNotCalled(?string $listId, ?string $email)
+    {
+        $mailChimpService = $this->createMailChimpServiceWithIsNotCalledExpectation('subscribe');
+        $this->setMailChimpServiceOnCommand($this->subscribeCommand, $mailChimpService);
+
+        $returnValue = $this->subscribeCommand->run($this->createInput($listId, $email), new NullOutput());
 
         $this->assertEquals(0, $returnValue);
     }
