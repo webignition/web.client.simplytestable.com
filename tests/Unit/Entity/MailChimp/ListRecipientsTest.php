@@ -88,6 +88,9 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
             'user2@example.com',
             'user1@example.com',
             'user2@example.com',
+            null,
+            1,
+            true,
         ];
 
         $expectedRecipients = [
@@ -100,11 +103,6 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         }
 
         $this->listRecipients->addRecipients($recipients);
-
-        foreach ($recipients as $recipient) {
-            $this->assertTrue($this->listRecipients->contains($recipient));
-        }
-
         $this->assertEquals($expectedRecipients, $this->listRecipients->getRecipients());
     }
 }

@@ -69,7 +69,9 @@ class ListRecipients
     public function addRecipients($recipients)
     {
         foreach ($recipients as $recipient) {
-            $this->addRecipient($recipient);
+            if (is_string($recipient)) {
+                $this->addRecipient($recipient);
+            }
         }
 
         return $this;
