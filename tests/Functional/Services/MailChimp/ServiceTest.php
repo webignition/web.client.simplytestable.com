@@ -52,9 +52,10 @@ class ServiceTest extends AbstractBaseTestCase
         /* @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
-        $listRecipients = new ListRecipients();
-        $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));
-        $listRecipients->addRecipient(self::USER_EMAIL);
+        $listRecipients = ListRecipients::create(
+            $this->listRecipientsService->getListId(self::LIST_NAME),
+            [self::USER_EMAIL]
+        );
 
         $entityManager->persist($listRecipients);
         $entityManager->flush();
@@ -142,9 +143,10 @@ class ServiceTest extends AbstractBaseTestCase
         /* @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
-        $listRecipients = new ListRecipients();
-        $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));
-        $listRecipients->addRecipient(self::USER_EMAIL);
+        $listRecipients = ListRecipients::create(
+            $this->listRecipientsService->getListId(self::LIST_NAME),
+            [self::USER_EMAIL]
+        );
 
         $entityManager->persist($listRecipients);
         $entityManager->flush();
@@ -193,10 +195,10 @@ class ServiceTest extends AbstractBaseTestCase
         /* @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
-        $listRecipients = new ListRecipients();
-        $listRecipients->setListId($this->listRecipientsService->getListId(self::LIST_NAME));
-        $listRecipients->addRecipient(self::USER_EMAIL);
-
+        $listRecipients = ListRecipients::create(
+            $this->listRecipientsService->getListId(self::LIST_NAME),
+            [self::USER_EMAIL]
+        );
         $entityManager->persist($listRecipients);
         $entityManager->flush();
 

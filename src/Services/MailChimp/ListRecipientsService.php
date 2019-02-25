@@ -113,8 +113,7 @@ class ListRecipientsService
         ));
 
         if (empty($listRecipients)) {
-            $listRecipients = new ListRecipients();
-            $listRecipients->setListId($listId);
+            $listRecipients = ListRecipients::create($listId);
         }
 
         return $listRecipients;
