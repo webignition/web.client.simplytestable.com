@@ -10,23 +10,12 @@ use Doctrine\ORM\Mapping as ORM;
 class ListRecipients
 {
     /**
-     *
-     * @var integer
+     * @var string
      *
      * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="string", length=16, unique=true)
      */
-    private $id;
-
-
-    /**
-     *
-     * @var string
-     * @ORM\Column(type="string", nullable=false)
-     */
-    private $listId;
-
+    private $listId = '';
 
     /**
      *
@@ -35,21 +24,9 @@ class ListRecipients
      */
     private $recipients;
 
-
     public function __construct()
     {
         $this->recipients = array();
-    }
-
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
-    {
-        return $this->id;
     }
 
     /**

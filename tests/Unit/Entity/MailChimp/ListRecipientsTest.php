@@ -40,16 +40,11 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(2, $this->listRecipients->count());
     }
 
-    public function testGetId()
-    {
-        $this->assertNull($this->listRecipients->getId());
-    }
-
     public function testSetGetListId()
     {
         $listId = 'foo';
 
-        $this->assertNull($this->listRecipients->getListId());
+        $this->assertEquals('', $this->listRecipients->getListId());
 
         $this->listRecipients->setListId($listId);
 
