@@ -29,6 +29,16 @@ class ListRecipients
         $this->recipients = array();
     }
 
+    public static function create(string $listId, array $recipients = []): ListRecipients
+    {
+        $listRecipients = new static();
+
+        $listRecipients->listId = $listId;
+        $listRecipients->setRecipients($recipients);
+
+        return $listRecipients;
+    }
+
     /**
      *
      * @param string $listId

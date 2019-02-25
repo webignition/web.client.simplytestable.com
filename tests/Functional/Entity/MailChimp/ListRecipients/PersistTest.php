@@ -32,20 +32,16 @@ class PersistTest extends AbstractBaseTestCase
      */
     public function testPersist(string $listId, array $recipients)
     {
-        $this->listRecipients->setListId($listId);
+        $listRecipients = ListRecipients::create($listId, $recipients);
 
-        if (!empty($recipients)) {
-            $this->listRecipients->setRecipients($recipients);
-        }
-
-        $this->entityManager->persist($this->listRecipients);
+        $this->entityManager->persist($listRecipients);
         $this->entityManager->flush();
 
         $this->entityManager->clear();
 
         $retrievedListRecipients = $this->entityManager->getRepository(ListRecipients::class)->find($listId);
 
-        $this->assertEquals($this->listRecipients, $retrievedListRecipients);
+        $this->assertEquals($listRecipients, $retrievedListRecipients);
     }
 
     public function persistDataProvider(): array
