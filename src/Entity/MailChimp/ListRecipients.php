@@ -56,11 +56,6 @@ class ListRecipients
         $this->recipients = [];
     }
 
-    public function getRecipients(): array
-    {
-        return $this->recipients;
-    }
-
     /**
      *
      * @param string $recipient

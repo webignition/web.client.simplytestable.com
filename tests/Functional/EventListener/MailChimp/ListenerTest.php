@@ -3,6 +3,7 @@
 
 namespace App\Tests\Functional\EventListener\MailChimp;
 
+use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\MailChimp\ListRecipients;
 use App\EventListener\MailChimp\Listener;
@@ -44,12 +45,14 @@ class ListenerTest extends AbstractBaseTestCase
     public function testOnSubscribe(MailChimpEvent $event, array $expectedListRecipients = [])
     {
         $retrievedListRecipients = $this->listRecipientsService->get(self::LIST_NAME);
-        $this->assertEquals([], $retrievedListRecipients->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($retrievedListRecipients, 'recipients');
+        $this->assertEquals([], $listRecipients);
 
         $this->listener->onSubscribe($event);
 
         $retrievedListRecipients = $this->listRecipientsService->get(self::LIST_NAME);
-        $this->assertEquals($expectedListRecipients, $retrievedListRecipients->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($retrievedListRecipients, 'recipients');
+        $this->assertEquals($expectedListRecipients, $listRecipients);
     }
 
     public function onSubscribeDataProvider(): array
@@ -92,12 +95,14 @@ class ListenerTest extends AbstractBaseTestCase
         $listName = $listRecipientsService->getListName($event->getListId());
 
         $retrievedListRecipients = $listRecipientsService->get($listName);
-        $this->assertEquals($existingListRecipients, $retrievedListRecipients->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($retrievedListRecipients, 'recipients');
+        $this->assertEquals($existingListRecipients, $listRecipients);
 
         $this->listener->onUnsubscribe($event);
 
         $retrievedListRecipients = $listRecipientsService->get($listName);
-        $this->assertEquals($expectedListRecipients, $retrievedListRecipients->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($retrievedListRecipients, 'recipients');
+        $this->assertEquals($expectedListRecipients, $listRecipients);
     }
 
     public function onUnSubscribeDataProvider(): array
@@ -155,12 +160,14 @@ class ListenerTest extends AbstractBaseTestCase
         $listName = $listRecipientsService->getListName($event->getListId());
 
         $retrievedListRecipients = $listRecipientsService->get($listName);
-        $this->assertEquals($existingListRecipients, $retrievedListRecipients->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($retrievedListRecipients, 'recipients');
+        $this->assertEquals($existingListRecipients, $listRecipients);
 
         $this->listener->onUpEmail($event);
 
         $retrievedListRecipients = $listRecipientsService->get($listName);
-        $this->assertEquals($expectedListRecipients, array_values($retrievedListRecipients->getRecipients()));
+        $listRecipients = ObjectReflector::getProperty($retrievedListRecipients, 'recipients');
+        $this->assertEquals($expectedListRecipients, array_values($listRecipients));
     }
 
     public function onUpEmailDataProvider(): array
@@ -241,12 +248,14 @@ class ListenerTest extends AbstractBaseTestCase
         $listName = $listRecipientsService->getListName($event->getListId());
 
         $retrievedListRecipients = $listRecipientsService->get($listName);
-        $this->assertEquals($existingListRecipients, $retrievedListRecipients->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($retrievedListRecipients, 'recipients');
+        $this->assertEquals($existingListRecipients, $listRecipients);
 
         $this->listener->onCleaned($event);
 
         $retrievedListRecipients = $listRecipientsService->get($listName);
-        $this->assertEquals($expectedListRecipients, $retrievedListRecipients->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($retrievedListRecipients, 'recipients');
+        $this->assertEquals($expectedListRecipients, $listRecipients);
     }
 
     public function onCleanedDataProvider(): array
