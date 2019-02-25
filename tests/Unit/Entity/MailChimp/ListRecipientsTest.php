@@ -52,25 +52,14 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function testAddRecipient()
-    {
-        $recipient = 'user@example.com';
-
-        $this->assertFalse($this->listRecipients->contains($recipient));
-
-        $this->listRecipients->addRecipient($recipient);
-
-        $this->assertTrue($this->listRecipients->contains($recipient));
-    }
-
     public function testCount()
     {
         $this->assertEquals(0, $this->listRecipients->count());
 
-        $this->listRecipients->addRecipient('user1@example.com');
+        $this->listRecipients->addRecipients(['user1@example.com']);
         $this->assertEquals(1, $this->listRecipients->count());
 
-        $this->listRecipients->addRecipient('user2@example.com');
+        $this->listRecipients->addRecipients(['user2@example.com']);
         $this->assertEquals(2, $this->listRecipients->count());
     }
 
@@ -78,20 +67,23 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
     {
         $recipient = 'user@example.com';
 
-        $this->listRecipients->addRecipient($recipient);
+        $this->listRecipients->addRecipients([$recipient]);
         $this->assertTrue($this->listRecipients->contains($recipient));
 
         $this->listRecipients->removeRecipient($recipient);
         $this->assertFalse($this->listRecipients->contains($recipient));
     }
 
-    public function testSetRecipients()
+    public function testAddRecipients()
     {
         $recipients = [
             'user1@example.com',
             'user2@example.com',
             'user1@example.com',
             'user2@example.com',
+            null,
+            1,
+            true,
         ];
 
         $expectedRecipients = [
@@ -103,12 +95,7 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse($this->listRecipients->contains($recipient));
         }
 
-        $this->listRecipients->setRecipients($recipients);
-
-        foreach ($recipients as $recipient) {
-            $this->assertTrue($this->listRecipients->contains($recipient));
-        }
-
+        $this->listRecipients->addRecipients($recipients);
         $this->assertEquals($expectedRecipients, $this->listRecipients->getRecipients());
     }
 }
