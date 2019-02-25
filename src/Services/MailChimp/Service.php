@@ -36,24 +36,20 @@ class Service
      * @param string $listName
      * @param string $email
      *
-     * @return bool
-     *
      * @throws MemberExistsException
      * @throws UnknownException
      */
-    public function subscribe($listName, $email)
+    public function subscribe(string $listName, string $email)
     {
         $listRecipients = $this->listRecipientsService->get($listName);
         if ($listRecipients->contains($email)) {
-            return true;
+            return;
         }
 
         $this->fooClient->addListMember(
             $this->listRecipientsService->getListId($listName),
             $email
         );
-
-        return true;
     }
 
     /**
