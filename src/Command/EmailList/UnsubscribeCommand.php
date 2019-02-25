@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Command\EmailList;
 
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,9 +27,11 @@ class UnsubscribeCommand extends AbstractSubscriptionCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->mailChimpService->unsubscribe(
-            $input->getArgument(self::ARG_LIST_ID),
-            $input->getArgument(self::ARG_EMAIL)
-        );
+        $listId = $this->getListId($input);
+        $email = $this->getEmail($input);
+
+        if (!empty($listId) && !empty($email)) {
+            $this->mailChimpService->unsubscribe($listId, $email);
+        }
     }
 }
