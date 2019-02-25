@@ -22,12 +22,7 @@ class ListRecipients
      * @var array
      * @ORM\Column(type="json_array", nullable=true)
      */
-    private $recipients;
-
-    public function __construct()
-    {
-        $this->recipients = array();
-    }
+    private $recipients = [];
 
     public static function create(string $listId, array $recipients = []): ListRecipients
     {
@@ -54,24 +49,13 @@ class ListRecipients
     }
 
     /**
-     * Get recipients
-     *
-     * @return array
-     */
-    public function getRecipients()
-    {
-        return $this->recipients;
-    }
-
-
-    /**
      *
      * @param string $recipient
      * @return boolean
      */
     public function contains($recipient)
     {
-        return in_array($recipient, $this->getRecipients());
+        return in_array($recipient, $this->recipients);
     }
 
     public function addRecipient(string $recipient)
@@ -89,7 +73,7 @@ class ListRecipients
     public function removeRecipient($recipient)
     {
         if ($this->contains($recipient)) {
-            unset($this->recipients[array_search($recipient, $this->getRecipients())]);
+            unset($this->recipients[array_search($recipient, $this->recipients)]);
         }
 
         return $this;
@@ -102,6 +86,6 @@ class ListRecipients
      */
     public function count()
     {
-        return count($this->getRecipients());
+        return count($this->recipients);
     }
 }
