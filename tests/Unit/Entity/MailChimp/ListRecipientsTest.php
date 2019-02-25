@@ -26,7 +26,11 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
     {
         $listRecipients = ListRecipients::create($listId, $recipients);
 
-        $this->assertEquals($listId, $listRecipients->getListId());
+        $listRecipientsReflector = new \ReflectionObject($listRecipients);
+        $listIdProperty = $listRecipientsReflector->getProperty('listId');
+        $listIdProperty->setAccessible(true);
+
+        $this->assertEquals($listId, $listIdProperty->getValue($listRecipients));
         $this->assertEquals($recipients, $listRecipients->getRecipients());
     }
 
@@ -68,17 +72,6 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
 
         $this->listRecipients->addRecipient('user2@example.com');
         $this->assertEquals(2, $this->listRecipients->count());
-    }
-
-    public function testSetGetListId()
-    {
-        $listId = 'foo';
-
-        $this->assertEquals('', $this->listRecipients->getListId());
-
-        $this->listRecipients->setListId($listId);
-
-        $this->assertEquals($listId, $this->listRecipients->getListId());
     }
 
     public function testRemoveRecipient()
