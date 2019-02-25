@@ -44,12 +44,7 @@ class ListRecipients
         $this->recipients = [];
     }
 
-    /**
-     *
-     * @param string $recipient
-     * @return boolean
-     */
-    public function contains($recipient)
+    public function contains(string $recipient): bool
     {
         return in_array($recipient, $this->recipients);
     }
