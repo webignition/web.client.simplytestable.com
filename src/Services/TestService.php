@@ -153,12 +153,7 @@ class TestService
         $remoteTimePeriod = $remoteTest->getTimePeriod();
 
         if (!is_null($remoteTimePeriod)) {
-            $timePeriod = TimePeriod::create(
-                $remoteTimePeriod->getStartDateTime(),
-                $remoteTimePeriod->getEndDateTime()
-            );
-
-            $test->setTimePeriod($timePeriod);
+            $test->setTimePeriod(TimePeriod::fromTimePeriod($remoteTimePeriod));
         }
     }
 

@@ -38,6 +38,11 @@ class TimePeriod implements \JsonSerializable
         return $timePeriod;
     }
 
+    public static function fromTimePeriod(TimePeriod $source): TimePeriod
+    {
+        return static::create($source->getStartDateTime(), $source->getEndDateTime());
+    }
+
     /**
      * @return integer
      */
