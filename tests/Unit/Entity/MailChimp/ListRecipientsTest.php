@@ -4,6 +4,7 @@
 namespace App\Tests\Unit\Entity\MailChimp;
 
 use App\Entity\MailChimp\ListRecipients;
+use App\Tests\Services\ObjectReflector;
 
 class ListRecipientsTest extends \PHPUnit\Framework\TestCase
 {
@@ -26,11 +27,9 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
     {
         $listRecipients = ListRecipients::create($listId, $recipients);
 
-        $listRecipientsReflector = new \ReflectionObject($listRecipients);
-        $listIdProperty = $listRecipientsReflector->getProperty('listId');
-        $listIdProperty->setAccessible(true);
+        $listIdValue = ObjectReflector::getProperty($listRecipients, 'listId');
 
-        $this->assertEquals($listId, $listIdProperty->getValue($listRecipients));
+        $this->assertEquals($listId, $listIdValue);
         $this->assertEquals($recipients, $listRecipients->getRecipients());
     }
 
