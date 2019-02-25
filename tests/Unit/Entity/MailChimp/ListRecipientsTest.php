@@ -80,10 +80,7 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
             'user2@example.com',
         ];
 
-        foreach ($recipients as $recipient) {
-            $this->assertFalse($this->listRecipients->contains($recipient));
-        }
-
+        $this->listRecipients->clearRecipients();
         $this->listRecipients->addRecipients($recipients);
         $listRecipients = ObjectReflector::getProperty($this->listRecipients, 'recipients');
 
