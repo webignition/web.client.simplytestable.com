@@ -39,21 +39,13 @@ class ListRecipients
         return $listRecipients;
     }
 
-    /**
-     * Set recipients
-     *
-     * @param array $recipients
-     * @return ListRecipients
-     */
-    public function addRecipients($recipients)
+    public function addRecipients(array $recipients)
     {
         foreach ($recipients as $recipient) {
             if (is_string($recipient)) {
                 $this->addRecipient($recipient);
             }
         }
-
-        return $this;
     }
 
     public function clearRecipients()
