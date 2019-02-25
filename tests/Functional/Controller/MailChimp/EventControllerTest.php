@@ -113,9 +113,7 @@ class EventControllerTest extends AbstractControllerTest
         $list = $mailChimpListRecipientsService->get($listName);
 
         if (!empty($existingListRecipients)) {
-            foreach ($existingListRecipients as $listRecipient) {
-                $list->addRecipient($listRecipient);
-            }
+            $list->addRecipients($existingListRecipients);
 
             $entityManager->persist($list);
             $entityManager->flush();
