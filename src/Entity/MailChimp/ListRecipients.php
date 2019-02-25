@@ -22,12 +22,7 @@ class ListRecipients
      * @var array
      * @ORM\Column(type="json_array", nullable=true)
      */
-    private $recipients;
-
-    public function __construct()
-    {
-        $this->recipients = array();
-    }
+    private $recipients = [];
 
     public static function create(string $listId, array $recipients = []): ListRecipients
     {
@@ -61,16 +56,10 @@ class ListRecipients
         $this->recipients = [];
     }
 
-    /**
-     * Get recipients
-     *
-     * @return array
-     */
-    public function getRecipients()
+    public function getRecipients(): array
     {
         return $this->recipients;
     }
-
 
     /**
      *
