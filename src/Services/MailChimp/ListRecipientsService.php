@@ -108,13 +108,10 @@ class ListRecipientsService
         $listId = $this->listNameToListIdMap[$name];
 
         $entityRepository = $this->entityManager->getRepository(ListRecipients::class);
-        $listRecipients = $entityRepository->findOneBy(array(
-            'listId' => $listId
-        ));
+        $listRecipients = $entityRepository->find($listId);
 
         if (empty($listRecipients)) {
-            $listRecipients = new ListRecipients();
-            $listRecipients->setListId($listId);
+            $listRecipients = ListRecipients::create($listId);
         }
 
         return $listRecipients;

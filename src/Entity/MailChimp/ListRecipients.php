@@ -1,149 +1,65 @@
 <?php
+
 namespace App\Entity\MailChimp;
 
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- *
  * @ORM\Entity
  */
 class ListRecipients
 {
     /**
-     *
-     * @var integer
-     *
      * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="string", length=16, unique=true)
      */
-    private $id;
-
+    private $listId = '';
 
     /**
-     *
-     * @var string
-     * @ORM\Column(type="string", nullable=false)
-     */
-    private $listId;
-
-
-    /**
-     *
-     * @var array
      * @ORM\Column(type="json_array", nullable=true)
      */
-    private $recipients;
+    private $recipients = [];
 
-
-    public function __construct()
+    public static function create(string $listId, array $recipients = []): ListRecipients
     {
-        $this->recipients = array();
+        $listRecipients = new static();
+
+        $listRecipients->listId = $listId;
+        $listRecipients->addRecipients($recipients);
+
+        return $listRecipients;
     }
 
-
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
+    public function addRecipients(array $recipients)
     {
-        return $this->id;
+        foreach ($recipients as $recipient) {
+            if (is_string($recipient)) {
+                $this->addRecipient($recipient);
+            }
+        }
     }
 
-    /**
-     *
-     * @param string $listId
-     * @return ListRecipients
-     */
-    public function setListId($listId)
+    public function clearRecipients()
     {
-        $this->listId = $listId;
-        return $this;
+        $this->recipients = [];
     }
 
-    /**
-     *
-     * @return string
-     */
-    public function getListId()
+    public function contains(string $recipient): bool
     {
-        return $this->listId;
+        return in_array($recipient, $this->recipients);
     }
 
-
-    /**
-     * Set recipients
-     *
-     * @param array $recipients
-     * @return ListRecipients
-     */
-    public function setRecipients($recipients)
-    {
-        $this->recipients = $recipients;
-
-        return $this;
-    }
-
-    /**
-     * Get recipients
-     *
-     * @return array
-     */
-    public function getRecipients()
-    {
-        return $this->recipients;
-    }
-
-
-    /**
-     *
-     * @param string $recipient
-     * @return boolean
-     */
-    public function contains($recipient)
-    {
-        return in_array($recipient, $this->getRecipients());
-    }
-
-
-    /**
-     *
-     * @param string $recipient
-     * @return \App\Entity\MailChimp\ListRecipients
-     */
-    public function addRecipient($recipient)
+    public function addRecipient(string $recipient)
     {
         if (!$this->contains($recipient)) {
             $this->recipients[] = $recipient;
         }
-
-        return $this;
     }
 
-
-    /**
-     *
-     * @param string $recipient
-     * @return \App\Entity\MailChimp\ListRecipients
-     */
-    public function removeRecipient($recipient)
+    public function removeRecipient(string $recipient)
     {
         if ($this->contains($recipient)) {
-            unset($this->recipients[array_search($recipient, $this->getRecipients())]);
+            unset($this->recipients[array_search($recipient, $this->recipients)]);
         }
-
-        return $this;
-    }
-
-
-    /**
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->getRecipients());
     }
 }

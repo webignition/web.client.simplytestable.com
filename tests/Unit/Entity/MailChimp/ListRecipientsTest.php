@@ -1,8 +1,10 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Unit\Entity\MailChimp;
 
 use App\Entity\MailChimp\ListRecipients;
+use App\Tests\Services\ObjectReflector;
 
 class ListRecipientsTest extends \PHPUnit\Framework\TestCase
 {
@@ -18,71 +20,70 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         $this->listRecipients = new ListRecipients();
     }
 
-    public function testAddRecipient()
+    /**
+     * @dataProvider createDataProvider
+     */
+    public function testCreate(string $listId, array $recipients)
     {
-        $recipient = 'user@example.com';
+        $list = ListRecipients::create($listId, $recipients);
+        $listRecipients = ObjectReflector::getProperty($list, 'recipients');
 
-        $this->assertFalse($this->listRecipients->contains($recipient));
+        $listIdValue = ObjectReflector::getProperty($list, 'listId');
 
-        $this->listRecipients->addRecipient($recipient);
-
-        $this->assertTrue($this->listRecipients->contains($recipient));
+        $this->assertEquals($listId, $listIdValue);
+        $this->assertEquals($recipients, $listRecipients);
     }
 
-    public function testCount()
+    public function createDataProvider(): array
     {
-        $this->assertEquals(0, $this->listRecipients->count());
-
-        $this->listRecipients->addRecipient('user1@example.com');
-        $this->assertEquals(1, $this->listRecipients->count());
-
-        $this->listRecipients->addRecipient('user2@example.com');
-        $this->assertEquals(2, $this->listRecipients->count());
-    }
-
-    public function testGetId()
-    {
-        $this->assertNull($this->listRecipients->getId());
-    }
-
-    public function testSetGetListId()
-    {
-        $listId = 'foo';
-
-        $this->assertNull($this->listRecipients->getListId());
-
-        $this->listRecipients->setListId($listId);
-
-        $this->assertEquals($listId, $this->listRecipients->getListId());
+        return [
+            'listId only' => [
+                'listId' => 'list-id',
+                'recipients' => [],
+            ],
+            'listId and recipients' => [
+                'listId' => 'list-id',
+                'recipients' => [
+                    'user1@example.com',
+                    'user2@example.com',
+                    'user3@example.com',
+                ],
+            ],
+        ];
     }
 
     public function testRemoveRecipient()
     {
         $recipient = 'user@example.com';
 
-        $this->listRecipients->addRecipient($recipient);
+        $this->listRecipients->addRecipients([$recipient]);
         $this->assertTrue($this->listRecipients->contains($recipient));
 
         $this->listRecipients->removeRecipient($recipient);
         $this->assertFalse($this->listRecipients->contains($recipient));
     }
 
-    public function testSetRecipients()
+    public function testAddRecipients()
     {
         $recipients = [
             'user1@example.com',
             'user2@example.com',
+            'user1@example.com',
+            'user2@example.com',
+            null,
+            1,
+            true,
+        ];
+
+        $expectedRecipients = [
+            'user1@example.com',
             'user2@example.com',
         ];
 
-        foreach ($recipients as $recipient) {
-            $this->assertFalse($this->listRecipients->contains($recipient));
-        }
+        $this->listRecipients->clearRecipients();
+        $this->listRecipients->addRecipients($recipients);
+        $listRecipients = ObjectReflector::getProperty($this->listRecipients, 'recipients');
 
-        $this->listRecipients->setRecipients($recipients);
-
-        foreach ($recipients as $recipient) {
-            $this->assertTrue($this->listRecipients->contains($recipient));
-        }
+        $this->assertEquals($expectedRecipients, $listRecipients);
     }
 }

@@ -3,6 +3,7 @@
 
 namespace App\Tests\Functional\Controller\MailChimp;
 
+use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\MailChimp\EventController;
 use App\Services\MailChimp\ListRecipientsService;
@@ -113,25 +114,29 @@ class EventControllerTest extends AbstractControllerTest
         $list = $mailChimpListRecipientsService->get($listName);
 
         if (!empty($existingListRecipients)) {
-            foreach ($existingListRecipients as $listRecipient) {
-                $list->addRecipient($listRecipient);
-            }
+            $list->addRecipients($existingListRecipients);
 
             $entityManager->persist($list);
             $entityManager->flush();
         }
 
         $list = $mailChimpListRecipientsService->get($listName);
-        $this->assertEquals($existingListRecipients, $list->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($list, 'recipients');
+
+        $this->assertEquals($existingListRecipients, $listRecipients);
 
         $request->setMethod('POST');
 
         $response = $this->eventController->indexAction($request);
 
         $this->assertTrue($response->isSuccessful());
+
+        $mutatedList = $mailChimpListRecipientsService->get($listName);
+        $mutatedListRecipients = ObjectReflector::getProperty($mutatedList, 'recipients');
+
         $this->assertEquals(
             array_values($expectedListRecipients),
-            array_values($mailChimpListRecipientsService->get($listName)->getRecipients())
+            array_values($mutatedListRecipients)
         );
     }
 

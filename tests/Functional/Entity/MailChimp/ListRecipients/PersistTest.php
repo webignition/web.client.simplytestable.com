@@ -1,65 +1,64 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Entity\MailChimp\ListRecipients;
 
-use Doctrine\DBAL\DBALException;
+use App\Entity\MailChimp\ListRecipients;
+use App\Tests\Functional\AbstractBaseTestCase;
+use Doctrine\ORM\EntityManagerInterface;
 
-class PersistTest extends EntityTest
+class PersistTest extends AbstractBaseTestCase
 {
-    public function testPersistWithNoPropertiesSetThrowsIntegrityConstraintViolation()
+    /**
+     * @var ListRecipients
+     */
+    private $listRecipients;
+
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    protected function setUp()
     {
-        try {
-            self::$container->get('doctrine')->getManager()->persist($this->listRecipients);
-            self::$container->get('doctrine')->getManager()->flush();
-            $this->fail('\Doctrine\DBAL\DBALException not thrown');
-        } catch (DBALException $dbalException) {
-            $this->assertTrue(
-                substr_count($dbalException->getMessage(), 'INSERT INTO ListRecipients') > 0,
-                'DBALException does not relate to inserting ListRecipients entity'
-            );
-            $this->assertDBALExceptionRelatesToListRecipientsListIdNotBeingAllowedToBeNull($dbalException);
-        }
+        parent::setUp();
+
+        $this->listRecipients = new ListRecipients();
+        $this->entityManager = self::$container->get(EntityManagerInterface::class);
     }
 
-    private function assertDBALExceptionRelatesToListRecipientsListIdNotBeingAllowedToBeNull(
-        DBALException $dbalException
-    ) {
-        $exceptionMessageFragments = array(
-            'Integrity constraint violation: 19 ListRecipients.listId may not be NULL', // SQLite variant
-            'Integrity constraint violation: 1048 Column \'listId\' cannot be null'     // MySQL variant
-        );
+    /**
+     * @dataProvider persistDataProvider
+     */
+    public function testPersist(string $listId, array $recipients)
+    {
+        $listRecipients = ListRecipients::create($listId, $recipients);
 
-        foreach ($exceptionMessageFragments as $exceptionMessageFragment) {
-            if (substr_count($dbalException->getMessage(), $exceptionMessageFragment)) {
-                return true;
-            }
-        }
+        $this->entityManager->persist($listRecipients);
+        $this->entityManager->flush();
 
-        $this->fail('DBALException does not relate to ListRecipients.listId not being allowed to be NULL');
+        $this->entityManager->clear();
+
+        $retrievedListRecipients = $this->entityManager->getRepository(ListRecipients::class)->find($listId);
+
+        $this->assertEquals($listRecipients, $retrievedListRecipients);
     }
 
-    public function testPersistWithListIdOnly()
+    public function persistDataProvider(): array
     {
-        $this->listRecipients->setListId('foo');
-
-        self::$container->get('doctrine')->getManager()->persist($this->listRecipients);
-        self::$container->get('doctrine')->getManager()->flush();
-
-        $this->assertNotNull($this->listRecipients->getId());
-    }
-
-    public function testPersistWithListIdAndRecipients()
-    {
-        $this->listRecipients->setListId('foo');
-        $this->listRecipients->setRecipients(array(
-            'foobar1',
-            'foobar2',
-            'foobar3'
-        ));
-
-        self::$container->get('doctrine')->getManager()->persist($this->listRecipients);
-        self::$container->get('doctrine')->getManager()->flush();
-
-        $this->assertNotNull($this->listRecipients->getId());
+        return [
+            'listId only' => [
+                'listId' => 'list-id',
+                'recipients' => [],
+            ],
+            'listId and recipients' => [
+                'listId' => 'list-id',
+                'recipients' => [
+                    'user1@example.com',
+                    'user2@example.com',
+                    'user3@example.com',
+                ],
+            ],
+        ];
     }
 }
