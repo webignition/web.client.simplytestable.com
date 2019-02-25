@@ -93,9 +93,12 @@ class Listener
      */
     private function handleRemoveRecipientEvent(MailChimpEvent $event)
     {
-        if (array_key_exists('email', $event->getData())) {
+        $eventData = $event->getData();
+        $email = $eventData['email'] ?? null;
+
+        if (null !== $email) {
             $listRecipients = $this->getListRecipients($event);
-            $listRecipients->removeRecipient($event->getData()['email']);
+            $listRecipients->removeRecipient($email);
 
             $this->entityManager->persist($listRecipients);
             $this->entityManager->flush();
