@@ -3,6 +3,7 @@
 
 namespace App\Tests\Functional\Services\MailChimp;
 
+use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\MailChimp\ListRecipients;
 use App\Services\MailChimp\ListRecipientsService;
@@ -142,11 +143,11 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
      */
     public function testGetNew(string $name)
     {
-        $listRecipients = $this->listRecipientsService->get($name);
+        $list = $this->listRecipientsService->get($name);
+        $listRecipients = ObjectReflector::getProperty($list, 'recipients');
 
-        $this->assertInstanceOf(ListRecipients::class, $listRecipients);
-
-        $this->assertEquals([], $listRecipients->getRecipients());
+        $this->assertInstanceOf(ListRecipients::class, $list);
+        $this->assertEquals([], $listRecipients);
     }
 
     public function getNewDataProvider(): array
@@ -172,19 +173,19 @@ class ListRecipientsServiceTest extends AbstractBaseTestCase
         /* @var EntityManagerInterface $entityManager */
         $entityManager = self::$container->get(EntityManagerInterface::class);
 
-        $listRecipients = ListRecipients::create(
+        $list = ListRecipients::create(
             $this->listRecipientsService->getListId($name),
             $recipients
         );
 
-        $entityManager->persist($listRecipients);
+        $entityManager->persist($list);
         $entityManager->flush();
 
-        $retrievedListRecipients = $this->listRecipientsService->get($name);
+        $retrievedList = $this->listRecipientsService->get($name);
+        $listRecipients = ObjectReflector::getProperty($retrievedList, 'recipients');
 
-        $this->assertInstanceOf(ListRecipients::class, $listRecipients);
-
-        $this->assertEquals($recipients, $retrievedListRecipients->getRecipients());
+        $this->assertInstanceOf(ListRecipients::class, $list);
+        $this->assertEquals($recipients, $listRecipients);
     }
 
     public function getExistingDataProvider(): array

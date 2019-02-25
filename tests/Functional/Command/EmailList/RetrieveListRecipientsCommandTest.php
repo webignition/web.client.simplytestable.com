@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional\Command\EmailList;
 
+use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Command\EmailList\RetrieveListRecipientsCommand;
 use App\Entity\MailChimp\ListRecipients;
@@ -64,12 +65,13 @@ class RetrieveListRecipientsCommandTest extends AbstractBaseTestCase
 
             $listRecipientsRepository = $entityManager->getRepository(ListRecipients::class);
 
-            /* @var ListRecipients $listRecipients */
-            $listRecipients = $listRecipientsRepository->findOneBy([
+            /* @var ListRecipients $list */
+            $list = $listRecipientsRepository->findOneBy([
                 'listId' => $listId,
             ]);
+            $listRecipients = ObjectReflector::getProperty($list, 'recipients');
 
-            $this->assertEquals($expectedRetrievedEmails, $listRecipients->getRecipients());
+            $this->assertEquals($expectedRetrievedEmails, $listRecipients);
         }
     }
 

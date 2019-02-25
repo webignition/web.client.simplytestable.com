@@ -4,6 +4,7 @@
 namespace App\Tests\Unit\Entity\MailChimp;
 
 use App\Entity\MailChimp\ListRecipients;
+use App\Tests\Services\ObjectReflector;
 
 class ListRecipientsTest extends \PHPUnit\Framework\TestCase
 {
@@ -24,14 +25,13 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreate(string $listId, array $recipients)
     {
-        $listRecipients = ListRecipients::create($listId, $recipients);
+        $list = ListRecipients::create($listId, $recipients);
+        $listRecipients = ObjectReflector::getProperty($list, 'recipients');
 
-        $listRecipientsReflector = new \ReflectionObject($listRecipients);
-        $listIdProperty = $listRecipientsReflector->getProperty('listId');
-        $listIdProperty->setAccessible(true);
+        $listIdValue = ObjectReflector::getProperty($list, 'listId');
 
-        $this->assertEquals($listId, $listIdProperty->getValue($listRecipients));
-        $this->assertEquals($recipients, $listRecipients->getRecipients());
+        $this->assertEquals($listId, $listIdValue);
+        $this->assertEquals($recipients, $listRecipients);
     }
 
     public function createDataProvider(): array
@@ -96,6 +96,8 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         }
 
         $this->listRecipients->addRecipients($recipients);
-        $this->assertEquals($expectedRecipients, $this->listRecipients->getRecipients());
+        $listRecipients = ObjectReflector::getProperty($this->listRecipients, 'recipients');
+
+        $this->assertEquals($expectedRecipients, $listRecipients);
     }
 }
