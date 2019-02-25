@@ -44,14 +44,11 @@ abstract class AbstractRetrieveRecipientsCommand extends AbstractEmailListComman
      */
     protected function retrieveAndStoreMemberEmails(string $listName): array
     {
-        $listRecipients = $this->listRecipientsService->get($listName);
-        $listRecipients->setRecipients([]);
-
         $memberEmails = $this->mailChimpService->retrieveMemberEmails($listName);
 
-        foreach ($memberEmails as $memberEmail) {
-            $listRecipients->addRecipient($memberEmail);
-        }
+        $listRecipients = $this->listRecipientsService->get($listName);
+        $listRecipients->clearRecipients();
+        $listRecipients->addRecipients($memberEmails);
 
         $this->entityManager->persist($listRecipients);
         $this->entityManager->flush();

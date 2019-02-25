@@ -34,7 +34,7 @@ class ListRecipients
         $listRecipients = new static();
 
         $listRecipients->listId = $listId;
-        $listRecipients->setRecipients($recipients);
+        $listRecipients->addRecipients($recipients);
 
         return $listRecipients;
     }
@@ -45,13 +45,20 @@ class ListRecipients
      * @param array $recipients
      * @return ListRecipients
      */
-    public function setRecipients($recipients)
+    public function addRecipients($recipients)
     {
         foreach ($recipients as $recipient) {
-            $this->addRecipient($recipient);
+            if (is_string($recipient)) {
+                $this->addRecipient($recipient);
+            }
         }
 
         return $this;
+    }
+
+    public function clearRecipients()
+    {
+        $this->recipients = [];
     }
 
     /**
@@ -75,21 +82,12 @@ class ListRecipients
         return in_array($recipient, $this->getRecipients());
     }
 
-
-    /**
-     *
-     * @param string $recipient
-     * @return \App\Entity\MailChimp\ListRecipients
-     */
-    public function addRecipient($recipient)
+    public function addRecipient(string $recipient)
     {
         if (!$this->contains($recipient)) {
             $this->recipients[] = $recipient;
         }
-
-        return $this;
     }
-
 
     /**
      *
