@@ -1,13 +1,16 @@
 <?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Command\EmailList;
 
+use App\Command\EmailList\AbstractEmailListCommand;
 use App\Command\EmailList\SubscribeCommand;
-use App\Tests\Factory\HttpResponseFactory;
+use App\Services\MailChimp\Service;
 use App\Tests\Functional\AbstractBaseTestCase;
+use App\Tests\Services\ObjectReflector;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\NullOutput;
-use App\Tests\Services\HttpMockHandler;
 
 class SubscribeCommandTest extends AbstractBaseTestCase
 {
@@ -26,20 +29,78 @@ class SubscribeCommandTest extends AbstractBaseTestCase
         $this->subscribeCommand = self::$container->get(SubscribeCommand::class);
     }
 
-    public function testRun()
+    public function testRunSubscribeIsCalled()
     {
-        $httpMockHandler = self::$container->get(HttpMockHandler::class);
-        $httpMockHandler->appendFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
+        $listId = 'announcements';
+        $email = 'user@example.com';
 
-        $input = new ArrayInput([
-            SubscribeCommand::ARG_LIST_ID => 'announcements',
-            SubscribeCommand::ARG_EMAIL => 'user@example.com',
-        ]);
+        $mailChimpService = \Mockery::mock(Service::class);
+        $mailChimpService
+            ->shouldReceive('subscribe')
+            ->once()
+            ->with($listId, $email)
+            ->andReturn(true);
 
-        $returnValue = $this->subscribeCommand->run($input, new NullOutput());
+        $this->setMailChimpServiceOnSubscribeCommand($mailChimpService);
+
+        $returnValue = $this->subscribeCommand->run($this->createInput($listId, $email), new NullOutput());
 
         $this->assertEquals(0, $returnValue);
+    }
+
+    /**
+     * @dataProvider runSubscribeIsNotCalledDataProvider
+     */
+    public function testRunSubscribeIsNotCalled(?string $listId, ?string $email)
+    {
+        $mailChimpService = \Mockery::mock(Service::class);
+        $mailChimpService
+            ->shouldNotReceive('subscribe')
+            ->with($listId, $email);
+
+        $this->setMailChimpServiceOnSubscribeCommand($mailChimpService);
+
+        $returnValue = $this->subscribeCommand->run($this->createInput($listId, $email), new NullOutput());
+
+        $this->assertEquals(0, $returnValue);
+    }
+
+    public function runSubscribeIsNotCalledDataProvider(): array
+    {
+        return [
+            'null listId, null email' => [
+                'listId' => null,
+                'email' => null,
+            ],
+            'empty listId, empty email' => [
+                'listId' => '',
+                'email' => '',
+            ],
+        ];
+    }
+
+    private function createInput(?string $listId, ?string $email): InputInterface
+    {
+        return new ArrayInput([
+            SubscribeCommand::ARG_LIST_ID => $listId,
+            SubscribeCommand::ARG_EMAIL => $email,
+        ]);
+    }
+
+    private function setMailChimpServiceOnSubscribeCommand(Service $mailChimpService)
+    {
+        ObjectReflector::setProperty(
+            $this->subscribeCommand,
+            AbstractEmailListCommand::class,
+            'mailChimpService',
+            $mailChimpService
+        );
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        \Mockery::close();
     }
 }
