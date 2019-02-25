@@ -56,24 +56,20 @@ class Service
      * @param string $listName
      * @param string $email
      *
-     * @return bool
-     *
      * @throws UnknownException
      * @throws ResourceNotFoundException
      */
-    public function unsubscribe($listName, $email)
+    public function unsubscribe(string $listName, string $email)
     {
         $listRecipients = $this->listRecipientsService->get($listName);
         if (!$listRecipients->contains($email)) {
-            return true;
+            return;
         }
 
         $this->fooClient->removeListMember(
             $this->listRecipientsService->getListId($listName),
             $email
         );
-
-        return true;
     }
 
     /**
