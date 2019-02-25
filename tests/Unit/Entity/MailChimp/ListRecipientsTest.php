@@ -92,7 +92,7 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($this->listRecipients->contains($recipient));
     }
 
-    public function testSetRecipients()
+    public function testAddRecipients()
     {
         $recipients = [
             'user1@example.com',
@@ -110,7 +110,7 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
             $this->assertFalse($this->listRecipients->contains($recipient));
         }
 
-        $this->listRecipients->setRecipients($recipients);
+        $this->listRecipients->addRecipients($recipients);
 
         foreach ($recipients as $recipient) {
             $this->assertTrue($this->listRecipients->contains($recipient));

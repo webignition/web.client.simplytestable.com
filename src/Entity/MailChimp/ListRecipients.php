@@ -34,7 +34,7 @@ class ListRecipients
         $listRecipients = new static();
 
         $listRecipients->listId = $listId;
-        $listRecipients->setRecipients($recipients);
+        $listRecipients->addRecipients($recipients);
 
         return $listRecipients;
     }
@@ -66,7 +66,7 @@ class ListRecipients
      * @param array $recipients
      * @return ListRecipients
      */
-    public function setRecipients($recipients)
+    public function addRecipients($recipients)
     {
         foreach ($recipients as $recipient) {
             $this->addRecipient($recipient);
