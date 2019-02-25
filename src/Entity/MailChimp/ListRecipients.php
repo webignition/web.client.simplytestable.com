@@ -68,7 +68,7 @@ class ListRecipients
      */
     public function contains($recipient)
     {
-        return in_array($recipient, $this->getRecipients());
+        return in_array($recipient, $this->recipients);
     }
 
     public function addRecipient(string $recipient)
@@ -86,7 +86,7 @@ class ListRecipients
     public function removeRecipient($recipient)
     {
         if ($this->contains($recipient)) {
-            unset($this->recipients[array_search($recipient, $this->getRecipients())]);
+            unset($this->recipients[array_search($recipient, $this->recipients)]);
         }
 
         return $this;
@@ -99,6 +99,6 @@ class ListRecipients
      */
     public function count()
     {
-        return count($this->getRecipients());
+        return count($this->recipients);
     }
 }
