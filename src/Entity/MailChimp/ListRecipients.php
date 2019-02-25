@@ -58,7 +58,9 @@ class ListRecipients
      */
     public function setRecipients($recipients)
     {
-        $this->recipients = $recipients;
+        foreach ($recipients as $recipient) {
+            $this->addRecipient($recipient);
+        }
 
         return $this;
     }

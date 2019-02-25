@@ -67,6 +67,12 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         $recipients = [
             'user1@example.com',
             'user2@example.com',
+            'user1@example.com',
+            'user2@example.com',
+        ];
+
+        $expectedRecipients = [
+            'user1@example.com',
             'user2@example.com',
         ];
 
@@ -79,5 +85,7 @@ class ListRecipientsTest extends \PHPUnit\Framework\TestCase
         foreach ($recipients as $recipient) {
             $this->assertTrue($this->listRecipients->contains($recipient));
         }
+
+        $this->assertEquals($expectedRecipients, $this->listRecipients->getRecipients());
     }
 }
