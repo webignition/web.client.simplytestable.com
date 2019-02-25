@@ -29,6 +29,15 @@ class TimePeriod implements \JsonSerializable
      */
     protected $endDateTime;
 
+    public static function create(?\DateTime $startDateTime, ?\DateTime $endDateTime): TimePeriod
+    {
+        $timePeriod = new static();
+        $timePeriod->startDateTime = $startDateTime;
+        $timePeriod->endDateTime = $endDateTime;
+
+        return $timePeriod;
+    }
+
     /**
      * @return integer
      */
