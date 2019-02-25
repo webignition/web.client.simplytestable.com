@@ -11,21 +11,9 @@ class Service
 {
     const LIST_MEMBERS_MAX_LIMIT = 100;
 
-    /**
-     *
-     * @var ListRecipientsService
-     */
     private $listRecipientsService;
-
-    /**
-     * @var MailChimpClient
-     */
     private $fooClient;
 
-    /**
-     * @param MailChimpClient $fooMailChimpClient
-     * @param ListRecipientsService $listRecipientsService
-     */
     public function __construct(MailChimpClient $fooMailChimpClient, ListRecipientsService $listRecipientsService)
     {
         $this->fooClient = $fooMailChimpClient;
