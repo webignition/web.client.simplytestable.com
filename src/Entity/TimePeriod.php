@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -19,68 +20,43 @@ class TimePeriod implements \JsonSerializable
 
     /**
      * @var \DateTime
+     *
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $startDateTime;
 
     /**
      * @var \DateTime
+     *
      * @ORM\Column(type="datetime", nullable=true)
      */
     protected $endDateTime;
 
-    /**
-     * @return integer
-     */
-    public function getId()
+    public static function create(?\DateTime $startDateTime, ?\DateTime $endDateTime): TimePeriod
     {
-        return $this->id;
+        $timePeriod = new static();
+        $timePeriod->startDateTime = $startDateTime;
+        $timePeriod->endDateTime = $endDateTime;
+
+        return $timePeriod;
     }
 
-    /**
-     * @param \DateTime $startDateTime
-     *
-     * @return TimePeriod
-     */
-    public function setStartDateTime($startDateTime)
+    public static function fromTimePeriod(TimePeriod $source): TimePeriod
     {
-        $this->startDateTime = $startDateTime;
-
-        return $this;
+        return static::create($source->getStartDateTime(), $source->getEndDateTime());
     }
 
-    /**
-     * @return \DateTime
-     */
-    public function getStartDateTime()
+    public function getStartDateTime(): ?\DateTime
     {
         return $this->startDateTime;
     }
 
-    /**
-     * @param \DateTime $endDateTime
-     *
-     * @return TimePeriod
-     */
-    public function setEndDateTime($endDateTime)
-    {
-        $this->endDateTime = $endDateTime;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getEndDateTime()
+    public function getEndDateTime(): ?\DateTime
     {
         return $this->endDateTime;
     }
 
-    /**
-     * @return array
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $timePeriodData = [];
 

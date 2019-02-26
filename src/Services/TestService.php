@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entity\TimePeriod;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
@@ -139,10 +140,6 @@ class TestService
         return $test;
     }
 
-    /**
-     * @param Test $test
-     * @param RemoteTest $remoteTest
-     */
     private function hydrateFromRemoteTest(Test $test, RemoteTest $remoteTest)
     {
         $test->setUser($remoteTest->getUser());
@@ -156,8 +153,7 @@ class TestService
         $remoteTimePeriod = $remoteTest->getTimePeriod();
 
         if (!is_null($remoteTimePeriod)) {
-            $test->getTimePeriod()->setStartDateTime($remoteTimePeriod->getStartDateTime());
-            $test->getTimePeriod()->setEndDateTime($remoteTimePeriod->getEndDateTime());
+            $test->setTimePeriod(TimePeriod::fromTimePeriod($remoteTimePeriod));
         }
     }
 

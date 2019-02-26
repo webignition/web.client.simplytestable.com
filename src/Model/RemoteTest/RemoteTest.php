@@ -67,28 +67,20 @@ class RemoteTest extends AbstractArrayBasedModel
         return empty($taskCount) ? 0 : $taskCount;
     }
 
-    /**
-     * @return TimePeriod|null
-     */
-    public function getTimePeriod()
+    public function getTimePeriod(): ?TimePeriod
     {
-        if (!$this->hasProperty('time_period')) {
+        $remoteTimePeriodData = $this->getProperty('time_period');
+        if (null === $remoteTimePeriodData) {
             return null;
         }
 
-        $remoteTimePeriodData = $this->getProperty('time_period');
+        $startDateTimeValue = $remoteTimePeriodData['start_date_time'] ?? null;
+        $endDateTimeValue = $remoteTimePeriodData['end_date_time'] ?? null;
 
-        $timePeriod = new TimePeriod();
-
-        if (array_key_exists('start_date_time', $remoteTimePeriodData)) {
-            $timePeriod->setStartDateTime(new \DateTime($remoteTimePeriodData['start_date_time']));
-        }
-
-        if (array_key_exists('end_date_time', $remoteTimePeriodData)) {
-            $timePeriod->setEndDateTime(new \DateTime($remoteTimePeriodData['end_date_time']));
-        }
-
-        return $timePeriod;
+        return TimePeriod::create(
+            $startDateTimeValue ? new \DateTime($startDateTimeValue) : null,
+            $endDateTimeValue ? new \DateTime($endDateTimeValue) : null
+        );
     }
 
     /**
