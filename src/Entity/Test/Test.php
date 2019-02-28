@@ -172,10 +172,7 @@ class Test implements \JsonSerializable
         $this->state = $state;
     }
 
-    /**
-     * @return string
-     */
-    public function getState()
+    public function getState(): ?string
     {
         return $this->state;
     }
