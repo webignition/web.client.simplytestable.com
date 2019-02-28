@@ -205,11 +205,6 @@ class Test implements \JsonSerializable
         return $this->testId;
     }
 
-    public function clearTasks()
-    {
-        $this->tasks = new ArrayCollection();
-    }
-
     /**
      * @return int[]
      */
