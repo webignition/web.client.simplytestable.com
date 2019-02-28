@@ -151,16 +151,6 @@ class Test implements \JsonSerializable
     }
 
     /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
      * @param string $user
      *
      * @return Test
