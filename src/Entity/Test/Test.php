@@ -247,7 +247,7 @@ class Test implements \JsonSerializable
     {
         $errorCount = 0;
 
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->tasks as $task) {
             /* @var $task Task */
             if ($task->hasOutput()) {
                 $errorCount += $task->getOutput()->getErrorCount();
@@ -271,7 +271,7 @@ class Test implements \JsonSerializable
     {
         $warningCount = 0;
 
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->tasks as $task) {
             /* @var $task Task */
             if ($task->hasOutput()) {
                 $warningCount += $task->getOutput()->getWarningCount();
@@ -285,7 +285,7 @@ class Test implements \JsonSerializable
     {
         $count = 0;
 
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->tasks as $task) {
             /* @var $task Task */
             if ($task->hasOutput() && $task->getType() == $type) {
                 $count += $task->getOutput()->getErrorCount();
@@ -299,7 +299,7 @@ class Test implements \JsonSerializable
     {
         $count = 0;
 
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->tasks as $task) {
             /* @var $task Task */
             if ($task->hasOutput() && $task->getType() == $type) {
                 $count += $task->getOutput()->getWarningCount();
@@ -311,7 +311,7 @@ class Test implements \JsonSerializable
 
     public function getFormattedWebsite(): string
     {
-        return rawurldecode($this->getWebsite());
+        return rawurldecode((string) $this->website);
     }
 
     public function jsonSerialize(): array
