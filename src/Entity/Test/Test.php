@@ -123,7 +123,7 @@ class Test implements \JsonSerializable
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
-        $this->taskIds = new ArrayCollection();
+        $this->taskIds = [];
         $this->timePeriod = new TimePeriod();
     }
 
@@ -208,17 +208,19 @@ class Test implements \JsonSerializable
     /**
      * @return int[]
      */
-    public function getTaskIds()
+    public function getTaskIds(): array
     {
         if (is_null($this->taskIds)) {
-            if (is_null($this->getTaskIdCollection()) || $this->getTaskIdCollection() == '') {
+            $this->taskIds = [];
+
+            $taskIdCollection = $this->getTaskIdCollection();
+
+            if (!empty($taskIdCollection)) {
                 $this->taskIds = [];
-            } else {
-                $this->taskIds = [];
-                $rawTaskIds = explode(',', $this->getTaskIdCollection());
+                $rawTaskIds = explode(',', $taskIdCollection);
 
                 foreach ($rawTaskIds as $rawTaskId) {
-                    $this->taskIds[] = (int)$rawTaskId;
+                    $this->taskIds[] = (int) $rawTaskId;
                 }
             }
         }
