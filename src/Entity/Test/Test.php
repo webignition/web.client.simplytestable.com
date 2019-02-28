@@ -200,16 +200,9 @@ class Test implements \JsonSerializable
         $this->timePeriod = $timePeriod;
     }
 
-    /**
-     * @param integer $testId
-     *
-     * @return Test
-     */
-    public function setTestId($testId)
+    public function setTestId(int $testId)
     {
         $this->testId = $testId;
-
-        return $this;
     }
 
     /**

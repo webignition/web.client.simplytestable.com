@@ -117,7 +117,7 @@ class TestService
 
         if (empty($test)) {
             $test = new Test();
-            $test->setTestId($testId);
+            $test->setTestId((int) $testId);
             $test->setWebsite(new NormalisedUrl($canonicalUrl));
         }
 

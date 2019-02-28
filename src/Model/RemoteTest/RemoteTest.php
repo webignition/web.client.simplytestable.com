@@ -316,7 +316,7 @@ class RemoteTest extends AbstractArrayBasedModel
      */
     public function getId()
     {
-        return $this->getProperty('id');
+        return (int) $this->getProperty('id');
     }
 
     /**
