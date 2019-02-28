@@ -9,6 +9,7 @@ use App\Entity\TimePeriod;
 use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
+use App\Tests\Services\ObjectReflector;
 
 class TestServiceTest extends AbstractCoreApplicationServiceTest
 {
@@ -118,7 +119,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
             $this->assertEquals($expectedTestValues['website'], $test->getWebsite());
             $this->assertEquals($expectedTestValues['urlCount'], $test->getUrlCount());
             $this->assertEquals($expectedTestValues['type'], $test->getType());
-            $this->assertEquals($expectedTestValues['taskTypes'], $test->getTaskTypes());
+            $this->assertEquals($expectedTestValues['taskTypes'], ObjectReflector::getProperty($test, 'taskTypes'));
 
             $timePeriod = $test->getTimePeriod();
 

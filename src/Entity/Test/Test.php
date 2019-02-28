@@ -182,14 +182,6 @@ class Test implements \JsonSerializable
         $this->taskTypes = $taskTypes;
     }
 
-    /**
-     * @return DoctrineCollection|string[]
-     */
-    public function getTaskTypes()
-    {
-        return $this->taskTypes;
-    }
-
     public function addTask(Task $task)
     {
         $this->tasks[] = $task;
