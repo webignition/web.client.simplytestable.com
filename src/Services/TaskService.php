@@ -320,7 +320,7 @@ class TaskService
         }
 
         if (!$test->hasTaskIds()) {
-            $test->setTaskIdColletion(implode(',', $this->retrieveRemoteTaskIds($test)));
+            $test->setTaskIdCollection(implode(',', $this->retrieveRemoteTaskIds($test)));
 
             $this->entityManager->persist($test);
             $this->entityManager->flush();
