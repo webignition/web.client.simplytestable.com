@@ -203,16 +203,9 @@ class Test implements \JsonSerializable
         return $this->tasks;
     }
 
-    /**
-     * @param TimePeriod $timePeriod
-     *
-     * @return Test
-     */
-    public function setTimePeriod(TimePeriod $timePeriod = null)
+    public function setTimePeriod(TimePeriod $timePeriod)
     {
         $this->timePeriod = $timePeriod;
-
-        return $this;
     }
 
     /**
