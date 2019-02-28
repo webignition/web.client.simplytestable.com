@@ -311,7 +311,7 @@ class Test implements \JsonSerializable
 
     public function getFormattedWebsite(): string
     {
-        return rawurldecode($this->getWebsite());
+        return rawurldecode((string) $this->website);
     }
 
     public function jsonSerialize(): array
