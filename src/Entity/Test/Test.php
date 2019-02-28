@@ -187,16 +187,9 @@ class Test implements \JsonSerializable
         return $this->state;
     }
 
-    /**
-     * @param array $taskTypes
-     *
-     * @return Test
-     */
-    public function setTaskTypes($taskTypes)
+    public function setTaskTypes(array $taskTypes)
     {
         $this->taskTypes = $taskTypes;
-
-        return $this;
     }
 
     /**
