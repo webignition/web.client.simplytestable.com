@@ -201,14 +201,6 @@ class Test implements \JsonSerializable
     }
 
     /**
-     * @return TimePeriod
-     */
-    public function getTimePeriod()
-    {
-        return $this->timePeriod;
-    }
-
-    /**
      * @param integer $testId
      *
      * @return Test

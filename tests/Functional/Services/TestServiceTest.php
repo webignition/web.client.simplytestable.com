@@ -121,7 +121,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
             $this->assertEquals($expectedTestValues['type'], $test->getType());
             $this->assertEquals($expectedTestValues['taskTypes'], ObjectReflector::getProperty($test, 'taskTypes'));
 
-            $timePeriod = $test->getTimePeriod();
+            $timePeriod = ObjectReflector::getProperty($test, 'timePeriod');
 
             $this->assertInstanceOf(TimePeriod::class, $timePeriod);
             $this->assertEquals($expectedTestValues['timePeriod']['startDateTime'], $timePeriod->getStartDateTime());
