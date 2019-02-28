@@ -120,7 +120,7 @@ class ProgressController extends AbstractBaseViewController
         $test = $this->testService->get($website, $test_id);
         $remoteTest = $this->remoteTestService->get();
 
-        $testWebsite = (string)$test->getWebsite();
+        $testWebsite = $test->getWebsite();
 
         if ($testWebsite !== $website) {
             return $this->createRedirectResponse(

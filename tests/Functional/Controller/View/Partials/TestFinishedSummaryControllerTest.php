@@ -137,7 +137,7 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
                             $test = $testData['test'];
                             $this->assertInstanceOf(Test::class, $test);
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
-                            $this->assertEquals(self::WEBSITE, (string)$test->getWebsite());
+                            $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
                             /* @var RemoteTest $remoteTest */
                             $remoteTest = $testData['remote_test'];
