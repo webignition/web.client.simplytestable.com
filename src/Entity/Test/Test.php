@@ -243,10 +243,7 @@ class Test implements \JsonSerializable
         $this->type = $type;
     }
 
-    /**
-     * @return int
-     */
-    public function getErrorCount()
+    public function getErrorCount(): int
     {
         $errorCount = 0;
 
@@ -260,10 +257,7 @@ class Test implements \JsonSerializable
         return $errorCount;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return $this->getErrorCount() > 0;
     }
