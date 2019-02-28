@@ -167,16 +167,9 @@ class Test implements \JsonSerializable
         return $this->website;
     }
 
-    /**
-     * @param string $state
-     *
-     * @return Test
-     */
-    public function setState($state)
+    public function setState(string $state)
     {
         $this->state = $state;
-
-        return $this;
     }
 
     /**
