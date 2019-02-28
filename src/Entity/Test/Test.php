@@ -238,16 +238,9 @@ class Test implements \JsonSerializable
         $this->taskIds = null;
     }
 
-    /**
-     * @param string $type
-     *
-     * @return Test
-     */
-    public function setType($type)
+    public function setType(string $type)
     {
         $this->type = $type;
-
-        return $this;
     }
 
     /**
