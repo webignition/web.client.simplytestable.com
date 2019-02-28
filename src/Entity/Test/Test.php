@@ -188,14 +188,6 @@ class Test implements \JsonSerializable
     }
 
     /**
-     * @param Task $task
-     */
-    public function removeTask(Task $task)
-    {
-        $this->tasks->removeElement($task);
-    }
-
-    /**
      * @return DoctrineCollection|Task[]
      */
     public function getTasks()
