@@ -169,10 +169,7 @@ class Test implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUser()
+    public function getUser(): ?string
     {
         return $this->user;
     }
