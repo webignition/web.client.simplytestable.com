@@ -125,6 +125,7 @@ class Test implements \JsonSerializable
         $this->tasks = new ArrayCollection();
         $this->taskIds = [];
         $this->timePeriod = new TimePeriod();
+        $this->taskIdCollection = '';
     }
 
     public function getTaskCount(): int
@@ -213,11 +214,9 @@ class Test implements \JsonSerializable
         if (is_null($this->taskIds)) {
             $this->taskIds = [];
 
-            $taskIdCollection = $this->getTaskIdCollection();
-
-            if (!empty($taskIdCollection)) {
+            if (!empty($this->taskIdCollection)) {
                 $this->taskIds = [];
-                $rawTaskIds = explode(',', $taskIdCollection);
+                $rawTaskIds = explode(',', $this->taskIdCollection);
 
                 foreach ($rawTaskIds as $rawTaskId) {
                     $this->taskIds[] = (int) $rawTaskId;
@@ -237,14 +236,6 @@ class Test implements \JsonSerializable
     {
         $this->taskIdCollection = $taskIdCollection;
         $this->taskIds = null;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTaskIdCollection()
-    {
-        return $this->taskIdCollection;
     }
 
     /**
