@@ -276,18 +276,12 @@ class Test implements \JsonSerializable
         return $this->getErrorCount() > 0;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasWarnings()
+    public function hasWarnings(): bool
     {
         return $this->getWarningCount() > 0;
     }
 
-    /**
-     * @return int
-     */
-    public function getWarningCount()
+    public function getWarningCount(): int
     {
         $warningCount = 0;
 
