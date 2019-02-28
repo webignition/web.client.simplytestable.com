@@ -293,12 +293,7 @@ class Test implements \JsonSerializable
         return $warningCount;
     }
 
-    /**
-     * @param string $type
-     *
-     * @return int
-     */
-    public function getErrorCountByTaskType($type = '')
+    public function getErrorCountByTaskType(string $type): int
     {
         $count = 0;
 
