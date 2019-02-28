@@ -135,48 +135,6 @@ class Test implements \JsonSerializable
     /**
      * @return int
      */
-    public function getCompletionPercent()
-    {
-        if ($this->getState() == 'new') {
-            return 0;
-        }
-
-        if ($this->getState() == 'completed') {
-            return 100;
-        }
-
-        if ($this->getTaskCount() == 0) {
-            return 100;
-        }
-
-        return (floor($this->getFinishedTaskCount() / $this->getTaskCount() * 100));
-    }
-
-    /**
-     * @return int
-     */
-    private function getFinishedTaskCount()
-    {
-        $finishedTaskStates = array(
-            'completed',
-            'failed',
-            'failed-no-retry-available',
-            'failed-retry-available',
-            'failed-retry-limit-reached'
-        );
-
-        $finishedTaskCount = 0;
-
-        foreach ($finishedTaskStates as $finishedTaskState) {
-            $finishedTaskCount += $this->getTaskCountByState($finishedTaskState);
-        }
-
-        return $finishedTaskCount;
-    }
-
-    /**
-     * @return int
-     */
     public function getTaskCount()
     {
         return count($this->tasks);
