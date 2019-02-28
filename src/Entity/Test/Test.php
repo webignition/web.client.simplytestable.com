@@ -120,11 +120,6 @@ class Test implements \JsonSerializable
      */
     private $urlCount = null;
 
-    /**
-     * @var array
-     */
-    private $taskIdIndex;
-
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
@@ -223,16 +218,6 @@ class Test implements \JsonSerializable
     /**
      * @param Task $task
      *
-     * @return bool
-     */
-    public function hasTask(Task $task)
-    {
-        return array_key_exists($task->getTaskId(), $this->getTaskIdIndex());
-    }
-
-    /**
-     * @param Task $task
-     *
      * @return Task|false
      */
     public function getTask(Task $task)
@@ -249,21 +234,6 @@ class Test implements \JsonSerializable
         }
 
         return false;
-    }
-
-    /**
-     * @return int[]
-     */
-    private function getTaskIdIndex()
-    {
-        if (is_null($this->taskIdIndex)) {
-            $this->taskIdIndex = [];
-            foreach ($this->getTasks() as $task) {
-                $this->taskIdIndex[$task->getTaskId()] = true;
-            }
-        }
-
-        return $this->taskIdIndex;
     }
 
     public function clearTasks()
