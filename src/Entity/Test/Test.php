@@ -226,12 +226,9 @@ class Test implements \JsonSerializable
         return $this->taskIds;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasTaskIds()
+    public function hasTaskIds(): bool
     {
-        return count($this->getTaskIds()) > 0;
+        return !empty($this->taskIdCollection);
     }
 
     /**
