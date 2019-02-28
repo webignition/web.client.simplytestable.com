@@ -238,7 +238,7 @@ class Test implements \JsonSerializable
      *
      * @return Test
      */
-    public function setTaskIdColletion($taskIdCollection)
+    public function setTaskIdCollection($taskIdCollection)
     {
         $this->taskIdCollection = $taskIdCollection;
         $this->taskIds = null;

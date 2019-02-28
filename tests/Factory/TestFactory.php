@@ -68,7 +68,7 @@ class TestFactory
         }
 
         if (isset($testValues[self::KEY_TASK_IDS])) {
-            $test->setTaskIdColletion($testValues[self::KEY_TASK_IDS]);
+            $test->setTaskIdCollection($testValues[self::KEY_TASK_IDS]);
         }
 
         if (isset($testValues[self::KEY_TASK_TYPES])) {
