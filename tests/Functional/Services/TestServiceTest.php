@@ -118,7 +118,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
             $this->assertEquals($expectedTestValues['state'], $test->getState());
             $this->assertEquals($expectedTestValues['website'], $test->getWebsite());
             $this->assertEquals($expectedTestValues['urlCount'], $test->getUrlCount());
-            $this->assertEquals($expectedTestValues['type'], $test->getType());
+            $this->assertEquals($expectedTestValues['type'], ObjectReflector::getProperty($test, 'type'));
             $this->assertEquals($expectedTestValues['taskTypes'], ObjectReflector::getProperty($test, 'taskTypes'));
 
             $timePeriod = ObjectReflector::getProperty($test, 'timePeriod');

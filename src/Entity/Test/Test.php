@@ -244,14 +244,6 @@ class Test implements \JsonSerializable
     }
 
     /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
      * @return int
      */
     public function getErrorCount()
