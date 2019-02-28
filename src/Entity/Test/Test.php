@@ -123,7 +123,7 @@ class Test implements \JsonSerializable
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
-        $this->taskIds = new ArrayCollection();
+        $this->taskIds = [];
         $this->timePeriod = new TimePeriod();
     }
 
