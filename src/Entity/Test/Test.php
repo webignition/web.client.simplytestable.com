@@ -258,7 +258,7 @@ class Test implements \JsonSerializable
         return $this->type;
     }
 
-    private function getErrorCount(): int
+    public function getErrorCount(): int
     {
         $errorCount = 0;
 
