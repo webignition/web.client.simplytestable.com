@@ -157,16 +157,9 @@ class Test implements \JsonSerializable
         return $this->user;
     }
 
-    /**
-     * @param NormalisedUrl $website
-     *
-     * @return Test
-     */
     public function setWebsite(NormalisedUrl $website)
     {
         $this->website = $website;
-
-        return $this;
     }
 
     /**
