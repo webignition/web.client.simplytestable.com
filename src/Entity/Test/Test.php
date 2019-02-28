@@ -220,10 +220,7 @@ class Test implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getTestId()
+    public function getTestId(): ?int
     {
         return $this->testId;
     }
