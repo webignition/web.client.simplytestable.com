@@ -132,10 +132,7 @@ class Test implements \JsonSerializable
         $this->timePeriod = new TimePeriod();
     }
 
-    /**
-     * @return int
-     */
-    public function getTaskCount()
+    public function getTaskCount(): int
     {
         return count($this->tasks);
     }
