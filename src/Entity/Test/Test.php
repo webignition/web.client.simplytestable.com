@@ -327,10 +327,7 @@ class Test implements \JsonSerializable
         return rawurldecode($this->getWebsite());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,
