@@ -179,10 +179,7 @@ class Test implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return NormalisedUrl
-     */
-    public function getWebsite()
+    public function getWebsite(): ?NormalisedUrl
     {
         return $this->website;
     }
