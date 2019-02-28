@@ -147,16 +147,9 @@ class Test implements \JsonSerializable
         return $this->urlCount;
     }
 
-    /**
-     * @param string $user
-     *
-     * @return Test
-     */
-    public function setUser($user)
+    public function setUser(string $user)
     {
         $this->user = $user;
-
-        return $this;
     }
 
     /**
