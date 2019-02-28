@@ -118,7 +118,7 @@ class Test implements \JsonSerializable
     /**
      * @var int
      */
-    private $urlCount;
+    private $urlCount = null;
 
     /**
      * @var array
@@ -142,10 +142,7 @@ class Test implements \JsonSerializable
         $this->urlCount = $urlCount;
     }
 
-    /**
-     * @return int
-     */
-    public function getUrlCount()
+    public function getUrlCount(): ?int
     {
         return $this->urlCount;
     }
