@@ -161,15 +161,9 @@ class Test implements \JsonSerializable
         return $total;
     }
 
-    /**
-     * @param int $urlCount
-     *
-     * @return Test
-     */
-    public function setUrlCount($urlCount)
+    public function setUrlCount(? int $urlCount)
     {
         $this->urlCount = $urlCount;
-        return $this;
     }
 
     /**
