@@ -205,27 +205,6 @@ class Test implements \JsonSerializable
         return $this->testId;
     }
 
-    /**
-     * @param Task $task
-     *
-     * @return Task|false
-     */
-    public function getTask(Task $task)
-    {
-        foreach ($this->getTasks() as $comparatorTask) {
-            $urlsAreEqual = $comparatorTask->getUrl() == $task->getUrl();
-            $typesAreEqual = $comparatorTask->getType() == $task->getType();
-            $taskIdsAreEqual = $comparatorTask->getTaskId() == $task->getTaskId();
-
-            /* @var $comparatorTask Task */
-            if ($urlsAreEqual && $typesAreEqual && $taskIdsAreEqual) {
-                return $comparatorTask;
-            }
-        }
-
-        return false;
-    }
-
     public function clearTasks()
     {
         $this->tasks = new ArrayCollection();
