@@ -319,10 +319,7 @@ class Test implements \JsonSerializable
         return $count;
     }
 
-    /**
-     * @return string
-     */
-    public function getFormattedWebsite()
+    public function getFormattedWebsite(): string
     {
         return rawurldecode($this->getWebsite());
     }
