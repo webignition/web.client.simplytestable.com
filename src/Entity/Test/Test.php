@@ -137,27 +137,6 @@ class Test implements \JsonSerializable
         return count($this->tasks);
     }
 
-    /**
-     * @param string $state
-     *
-     * @return int
-     */
-    public function getTaskCountByState($state)
-    {
-        if ($this->getTaskCount() == 0) {
-            return 0;
-        }
-
-        $total = 0;
-        foreach ($this->getTasks() as $task) {
-            if ($task->getState() == $state) {
-                $total++;
-            }
-        }
-
-        return $total;
-    }
-
     public function setUrlCount(? int $urlCount)
     {
         $this->urlCount = $urlCount;
