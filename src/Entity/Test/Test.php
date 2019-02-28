@@ -233,17 +233,10 @@ class Test implements \JsonSerializable
         return !empty($this->taskIdCollection);
     }
 
-    /**
-     * @param string $taskIdCollection
-     *
-     * @return Test
-     */
-    public function setTaskIdCollection($taskIdCollection)
+    public function setTaskIdCollection(string $taskIdCollection)
     {
         $this->taskIdCollection = $taskIdCollection;
         $this->taskIds = null;
-
-        return $this;
     }
 
     /**
