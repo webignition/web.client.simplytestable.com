@@ -51,16 +51,24 @@ class PreparingStatsController extends AbstractBaseViewController
     public function indexAction($website, $test_id)
     {
         $test = $this->testService->get($website, $test_id);
+
+        $completionPercent = 0;
+        $remainingTasksToRetrieveCount = 0;
+        $localTaskCount = 0;
+        $remoteTaskCount = 0;
+
         $remoteTest = $this->remoteTestService->get();
 
-        $localTaskCount = $test->getTaskCount();
-        $remoteTaskCount = $remoteTest->getTaskCount();
+        if (!empty($remoteTest)) {
+            $localTaskCount = $test->getTaskCount();
+            $remoteTaskCount = $remoteTest->getTaskCount();
 
-        $completionPercent = 0 === $remoteTaskCount
-            ? 100
-            : round(($localTaskCount / $remoteTaskCount) * 100);
+            $completionPercent = 0 === $remoteTaskCount
+                ? 100
+                : round(($localTaskCount / $remoteTaskCount) * 100);
 
-        $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
+            $remainingTasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
+        }
 
         return $this->createJsonResponse(
             $test_id,
