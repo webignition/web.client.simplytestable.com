@@ -145,9 +145,9 @@ class RemoteTestService
      *
      * @throws CoreApplicationRequestException
      */
-    public function owns(UserInterface $user)
+    public function owns(UserInterface $user): bool
     {
-        if ($user->getUsername() == $this->test->getUser()) {
+        if ($user->getUsername() === $this->test->getUser()) {
             return true;
         }
 
