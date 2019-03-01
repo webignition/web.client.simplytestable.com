@@ -322,7 +322,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getFinishedWebsites()
+    public function getFinishedWebsites(): array
     {
         $response = $this->coreApplicationHttpClient->get(
             'tests_list_websites',
