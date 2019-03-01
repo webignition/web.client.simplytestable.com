@@ -65,7 +65,7 @@ class RemoteTestService
         $this->test = $test;
         $remoteTest = $this->get();
 
-        if ($remoteTest instanceof RemoteTest && $remoteTest->getId() != $test->getTestId()) {
+        if ($remoteTest instanceof RemoteTest && $remoteTest->getId() !== $test->getTestId()) {
             $this->remoteTest = null;
         }
     }
