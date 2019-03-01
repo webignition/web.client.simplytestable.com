@@ -340,7 +340,7 @@ class RemoteTestService
 
     public function getFinishedCount(?string $filter = null): int
     {
-        $finishedCount = null;
+        $finishedCount = 0;
 
         try {
             $response = $this->coreApplicationHttpClient->get(
