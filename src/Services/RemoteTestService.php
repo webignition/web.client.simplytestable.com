@@ -396,12 +396,7 @@ class RemoteTestService
         return $list;
     }
 
-    /**
-     * @param $canonicalUrl
-     *
-     * @return RemoteTest|null
-     */
-    public function retrieveLatest($canonicalUrl)
+    public function retrieveLatest(string $canonicalUrl): ?RemoteTest
     {
         $remoteTest = null;
 
