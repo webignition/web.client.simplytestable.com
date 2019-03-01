@@ -338,14 +338,9 @@ class RemoteTestService
         return $this->jsonResponseHandler->handle($response);
     }
 
-    /**
-     * @param string|null $filter
-     *
-     * @return int
-     */
-    public function getFinishedCount($filter = null)
+    public function getFinishedCount(?string $filter = null): int
     {
-        $finishedCount = null;
+        $finishedCount = 0;
 
         try {
             $response = $this->coreApplicationHttpClient->get(
