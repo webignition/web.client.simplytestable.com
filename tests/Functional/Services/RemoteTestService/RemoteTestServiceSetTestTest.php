@@ -74,6 +74,12 @@ class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
                 ],
                 'expectedHasRemoteTest' => false,
             ],
+            'invalid remote test' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'expectedHasRemoteTest' => false,
+            ],
         ];
     }
 }
