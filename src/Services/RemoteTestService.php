@@ -82,8 +82,11 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function start($canonicalUrl, TestOptions $testOptions, $testType = Test::TYPE_FULL_SITE)
-    {
+    public function start(
+        string $canonicalUrl,
+        TestOptions $testOptions,
+        string $testType = Test::TYPE_FULL_SITE
+    ): RemoteTest {
         if ($testOptions->hasFeatureOptions('cookies')) {
             $cookieDomain = $this->registerableDomainService->getRegisterableDomain($canonicalUrl);
 
@@ -112,11 +115,7 @@ class RemoteTestService
         return new RemoteTest($responseData);
     }
 
-    /**
-     * @param TestOptions $testOptions
-     * @param string $domain
-     */
-    private function setCustomCookieDomain(TestOptions $testOptions, $domain)
+    private function setCustomCookieDomain(TestOptions $testOptions, string $domain)
     {
         $cookieOptions = $testOptions->getFeatureOptions('cookies');
         $cookies = $cookieOptions['cookies'];
