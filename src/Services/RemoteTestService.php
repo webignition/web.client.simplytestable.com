@@ -304,7 +304,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getFinished($limit, $offset, $filter = null)
+    public function getFinished(int $limit, int $offset, ?string $filter = null): TestList
     {
         return $this->getList([
             'limit' => $limit,
@@ -378,7 +378,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    private function getList(array $routeParameters)
+    private function getList(array $routeParameters): TestList
     {
         $list = new TestList();
 
