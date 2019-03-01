@@ -341,6 +341,17 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
                 'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
+            'invalid remote test' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::create(200),
+                ],
+                'user' => SystemUserService::getPublicUser(),
+                'request' => new Request(),
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
+                'expectedRedirectUrl' => '/',
+                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+            ],
         ];
     }
 

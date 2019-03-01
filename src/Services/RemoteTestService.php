@@ -15,35 +15,19 @@ use webignition\SimplyTestableUserInterface\UserInterface;
 class RemoteTestService
 {
     /**
-     * @var RemoteTest
+     * @var RemoteTest|null
      */
     private $remoteTest = null;
 
     /**
-     * @var Test
+     * @var Test|null
      */
     private $test;
 
-    /**
-     * @var CoreApplicationHttpClient
-     */
     private $coreApplicationHttpClient;
-
-    /**
-     * @var JsonResponseHandler
-     */
     private $jsonResponseHandler;
-
-    /**
-     * @var RegisterableDomainService
-     */
     private $registerableDomainService;
 
-    /**
-     * @param CoreApplicationHttpClient $coreApplicationHttpClient
-     * @param JsonResponseHandler $jsonResponseHandler
-     * @param RegisterableDomainService $registerableDomainService
-     */
     public function __construct(
         CoreApplicationHttpClient $coreApplicationHttpClient,
         JsonResponseHandler $jsonResponseHandler,
@@ -65,7 +49,7 @@ class RemoteTestService
         $this->test = $test;
         $remoteTest = $this->get();
 
-        if ($remoteTest instanceof RemoteTest && $remoteTest->getId() != $test->getTestId()) {
+        if (empty($remoteTest) || ($remoteTest instanceof RemoteTest && $remoteTest->getId() !== $test->getTestId())) {
             $this->remoteTest = null;
         }
     }
@@ -82,8 +66,11 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function start($canonicalUrl, TestOptions $testOptions, $testType = 'full site')
-    {
+    public function start(
+        string $canonicalUrl,
+        TestOptions $testOptions,
+        string $testType = Test::TYPE_FULL_SITE
+    ): RemoteTest {
         if ($testOptions->hasFeatureOptions('cookies')) {
             $cookieDomain = $this->registerableDomainService->getRegisterableDomain($canonicalUrl);
 
@@ -112,11 +99,7 @@ class RemoteTestService
         return new RemoteTest($responseData);
     }
 
-    /**
-     * @param TestOptions $testOptions
-     * @param string $domain
-     */
-    private function setCustomCookieDomain(TestOptions $testOptions, $domain)
+    private function setCustomCookieDomain(TestOptions $testOptions, string $domain)
     {
         $cookieOptions = $testOptions->getFeatureOptions('cookies');
         $cookies = $cookieOptions['cookies'];
@@ -146,14 +129,18 @@ class RemoteTestService
      *
      * @throws CoreApplicationRequestException
      */
-    public function owns(UserInterface $user)
+    public function owns(UserInterface $user): bool
     {
-        if ($user->getUsername() == $this->test->getUser()) {
+        if ($user->getUsername() === $this->test->getUser()) {
             return true;
         }
 
         try {
             $remoteTest = $this->get();
+            if (empty($remoteTest)) {
+                return false;
+            }
+
             $owners = $remoteTest->getOwners();
 
             return $owners->contains($user->getUsername());
@@ -165,12 +152,12 @@ class RemoteTestService
     }
 
     /**
-     * @return bool|RemoteTest
+     * @return RemoteTest|null
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function get()
+    public function get(): ?RemoteTest
     {
         if (is_null($this->remoteTest)) {
             try {
@@ -185,16 +172,13 @@ class RemoteTestService
                 $remoteTestData = $this->jsonResponseHandler->handle($response);
                 $this->remoteTest = new RemoteTest($remoteTestData);
             } catch (InvalidContentTypeException $invalidContentTypeException) {
-                return false;
+                return null;
             }
         }
 
         return $this->remoteTest;
     }
 
-    /**
-     * @param RemoteTest $remoteTest
-     */
     public function set(RemoteTest $remoteTest)
     {
         $this->remoteTest = $remoteTest;
@@ -218,10 +202,10 @@ class RemoteTestService
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function cancelByTestProperties($testId, $website)
+    public function cancelByTestProperties(int $testId, string $website)
     {
         $this->coreApplicationHttpClient->post('test_cancel', [
-            'canonical_url' => (string)$website,
+            'canonical_url' => $website,
             'test_id' => $testId,
         ]);
     }
@@ -237,7 +221,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retest($testId, $website)
+    public function retest(int $testId, string $website): RemoteTest
     {
         $response = $this->coreApplicationHttpClient->post(
             'test_retest',
@@ -277,7 +261,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getRecent($limit = 3)
+    public function getRecent(int $limit = 3): TestList
     {
         return $this->getList([
             'limit' => $limit,
@@ -304,7 +288,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getFinished($limit, $offset, $filter = null)
+    public function getFinished(int $limit, int $offset, ?string $filter = null): TestList
     {
         return $this->getList([
             'limit' => $limit,
@@ -322,7 +306,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getFinishedWebsites()
+    public function getFinishedWebsites(): array
     {
         $response = $this->coreApplicationHttpClient->get(
             'tests_list_websites',
@@ -338,14 +322,9 @@ class RemoteTestService
         return $this->jsonResponseHandler->handle($response);
     }
 
-    /**
-     * @param string|null $filter
-     *
-     * @return int
-     */
-    public function getFinishedCount($filter = null)
+    public function getFinishedCount(?string $filter = null): int
     {
-        $finishedCount = null;
+        $finishedCount = 0;
 
         try {
             $response = $this->coreApplicationHttpClient->get(
@@ -378,7 +357,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    private function getList(array $routeParameters)
+    private function getList(array $routeParameters): TestList
     {
         $list = new TestList();
 
@@ -396,12 +375,7 @@ class RemoteTestService
         return $list;
     }
 
-    /**
-     * @param $canonicalUrl
-     *
-     * @return RemoteTest|null
-     */
-    public function retrieveLatest($canonicalUrl)
+    public function retrieveLatest(string $canonicalUrl): ?RemoteTest
     {
         $remoteTest = null;
 

@@ -180,6 +180,19 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
                     'remote_task_count' => 12,
                 ],
             ],
+            'invalid remote test' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::create(200),
+                ],
+                'testValues' => [],
+                'expectedResponseData' => [
+                    'id' => 1,
+                    'completion_percent' => 0,
+                    'remaining_tasks_to_retrieve_count' => 0,
+                    'local_task_count' => 0,
+                    'remote_task_count' => 0,
+                ],
+            ],
         ];
     }
 

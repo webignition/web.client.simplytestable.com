@@ -260,6 +260,15 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                 'testId' => 1,
                 'expectedTestValues' => null,
             ],
+            'has not locally, invalid remote test, do not create' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'testValues' => [],
+                'canonicalUrl' => 'http://example.com/',
+                'testId' => 1,
+                'expectedTestValues' => null,
+            ],
         ];
     }
 

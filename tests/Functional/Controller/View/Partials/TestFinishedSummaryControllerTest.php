@@ -95,6 +95,21 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
         $this->assertTrue($response->isSuccessful());
     }
 
+    public function testIndexActionInvalidRemoteTest()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        /* @var TestFinishedSummaryController $testFinishedSummaryController */
+        $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
+
+        $response = $testFinishedSummaryController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEmpty($response->getContent());
+    }
+
     /**
      * @dataProvider indexActionRenderDataProvider
      */

@@ -169,6 +169,16 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
+            'invalid remote test' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::create(200),
+                ],
+                'user' => SystemUserService::getPublicUser(),
+                'request' => new Request(),
+                'website' => self::WEBSITE,
+                'expectedRedirectUrl' => '/',
+                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+            ],
         ];
     }
 

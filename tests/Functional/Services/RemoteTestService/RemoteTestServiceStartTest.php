@@ -3,6 +3,7 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
+use App\Entity\Test\Test;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -129,7 +130,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                 'testOptions' => ModelFactory::createTestOptions(),
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
                 'expectedPostData' => [
-                    'type' => 'full site',
+                    'type' => Test::TYPE_FULL_SITE,
                 ],
             ],
             'custom cookies' => [
@@ -148,7 +149,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                 ]),
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
                 'expectedPostData' => [
-                    'type' => 'full site',
+                    'type' => Test::TYPE_FULL_SITE,
                     'parameters' => [
                         'cookies' => [
                             [
@@ -177,7 +178,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                 ]),
                 'expectedRequestUrl' => 'http://null/job/foo/start/',
                 'expectedPostData' => [
-                    'type' => 'full site',
+                    'type' => Test::TYPE_FULL_SITE,
                 ],
             ],
         ];

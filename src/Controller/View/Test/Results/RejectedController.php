@@ -84,6 +84,10 @@ class RejectedController extends AbstractBaseViewController
         $test = $this->testService->get($website, $test_id);
         $remoteTest = $this->remoteTestService->get();
 
+        if (empty($remoteTest)) {
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
+        }
+
         $cacheValidatorParameters = [
             'website' => $website,
             'test_id' => $test_id,
