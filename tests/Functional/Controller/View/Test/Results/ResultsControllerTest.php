@@ -426,6 +426,17 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
                 ],
             ],
+            'invalid remote test' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createSuccessResponse(),
+                ],
+                'user' => SystemUserService::getPublicUser(),
+                'request' => new Request(),
+                'expectedRedirectUrl' => '/',
+                'expectedRequestUrls' => [
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                ],
+            ],
         ];
     }
 
@@ -860,7 +871,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
-        $this->assertInternalType('array', $parameters['website']);
+        $this->assertIsArray($parameters['website']);
 
         /* @var Test $test */
         $test = $parameters['test'];
@@ -880,9 +891,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
             'link-integrity',
         ], array_keys($parameters['task_types']));
 
-        $this->assertInternalType('array', $parameters['test_options']);
-        $this->assertInternalType('array', $parameters['css_validation_ignore_common_cdns']);
-        $this->assertInternalType('array', $parameters['default_css_validation_options']);
+        $this->assertIsArray($parameters['test_options']);
+        $this->assertIsArray($parameters['css_validation_ignore_common_cdns']);
+        $this->assertIsArray($parameters['default_css_validation_options']);
     }
 
     private function assertViewParameterKeys(array $parameters)

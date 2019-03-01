@@ -7,6 +7,7 @@ use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
+use App\Model\RemoteTest\RemoteTest;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -124,9 +125,11 @@ class TestController extends AbstractController
         try {
             $test = $this->testService->get($website, $test_id);
             $remoteTest = $this->remoteTestService->get();
-            $crawlData = $remoteTest->getCrawl();
 
-            $this->remoteTestService->cancelByTestProperties($crawlData['id'], $test->getWebsite());
+            if ($remoteTest instanceof RemoteTest) {
+                $crawlData = $remoteTest->getCrawl();
+                $this->remoteTestService->cancelByTestProperties($crawlData['id'], $test->getWebsite());
+            }
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             // Nothing happens, we redirect to the test progress page regardless
         } catch (InvalidCredentialsException $invalidCredentialsException) {

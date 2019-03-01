@@ -65,7 +65,7 @@ class RemoteTestService
         $this->test = $test;
         $remoteTest = $this->get();
 
-        if ($remoteTest instanceof RemoteTest && $remoteTest->getId() !== $test->getTestId()) {
+        if (empty($remoteTest) || ($remoteTest instanceof RemoteTest && $remoteTest->getId() !== $test->getTestId())) {
             $this->remoteTest = null;
         }
     }
@@ -153,6 +153,10 @@ class RemoteTestService
 
         try {
             $remoteTest = $this->get();
+            if (empty($remoteTest)) {
+                return false;
+            }
+
             $owners = $remoteTest->getOwners();
 
             return $owners->contains($user->getUsername());

@@ -113,4 +113,13 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
 
         $this->assertTrue($this->remoteTestService->owns($this->user));
     }
+
+    public function testOwnsInvalidRemoteTest()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createSuccessResponse(),
+        ]);
+
+        $this->assertFalse($this->remoteTestService->owns($this->user));
+    }
 }
