@@ -108,7 +108,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 
         $remoteTest = $this->remoteTestService->get();
 
-        $this->assertFalse($remoteTest);
+        $this->assertNull($remoteTest);
     }
 
     public function testGetSuccess()
