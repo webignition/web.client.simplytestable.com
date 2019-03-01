@@ -115,11 +115,7 @@ class RemoteTestService
         return new RemoteTest($responseData);
     }
 
-    /**
-     * @param TestOptions $testOptions
-     * @param string $domain
-     */
-    private function setCustomCookieDomain(TestOptions $testOptions, $domain)
+    private function setCustomCookieDomain(TestOptions $testOptions, string $domain)
     {
         $cookieOptions = $testOptions->getFeatureOptions('cookies');
         $cookies = $cookieOptions['cookies'];
