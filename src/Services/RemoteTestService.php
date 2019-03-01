@@ -195,9 +195,6 @@ class RemoteTestService
         return $this->remoteTest;
     }
 
-    /**
-     * @param RemoteTest $remoteTest
-     */
     public function set(RemoteTest $remoteTest)
     {
         $this->remoteTest = $remoteTest;
