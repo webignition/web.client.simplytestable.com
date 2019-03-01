@@ -168,12 +168,12 @@ class RemoteTestService
     }
 
     /**
-     * @return bool|RemoteTest
+     * @return RemoteTest|null
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function get()
+    public function get(): ?RemoteTest
     {
         if (is_null($this->remoteTest)) {
             try {
@@ -188,7 +188,7 @@ class RemoteTestService
                 $remoteTestData = $this->jsonResponseHandler->handle($response);
                 $this->remoteTest = new RemoteTest($remoteTestData);
             } catch (InvalidContentTypeException $invalidContentTypeException) {
-                return false;
+                return null;
             }
         }
 
