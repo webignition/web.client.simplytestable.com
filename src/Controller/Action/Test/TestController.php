@@ -128,7 +128,7 @@ class TestController extends AbstractController
 
             if ($remoteTest instanceof RemoteTest) {
                 $crawlData = $remoteTest->getCrawl();
-                $this->remoteTestService->cancelByTestProperties($crawlData['id'], $test->getWebsite());
+                $this->remoteTestService->cancelByTestProperties((int) $crawlData['id'], $test->getWebsite());
             }
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             // Nothing happens, we redirect to the test progress page regardless

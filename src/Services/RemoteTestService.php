@@ -221,10 +221,10 @@ class RemoteTestService
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function cancelByTestProperties($testId, $website)
+    public function cancelByTestProperties(int $testId, string $website)
     {
         $this->coreApplicationHttpClient->post('test_cancel', [
-            'canonical_url' => (string)$website,
+            'canonical_url' => $website,
             'test_id' => $testId,
         ]);
     }
