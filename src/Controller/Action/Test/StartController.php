@@ -4,6 +4,7 @@ namespace App\Controller\Action\Test;
 
 use App\Controller\AbstractController;
 use App\Entity\Task\Task;
+use App\Entity\Test\Test;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -120,7 +121,7 @@ class StartController extends AbstractController
         }
 
         $isFullSiteTest = $this->isFullSiteTest($requestData);
-        $testType = $isFullSiteTest ? 'full site' : 'single url';
+        $testType = $isFullSiteTest ? Test::TYPE_FULL_SITE : Test::TYPE_SINGLE_URL;
         $urlToTest = $this->getUrlToTest($isFullSiteTest, $website);
 
         try {

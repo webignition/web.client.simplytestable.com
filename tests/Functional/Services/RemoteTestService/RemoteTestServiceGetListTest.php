@@ -3,6 +3,7 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
+use App\Entity\Test\Test;
 use App\Model\TestList;
 use App\Tests\Factory\HttpResponseFactory;
 
@@ -90,7 +91,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
                                 'url_count' => 12,
                                 'task_types' => [],
                                 'task_type_options' => [],
-                                'type' => 'Full site',
+                                'type' => Test::TYPE_FULL_SITE,
                                 'parameters' => '',
                             ],
                         ],
