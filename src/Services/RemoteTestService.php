@@ -237,7 +237,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retest($testId, $website)
+    public function retest(int $testId, string $website): RemoteTest
     {
         $response = $this->coreApplicationHttpClient->post(
             'test_retest',
