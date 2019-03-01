@@ -118,218 +118,69 @@ class Test implements \JsonSerializable
     /**
      * @var int
      */
-    private $urlCount;
-
-    /**
-     * @var array
-     */
-    private $taskIdIndex;
+    private $urlCount = null;
 
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
-        $this->taskIds = new ArrayCollection();
+        $this->taskIds = [];
         $this->timePeriod = new TimePeriod();
+        $this->taskIdCollection = '';
     }
 
-    /**
-     * @return int
-     */
-    public function getCompletionPercent()
-    {
-        if ($this->getState() == 'new') {
-            return 0;
-        }
-
-        if ($this->getState() == 'completed') {
-            return 100;
-        }
-
-        if ($this->getTaskCount() == 0) {
-            return 100;
-        }
-
-        return (floor($this->getFinishedTaskCount() / $this->getTaskCount() * 100));
-    }
-
-    /**
-     * @return int
-     */
-    private function getFinishedTaskCount()
-    {
-        $finishedTaskStates = array(
-            'completed',
-            'failed',
-            'failed-no-retry-available',
-            'failed-retry-available',
-            'failed-retry-limit-reached'
-        );
-
-        $finishedTaskCount = 0;
-
-        foreach ($finishedTaskStates as $finishedTaskState) {
-            $finishedTaskCount += $this->getTaskCountByState($finishedTaskState);
-        }
-
-        return $finishedTaskCount;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTaskCount()
+    public function getTaskCount(): int
     {
         return count($this->tasks);
     }
 
-    /**
-     * @param string $state
-     *
-     * @return int
-     */
-    public function getTaskCountByState($state)
-    {
-        if ($this->getTaskCount() == 0) {
-            return 0;
-        }
-
-        $total = 0;
-        foreach ($this->getTasks() as $task) {
-            if ($task->getState() == $state) {
-                $total++;
-            }
-        }
-
-        return $total;
-    }
-
-    /**
-     * @param int $urlCount
-     *
-     * @return Test
-     */
-    public function setUrlCount($urlCount)
+    public function setUrlCount(? int $urlCount)
     {
         $this->urlCount = $urlCount;
-        return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getUrlCount()
+    public function getUrlCount(): ?int
     {
         return $this->urlCount;
     }
 
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param string $user
-     *
-     * @return Test
-     */
-    public function setUser($user)
+    public function setUser(string $user)
     {
         $this->user = $user;
-
-        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getUser()
+    public function getUser(): ?string
     {
         return $this->user;
     }
 
-    /**
-     * @param NormalisedUrl $website
-     *
-     * @return Test
-     */
     public function setWebsite(NormalisedUrl $website)
     {
         $this->website = $website;
-
-        return $this;
     }
 
-    /**
-     * @return NormalisedUrl
-     */
-    public function getWebsite()
+    public function getWebsite(): string
     {
-        return $this->website;
+        return (string) $this->website;
     }
 
-    /**
-     * @param string $state
-     *
-     * @return Test
-     */
-    public function setState($state)
+    public function setState(string $state)
     {
         $this->state = $state;
-
-        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getState()
+    public function getState(): ?string
     {
         return $this->state;
     }
 
-    /**
-     * @param array $taskTypes
-     *
-     * @return Test
-     */
-    public function setTaskTypes($taskTypes)
+    public function setTaskTypes(array $taskTypes)
     {
         $this->taskTypes = $taskTypes;
-
-        return $this;
     }
 
-    /**
-     * @return DoctrineCollection|string[]
-     */
-    public function getTaskTypes()
-    {
-        return $this->taskTypes;
-    }
-
-    /**
-     * @param Task $task
-     *
-     * @return Test
-     */
     public function addTask(Task $task)
     {
         $this->tasks[] = $task;
-
-        return $this;
-    }
-
-    /**
-     * @param Task $task
-     */
-    public function removeTask(Task $task)
-    {
-        $this->tasks->removeElement($task);
     }
 
     /**
@@ -340,111 +191,35 @@ class Test implements \JsonSerializable
         return $this->tasks;
     }
 
-    /**
-     * @param TimePeriod $timePeriod
-     *
-     * @return Test
-     */
-    public function setTimePeriod(TimePeriod $timePeriod = null)
+    public function setTimePeriod(TimePeriod $timePeriod)
     {
         $this->timePeriod = $timePeriod;
-
-        return $this;
     }
 
-    /**
-     * @return TimePeriod
-     */
-    public function getTimePeriod()
-    {
-        return $this->timePeriod;
-    }
-
-    /**
-     * @param integer $testId
-     *
-     * @return Test
-     */
-    public function setTestId($testId)
+    public function setTestId(int $testId)
     {
         $this->testId = $testId;
-
-        return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getTestId()
+    public function getTestId(): ?int
     {
         return $this->testId;
     }
 
     /**
-     * @param Task $task
-     *
-     * @return bool
-     */
-    public function hasTask(Task $task)
-    {
-        return array_key_exists($task->getTaskId(), $this->getTaskIdIndex());
-    }
-
-    /**
-     * @param Task $task
-     *
-     * @return Task|false
-     */
-    public function getTask(Task $task)
-    {
-        foreach ($this->getTasks() as $comparatorTask) {
-            $urlsAreEqual = $comparatorTask->getUrl() == $task->getUrl();
-            $typesAreEqual = $comparatorTask->getType() == $task->getType();
-            $taskIdsAreEqual = $comparatorTask->getTaskId() == $task->getTaskId();
-
-            /* @var $comparatorTask Task */
-            if ($urlsAreEqual && $typesAreEqual && $taskIdsAreEqual) {
-                return $comparatorTask;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @return int[]
      */
-    private function getTaskIdIndex()
-    {
-        if (is_null($this->taskIdIndex)) {
-            $this->taskIdIndex = [];
-            foreach ($this->getTasks() as $task) {
-                $this->taskIdIndex[$task->getTaskId()] = true;
-            }
-        }
-
-        return $this->taskIdIndex;
-    }
-
-    public function clearTasks()
-    {
-        $this->tasks = new ArrayCollection();
-    }
-
-    /**
-     * @return int[]
-     */
-    public function getTaskIds()
+    public function getTaskIds(): array
     {
         if (is_null($this->taskIds)) {
-            if (is_null($this->getTaskIdCollection()) || $this->getTaskIdCollection() == '') {
+            $this->taskIds = [];
+
+            if (!empty($this->taskIdCollection)) {
                 $this->taskIds = [];
-            } else {
-                $this->taskIds = [];
-                $rawTaskIds = explode(',', $this->getTaskIdCollection());
+                $rawTaskIds = explode(',', $this->taskIdCollection);
 
                 foreach ($rawTaskIds as $rawTaskId) {
-                    $this->taskIds[] = (int)$rawTaskId;
+                    $this->taskIds[] = (int) $rawTaskId;
                 }
             }
         }
@@ -452,63 +227,27 @@ class Test implements \JsonSerializable
         return $this->taskIds;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasTaskIds()
+    public function hasTaskIds(): bool
     {
-        return count($this->getTaskIds()) > 0;
+        return !empty($this->taskIdCollection);
     }
 
-    /**
-     * @param string $taskIdCollection
-     *
-     * @return Test
-     */
-    public function setTaskIdColletion($taskIdCollection)
+    public function setTaskIdCollection(string $taskIdCollection)
     {
         $this->taskIdCollection = $taskIdCollection;
         $this->taskIds = null;
-
-        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTaskIdCollection()
-    {
-        return $this->taskIdCollection;
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return Test
-     */
-    public function setType($type)
+    public function setType(string $type)
     {
         $this->type = $type;
-
-        return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @return int
-     */
-    public function getErrorCount()
+    public function getErrorCount(): int
     {
         $errorCount = 0;
 
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->tasks as $task) {
             /* @var $task Task */
             if ($task->hasOutput()) {
                 $errorCount += $task->getOutput()->getErrorCount();
@@ -518,30 +257,21 @@ class Test implements \JsonSerializable
         return $errorCount;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasErrors()
+    public function hasErrors(): bool
     {
         return $this->getErrorCount() > 0;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasWarnings()
+    public function hasWarnings(): bool
     {
         return $this->getWarningCount() > 0;
     }
 
-    /**
-     * @return int
-     */
-    public function getWarningCount()
+    public function getWarningCount(): int
     {
         $warningCount = 0;
 
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->tasks as $task) {
             /* @var $task Task */
             if ($task->hasOutput()) {
                 $warningCount += $task->getOutput()->getWarningCount();
@@ -551,16 +281,11 @@ class Test implements \JsonSerializable
         return $warningCount;
     }
 
-    /**
-     * @param string $type
-     *
-     * @return int
-     */
-    public function getErrorCountByTaskType($type = '')
+    public function getErrorCountByTaskType(string $type): int
     {
         $count = 0;
 
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->tasks as $task) {
             /* @var $task Task */
             if ($task->hasOutput() && $task->getType() == $type) {
                 $count += $task->getOutput()->getErrorCount();
@@ -570,16 +295,11 @@ class Test implements \JsonSerializable
         return $count;
     }
 
-    /**
-     * @param string $type
-     *
-     * @return int
-     */
-    public function getWarningCountByTaskType($type = '')
+    public function getWarningCountByTaskType(string $type): int
     {
         $count = 0;
 
-        foreach ($this->getTasks() as $task) {
+        foreach ($this->tasks as $task) {
             /* @var $task Task */
             if ($task->hasOutput() && $task->getType() == $type) {
                 $count += $task->getOutput()->getWarningCount();
@@ -589,18 +309,12 @@ class Test implements \JsonSerializable
         return $count;
     }
 
-    /**
-     * @return string
-     */
-    public function getFormattedWebsite()
+    public function getFormattedWebsite(): string
     {
-        return rawurldecode($this->getWebsite());
+        return rawurldecode((string) $this->website);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id' => $this->id,

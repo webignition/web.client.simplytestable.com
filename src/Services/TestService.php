@@ -117,7 +117,7 @@ class TestService
 
         if (empty($test)) {
             $test = new Test();
-            $test->setTestId($testId);
+            $test->setTestId((int) $testId);
             $test->setWebsite(new NormalisedUrl($canonicalUrl));
         }
 
@@ -147,7 +147,7 @@ class TestService
         $test->setState($remoteTest->getState());
         $test->setUrlCount($remoteTest->getUrlCount());
         $test->setTestId($remoteTest->getId());
-        $test->setType($remoteTest->getType());
+        $test->setType((string) $remoteTest->getType());
         $test->setTaskTypes($remoteTest->getTaskTypes());
 
         $remoteTimePeriod = $remoteTest->getTimePeriod();

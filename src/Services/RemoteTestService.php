@@ -177,7 +177,7 @@ class RemoteTestService
                 $response = $this->coreApplicationHttpClient->get(
                     'test_status',
                     [
-                        'canonical_url' => (string)$this->test->getWebsite(),
+                        'canonical_url' => $this->test->getWebsite(),
                         'test_id' => $this->test->getTestId(),
                     ]
                 );
@@ -255,7 +255,7 @@ class RemoteTestService
     public function lock()
     {
         $this->coreApplicationHttpClient->post('test_set_private', [
-            'canonical_url' => (string)$this->test->getWebsite(),
+            'canonical_url' => $this->test->getWebsite(),
             'test_id' => $this->test->getTestId()
         ]);
     }
@@ -263,7 +263,7 @@ class RemoteTestService
     public function unlock()
     {
         $this->coreApplicationHttpClient->post('test_set_public', [
-            'canonical_url' => (string)$this->test->getWebsite(),
+            'canonical_url' => $this->test->getWebsite(),
             'test_id' => $this->test->getTestId()
         ]);
     }

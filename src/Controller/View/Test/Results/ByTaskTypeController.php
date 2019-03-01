@@ -136,7 +136,7 @@ class ByTaskTypeController extends AbstractResultsController
             ));
         }
 
-        if ($website !== (string)$test->getWebsite()) {
+        if ($website !== $test->getWebsite()) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_results_by_task_type_filter',
                 [

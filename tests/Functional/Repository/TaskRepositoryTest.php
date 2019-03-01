@@ -3,6 +3,7 @@
 
 namespace App\Tests\Functional\Repository;
 
+use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
@@ -52,7 +53,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
         $testIds = [];
         foreach ($tests as $test) {
-            $testIds[] = $test->getId();
+            $testIds[] = ObjectReflector::getProperty($test, 'id');
         }
 
         $test = $tests[$testIndex];
@@ -171,7 +172,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
 
         $testIds = [];
         foreach ($tests as $test) {
-            $testIds[] = $test->getId();
+            $testIds[] = ObjectReflector::getProperty($test, 'id');
         }
 
         $test = $tests[$testIndex];

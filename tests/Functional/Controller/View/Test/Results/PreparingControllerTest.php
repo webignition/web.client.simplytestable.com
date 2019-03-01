@@ -214,7 +214,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $test = $parameters['test'];
                             $this->assertInstanceOf(Test::class, $test);
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
-                            $this->assertEquals(self::WEBSITE, (string)$test->getWebsite());
+                            $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
                             $this->assertEquals(0, $parameters['local_task_count']);
                             $this->assertEquals(12, $parameters['remote_task_count']);
@@ -264,7 +264,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $test = $parameters['test'];
                             $this->assertInstanceOf(Test::class, $test);
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
-                            $this->assertEquals(self::WEBSITE, (string)$test->getWebsite());
+                            $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
                             $this->assertEquals(3, $parameters['local_task_count']);
                             $this->assertEquals(12, $parameters['remote_task_count']);

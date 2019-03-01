@@ -290,7 +290,7 @@ class TaskService
             $response = $this->coreApplicationHttpClient->post(
                 'test_tasks',
                 [
-                    'canonical_url' => (string)$test->getWebsite(),
+                    'canonical_url' => $test->getWebsite(),
                     'test_id' => $test->getTestId(),
                 ],
                 [
@@ -320,7 +320,7 @@ class TaskService
         }
 
         if (!$test->hasTaskIds()) {
-            $test->setTaskIdColletion(implode(',', $this->retrieveRemoteTaskIds($test)));
+            $test->setTaskIdCollection(implode(',', $this->retrieveRemoteTaskIds($test)));
 
             $this->entityManager->persist($test);
             $this->entityManager->flush();
@@ -373,7 +373,7 @@ class TaskService
         $response = $this->coreApplicationHttpClient->get(
             'test_task_ids',
             [
-                'canonical_url' => (string)$test->getWebsite(),
+                'canonical_url' => $test->getWebsite(),
                 'test_id' => $test->getTestId(),
             ]
         );
