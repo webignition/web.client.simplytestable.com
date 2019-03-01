@@ -277,7 +277,7 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getRecent($limit = 3)
+    public function getRecent(int $limit = 3): TestList
     {
         return $this->getList([
             'limit' => $limit,
