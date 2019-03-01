@@ -15,35 +15,19 @@ use webignition\SimplyTestableUserInterface\UserInterface;
 class RemoteTestService
 {
     /**
-     * @var RemoteTest
+     * @var RemoteTest|null
      */
     private $remoteTest = null;
 
     /**
-     * @var Test
+     * @var Test|null
      */
     private $test;
 
-    /**
-     * @var CoreApplicationHttpClient
-     */
     private $coreApplicationHttpClient;
-
-    /**
-     * @var JsonResponseHandler
-     */
     private $jsonResponseHandler;
-
-    /**
-     * @var RegisterableDomainService
-     */
     private $registerableDomainService;
 
-    /**
-     * @param CoreApplicationHttpClient $coreApplicationHttpClient
-     * @param JsonResponseHandler $jsonResponseHandler
-     * @param RegisterableDomainService $registerableDomainService
-     */
     public function __construct(
         CoreApplicationHttpClient $coreApplicationHttpClient,
         JsonResponseHandler $jsonResponseHandler,
