@@ -42,7 +42,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 
     public function getRemoteIdCountDataProvider(): array
     {
-        $test = new Test();
+        $test = Test::create(1, 'http://example.com/');
 
         return [
             'outcomeFilter: skipped, typeFilter: null' => [
@@ -146,7 +146,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
 
     public function getRemoteIdsDataProvider(): array
     {
-        $test = new Test();
+        $test = Test::create(1, 'http://example.com/');
 
         return [
             'outcomeFilter: skipped, typeFilter: null' => [

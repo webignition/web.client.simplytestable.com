@@ -116,9 +116,7 @@ class TestService
         ]);
 
         if (empty($test)) {
-            $test = new Test();
-            $test->setTestId((int) $testId);
-            $test->setWebsite(new NormalisedUrl($canonicalUrl));
+            $test = Test::create((int) $testId, (string) (new NormalisedUrl($canonicalUrl)));
         }
 
         try {

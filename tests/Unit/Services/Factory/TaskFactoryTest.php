@@ -19,7 +19,7 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
 
         $taskFactory = new TaskFactory($taskOutputFactory);
 
-        $test = new Test();
+        $test = Test::create(1, 'http://example.com/');
         $task = $taskFactory->create($test);
 
         $this->assertInstanceOf(Task::class, $task);
