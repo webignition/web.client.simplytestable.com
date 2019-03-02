@@ -8,7 +8,6 @@ use App\Exception\CoreApplicationRequestException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 {
@@ -24,9 +23,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = new Test();
-        $this->test->setTestId(1);
-        $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
+        $this->test = Test::create(1, 'http://example.com/');
 
         $this->setRemoteTestServiceTest($this->test);
     }
@@ -100,11 +97,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $test = new Test();
-        $test->setTestId(1);
-        $test->setWebsite(new NormalisedUrl('http://example.com/'));
-
-        $this->setRemoteTestServiceTest($test);
+        $this->setRemoteTestServiceTest($this->test);
 
         $remoteTest = $this->remoteTestService->get();
 
@@ -119,11 +112,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $test = new Test();
-        $test->setTestId(1);
-        $test->setWebsite(new NormalisedUrl('http://example.com/'));
-
-        $this->setRemoteTestServiceTest($test);
+        $this->setRemoteTestServiceTest($this->test);
 
         $remoteTest = $this->remoteTestService->get();
 

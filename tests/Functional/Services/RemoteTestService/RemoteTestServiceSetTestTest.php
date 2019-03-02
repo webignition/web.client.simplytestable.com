@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Services\RemoteTestService;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
 use App\Tests\Factory\HttpResponseFactory;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
 {
@@ -28,9 +27,7 @@ class RemoteTestServiceSetTestTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = new Test();
-        $this->test->setTestId(self::REMOTE_TEST_ID);
-        $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
+        $this->test = Test::create(1, 'http://example.com/');
 
         $this->remoteTest = new RemoteTest([
             'id' => self::REMOTE_TEST_ID,
