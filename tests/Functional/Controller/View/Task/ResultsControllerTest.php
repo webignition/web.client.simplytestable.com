@@ -1152,19 +1152,21 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     private function assertCommonViewParameterKeys(array $parameters)
     {
-        $this->assertArraySubset(
-            [
-                'user',
-                'is_logged_in',
-                'website_url',
-                'test',
-                'task',
-                'task_url',
-                'is_owner',
-                'is_public_user_test',
-            ],
-            array_keys($parameters)
-        );
+        $expectedKeys = [
+            'user',
+            'is_logged_in',
+            'website_url',
+            'test',
+            'task',
+            'task_url',
+            'is_owner',
+            'is_public_user_test',
+        ];
+
+        $keys = array_keys($parameters);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertContains($expectedKey, $keys);
+        }
     }
 
     /**

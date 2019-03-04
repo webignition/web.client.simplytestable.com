@@ -684,20 +684,22 @@ class AccountControllerTest extends AbstractAccountControllerTest
 
     private function assertViewParameterKeys(array $parameters)
     {
-        $this->assertArraySubset(
-            [
-                'user',
-                'is_logged_in',
-                'user_summary',
-                'plan_presentation_name',
-                'stripe_event_data',
-                'mailchimp_updates_subscribed',
-                'mailchimp_announcements_subscribed',
-                'card_expiry_month',
-                'currency_map',
-            ],
-            array_keys($parameters)
-        );
+        $expectedKeys = [
+            'user',
+            'is_logged_in',
+            'user_summary',
+            'plan_presentation_name',
+            'stripe_event_data',
+            'mailchimp_updates_subscribed',
+            'mailchimp_announcements_subscribed',
+            'card_expiry_month',
+            'currency_map',
+        ];
+
+        $keys = array_keys($parameters);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertContains($expectedKey, $keys);
+        }
     }
 
     /**

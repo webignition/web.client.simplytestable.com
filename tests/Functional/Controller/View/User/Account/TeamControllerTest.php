@@ -417,15 +417,17 @@ class TeamControllerTest extends AbstractAccountControllerTest
 
     private function assertViewParameterKeys(array $parameters)
     {
-        $this->assertArraySubset(
-            [
-                'user',
-                'is_logged_in',
-                'plan_presentation_name',
-                'user_summary',
-            ],
-            array_keys($parameters)
-        );
+        $expectedKeys = [
+            'user',
+            'is_logged_in',
+            'plan_presentation_name',
+            'user_summary',
+        ];
+
+        $keys = array_keys($parameters);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertContains($expectedKey, $keys);
+        }
     }
 
     /**

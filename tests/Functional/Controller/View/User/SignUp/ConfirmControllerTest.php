@@ -331,17 +331,18 @@ class ConfirmControllerTest extends AbstractViewControllerTest
 
     private function assertViewParameterKeys(array $parameters)
     {
-        $this->assertArraySubset(
-            [
-                'user',
-                'is_logged_in',
-                'email',
-                'token',
-            ],
-            array_keys($parameters)
-        );
+        $expectedKeys = [
+            'user',
+            'is_logged_in',
+            'email',
+            'token',
+            'has_notification',
+        ];
 
-        $this->assertArrayHasKey('has_notification', $parameters);
+        $keys = array_keys($parameters);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertContains($expectedKey, $keys);
+        }
     }
 
     /**
