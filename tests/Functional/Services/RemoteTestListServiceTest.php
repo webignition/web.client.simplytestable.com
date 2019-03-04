@@ -1,14 +1,27 @@
 <?php
 /** @noinspection PhpDocSignatureInspection */
 
-namespace App\Tests\Functional\Services\RemoteTestService;
+namespace App\Tests\Functional\Services;
 
 use App\Entity\Test\Test;
 use App\Model\TestList;
+use App\Services\RemoteTestListService;
 use App\Tests\Factory\HttpResponseFactory;
 
-class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
+class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
 {
+    /**
+     * @var RemoteTestListService
+     */
+    private $remoteTestListService;
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->remoteTestListService = self::$container->get(RemoteTestListService::class);
+    }
+
     /**
      * @dataProvider getFinishedDataProvider
      */
@@ -25,7 +38,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $finishedList = $this->remoteTestService->getFinished($limit, $offset, $filter);
+        $finishedList = $this->remoteTestListService->getFinished($limit, $offset, $filter);
 
         $this->assertInstanceOf(TestList::class, $finishedList);
 
@@ -123,7 +136,7 @@ class RemoteTestServiceGetListTest extends AbstractRemoteTestServiceTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $finishedList = $this->remoteTestService->getRecent($limit);
+        $finishedList = $this->remoteTestListService->getRecent($limit);
 
         $this->assertInstanceOf(TestList::class, $finishedList);
 

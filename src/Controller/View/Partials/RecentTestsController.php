@@ -9,6 +9,7 @@ use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
+use App\Services\RemoteTestListService;
 use App\Services\RemoteTestService;
 use App\Services\TaskService;
 use App\Services\TestService;
@@ -20,20 +21,11 @@ class RecentTestsController extends AbstractBaseViewController
 {
     const LIMIT = 3;
 
-    /**
-     * @var TestService
-     */
     private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
     private $remoteTestService;
-
-    /**
-     * @var TaskService
-     */
     private $taskService;
+
+    private $remoteTestListService;
 
 
     public function __construct(
@@ -43,13 +35,15 @@ class RecentTestsController extends AbstractBaseViewController
         CacheableResponseFactory $cacheableResponseFactory,
         TestService $testService,
         RemoteTestService $remoteTestService,
-        TaskService $taskService
+        TaskService $taskService,
+        RemoteTestListService $remoteTestListService
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
+        $this->remoteTestListService = $remoteTestListService;
     }
 
     /**
@@ -61,7 +55,7 @@ class RecentTestsController extends AbstractBaseViewController
      */
     public function indexAction()
     {
-        $testList = $this->remoteTestService->getRecent(self::LIMIT);
+        $testList = $this->remoteTestListService->getRecent(self::LIMIT);
 
         foreach ($testList->get() as $testObject) {
             /* @var RemoteTest $remoteTest */
