@@ -39,7 +39,7 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
             'id' => 1,
         ]);
 
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'HTTP 404' => [

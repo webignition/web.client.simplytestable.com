@@ -92,7 +92,7 @@ class UserAccountCardServiceTest extends AbstractCoreApplicationServiceTest
 
     public function associateFailureDataProvider(): array
     {
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'HTTP 400' => [

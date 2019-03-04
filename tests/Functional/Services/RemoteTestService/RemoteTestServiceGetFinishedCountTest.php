@@ -28,7 +28,7 @@ class RemoteTestServiceGetFinishedCountTest extends AbstractRemoteTestServiceTes
     public function getFinishedCountDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         $successfulRequestUrl = 'http://null/jobs/list/count/?exclude-states%5B0%5D=rejected&exclude-current=1';
 

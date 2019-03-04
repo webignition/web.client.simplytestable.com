@@ -424,7 +424,7 @@ class CoreApplicationHttpClientTest extends AbstractBaseTestCase
     public function requestThrowsExceptionDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curl28Exception = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curl28Exception = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             '404' => [

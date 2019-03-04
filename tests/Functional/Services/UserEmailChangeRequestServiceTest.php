@@ -188,7 +188,7 @@ class UserEmailChangeRequestServiceTest extends AbstractCoreApplicationServiceTe
     public function modifyEmailChangeRequestSuccessDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'HTTP 503' => [

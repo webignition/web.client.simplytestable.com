@@ -47,7 +47,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
     public function getRemoteFailureDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'HTTP 404' => [
