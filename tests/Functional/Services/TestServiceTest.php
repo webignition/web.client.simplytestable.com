@@ -31,68 +31,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
     }
 
     /**
-     * @dataProvider hasDataProvider
-     */
-    public function testHas(
-        array $httpFixtures,
-        array $testValues,
-        string $canonicalUrl,
-        int $testId,
-        bool $expectedHas
-    ) {
-        $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($testValues)) {
-            $testFactory = new TestFactory(self::$container);
-            $testFactory->create($testValues);
-        }
-
-        $has = $this->testService->has($canonicalUrl, $testId);
-
-        $this->assertEquals($expectedHas, $has);
-    }
-
-    public function hasDataProvider(): array
-    {
-        return [
-            'has locally' => [
-                'httpFixtures' => [],
-                'testValues' => [
-                    TestFactory::KEY_WEBSITE => 'http://example.com/',
-                    TestFactory::KEY_TEST_ID => 1,
-                ],
-                'canonicalUrl' => 'http://example.com/',
-                'testId' => 1,
-                'expectedHas' => true,
-            ],
-            'has remotely' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        'id' => 1,
-                        'website' => 'http://example.com/',
-                        'task_types' => [],
-                        'user' => self::USERNAME,
-                        'state' => Test::STATE_COMPLETED,
-                    ]),
-                ],
-                'testValues' => [],
-                'canonicalUrl' => 'http://example.com/',
-                'testId' => 1,
-                'expectedHas' => true,
-            ],
-            'not has remotely' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createForbiddenResponse(),
-                ],
-                'testValues' => [],
-                'canonicalUrl' => 'http://example.com/',
-                'testId' => 1,
-                'expectedHas' => false,
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider getDataProvider
      */
     public function testGet(

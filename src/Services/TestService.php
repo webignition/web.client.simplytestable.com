@@ -84,27 +84,6 @@ class TestService
      * @param string $canonicalUrl
      * @param int $testId
      *
-     * @return bool
-     *
-     * @throws CoreApplicationRequestException
-     */
-    public function has($canonicalUrl, $testId)
-    {
-        $test = $this->testRepository->findOneBy([
-            'testId' => $testId
-        ]);
-
-        if (!empty($test)) {
-            return true;
-        }
-
-        return $this->get($canonicalUrl, $testId) instanceof Test;
-    }
-
-    /**
-     * @param string $canonicalUrl
-     * @param int $testId
-     *
      * @return Test|null
      *
      * @throws CoreApplicationRequestException
