@@ -25,5 +25,3 @@ services:
   App\Tests\Services\PostmarkMessageVerifier:
 
   App\Services\StripeNotificationFactory:
-
-  App\Services\RemoteTestListService:
