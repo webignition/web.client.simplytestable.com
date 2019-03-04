@@ -14,16 +14,6 @@ use webignition\SimplyTestableUserInterface\UserInterface;
 
 class RemoteTestService
 {
-    /**
-     * @var RemoteTest|null
-     */
-    private $remoteTest = null;
-
-    /**
-     * @var Test|null
-     */
-    private $test;
-
     private $coreApplicationHttpClient;
     private $jsonResponseHandler;
     private $registerableDomainService;
@@ -40,18 +30,9 @@ class RemoteTestService
 
     /**
      * @param Test $test
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
      */
     public function setTest(Test $test)
     {
-        $this->test = $test;
-        $remoteTest = $this->get();
-
-        if (empty($remoteTest) || ($remoteTest instanceof RemoteTest && $remoteTest->getId() !== $test->getTestId())) {
-            $this->remoteTest = null;
-        }
     }
 
     /**
@@ -123,20 +104,21 @@ class RemoteTestService
     }
 
     /**
+     * @param Test $test
      * @param UserInterface $user
      *
      * @return bool
      *
      * @throws CoreApplicationRequestException
      */
-    public function owns(UserInterface $user): bool
+    public function owns(Test $test, UserInterface $user): bool
     {
-        if ($user->getUsername() === $this->test->getUser()) {
+        if ($user->getUsername() === $test->getUser()) {
             return true;
         }
 
         try {
-            $remoteTest = $this->get();
+            $remoteTest = $this->get($test);
             if (empty($remoteTest)) {
                 return false;
             }
@@ -152,12 +134,14 @@ class RemoteTestService
     }
 
     /**
+     * @param Test $test
+     *
      * @return RemoteTest|null
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function get(): ?RemoteTest
+    public function get(Test $test): ?RemoteTest
     {
         $remoteTest = null;
 
@@ -165,8 +149,8 @@ class RemoteTestService
             $response = $this->coreApplicationHttpClient->get(
                 'test_status',
                 [
-                    'canonical_url' => $this->test->getWebsite(),
-                    'test_id' => $this->test->getTestId(),
+                    'canonical_url' => $test->getWebsite(),
+                    'test_id' => $test->getTestId(),
                 ]
             );
 
@@ -179,13 +163,15 @@ class RemoteTestService
     }
 
     /**
+     * @param Test $test
+     *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function cancel()
+    public function cancel(Test $test)
     {
-        $this->cancelByTestProperties($this->test->getTestId(), $this->test->getWebsite());
+        $this->cancelByTestProperties($test->getTestId(), $test->getWebsite());
     }
 
     /**
@@ -230,19 +216,19 @@ class RemoteTestService
         return new RemoteTest($responseData);
     }
 
-    public function lock()
+    public function lock(Test $test)
     {
         $this->coreApplicationHttpClient->post('test_set_private', [
-            'canonical_url' => $this->test->getWebsite(),
-            'test_id' => $this->test->getTestId()
+            'canonical_url' => $test->getWebsite(),
+            'test_id' => $test->getTestId()
         ]);
     }
 
-    public function unlock()
+    public function unlock(Test $test)
     {
         $this->coreApplicationHttpClient->post('test_set_public', [
-            'canonical_url' => $this->test->getWebsite(),
-            'test_id' => $this->test->getTestId()
+            'canonical_url' => $test->getWebsite(),
+            'test_id' => $test->getTestId()
         ]);
     }
 

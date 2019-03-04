@@ -25,8 +25,6 @@ class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
 
         $this->test = Test::create(1, 'http://example.com/');
 
-        $this->setRemoteTestServiceTest($this->test);
-
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => self::NEW_TEST_ID,
