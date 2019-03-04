@@ -120,12 +120,21 @@ class Test implements \JsonSerializable
      */
     private $urlCount = null;
 
-    public function __construct()
+    private function __construct()
     {
         $this->tasks = new ArrayCollection();
         $this->taskIds = [];
         $this->timePeriod = new TimePeriod();
         $this->taskIdCollection = '';
+    }
+
+    public static function create(int $testId, string $website): Test
+    {
+        $test = new Test();
+        $test->testId = $testId;
+        $test->website = $website;
+
+        return $test;
     }
 
     public function getTaskCount(): int

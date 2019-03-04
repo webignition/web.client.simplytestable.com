@@ -4,7 +4,6 @@ namespace App\Tests\Functional\Services\RemoteTestService;
 
 use App\Entity\Test\Test;
 use App\Tests\Factory\HttpResponseFactory;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 {
@@ -20,11 +19,7 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = new Test();
-        $this->test->setTestId(1);
-        $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
-
-        $this->setRemoteTestServiceTest($this->test);
+        $this->test = Test::create(1, 'http://example.com/');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -33,7 +28,7 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 
     public function testCancel()
     {
-        $this->remoteTestService->cancel();
+        $this->remoteTestService->cancel($this->test);
 
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Fexample.com%2F/1/cancel/',

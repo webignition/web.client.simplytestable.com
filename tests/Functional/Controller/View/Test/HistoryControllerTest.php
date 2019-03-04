@@ -97,7 +97,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
         if (empty($expectedRequestUrls)) {
             $this->assertEmpty($this->httpHistory->count());
         } else {
-            $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
+            $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrlsAsStrings());
         }
     }
 
@@ -144,6 +144,15 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             ],
                         ],
                     ]),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => 1,
+                        'website' => 'http://example.com/',
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_COMPLETED,
+                        'task_type_options' => [],
+                        'task_count' => 4,
+                    ]),
                     HttpResponseFactory::createJsonResponse([1]),
                     HttpResponseFactory::createJsonResponse([
                         [
@@ -161,6 +170,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/history/9/',
                 'expectedRequestUrls' => [
                     'http://null/jobs/list/10/90/?exclude-states%5B0%5D=rejected&exclude-current=1',
+                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
                 ],
@@ -358,6 +368,15 @@ class HistoryControllerTest extends AbstractViewControllerTest
                                 'state' => Test::STATE_COMPLETED,
                             ],
                         ],
+                    ]),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => 1,
+                        'website' => 'http://example.com/',
+                        'task_types' => [],
+                        'user' => 'user@example.com',
+                        'state' => Test::STATE_COMPLETED,
+                        'task_type_options' => [],
+                        'task_count' => 4,
                     ]),
                 ],
                 'user' => SystemUserService::getPublicUser(),

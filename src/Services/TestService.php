@@ -105,7 +105,7 @@ class TestService
      * @param string $canonicalUrl
      * @param int $testId
      *
-     * @return Test|bool
+     * @return Test|null
      *
      * @throws CoreApplicationRequestException
      */
@@ -116,20 +116,17 @@ class TestService
         ]);
 
         if (empty($test)) {
-            $test = new Test();
-            $test->setTestId((int) $testId);
-            $test->setWebsite(new NormalisedUrl($canonicalUrl));
+            $test = Test::create((int) $testId, (string) (new NormalisedUrl($canonicalUrl)));
         }
 
         try {
-            $this->remoteTestService->setTest($test);
-            $remoteTest = $this->remoteTestService->get();
+            $remoteTest = $this->remoteTestService->get($test);
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            return false;
+            return null;
         }
 
         if (!$remoteTest instanceof RemoteTest) {
-            return false;
+            return null;
         }
 
         $this->hydrateFromRemoteTest($test, $remoteTest);

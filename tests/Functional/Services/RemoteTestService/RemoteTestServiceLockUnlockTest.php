@@ -4,7 +4,6 @@ namespace App\Tests\Functional\Services\RemoteTestService;
 
 use App\Entity\Test\Test;
 use App\Tests\Factory\HttpResponseFactory;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 {
@@ -20,11 +19,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = new Test();
-        $this->test->setTestId(1);
-        $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
-
-        $this->setRemoteTestServiceTest($this->test);
+        $this->test = Test::create(1, 'http://example.com/');
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -33,7 +28,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 
     public function testLock()
     {
-        $this->remoteTestService->lock();
+        $this->remoteTestService->lock($this->test);
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-private/',
             $this->httpHistory->getLastRequestUrl()
@@ -42,7 +37,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 
     public function testUnlock()
     {
-        $this->remoteTestService->unlock();
+        $this->remoteTestService->unlock($this->test);
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-public/',
             $this->httpHistory->getLastRequestUrl()

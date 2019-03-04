@@ -8,7 +8,6 @@ use App\Exception\CoreApplicationRequestException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
 {
@@ -24,11 +23,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = new Test();
-        $this->test->setTestId(1);
-        $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
-
-        $this->setRemoteTestServiceTest($this->test);
+        $this->test = Test::create(1, 'http://example.com/');
     }
 
     /**
@@ -46,7 +41,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $this->expectExceptionMessage($expectedExceptionMessage);
         $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->remoteTestService->get();
+        $this->remoteTestService->get(Test::create(1, 'http://example.com/'));
     }
 
     public function getRemoteFailureDataProvider(): array
@@ -100,13 +95,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $test = new Test();
-        $test->setTestId(1);
-        $test->setWebsite(new NormalisedUrl('http://example.com/'));
-
-        $this->setRemoteTestServiceTest($test);
-
-        $remoteTest = $this->remoteTestService->get();
+        $remoteTest = $this->remoteTestService->get($this->test);
 
         $this->assertNull($remoteTest);
     }
@@ -119,15 +108,14 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $test = new Test();
-        $test->setTestId(1);
-        $test->setWebsite(new NormalisedUrl('http://example.com/'));
-
-        $this->setRemoteTestServiceTest($test);
-
-        $remoteTest = $this->remoteTestService->get();
+        $remoteTest = $this->remoteTestService->get($this->test);
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
         $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/', $this->httpHistory->getLastRequestUrl());
+    }
+
+    public function testGetTestIsNull()
+    {
+        $this->assertNull($this->remoteTestService->get(null));
     }
 }

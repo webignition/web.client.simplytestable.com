@@ -59,9 +59,7 @@ class TestUrlLimitNotificationController extends AbstractBaseViewController
             return new Response();
         }
 
-        $this->remoteTestService->setTest($test);
-
-        $remoteTest = $this->remoteTestService->get();
+        $remoteTest = $this->remoteTestService->get($test);
 
         if (empty($remoteTest)) {
             return new Response();

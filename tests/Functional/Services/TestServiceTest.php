@@ -112,7 +112,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         $test = $this->testService->get($canonicalUrl, $testId);
 
         if (empty($expectedTestValues)) {
-            $this->assertFalse($test);
+            $this->assertNull($test);
         } else {
             $this->assertEquals($expectedTestValues['testId'], $test->getTestId());
             $this->assertEquals($expectedTestValues['state'], $test->getState());
@@ -277,7 +277,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testIsFinished(string $state, bool $expectedIsFinished)
     {
-        $test = new Test();
+        $test = Test::create(1, 'http://example.com/');
         $test->setState($state);
 
         $this->assertEquals($expectedIsFinished, $this->testService->isFinished($test));

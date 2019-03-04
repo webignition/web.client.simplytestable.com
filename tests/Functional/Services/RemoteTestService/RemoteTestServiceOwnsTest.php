@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Services\RemoteTestService;
 use App\Entity\Test\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Tests\Factory\HttpResponseFactory;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
 {
@@ -22,18 +21,14 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = new Test();
-        $this->test->setTestId(1);
-        $this->test->setWebsite(new NormalisedUrl('http://example.com/'));
-
-        $this->setRemoteTestServiceTest($this->test);
+        $this->test = Test::create(1, 'http://example.com/');
     }
 
     public function testOwnsDirectOwner()
     {
         $this->test->setUser($this->user->getUsername());
 
-        $this->assertTrue($this->remoteTestService->owns($this->user));
+        $this->assertTrue($this->remoteTestService->owns($this->test, $this->user));
     }
 
     /**
@@ -51,7 +46,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
         $this->expectExceptionMessage($expectedExceptionMessage);
         $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->remoteTestService->owns($this->user);
+        $this->remoteTestService->owns($this->test, $this->user);
     }
 
     public function ownsRemoteExceptionDataProvider(): array
@@ -81,7 +76,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
             HttpResponseFactory::createForbiddenResponse(),
         ]);
 
-        $this->assertFalse($this->remoteTestService->owns($this->user));
+        $this->assertFalse($this->remoteTestService->owns($this->test, $this->user));
     }
 
     public function testOwnsOwnersDoesNotContain()
@@ -96,7 +91,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $this->assertFalse($this->remoteTestService->owns($this->user));
+        $this->assertFalse($this->remoteTestService->owns($this->test, $this->user));
     }
 
     public function testOwnsOwnersContains()
@@ -111,7 +106,7 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $this->assertTrue($this->remoteTestService->owns($this->user));
+        $this->assertTrue($this->remoteTestService->owns($this->test, $this->user));
     }
 
     public function testOwnsInvalidRemoteTest()
@@ -120,6 +115,6 @@ class RemoteTestServiceOwnsTest extends AbstractRemoteTestServiceTest
             HttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $this->assertFalse($this->remoteTestService->owns($this->user));
+        $this->assertFalse($this->remoteTestService->owns($this->test, $this->user));
     }
 }

@@ -113,7 +113,7 @@ class ResultsController extends AbstractBaseViewController
     {
         $user = $this->userManager->getUser();
         $test = $this->testService->get($website, $test_id);
-        $isOwner = $this->remoteTestService->owns($user);
+        $isOwner = $this->remoteTestService->owns($test, $user);
 
         $task = $this->taskService->get($test, $task_id);
 

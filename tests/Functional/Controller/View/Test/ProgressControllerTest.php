@@ -152,7 +152,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
+        $this->assertEquals($expectedRequestUrl, (string) $this->httpHistory->getLastRequestUrl());
     }
 
     /**
@@ -183,7 +183,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $responseData = json_decode($response->getContent());
 
         $this->assertEquals('http://localhost' . $expectedRedirectUrl, $responseData->this_url);
-        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
+        $this->assertEquals($expectedRequestUrl, (string) $this->httpHistory->getLastRequestUrl());
     }
 
     public function indexActionRedirectDataProvider(): array
@@ -195,12 +195,15 @@ class ProgressControllerTest extends AbstractViewControllerTest
             'remote test website not match request website' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'website' => 'bar',
+                    ])),
                 ],
                 'user' => $publicUser,
                 'website' => 'foo',
                 'testId' => self::TEST_ID,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-                'expectedRequestUrl' => 'http://null/job/foo/1/',
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'finished test; state=completed' => [
                 'httpFixtures' => [

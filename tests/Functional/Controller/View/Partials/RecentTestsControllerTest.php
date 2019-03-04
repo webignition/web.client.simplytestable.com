@@ -143,6 +143,19 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                             ],
                         ],
                     ]),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => 1,
+                        'website' => 'http://example.com/',
+                        'task_types' => [
+                            [
+                                'name' => Task::TYPE_HTML_VALIDATION,
+                            ],
+                        ],
+                        'user' => self::USER_EMAIL,
+                        'state' => Test::STATE_COMPLETED,
+                        'task_type_options' => [],
+                        'task_count' => 4,
+                    ]),
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -190,6 +203,19 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                                 'task_count' => 999,
                             ],
                         ],
+                    ]),
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => 1,
+                        'website' => 'http://example.com/',
+                        'task_types' => [
+                            [
+                                'name' => Task::TYPE_HTML_VALIDATION,
+                            ],
+                        ],
+                        'user' => self::USER_EMAIL,
+                        'state' => Test::STATE_COMPLETED,
+                        'task_type_options' => [],
+                        'task_count' => 4,
                     ]),
                     HttpResponseFactory::createJsonResponse([
                         2,

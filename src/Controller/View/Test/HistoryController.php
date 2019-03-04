@@ -85,7 +85,6 @@ class HistoryController extends AbstractBaseViewController
             /* @var RemoteTest $remoteTest */
             $remoteTest = $testObject['remote_test'];
 
-            $this->remoteTestService->set($remoteTest);
             $test = $this->testService->get($remoteTest->getWebsite(), $remoteTest->getId());
 
             $testList->addTest($test);
