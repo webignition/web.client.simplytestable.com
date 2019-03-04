@@ -29,13 +29,6 @@ class RemoteTestService
     }
 
     /**
-     * @param Test $test
-     */
-    public function setTest(Test $test)
-    {
-    }
-
-    /**
      * @param string $canonicalUrl
      * @param TestOptions $testOptions
      * @param string $testType
