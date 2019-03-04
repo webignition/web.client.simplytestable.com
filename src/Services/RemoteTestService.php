@@ -178,11 +178,6 @@ class RemoteTestService
         return $remoteTest;
     }
 
-    public function set(RemoteTest $remoteTest)
-    {
-        $this->remoteTest = $remoteTest;
-    }
-
     /**
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
