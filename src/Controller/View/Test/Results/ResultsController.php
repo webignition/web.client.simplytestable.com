@@ -135,7 +135,7 @@ class ResultsController extends AbstractResultsController
         $user = $this->userManager->getUser();
 
         $test = $this->testService->get($website, $test_id);
-        $remoteTest = $this->remoteTestService->get();
+        $remoteTest = $this->remoteTestService->get($test);
 
         if (empty($remoteTest)) {
             return new RedirectResponse($this->generateUrl('view_dashboard'));
@@ -208,7 +208,7 @@ class ResultsController extends AbstractResultsController
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
 
-        $isOwner = $this->remoteTestService->owns($user);
+        $isOwner = $this->remoteTestService->owns($test, $user);
 
         return $this->renderWithDefaultViewParameters(
             'test-results.html.twig',

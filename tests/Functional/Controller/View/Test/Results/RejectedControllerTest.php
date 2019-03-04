@@ -295,7 +295,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
+        $this->assertEquals($expectedRequestUrl, (string) $this->httpHistory->getLastRequestUrl());
     }
 
     public function indexActionBadRequestDataProvider(): array
@@ -304,11 +304,14 @@ class RejectedControllerTest extends AbstractViewControllerTest
             'website mismatch' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'website' => 'http://foo.example.com/',
+                    ])),
                 ],
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
                 'expectedRedirectUrl' => '/http://example.com//1/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Ffoo.example.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
             ],
             'incorrect state' => [
                 'httpFixtures' => [

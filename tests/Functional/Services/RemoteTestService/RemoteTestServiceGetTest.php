@@ -24,8 +24,6 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         parent::setUp();
 
         $this->test = Test::create(1, 'http://example.com/');
-
-        $this->setRemoteTestServiceTest($this->test);
     }
 
     /**
@@ -43,7 +41,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $this->expectExceptionMessage($expectedExceptionMessage);
         $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->remoteTestService->get();
+        $this->remoteTestService->get(Test::create(1, 'http://example.com/'));
     }
 
     public function getRemoteFailureDataProvider(): array
@@ -97,9 +95,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $this->setRemoteTestServiceTest($this->test);
-
-        $remoteTest = $this->remoteTestService->get();
+        $remoteTest = $this->remoteTestService->get($this->test);
 
         $this->assertNull($remoteTest);
     }
@@ -112,11 +108,14 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $this->setRemoteTestServiceTest($this->test);
-
-        $remoteTest = $this->remoteTestService->get();
+        $remoteTest = $this->remoteTestService->get($this->test);
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
         $this->assertEquals('http://null/job/http%3A%2F%2Fexample.com%2F/1/', $this->httpHistory->getLastRequestUrl());
+    }
+
+    public function testGetTestIsNull()
+    {
+        $this->assertNull($this->remoteTestService->get(null));
     }
 }

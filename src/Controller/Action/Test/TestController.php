@@ -3,11 +3,11 @@
 namespace App\Controller\Action\Test;
 
 use App\Controller\AbstractController;
+use App\Entity\Test\Test;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -51,14 +51,9 @@ class TestController extends AbstractController
      */
     public function lockAction($website, $test_id)
     {
-        try {
-            $this->testService->get($website, $test_id);
-            $this->remoteTestService->lock();
-        } catch (\Exception $e) {
-            // We already redirect back to test results regardless of if this action succeeds
-        }
-
-        return new Response();
+        return $this->lockUnlock($website, $test_id, function (?Test $test) {
+            $this->remoteTestService->lock($test);
+        });
     }
 
     /**
@@ -69,9 +64,16 @@ class TestController extends AbstractController
      */
     public function unlockAction($website, $test_id)
     {
+        return $this->lockUnlock($website, $test_id, function (?Test $test) {
+            $this->remoteTestService->unlock($test);
+        });
+    }
+
+    private function lockUnlock($website, $test_id, callable $action): Response
+    {
         try {
-            $this->testService->get($website, $test_id);
-            $this->remoteTestService->unlock();
+            $test = $this->testService->get($website, $test_id);
+            $action($test);
         } catch (\Exception $e) {
             // We already redirect back to test results regardless of if this action succeeds
         }
@@ -94,9 +96,11 @@ class TestController extends AbstractController
             'test_id' => $test_id,
         ];
 
+        $test = null;
+
         try {
-            $this->testService->get($website, $test_id);
-            $this->remoteTestService->cancel();
+            $test = $this->testService->get($website, $test_id);
+            $this->remoteTestService->cancel($test);
         } catch (InvalidCredentialsException $invalidCredentialsException) {
             return new RedirectResponse($this->generateUrl('view_dashboard'));
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
@@ -104,6 +108,10 @@ class TestController extends AbstractController
                 'view_test_progress',
                 $routeParameters
             ));
+        }
+
+        if (empty($test)) {
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
         }
 
         return new RedirectResponse($this->generateUrl(
@@ -124,9 +132,9 @@ class TestController extends AbstractController
     {
         try {
             $test = $this->testService->get($website, $test_id);
-            $remoteTest = $this->remoteTestService->get();
+            $remoteTest = $this->remoteTestService->get($test);
 
-            if ($remoteTest instanceof RemoteTest) {
+            if ($remoteTest) {
                 $crawlData = $remoteTest->getCrawl();
                 $this->remoteTestService->cancelByTestProperties((int) $crawlData['id'], $test->getWebsite());
             }

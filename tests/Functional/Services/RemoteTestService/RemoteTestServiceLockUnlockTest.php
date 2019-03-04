@@ -21,8 +21,6 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 
         $this->test = Test::create(1, 'http://example.com/');
 
-        $this->setRemoteTestServiceTest($this->test);
-
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -30,7 +28,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 
     public function testLock()
     {
-        $this->remoteTestService->lock();
+        $this->remoteTestService->lock($this->test);
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-private/',
             $this->httpHistory->getLastRequestUrl()
@@ -39,7 +37,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 
     public function testUnlock()
     {
-        $this->remoteTestService->unlock();
+        $this->remoteTestService->unlock($this->test);
         $this->assertEquals(
             'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-public/',
             $this->httpHistory->getLastRequestUrl()

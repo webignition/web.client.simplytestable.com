@@ -167,6 +167,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'website' => 'http://foo.example.com/',
                     ])),
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'website' => 'http://foo.example.com/',
+                    ])),
                 ],
                 'expectedRedirectUrl' => '/http://foo.example.com//1/',
             ],
