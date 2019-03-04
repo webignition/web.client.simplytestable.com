@@ -226,19 +226,21 @@ class CardControllerTest extends AbstractAccountControllerTest
 
     private function assertViewParameterKeys(array $parameters)
     {
-        $this->assertArraySubset(
-            [
-                'user',
-                'is_logged_in',
-                'stripe_publishable_key',
-                'plan_presentation_name',
-                'user_summary',
-                'countries',
-                'expiry_year_start',
-                'expiry_year_end',
-            ],
-            array_keys($parameters)
-        );
+        $expectedKeys = [
+            'user',
+            'is_logged_in',
+            'stripe_publishable_key',
+            'plan_presentation_name',
+            'user_summary',
+            'countries',
+            'expiry_year_start',
+            'expiry_year_end',
+        ];
+
+        $keys = array_keys($parameters);
+        foreach ($expectedKeys as $expectedKey) {
+            $this->assertContains($expectedKey, $keys);
+        }
     }
     /**
      * {@inheritdoc}
