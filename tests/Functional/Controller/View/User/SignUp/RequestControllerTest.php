@@ -303,7 +303,7 @@ class RequestControllerTest extends AbstractViewControllerTest
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
 
-        $this->assertInternalType('array', $parameters['plans']);
+        $this->assertIsArray($parameters['plans']);
 
         /* @var Plan[] $plans */
         $plans = $parameters['plans'];

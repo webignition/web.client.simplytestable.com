@@ -48,11 +48,11 @@ class RulesRetrieverTest extends AbstractBaseTestCase
         )
             ->withArgs(function ($path, $contents) use ($expectedFilePutContentsArg0) {
                 $this->assertSame($expectedFilePutContentsArg0, $path);
-                $this->assertInternalType('string', $contents);
+                $this->assertIsString($contents);
 
                 $decodedContents = json_decode($contents, true);
 
-                $this->assertInternalType('array', $decodedContents);
+                $this->assertIsArray($decodedContents);
 
                 $this->assertSame(
                     [

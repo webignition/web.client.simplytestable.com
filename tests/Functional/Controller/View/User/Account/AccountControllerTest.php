@@ -353,7 +353,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertInternalType('array', $parameters['stripe_event_data']);
+                            $this->assertIsArray($parameters['stripe_event_data']);
                             $stripeEventData = $parameters['stripe_event_data'];
 
                             $this->assertArrayHasKey('invoice', $stripeEventData);
@@ -429,7 +429,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
                         'withArgs' => function ($viewName, $parameters) {
                             $this->assertCommonViewData($viewName, $parameters);
 
-                            $this->assertInternalType('array', $parameters['stripe_event_data']);
+                            $this->assertIsArray($parameters['stripe_event_data']);
                             $stripeEventData = $parameters['stripe_event_data'];
 
                             $this->assertArrayHasKey('invoice', $stripeEventData);
@@ -679,7 +679,7 @@ class AccountControllerTest extends AbstractAccountControllerTest
         $this->assertViewParameterKeys($parameters);
 
         $this->assertInstanceOf(UserSummary::class, $parameters['user_summary']);
-        $this->assertInternalType('array', $parameters['currency_map']);
+        $this->assertIsArray($parameters['currency_map']);
     }
 
     private function assertViewParameterKeys(array $parameters)

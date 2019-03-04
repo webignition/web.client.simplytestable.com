@@ -297,13 +297,13 @@ class ProgressControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
                             $this->assertTestAndRemoteTest($parameters);
-                            $this->assertInternalType('array', $parameters['website']);
+                            $this->assertIsArray($parameters['website']);
                             $this->assertStateLabel($parameters, '50 urls, 100 tests; 79% done');
                             $this->assertAvailableTaskTypes($parameters, [
                                 'html-validation',
                                 'css-validation',
                             ]);
-                            $this->assertInternalType('array', $parameters['test_options']);
+                            $this->assertIsArray($parameters['test_options']);
                             $this->assertTrue($parameters['is_public_user_test']);
 
                             return true;
@@ -328,7 +328,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
                             $this->assertTestAndRemoteTest($parameters);
-                            $this->assertInternalType('array', $parameters['website']);
+                            $this->assertIsArray($parameters['website']);
                             $this->assertStateLabel(
                                 $parameters,
                                 '11 urls, 44 tests; waiting for first test to begin'
@@ -337,7 +337,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                                 'html-validation',
                                 'css-validation',
                             ]);
-                            $this->assertInternalType('array', $parameters['test_options']);
+                            $this->assertIsArray($parameters['test_options']);
                             $this->assertTrue($parameters['is_public_user_test']);
 
                             return true;
@@ -367,7 +367,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
                             $this->assertTestAndRemoteTest($parameters);
-                            $this->assertInternalType('array', $parameters['website']);
+                            $this->assertIsArray($parameters['website']);
                             $this->assertStateLabel(
                                 $parameters,
                                 'Finding URLs to test: 10 pages examined, 30 of 250 found'
@@ -377,7 +377,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                                 'css-validation',
                                 'link-integrity',
                             ]);
-                            $this->assertInternalType('array', $parameters['test_options']);
+                            $this->assertIsArray($parameters['test_options']);
                             $this->assertFalse($parameters['is_public_user_test']);
 
                             return true;
@@ -412,7 +412,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
         $responseData = json_decode($response->getContent(), true);
 
-        $this->assertInternalType('array', $responseData);
+        $this->assertIsArray($responseData);
         $this->assertEquals([
             'test',
             'state_label',
@@ -420,10 +420,10 @@ class ProgressControllerTest extends AbstractViewControllerTest
             'this_url',
         ], array_keys($responseData));
 
-        $this->assertInternalType('array', $responseData['test']);
+        $this->assertIsArray($responseData['test']);
         $this->assertEquals(self::TEST_ID, $responseData['test']['test_id']);
 
-        $this->assertInternalType('array', $responseData['remote_test']);
+        $this->assertIsArray($responseData['remote_test']);
         $this->assertEquals(self::TEST_ID, $responseData['remote_test']['id']);
         $this->assertEquals(self::WEBSITE, $responseData['remote_test']['website']);
 
@@ -558,13 +558,13 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     private function assertStateLabel(array $parameters, string $expectedStateLabel)
     {
-        $this->assertInternalType('string', $parameters['state_label']);
+        $this->assertIsString($parameters['state_label']);
         $this->assertEquals($expectedStateLabel, $parameters['state_label']);
     }
 
     private function assertAvailableTaskTypes(array $parameters, array $expectedTaskTypeKeys)
     {
-        $this->assertInternalType('array', $parameters['available_task_types']);
+        $this->assertIsArray($parameters['available_task_types']);
         $this->assertEquals($expectedTaskTypeKeys, array_keys($parameters['available_task_types']));
     }
 

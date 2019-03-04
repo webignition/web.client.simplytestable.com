@@ -360,7 +360,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                             $this->assertInstanceOf(Team::class, $parameters['team']);
 
                             $this->assertArrayHasKey('invites', $parameters);
-                            $this->assertInternalType('array', $parameters['invites']);
+                            $this->assertIsArray($parameters['invites']);
                             $this->assertInstanceOf(Invite::class, $parameters['invites'][0]);
 
                             return true;
@@ -394,7 +394,7 @@ class TeamControllerTest extends AbstractAccountControllerTest
                             $this->assertArrayNotHasKey('team_create_error', $parameters);
 
                             $this->assertArrayHasKey('invites', $parameters);
-                            $this->assertInternalType('array', $parameters['invites']);
+                            $this->assertIsArray($parameters['invites']);
                             $this->assertInstanceOf(Invite::class, $parameters['invites'][0]);
 
                             return true;

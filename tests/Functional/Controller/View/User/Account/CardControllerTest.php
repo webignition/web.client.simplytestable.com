@@ -211,13 +211,13 @@ class CardControllerTest extends AbstractAccountControllerTest
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
 
-        $this->assertInternalType('string', $parameters['stripe_publishable_key']);
+        $this->assertIsString($parameters['stripe_publishable_key']);
         $this->assertEquals('Agency', $parameters['plan_presentation_name']);
         $this->assertInstanceOf(UserSummary::class, $parameters['user_summary']);
-        $this->assertInternalType('array', $parameters['countries']);
+        $this->assertIsArray($parameters['countries']);
 
-        $this->assertInternalType('int', $parameters['expiry_year_start']);
-        $this->assertInternalType('int', $parameters['expiry_year_end']);
+        $this->assertIsInt($parameters['expiry_year_start']);
+        $this->assertIsInt($parameters['expiry_year_end']);
         $this->assertEquals(
             CardController::CARD_EXPIRY_DATE_YEAR_RANGE,
             $parameters['expiry_year_end'] - $parameters['expiry_year_start']
