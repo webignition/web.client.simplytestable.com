@@ -10,19 +10,8 @@ use Twig_Environment;
 
 abstract class AbstractBaseViewController extends AbstractController
 {
-    /**
-     * @var DefaultViewParameters
-     */
     private $defaultViewParameters;
-
-    /**
-     * @var Twig_Environment
-     */
     private $twig;
-
-    /**
-     * @var CacheableResponseFactory
-     */
     protected $cacheableResponseFactory;
 
     public function __construct(
@@ -38,18 +27,7 @@ abstract class AbstractBaseViewController extends AbstractController
         $this->cacheableResponseFactory = $cacheableResponseFactory;
     }
 
-    /**
-     * @param string $view
-     * @param array $parameters
-     * @param Response|null $response
-     *
-     * @return Response
-     *
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    protected function render($view, array $parameters = array(), Response $response = null)
+    protected function render(string $view, array $parameters = [], Response $response = null): Response
     {
         if (empty($response)) {
             $response = new Response();
@@ -62,19 +40,11 @@ abstract class AbstractBaseViewController extends AbstractController
         return $response;
     }
 
-    /**
-     * @param string $view
-     * @param array $parameters
-     * @param Response|null $response
-     *
-     * @return Response
-     *
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    protected function renderWithDefaultViewParameters($view, array $parameters = array(), Response $response = null)
-    {
+    protected function renderWithDefaultViewParameters(
+        string $view,
+        array $parameters = [],
+        Response $response = null
+    ): Response {
         return $this->render(
             $view,
             array_merge($this->defaultViewParameters->getDefaultViewParameters(), $parameters),
