@@ -141,9 +141,13 @@ class RemoteTestService
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function get(Test $test): ?RemoteTest
+    public function get(?Test $test): ?RemoteTest
     {
         $remoteTest = null;
+
+        if (null === $test) {
+            return $remoteTest;
+        }
 
         try {
             $response = $this->coreApplicationHttpClient->get(
