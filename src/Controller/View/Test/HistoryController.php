@@ -25,21 +25,9 @@ class HistoryController extends AbstractBaseViewController
     const DEFAULT_PAGE_NUMBER = 1;
     const TEST_LIST_LIMIT = 10;
 
-    /**
-     * @var TestService
-     */
     private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
     private $remoteTestService;
-
-    /**
-     * @var TaskService
-     */
     private $taskService;
-
     private $remoteTestListService;
 
     public function __construct(

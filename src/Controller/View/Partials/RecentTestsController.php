@@ -21,19 +21,8 @@ class RecentTestsController extends AbstractBaseViewController
 {
     const LIMIT = 3;
 
-    /**
-     * @var TestService
-     */
     private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
     private $remoteTestService;
-
-    /**
-     * @var TaskService
-     */
     private $taskService;
 
     private $remoteTestListService;
