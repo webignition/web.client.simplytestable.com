@@ -9,6 +9,7 @@ use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
+use App\Services\RemoteTestListService;
 use App\Services\RemoteTestService;
 use App\Services\TaskService;
 use App\Services\TestService;
@@ -39,6 +40,8 @@ class HistoryController extends AbstractBaseViewController
      */
     private $taskService;
 
+    private $remoteTestListService;
+
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
@@ -46,13 +49,15 @@ class HistoryController extends AbstractBaseViewController
         CacheableResponseFactory $cacheableResponseFactory,
         TestService $testService,
         RemoteTestService $remoteTestService,
-        TaskService $taskService
+        TaskService $taskService,
+        RemoteTestListService $remoteTestListService
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
+        $this->remoteTestListService = $remoteTestListService;
     }
 
     /**
@@ -79,7 +84,7 @@ class HistoryController extends AbstractBaseViewController
 
         $testListOffset = ($pageNumber - 1) * self::TEST_LIST_LIMIT;
 
-        $testList = $this->remoteTestService->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
+        $testList = $this->remoteTestListService->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
 
         foreach ($testList->get() as $testObject) {
             /* @var RemoteTest $remoteTest */
