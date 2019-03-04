@@ -30,7 +30,7 @@ class RemoteTestServiceGetFinishedWebsitesTest extends AbstractRemoteTestService
     public function getFinishedWebsitesFailureDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'HTTP 500' => [

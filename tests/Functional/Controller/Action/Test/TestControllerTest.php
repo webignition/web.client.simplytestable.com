@@ -149,7 +149,7 @@ class TestControllerTest extends AbstractControllerTest
     {
         $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'invalid owner' => [
@@ -217,7 +217,7 @@ class TestControllerTest extends AbstractControllerTest
     {
         $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'invalid owner' => [

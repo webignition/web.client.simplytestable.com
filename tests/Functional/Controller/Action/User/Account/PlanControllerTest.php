@@ -118,7 +118,7 @@ class PlanControllerTest extends AbstractUserAccountControllerTest
     public function subscribeActionDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'already on plan' => [

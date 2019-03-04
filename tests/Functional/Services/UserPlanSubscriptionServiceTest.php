@@ -92,7 +92,7 @@ class UserPlanSubscriptionServiceTest extends AbstractCoreApplicationServiceTest
 
     public function subscribeFailureDataProvider(): array
     {
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'HTTP 400' => [

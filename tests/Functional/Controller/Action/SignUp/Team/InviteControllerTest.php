@@ -104,7 +104,7 @@ class InviteControllerTest extends AbstractControllerTest
     {
         $notFoundResponse = HttpResponseFactory::createNotFoundResponse();
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         $inviteHttpResponse = HttpResponseFactory::createJsonResponse([
             'team' => 'Team Name',

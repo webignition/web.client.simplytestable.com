@@ -195,7 +195,7 @@ class PasswordChangeControllerTest extends AbstractUserAccountControllerTest
             'failed; CURL 28' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse('token-value'),
-                    ConnectExceptionFactory::create('CURL/28 Operation timed out'),
+                    ConnectExceptionFactory::create(28, 'Operation timed out'),
                 ],
                 'request' => new Request([], [
                     'current-password' => self::USER_CURRENT_PASSWORD,

@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Factory;
 
@@ -8,18 +7,10 @@ use GuzzleHttp\Psr7\Request;
 
 class ConnectExceptionFactory
 {
-    /**
-     * Transforms a stringified curl message into a ConnectException
-     *
-     * Usage example:
-     * ConnectExceptionFactory::create('CURL/28 Operation timed out');
-     */
-    public static function create(string $curlMessage): ConnectException
+    public static function create(int $code, string $message): ConnectException
     {
-        $curlMessageParts = explode(' ', $curlMessage, 2);
-
         return new ConnectException(
-            'cURL error ' . str_replace('CURL/', '', $curlMessageParts[0]) . ': ' . $curlMessageParts[1],
+            'cURL error ' . $code . ': ' . $message,
             new Request('GET', 'http://example.com/')
         );
     }

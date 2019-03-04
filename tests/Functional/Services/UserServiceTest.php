@@ -63,7 +63,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
         $notFoundResponse = HttpResponseFactory::createNotFoundResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'HTTP 404 (invalid token)' => [
@@ -189,7 +189,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     public function createFailureDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'user already exists' => [
@@ -312,7 +312,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     public function activateFailureDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'invalid token' => [
@@ -395,7 +395,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     public function activateAndAcceptFailureDataProvider(): array
     {
         $serviceUnavailableResponse = HttpResponseFactory::createServiceUnavailableResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'no invite for token' => [
@@ -608,7 +608,7 @@ class UserServiceTest extends AbstractCoreApplicationServiceTest
     public function getSummaryFailureDataProvider(): array
     {
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
             'HTTP 500' => [

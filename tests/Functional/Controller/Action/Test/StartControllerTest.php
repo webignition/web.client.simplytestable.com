@@ -120,7 +120,7 @@ class StartControllerTest extends AbstractControllerTest
         $privateUser = new User(self::USER_EMAIL);
 
         $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create('CURL/28 Operation timed out');
+        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         $expectedProgressRedirectUrl = '/http://example.com//1/progress/';
 
