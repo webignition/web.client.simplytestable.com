@@ -382,8 +382,8 @@ class RejectedControllerTest extends AbstractViewControllerTest
                                 array_keys($parameters)
                             );
 
-                            $this->assertInternalType('array', $parameters['website']);
-                            $this->assertInternalType('array', $parameters['plans']);
+                            $this->assertIsArray($parameters['website']);
+                            $this->assertIsArray($parameters['plans']);
 
                             /* @var RemoteTest $remoteTest */
                             $remoteTest = $parameters['remote_test'];
@@ -446,8 +446,8 @@ class RejectedControllerTest extends AbstractViewControllerTest
                                 array_keys($parameters)
                             );
 
-                            $this->assertInternalType('array', $parameters['website']);
-                            $this->assertInternalType('array', $parameters['plans']);
+                            $this->assertIsArray($parameters['website']);
+                            $this->assertIsArray($parameters['plans']);
 
                             /* @var RemoteTest $remoteTest */
                             $remoteTest = $parameters['remote_test'];

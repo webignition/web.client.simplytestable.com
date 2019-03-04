@@ -679,7 +679,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     {
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertViewParameterKeys($parameters);
-        $this->assertInternalType('array', $parameters['website']);
+        $this->assertIsArray($parameters['website']);
         $this->assertInstanceOf(ErrorTaskMapCollection::class, $parameters['error_task_maps']);
 
         /* @var Test $test */

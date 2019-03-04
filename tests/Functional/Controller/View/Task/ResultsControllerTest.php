@@ -754,8 +754,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
                             $this->assertCount(2, $errorsByLinkState['http'][404]);
                             $this->assertCount(2, $errorsByLinkState['curl'][28]);
 
-                            $this->assertInternalType('array', $parameters['link_class_labels']);
-                            $this->assertInternalType('array', $parameters['link_state_descriptions']);
+                            $this->assertIsArray($parameters['link_class_labels']);
+                            $this->assertIsArray($parameters['link_state_descriptions']);
 
                             return true;
                         },
@@ -1136,7 +1136,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertEquals(self::VIEW_NAME, $viewName);
         $this->assertCommonViewParameterKeys($parameters);
 
-        $this->assertInternalType('array', $parameters['website_url']);
+        $this->assertIsArray($parameters['website_url']);
 
         /* @var Test $test */
         $test = $parameters['test'];

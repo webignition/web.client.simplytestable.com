@@ -138,7 +138,7 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
                             $this->assertViewParameterKeys($parameters);
 
                             $testData = $parameters['test'];
-                            $this->assertInternalType('array', $testData);
+                            $this->assertIsArray($testData);
 
                             $this->assertEquals(
                                 [

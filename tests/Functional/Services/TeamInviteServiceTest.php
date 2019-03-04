@@ -142,7 +142,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
         $invites = $this->teamInviteService->getForUser();
 
-        $this->assertInternalType('array', $invites);
+        $this->assertIsArray($invites);
         $invite = $invites[0];
 
         $this->assertInstanceOf(Invite::class, $invite);
@@ -215,7 +215,7 @@ class TeamInviteServiceTest extends AbstractCoreApplicationServiceTest
 
         $invites = $this->teamInviteService->getForTeam();
 
-        $this->assertInternalType('array', $invites);
+        $this->assertIsArray($invites);
         $invite = $invites[0];
 
         $this->assertInstanceOf(Invite::class, $invite);

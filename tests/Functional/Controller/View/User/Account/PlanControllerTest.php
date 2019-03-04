@@ -296,12 +296,12 @@ class PlanControllerTest extends AbstractAccountControllerTest
         $this->assertInstanceOf(UserSummary::class, $parameters['user_summary']);
         $this->assertEquals('Agency', $parameters['plan_presentation_name']);
 
-        $this->assertInternalType('array', $parameters['plans']);
+        $this->assertIsArray($parameters['plans']);
         foreach ($parameters['plans'] as $plan) {
             $this->assertInstanceOf(Plan::class, $plan);
         }
 
-        $this->assertInternalType('array', $parameters['currency_map']);
+        $this->assertIsArray($parameters['currency_map']);
     }
 
     private function assertViewParameterKeys(array $parameters)

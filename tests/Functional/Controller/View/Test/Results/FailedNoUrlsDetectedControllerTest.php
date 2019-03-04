@@ -169,8 +169,8 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInternalType('array', $parameters['website']);
-                            $this->assertInternalType('string', $parameters['redirect']);
+                            $this->assertIsArray($parameters['website']);
+                            $this->assertIsString($parameters['redirect']);
 
                             return true;
                         },
