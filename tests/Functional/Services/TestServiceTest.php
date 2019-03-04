@@ -112,7 +112,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         $test = $this->testService->get($canonicalUrl, $testId);
 
         if (empty($expectedTestValues)) {
-            $this->assertFalse($test);
+            $this->assertNull($test);
         } else {
             $this->assertEquals($expectedTestValues['testId'], $test->getTestId());
             $this->assertEquals($expectedTestValues['state'], $test->getState());

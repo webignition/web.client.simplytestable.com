@@ -105,7 +105,7 @@ class TestService
      * @param string $canonicalUrl
      * @param int $testId
      *
-     * @return Test|bool
+     * @return Test|null
      *
      * @throws CoreApplicationRequestException
      */
@@ -123,11 +123,11 @@ class TestService
             $this->remoteTestService->setTest($test);
             $remoteTest = $this->remoteTestService->get();
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            return false;
+            return null;
         }
 
         if (!$remoteTest instanceof RemoteTest) {
-            return false;
+            return null;
         }
 
         $this->hydrateFromRemoteTest($test, $remoteTest);
