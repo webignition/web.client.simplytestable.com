@@ -106,11 +106,6 @@ class ByTaskTypeController extends AbstractResultsController
     {
         $user = $this->userManager->getUser();
         $test = $this->testService->get($website, $test_id);
-
-        if (empty($test)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
-
         $remoteTest = $this->remoteTestService->get($test);
 
         if (empty($remoteTest)) {
