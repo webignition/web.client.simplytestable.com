@@ -159,24 +159,23 @@ class RemoteTestService
      */
     public function get(): ?RemoteTest
     {
-        if (is_null($this->remoteTest)) {
-            try {
-                $response = $this->coreApplicationHttpClient->get(
-                    'test_status',
-                    [
-                        'canonical_url' => $this->test->getWebsite(),
-                        'test_id' => $this->test->getTestId(),
-                    ]
-                );
+        $remoteTest = null;
 
-                $remoteTestData = $this->jsonResponseHandler->handle($response);
-                $this->remoteTest = new RemoteTest($remoteTestData);
-            } catch (InvalidContentTypeException $invalidContentTypeException) {
-                return null;
-            }
+        try {
+            $response = $this->coreApplicationHttpClient->get(
+                'test_status',
+                [
+                    'canonical_url' => $this->test->getWebsite(),
+                    'test_id' => $this->test->getTestId(),
+                ]
+            );
+
+            $remoteTestData = $this->jsonResponseHandler->handle($response);
+            $remoteTest = new RemoteTest($remoteTestData);
+        } catch (InvalidContentTypeException $invalidContentTypeException) {
         }
 
-        return $this->remoteTest;
+        return $remoteTest;
     }
 
     public function set(RemoteTest $remoteTest)
