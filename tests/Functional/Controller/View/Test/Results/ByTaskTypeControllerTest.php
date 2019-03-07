@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 use App\Controller\View\Test\Results\ByTaskTypeController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
+use App\Model\Test\DecoratedTest;
 use App\Model\Test\Task\ErrorTaskMapCollection;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
@@ -684,7 +685,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
         /* @var Test $test */
         $test = $parameters['test'];
-        $this->assertInstanceOf(Test::class, $test);
+        $this->assertInstanceOf(DecoratedTest::class, $test);
         $this->assertEquals(self::TEST_ID, $test->getTestId());
         $this->assertEquals(self::WEBSITE, $test->getWebsite());
     }
