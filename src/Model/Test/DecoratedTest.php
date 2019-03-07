@@ -75,4 +75,9 @@ class DecoratedTest
     {
         return $this->remoteTest->getParameter($key);
     }
+
+    public function getAmendments()
+    {
+        return $this->remoteTest->getAmmendments();
+    }
 }
