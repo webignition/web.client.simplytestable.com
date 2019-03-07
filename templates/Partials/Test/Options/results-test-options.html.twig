@@ -5,13 +5,13 @@
 <div class="row test-options-set full-single-options-set">
     <div class="col-lg-6 col-md-6 col-sm-6 full-single-option">
         <label class="radio">
-            <input type="radio" name="full-single" value="full" {% if remote_test.type == 'Full site' %}checked{% endif %}> Full site test
+            <input type="radio" name="full-single" value="full" {% if remote_test.isFullSite %}checked{% endif %}> Full site test
             <span class="help-block">Test your entire site by finding URLs in your sitemap and by crawling your site</span>
         </label>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-6 full-single-option">
         <label class="radio">
-            <input type="radio" name="full-single" value="single" {% if remote_test.type != 'Full site' %}checked{% endif %}> Single URL test
+            <input type="radio" name="full-single" value="single" {% if remote_test.isSingleUrl %}checked{% endif %}> Single URL test
             <span class="help-block">Test just the above URL only</span>
         </label>
     </div>
