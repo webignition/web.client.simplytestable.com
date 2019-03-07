@@ -7,6 +7,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
@@ -181,8 +182,10 @@ class ProgressController extends AbstractBaseViewController
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
 
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
+
         $commonViewData = [
-            'test' => $test,
+            'test' => $decoratedTest,
             'state_label' => $this->getStateLabel($test, $remoteTest),
         ];
 

@@ -5,7 +5,7 @@ namespace App\Model\Test;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
 
-class DecoratedTest
+class DecoratedTest implements \JsonSerializable
 {
     private $test;
     private $remoteTest;
@@ -79,5 +79,20 @@ class DecoratedTest
     public function getAmendments()
     {
         return $this->remoteTest->getAmmendments();
+    }
+
+    public function getState(): string
+    {
+        return $this->remoteTest->getState();
+    }
+
+    public function getCompletionPercent()
+    {
+        return $this->remoteTest->getCompletionPercent();
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_merge($this->test->jsonSerialize(), []);
     }
 }
