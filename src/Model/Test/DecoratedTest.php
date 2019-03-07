@@ -78,7 +78,9 @@ class DecoratedTest implements \JsonSerializable
 
     public function getAmendments()
     {
-        return $this->remoteTest->getAmmendments();
+        $amendments = $this->remoteTest->getAmmendments();
+
+        return $amendments ?? [];
     }
 
     public function getState(): string
@@ -98,6 +100,11 @@ class DecoratedTest implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return array_merge($this->test->jsonSerialize(), []);
+        return array_merge($this->test->jsonSerialize(), [
+            'task_count' => $this->getTaskCount(),
+            'completion_percent' => $this->getCompletionPercent(),
+            'task_count_by_state' => $this->getTaskCountByState(),
+            'amendments' => $this->getAmendments(),
+        ]);
     }
 }
