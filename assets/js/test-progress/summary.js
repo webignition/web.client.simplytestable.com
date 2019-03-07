@@ -45,16 +45,16 @@ class Summary {
      * @param {object} summaryData
      */
     render (summaryData) {
-        let remoteTest = summaryData.remote_test;
+        let test = summaryData.test;
 
-        this.progressBar.setCompletionPercent(remoteTest.completion_percent);
-        this.progressBar.setStyle(summaryData.test.state === 'crawling' ? 'warning' : 'default');
+        this.progressBar.setCompletionPercent(test.completion_percent);
+        this.progressBar.setStyle(test.state === 'crawling' ? 'warning' : 'default');
         this.stateLabel.innerText = summaryData.state_label;
-        this.taskQueues.render(remoteTest.task_count, remoteTest.task_count_by_state);
+        this.taskQueues.render(test.task_count, test.task_count_by_state);
 
-        if (remoteTest.ammendments && remoteTest.ammendments.length > 0) {
+        if (test.amendments.length > 0) {
             this.element.dispatchEvent(new CustomEvent(Summary.getRenderAmmendmentEventName(), {
-                detail: remoteTest.ammendments[0]
+                detail: test.amendments[0]
             }));
         }
     };

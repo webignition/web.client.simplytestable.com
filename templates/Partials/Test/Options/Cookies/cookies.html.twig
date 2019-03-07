@@ -1,8 +1,9 @@
-{% if remote_test is defined %}
-    {% set test_cookies_enabled = remote_test.hasParameter('cookies') %}
-    {% set test_cookies = (remote_test.hasParameter('cookies') ? remote_test.parameter('cookies') : [{'name': '', 'value': ''}]) %}
+{% set test_cookies_enabled = false %}
+
+{% if test is defined %}
+    {% set test_cookies_enabled = test.getParameter('cookies') ? true : false %}
+    {% set test_cookies = test.getParameter('cookies')|default([{'name': '', 'value': ''}]) %}
 {% else %}
-    {% set test_cookies_enabled = false %}
     {% set test_cookies = test_options.cookies %}
 {% endif %}
 

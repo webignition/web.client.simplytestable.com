@@ -75,7 +75,7 @@ class TestProgress {
             this.summaryData = event.detail.response;
 
             let state = this.summaryData.test.state;
-            let taskCount = this.summaryData.remote_test.task_count;
+            let taskCount = this.summaryData.test.task_count;
             let isStateQueuedOrInProgress = ['queued', 'in-progress'].indexOf(state) !== -1;
 
             this._setBodyJobClass(this.document.body.classList, state);
@@ -94,7 +94,7 @@ class TestProgress {
     _taskListInitializedEventListener () {
         this.taskListIsInitialized = true;
         this.taskList.render(0);
-        this.taskListPagination = new TaskListPagination(this.pageLength, this.summaryData.remote_test.task_count);
+        this.taskListPagination = new TaskListPagination(this.pageLength, this.summaryData.test.task_count);
 
         if (this.taskListPagination.isRequired() && !this.taskListPagination.isRendered()) {
             this.taskListPagination.init(this._createPaginationElement());

@@ -7,6 +7,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
@@ -181,14 +182,15 @@ class ProgressController extends AbstractBaseViewController
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
 
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
+
         $commonViewData = [
-            'test' => $test,
+            'test' => $decoratedTest,
             'state_label' => $this->getStateLabel($test, $remoteTest),
         ];
 
         if ($this->requestIsForApplicationJson($request)) {
             $viewData = array_merge($commonViewData, [
-                'remote_test' => $remoteTest->__toArray(),
                 'this_url' => $this->generateUrl(
                     'view_test_progress',
                     [
@@ -203,7 +205,6 @@ class ProgressController extends AbstractBaseViewController
             $response->headers->set('content-type', 'application/json');
         } else {
             $viewData = array_merge($commonViewData, [
-                'remote_test' => $remoteTest,
                 'website' => $this->urlViewValues->create($testWebsite),
                 'available_task_types' => $this->taskTypeService->getAvailable(),
                 'task_types' => $this->taskTypeService->get(),
