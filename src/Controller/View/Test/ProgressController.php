@@ -206,7 +206,6 @@ class ProgressController extends AbstractBaseViewController
             $response->headers->set('content-type', 'application/json');
         } else {
             $viewData = array_merge($commonViewData, [
-                'remote_test' => $remoteTest,
                 'website' => $this->urlViewValues->create($testWebsite),
                 'available_task_types' => $this->taskTypeService->getAvailable(),
                 'task_types' => $this->taskTypeService->get(),
