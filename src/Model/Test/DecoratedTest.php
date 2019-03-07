@@ -70,4 +70,9 @@ class DecoratedTest
     {
         return $this->remoteTest->getTaskCount();
     }
+
+    public function getParameter(string $key)
+    {
+        return $this->remoteTest->getParameter($key);
+    }
 }
