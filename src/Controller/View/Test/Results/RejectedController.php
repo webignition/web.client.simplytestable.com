@@ -8,6 +8,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\PlansService;
@@ -131,9 +132,11 @@ class RejectedController extends AbstractBaseViewController
             ));
         }
 
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
+
         $viewData = [
             'website' => $this->urlViewValues->create($website),
-            'remote_test' => $remoteTest,
+            'test' => $decoratedTest,
             'plans' => $this->plansService->getList(),
         ];
 

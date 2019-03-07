@@ -10,7 +10,7 @@
 
 {% if next_plan is null %}
     <p class="lead">
-        You have reached your account's monthly limit of <strong>{{ remote_test.rejection.constraint.limit|number_format }}</strong>
+        You have reached your account's monthly limit of <strong>{{ constraint.limit|number_format }}</strong>
         credits.
     </p>
 
@@ -32,7 +32,7 @@
     {% set credit_increase_factor = (next_plan.creditsPerMonth / userSummary.planConstraints.credits.limit) %}
 
     <p class="lead">
-        You have reached your account's monthly limit of <strong>{{ remote_test.rejection.constraint.limit|number_format }}</strong>
+        You have reached your account's monthly limit of <strong>{{ constraint.limit|number_format }}</strong>
         credits.
     </p>
 
@@ -72,7 +72,7 @@
             </li>
             <li>
                 <p>
-                    <a href="{{ path('view_test_history_page1', {'filter': remote_test.website}) }}">Past results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %} <i class="fa fa-caret-right"></i></a>
+                    <a href="{{ path('view_test_history_page1', {'filter': test.website}) }}">Past results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %} <i class="fa fa-caret-right"></i></a>
                 </p>
             </li>
         </ul>
