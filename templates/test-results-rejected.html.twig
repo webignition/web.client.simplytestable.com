@@ -2,14 +2,18 @@
 
 {% set dialog_width = 8 %}
 
+{% set constraint = test.rejection.constraint %}
+{% set constraint_name = constraint ? constraint.name : null %}
+{% set reason = test.rejection.reason %}
+
 {% set title %}
-    {% if remote_test.rejection.constraint is defined and remote_test.rejection.constraint is not null %}
+    {% if constraint_name is not null %}
         {% if is_logged_in %}
             Plan limit reached
         {% else %}
             Demo limit reached
         {% endif %}
-    {% elseif remote_test.rejection.reason|slice(0, 4) == 'curl' %}
+    {% elseif test.rejection.reason|slice(0, 4) == 'curl' %}
         Sorry, that can't be accessed at the moment
     {% else %}
         Oops, I can't do that
@@ -22,23 +26,23 @@
 {% block content %}
     <h1>{{ title }}</h1>
 
-    {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'credits_per_month' %}
+    {% if constraint_name == 'credits_per_month' %}
         {% include 'Partials/Test/Results/Rejected/CreditLimit/credit-limit.html.twig' %}
     {% endif %}
 
-    {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'full_site_jobs_per_site' %}
+    {% if constraint_name == 'full_site_jobs_per_site' %}
         {% include 'Partials/Test/Results/Rejected/full-site.html.twig' %}
     {% endif %}
 
-    {% if remote_test.rejection.constraint.name is defined and remote_test.rejection.constraint.name == 'single_url_jobs_per_url' %}
+    {% if constraint_name == 'single_url_jobs_per_url' %}
         {% include 'Partials/Test/Results/Rejected/single-page.html.twig' %}
     {% endif %}
 
-    {% if remote_test.rejection.constraint is null and remote_test.rejection.reason == 'unroutable' %}
+    {% if constraint_name is empty and reason == 'unroutable' %}
         {% include 'Partials/Test/Results/Rejected/unroutable.html.twig' %}
     {% endif %}
 
-    {% if remote_test.rejection.constraint is null and remote_test.rejection.reason|slice(0, 4) == 'curl' %}
+    {% if constraint_name is empty and reason|slice(0, 4) == 'curl' %}
         {% include 'Partials/Test/Results/Rejected/curl-error.html.twig' %}
     {% endif %}
 {% endblock %}

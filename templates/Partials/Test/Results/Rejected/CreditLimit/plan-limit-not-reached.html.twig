@@ -2,7 +2,7 @@
 
 <p class="lead">
     This test couldn't go ahead as, at the time, you had reached your account's monthly
-    limit of <strong>{{ remote_test.rejection.constraint.limit|number_format }}</strong> credits.
+    limit of <strong>{{ constraint.limit|number_format }}</strong> credits.
 </p>
 
 <p class="lead">
@@ -11,7 +11,7 @@
 </p>
 
 <div class="cta">
-    <form method="post" action="{{ path('action_test_retest', {'website': website.raw, 'test_id': remote_test.id}) }}">
+    <form method="post" action="{{ path('action_test_retest', {'website': website.raw, 'test_id': test.testId}) }}">
         <button type="submit" class="btn btn-primary btn-lg">
             <span class="primary">Re-test {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %}</span>
             <span class="byline">Just one click. Do it now.</span>
@@ -24,7 +24,7 @@
     <ul class="actions">
         <li>
             <p>
-                <a href="{{ path('view_test_history_page1', {'filter': remote_test.website}) }}">Past results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %} <i class="fa fa-caret-right"></i></a>
+                <a href="{{ path('view_test_history_page1', {'filter': test.website}) }}">Past results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %} <i class="fa fa-caret-right"></i></a>
             </p>
         </li>
     </ul>
