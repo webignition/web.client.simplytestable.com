@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Controller\View\Test\Progress;
 use App\Controller\View\Test\ProgressController;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -416,16 +417,11 @@ class ProgressControllerTest extends AbstractViewControllerTest
         $this->assertEquals([
             'test',
             'state_label',
-            'remote_test',
             'this_url',
         ], array_keys($responseData));
 
         $this->assertIsArray($responseData['test']);
         $this->assertEquals(self::TEST_ID, $responseData['test']['test_id']);
-
-        $this->assertIsArray($responseData['remote_test']);
-        $this->assertEquals(self::TEST_ID, $responseData['remote_test']['id']);
-        $this->assertEquals(self::WEBSITE, $responseData['remote_test']['website']);
 
         $this->assertEquals('http://localhost/http://example.com//1/progress/', $responseData['this_url']);
         $this->assertEquals($expectedStateLabel, $responseData['state_label']);
@@ -526,7 +522,6 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'is_logged_in',
                 'test',
                 'state_label',
-                'remote_test',
                 'website',
                 'available_task_types',
                 'task_types',
@@ -541,19 +536,12 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     private function assertTestAndRemoteTest(array $parameters)
     {
-        $this->assertInstanceOf(Test::class, $parameters['test']);
+        $this->assertInstanceOf(DecoratedTest::class, $parameters['test']);
 
         /* @var Test $test */
         $test = $parameters['test'];
         $this->assertEquals(self::TEST_ID, $test->getTestId());
         $this->assertEquals(self::WEBSITE, $test->getWebsite());
-
-        $this->assertInstanceOf(RemoteTest::class, $parameters['remote_test']);
-
-        /* @var RemoteTest $remoteTest */
-        $remoteTest = $parameters['remote_test'];
-        $this->assertEquals(self::TEST_ID, $remoteTest->getId());
-        $this->assertEquals(self::WEBSITE, $remoteTest->getWebsite());
     }
 
     private function assertStateLabel(array $parameters, string $expectedStateLabel)
