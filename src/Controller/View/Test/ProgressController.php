@@ -191,7 +191,6 @@ class ProgressController extends AbstractBaseViewController
 
         if ($this->requestIsForApplicationJson($request)) {
             $viewData = array_merge($commonViewData, [
-                'remote_test' => $remoteTest->__toArray(),
                 'this_url' => $this->generateUrl(
                     'view_test_progress',
                     [
