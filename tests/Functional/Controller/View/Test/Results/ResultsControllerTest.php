@@ -7,6 +7,7 @@ use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -878,15 +879,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
         /* @var Test $test */
         $test = $parameters['test'];
-        $this->assertInstanceOf(Test::class, $test);
+        $this->assertInstanceOf(DecoratedTest::class, $test);
         $this->assertEquals(self::TEST_ID, $test->getTestId());
         $this->assertEquals(self::WEBSITE, $test->getWebsite());
-
-        /* @var RemoteTest $remoteTest */
-        $remoteTest = $parameters['remote_test'];
-        $this->assertInstanceOf(RemoteTest::class, $remoteTest);
-        $this->assertEquals(self::TEST_ID, $remoteTest->getId());
-        $this->assertEquals(self::WEBSITE, $remoteTest->getWebsite());
 
         $this->assertEquals([
             'html-validation',
@@ -909,7 +904,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'test',
                 'is_public',
                 'is_public_user_test',
-                'remote_test',
                 'is_owner',
                 'type',
                 'type_label',
