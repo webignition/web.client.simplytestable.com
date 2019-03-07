@@ -211,7 +211,7 @@ class ResultsController extends AbstractResultsController
 
         $isOwner = $this->remoteTestService->owns($test, $user);
 
-        $decoratedTest = new DecoratedTest($test);
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
 
         return $this->renderWithDefaultViewParameters(
             'test-results.html.twig',
@@ -220,7 +220,7 @@ class ResultsController extends AbstractResultsController
                 'test' => $decoratedTest,
                 'is_public' => $remoteTest->getIsPublic(),
                 'is_public_user_test' => $isPublicUserTest,
-                'remote_test' => $remoteTest,
+//                'remote_test' => $remoteTest,
                 'is_owner' => $isOwner,
                 'type' => $taskType,
                 'type_label' => $this->getTaskTypeLabel($taskType),

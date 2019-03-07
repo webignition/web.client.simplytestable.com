@@ -2,20 +2,14 @@
 
     {% for task_type_key, task_type_details in task_types %}
         {% set is_available = task_type_key in available_task_types|keys %}
-        {% set is_selected = test_options[task_type_key] is defined or task_type_details.name in remote_test.tasktypes %}
+        {% set is_selected = test_options[task_type_key] is defined or task_type_details.name in test.tasktypes %}
 
         {% set task_type_error_count = 0 %}
-
-        {% for task_type in remote_test.tasktypes %}
-            {% if task_type_details.name == task_type %}
-                {% set task_type_error_count = test.getErrorCountByTaskType(task_type) %}
-            {% endif %}
-        {% endfor %}
-
         {% set task_type_warning_count = 0 %}
 
-        {% for task_type in remote_test.tasktypes %}
+        {% for task_type in test.tasktypes %}
             {% if task_type_details.name == task_type %}
+                {% set task_type_error_count = test.getErrorCountByTaskType(task_type) %}
                 {% set task_type_warning_count = test.getWarningCountByTaskType(task_type) %}
             {% endif %}
         {% endfor %}

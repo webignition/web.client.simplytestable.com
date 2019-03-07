@@ -3,14 +3,17 @@
 namespace App\Model\Test;
 
 use App\Entity\Test\Test;
+use App\Model\RemoteTest\RemoteTest;
 
 class DecoratedTest
 {
     private $test;
+    private $remoteTest;
 
-    public function __construct(Test $test)
+    public function __construct(Test $test, RemoteTest $remoteTest)
     {
         $this->test = $test;
+        $this->remoteTest = $remoteTest;
     }
 
     public function getTestId(): int
@@ -41,5 +44,30 @@ class DecoratedTest
     public function getWebsite(): string
     {
         return $this->test->getWebsite();
+    }
+
+    public function getErrorFreeTaskCount(): int
+    {
+        return $this->remoteTest->getErrorFreeTaskCount();
+    }
+
+    public function getTaskTypes(): array
+    {
+        return $this->remoteTest->getTaskTypes();
+    }
+
+    public function isFullSite(): bool
+    {
+        return $this->remoteTest->isFullSite();
+    }
+
+    public function isSingleUrl(): bool
+    {
+        return $this->remoteTest->isSingleUrl();
+    }
+
+    public function getTaskCount(): int
+    {
+        return $this->remoteTest->getTaskCount();
     }
 }
