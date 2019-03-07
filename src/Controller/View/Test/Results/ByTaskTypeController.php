@@ -7,6 +7,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Model\Test\Task\ErrorTaskMapCollection;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
@@ -188,13 +189,15 @@ class ByTaskTypeController extends AbstractResultsController
         $errorTaskMaps->sortMapsByOccurrenceCount();
         $errorTaskMaps->sortByOccurrenceCount();
 
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
+
         return $this->renderWithDefaultViewParameters(
             'test-results-by-task-type.html.twig',
             [
                 'is_owner' => $this->remoteTestService->owns($test, $user),
                 'is_public_user_test' => $test->getUser() === SystemUserService::getPublicUser()->getUsername(),
                 'website' => $this->urlViewValues->create($website),
-                'test' => $test,
+                'test' => $decoratedTest,
                 'task_type' => $selectedTaskType,
                 'filter' => $hasValidFilter ? $filter : self::DEFAULT_FILTER,
                 'tasks' => $tasks,
