@@ -10,7 +10,7 @@
     {% include 'Partials/Test/Progress/Index/task-queue.html.twig'
         with {
         'name': queue_name|capitalize,
-        'value': remote_test.taskcountbystate[queue_name],
+        'value': test.taskcountbystate[queue_name],
         'label_type': queue_label_type
     } %}
 {% endfor %}
