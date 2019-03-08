@@ -103,6 +103,11 @@ class DecoratedTest implements \JsonSerializable
         return $this->remoteTest->getRejection();
     }
 
+    public function requiresRemoteTasks(): bool
+    {
+        return $this->remoteTest->getTaskCount() !== $this->test->getTaskCount();
+    }
+
     public function jsonSerialize(): array
     {
         return array_merge($this->test->jsonSerialize(), [
