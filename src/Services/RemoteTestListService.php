@@ -79,19 +79,14 @@ class RemoteTestListService
      */
     private function createList(array $routeParameters): TestList
     {
-        $list = new TestList();
-
         $response = $this->coreApplicationHttpClient->get('tests_list', $routeParameters);
-        $responseData = $this->jsonResponseHandler->handle($response);
+        $data = $this->jsonResponseHandler->handle($response);
 
-        $list->setMaxResults($responseData['max_results']);
-        $list->setLimit($responseData['limit']);
-        $list->setOffset($responseData['offset']);
-
-        foreach ($responseData['jobs'] as $remoteTestData) {
-            $list->addRemoteTest(new RemoteTest($remoteTestData));
+        $remoteTests = [];
+        foreach ($data['jobs'] as $remoteTestData) {
+            $remoteTests[] = new RemoteTest($remoteTestData);
         }
 
-        return $list;
+        return new TestList($remoteTests, $data['max_results'], $data['offset'], $data['limit']);
     }
 }
