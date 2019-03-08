@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 
 class RemoteTestList
 {
@@ -103,7 +104,9 @@ class RemoteTestList
         /* @var RemoteTest $remoteTest */
         $remoteTest = $this->tests[$test->getTestId()]['remote_test'];
 
-        return $remoteTest->getTaskCount() != $test->getTaskCount();
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
+
+        return $decoratedTest->requiresRemoteTasks();
     }
 
     private function containsRemote(int $testId): bool
