@@ -5,7 +5,7 @@ namespace App\Model;
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
 
-class TestList
+class RemoteTestList
 {
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;
 

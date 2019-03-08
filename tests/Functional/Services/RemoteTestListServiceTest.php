@@ -4,7 +4,7 @@
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Test\Test;
-use App\Model\TestList;
+use App\Model\RemoteTestList;
 use App\Services\RemoteTestListService;
 use App\Tests\Factory\HttpResponseFactory;
 
@@ -40,7 +40,7 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
 
         $finishedList = $this->remoteTestListService->getFinished($limit, $offset, $filter);
 
-        $this->assertInstanceOf(TestList::class, $finishedList);
+        $this->assertInstanceOf(RemoteTestList::class, $finishedList);
 
         $this->assertEquals($expectedMaxResults, $finishedList->getMaxResults());
         $this->assertEquals($expectedLimit, $finishedList->getLimit());
@@ -138,7 +138,7 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
 
         $finishedList = $this->remoteTestListService->getRecent($limit);
 
-        $this->assertInstanceOf(TestList::class, $finishedList);
+        $this->assertInstanceOf(RemoteTestList::class, $finishedList);
 
         $this->assertEquals($expectedMaxResults, $finishedList->getMaxResults());
         $this->assertEquals($expectedLimit, $finishedList->getLimit());

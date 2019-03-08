@@ -4,16 +4,16 @@
 namespace App\Tests\Unit\Model;
 
 use App\Model\RemoteTest\RemoteTest;
-use App\Model\TestList;
+use App\Model\RemoteTestList;
 
-class TestListTest extends \PHPUnit\Framework\TestCase
+class RemoteTestListTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createDataProvider
      */
     public function testCreate(array $remoteTests, int $maxResults, int $offset, int $limit, array $expectedTests)
     {
-        $testList = new TestList($remoteTests, $maxResults, $offset, $limit);
+        $testList = new RemoteTestList($remoteTests, $maxResults, $offset, $limit);
 
         $this->assertEquals($expectedTests, $testList->get());
         $this->assertEquals($maxResults, $testList->getMaxResults());
