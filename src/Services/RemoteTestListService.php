@@ -6,7 +6,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
-use App\Model\TestList;
+use App\Model\RemoteTestList;
 
 class RemoteTestListService
 {
@@ -24,13 +24,13 @@ class RemoteTestListService
     /**
      * @param int $limit
      *
-     * @return TestList
+     * @return RemoteTestList
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getRecent(int $limit = 3): TestList
+    public function getRecent(int $limit = 3): RemoteTestList
     {
         return $this->createList([
             'limit' => $limit,
@@ -51,13 +51,13 @@ class RemoteTestListService
      * @param int $offset
      * @param string $filter
      *
-     * @return TestList
+     * @return RemoteTestList
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getFinished(int $limit, int $offset, ?string $filter = null): TestList
+    public function getFinished(int $limit, int $offset, ?string $filter = null): RemoteTestList
     {
         return $this->createList([
             'limit' => $limit,
@@ -71,13 +71,13 @@ class RemoteTestListService
     /**
      * @param array $routeParameters
      *
-     * @return TestList
+     * @return RemoteTestList
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    private function createList(array $routeParameters): TestList
+    private function createList(array $routeParameters): RemoteTestList
     {
         $response = $this->coreApplicationHttpClient->get('tests_list', $routeParameters);
         $data = $this->jsonResponseHandler->handle($response);
@@ -87,6 +87,6 @@ class RemoteTestListService
             $remoteTests[] = new RemoteTest($remoteTestData);
         }
 
-        return new TestList($remoteTests, $data['max_results'], $data['offset'], $data['limit']);
+        return new RemoteTestList($remoteTests, $data['max_results'], $data['offset'], $data['limit']);
     }
 }
