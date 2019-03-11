@@ -5,6 +5,7 @@ namespace App\Controller\View\Partials;
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
+use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
@@ -68,16 +69,13 @@ class TestFinishedSummaryController extends AbstractBaseViewController
             return new Response();
         }
 
-        $viewData = [
-            'test' => [
-                'test' => $test,
-                'remote_test' => $remoteTest,
-            ]
-        ];
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
 
         return $this->renderWithDefaultViewParameters(
             'Partials/Test/Summary/finished.html.twig',
-            $viewData,
+            [
+                'test' => $decoratedTest,
+            ],
             $response
         );
     }

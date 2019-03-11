@@ -184,11 +184,13 @@ class RemoteTest extends AbstractArrayBasedModel
     }
 
     /**
-     * @return array|null
+     * @return array
      */
     public function getCrawl()
     {
-        return $this->getProperty('crawl');
+        $crawlData = $this->getProperty('crawl');
+
+        return $crawlData ? $crawlData : [];
     }
 
     /**

@@ -2,13 +2,10 @@
     {% set type = '' %}
 {% endif %}
 
-{% set span_width %}{% if app.request.attributes.get('_route') == 'view_test_results' %}6{% else %}4{% endif %}{% endset %}
-{% set is_dashboard = (app.request.attributes.get('_route') != 'view_test_results') %}
-
 <div class="summary-prose hidden-xs">
     {% if test.errorCount > 0 or test.warningCount > 0 %}
 
-        {% for task_type in remote_test.tasktypes %}
+        {% for task_type in test.tasktypes %}
             {% set task_error_count = test.getErrorCountByTaskType(task_type) %}
             {% set task_warning_count = test.getWarningCountByTaskType(task_type) %}
 

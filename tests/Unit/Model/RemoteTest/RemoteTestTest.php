@@ -411,7 +411,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getCrawlDataProvider
      */
-    public function testGetCrawl(array $remoteTestData, ?array $expectedCrawlData)
+    public function testGetCrawl(array $remoteTestData, array $expectedCrawlData)
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
@@ -425,7 +425,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         return [
             'no crawl data' => [
                 'remoteTestData' => [],
-                'expectedCrawlData' => null,
+                'expectedCrawlData' => [],
             ],
             'has crawl data' => [
                 'remoteTestData' => [
