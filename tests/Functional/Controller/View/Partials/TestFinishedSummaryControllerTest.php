@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\TestFinishedSummaryController;
 use App\Entity\Test\Test;
-use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -137,28 +137,11 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $testData = $parameters['test'];
-                            $this->assertIsArray($testData);
-
-                            $this->assertEquals(
-                                [
-                                    'test',
-                                    'remote_test',
-                                ],
-                                array_keys($testData)
-                            );
-
-                            /* @var Test $test */
-                            $test = $testData['test'];
-                            $this->assertInstanceOf(Test::class, $test);
-                            $this->assertEquals(self::TEST_ID, $test->getTestId());
-                            $this->assertEquals(self::WEBSITE, $test->getWebsite());
-
-                            /* @var RemoteTest $remoteTest */
-                            $remoteTest = $testData['remote_test'];
-                            $this->assertInstanceOf(RemoteTest::class, $remoteTest);
-                            $this->assertEquals(self::TEST_ID, $remoteTest->getId());
-                            $this->assertEquals(self::WEBSITE, $remoteTest->getWebsite());
+                            /* @var DecoratedTest $decoratedTest */
+                            $decoratedTest = $parameters['test'];
+                            $this->assertInstanceOf(DecoratedTest::class, $decoratedTest);
+                            $this->assertEquals(self::TEST_ID, $decoratedTest->getTestId());
+                            $this->assertEquals(self::WEBSITE, $decoratedTest->getWebsite());
 
                             return true;
                         },
