@@ -290,7 +290,6 @@ class TaskService
             $response = $this->coreApplicationHttpClient->post(
                 'test_tasks',
                 [
-                    'canonical_url' => $test->getWebsite(),
                     'test_id' => $test->getTestId(),
                 ],
                 [
