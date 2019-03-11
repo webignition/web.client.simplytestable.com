@@ -223,7 +223,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         if (empty($expectedRequestUrls)) {
             $this->assertEmpty($this->httpHistory->count());
         } else {
-            $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
+            $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrlsAsStrings());
         }
     }
 
@@ -244,7 +244,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'task has no errors and no warnings' => [
@@ -266,7 +266,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'incomplete task' => [
@@ -285,7 +285,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/',
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
         ];

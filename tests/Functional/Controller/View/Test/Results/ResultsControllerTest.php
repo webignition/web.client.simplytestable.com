@@ -330,7 +330,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         if (empty($expectedRequestUrls)) {
             $this->assertEquals(0, $this->httpHistory->count());
         } else {
-            $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
+            $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrlsAsStrings());
         }
     }
 
@@ -364,7 +364,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'non-relevant filter; filter=with-errors, one task with no errors' => [
@@ -395,7 +395,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'non-relevant filter; filter=with-errors, one task with no errors and with warnings' => [
@@ -426,7 +426,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'invalid remote test' => [

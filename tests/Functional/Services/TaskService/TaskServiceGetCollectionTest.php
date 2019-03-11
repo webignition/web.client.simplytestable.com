@@ -79,7 +79,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
             }
         }
 
-        $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrls());
+        $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrlsAsStrings());
     }
 
     public function getCollectionDataProvider(): array
@@ -131,7 +131,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                 ],
                 'expectedRequestUrls' => [
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'all remote task ids, none exist locally' => [
@@ -176,7 +176,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                     ],
                 ],
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'all remote task ids, all exist locally, all finished' => [
@@ -297,7 +297,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                     ],
                 ],
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'all remote task ids, all exist locally, some finished, retrieved tasks have outputs' => [
@@ -351,7 +351,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                     ],
                 ],
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
             'all remote task ids, all exist locally, some finished, retrieved tasks have identical outputs' => [
@@ -432,7 +432,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                     ],
                 ],
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/',
+                    'http://null/job/1/tasks/',
                 ],
             ],
         ];
