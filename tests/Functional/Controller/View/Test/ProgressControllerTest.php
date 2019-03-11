@@ -203,7 +203,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'website' => 'foo',
                 'testId' => self::TEST_ID,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'finished test; state=completed' => [
                 'httpFixtures' => [
@@ -215,7 +215,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'finished test; state=failed_no_sitemap; public user' => [
                 'httpFixtures' => [
@@ -228,7 +228,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'finished test; state=failed_no_sitemap; private user' => [
                 'httpFixtures' => [
@@ -241,7 +241,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
                 'expectedRedirectUrl' => '/http://example.com//1/re-test/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'invalid remote test' => [
                 'httpFixtures' => [
@@ -251,7 +251,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'website' => 'foo',
                 'testId' => self::TEST_ID,
                 'expectedRedirectUrl' => '/',
-                'expectedRequestUrl' => 'http://null/job/foo/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
         ];
     }
