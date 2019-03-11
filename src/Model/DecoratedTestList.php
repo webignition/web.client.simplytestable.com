@@ -11,6 +11,10 @@ class DecoratedTestList implements \Iterator
     private $maxResults = 0;
     private $offset = 0;
     private $limit = 1;
+    private $length = 0;
+    private $pageIndex = 0;
+    private $pageCount = 0;
+    private $pageCollectionIndex = 0;
 
     private $iteratorPosition = 0;
 
@@ -30,6 +34,11 @@ class DecoratedTestList implements \Iterator
                 $this->tests[] = $test;
             }
         }
+
+        $this->length = count($this->tests);
+        $this->pageIndex = 0 === $this->limit ? 0 : $this->offset / $this->limit;
+        $this->pageCount = 0 === $this->limit ? 0 : (int) ceil($this->maxResults / $this->limit);
+        $this->pageCollectionIndex = (int) floor($this->pageIndex / self::PAGINATION_PAGE_COLLECTION_SIZE);
     }
 
     public function current(): DecoratedTest
@@ -74,35 +83,27 @@ class DecoratedTestList implements \Iterator
 
     public function getLength(): int
     {
-        return count($this->tests);
+        return $this->length;
     }
 
     public function getPageNumber(): int
     {
-        return $this->getPageIndex() + 1;
+        return $this->pageIndex + 1;
     }
 
     public function getPageCount(): int
     {
-        if (0 === $this->getLimit()) {
-            return 0;
-        }
-
-        return (int) ceil($this->getMaxResults() / $this->getLimit());
+        return $this->pageCount;
     }
 
     public function getPageIndex(): int
     {
-        if (0 === $this->getLimit()) {
-            return 0;
-        }
-
-        return $this->getOffset() / $this->getLimit();
+        return $this->pageIndex;
     }
 
     public function getPageCollectionIndex(): int
     {
-        return (int) floor($this->getPageIndex() / self::PAGINATION_PAGE_COLLECTION_SIZE);
+        return $this->pageCollectionIndex;
     }
 
     /**
@@ -112,12 +113,12 @@ class DecoratedTestList implements \Iterator
     {
         $pageNumbers = [];
 
-        if ($this->getMaxResults() <= $this->getLimit()) {
+        if ($this->maxResults <= $this->limit) {
             return $pageNumbers;
         }
 
-        $start = $this->getPageCollectionIndex() * $this->getLimit();
-        $end = $start + $this->getLimit() - 1;
+        $start = $this->pageCollectionIndex * $this->limit;
+        $end = $start + $this->limit - 1;
 
         for ($pageIndex = $start; $pageIndex <= $end; $pageIndex++) {
             if ($this->isValidPageIndex($pageIndex)) {
@@ -130,7 +131,7 @@ class DecoratedTestList implements \Iterator
 
     private function isValidPageIndex(int $index): bool
     {
-        return $this->getMaxResults() > ($index) * $this->getLimit();
+        return $this->maxResults > ($index) * $this->limit;
     }
 
     public function getHash(): string
@@ -141,9 +142,9 @@ class DecoratedTestList implements \Iterator
     private function getHashableContent(): string
     {
         $hashableData = [
-            'max_results' => $this->getMaxResults(),
-            'offset' => $this->getOffset(),
-            'limit' => $this->getLimit(),
+            'max_results' => $this->maxResults,
+            'offset' => $this->offset,
+            'limit' => $this->limit,
             'test_data' => [],
         ];
 
