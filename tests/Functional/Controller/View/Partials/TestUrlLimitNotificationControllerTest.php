@@ -3,7 +3,7 @@
 namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\TestUrlLimitNotificationController;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;

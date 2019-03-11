@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use App\Controller\RedirectController;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;

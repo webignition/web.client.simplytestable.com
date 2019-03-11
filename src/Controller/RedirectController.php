@@ -5,7 +5,7 @@ namespace App\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Services\RemoteTestService;

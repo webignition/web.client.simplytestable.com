@@ -5,7 +5,7 @@ namespace App\Tests\Unit\Services\Factory;
 
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Services\Factory\TaskFactory;
 use App\Services\Factory\TaskOutputFactory;
 use App\Tests\Factory\MockFactory;

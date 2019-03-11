@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\View\Test\History;
 
 use App\Controller\View\Test\HistoryController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\DecoratedTestList;
 use App\Services\SystemUserService;
 use App\Services\UserManager;

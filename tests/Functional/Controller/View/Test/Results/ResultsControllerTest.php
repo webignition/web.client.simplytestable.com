@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\Test\DecoratedTest;
 use App\Services\SystemUserService;
 use App\Services\UserManager;

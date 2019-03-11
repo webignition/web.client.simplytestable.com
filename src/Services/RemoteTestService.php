@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;

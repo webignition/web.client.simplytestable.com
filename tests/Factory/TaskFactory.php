@@ -5,7 +5,7 @@ namespace App\Tests\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TaskFactory

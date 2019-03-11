@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\TaskController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

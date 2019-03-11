@@ -2,7 +2,7 @@
 
 namespace App\Model\RemoteTest;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Entity\TimePeriod;
 use App\Model\AbstractArrayBasedModel;
 use Symfony\Component\HttpFoundation\ParameterBag;

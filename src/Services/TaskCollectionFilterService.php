@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Repository\TaskRepository;
 
 class TaskCollectionFilterService

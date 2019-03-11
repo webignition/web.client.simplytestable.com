@@ -4,7 +4,7 @@
 namespace App\Tests\Unit\Model\RemoteTest;
 
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Entity\TimePeriod;
 use App\Model\RemoteTest\Rejection;
 use App\Model\RemoteTest\RemoteTest;

@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\Action\Test\Task\Results;
 
 use App\Controller\Action\Test\Task\Results\ByUrlController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;

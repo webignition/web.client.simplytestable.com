@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Repository;
 use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Repository\TaskRepository;
 use App\Tests\Factory\OutputFactory;
 use App\Tests\Factory\TaskFactory;

@@ -5,7 +5,7 @@ namespace App\EventListener;
 use App\Services\TestService;
 use App\Services\UrlMatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 

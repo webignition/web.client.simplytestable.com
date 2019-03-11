@@ -2,7 +2,7 @@
 
 namespace App\Controller\View\Test\Results;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;

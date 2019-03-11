@@ -3,7 +3,7 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\RemoteTest\RemoteTest;
 
 abstract class AbstractResultsController extends AbstractBaseViewController

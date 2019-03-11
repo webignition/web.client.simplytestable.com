@@ -3,7 +3,7 @@
 namespace App\Services\Factory;
 
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Entity\TimePeriod;
 
 class TaskFactory

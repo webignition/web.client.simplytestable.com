@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Tests\Factory\HttpResponseFactory;
 

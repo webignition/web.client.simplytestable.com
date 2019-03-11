@@ -5,7 +5,7 @@ namespace App\Controller\View\Test;
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;

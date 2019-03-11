@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\TestTaskListController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Symfony\Component\DomCrawler\Crawler;
