@@ -117,4 +117,9 @@ class DecoratedTest implements \JsonSerializable
             'amendments' => $this->getAmendments(),
         ]);
     }
+
+    public function __toArray(): array
+    {
+        return array_merge($this->test->jsonSerialize(), $this->remoteTest->__toArray());
+    }
 }
