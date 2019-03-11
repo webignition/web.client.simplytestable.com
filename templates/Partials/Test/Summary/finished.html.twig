@@ -1,25 +1,23 @@
 {% extends 'Partials/Test/Summary/summary.html.twig' %}
 
-{% set was_not_started = test.test.state == 'cancelled' and test.remote_test.taskcount == test.remote_test.taskcountbystate.cancelled %}
-{% set no_urls = test.test.state == 'failed-no-sitemap' and test.remote_test.crawl is null %}
+{% set was_not_started = test.state == 'cancelled' and test.taskcount == test.taskcountbystate.cancelled %}
+{% set no_urls = test.state == 'failed-no-sitemap' and test.crawlData is not empty %}
 {% set icon = 'fa-bar-chart-o' %}
-{% set url = path('view_test_results', {'website': test.test.website, 'test_id':test.test.testId}) %}
+{% set results_url = path('view_test_results', {'website': test.website, 'test_id': test.testid}) %}
 
-{% block container_class %}finished {% if was_not_started %}not-started{% endif %} {% if test_list is defined and test_list.requiresresults(test.test) %}requires-results{% endif %}{% endblock %}
+{% block container_class %}finished {% if was_not_started %}not-started{% endif %} {% if test.requiresRemoteTasks %}requires-results{% endif %}{% endblock %}
 
-{% if test_list is defined and test_list.requiresresults(test.test) %}
+{% if test.requiresRemoteTasks %}
     {% set container_attributes = ['data-completion-percent="0"']|join('') %}
 {% endif %}
 
 {% block url_button_label %}View full results{% endblock %}
 
-{% set results_url = path('view_test_results', {'website': test.test.website, 'test_id': test.test.testid}) %}
-
 {% block pre_stats %}
-    {% if test_list is defined and test_list.requiresresults(test.test) %}
+    {% if test.requiresRemoteTasks %}
         {% set route_parameters = {
-            website: test.test.website,
-            test_id: test.test.testid
+            website: test.website,
+            test_id: test.testid
         } %}
 
         {% set status_url = path('view_test_results_preparing_stats', route_parameters) %}
@@ -62,7 +60,7 @@
             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 summary-col">
                 {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                 with {
-                    count: test.test.errorCount,
+                    count: test.errorCount,
                     name:'error',
                     anchor: [results_url, '?filter=with-errors']|join(''),
                     include_icon: false,
@@ -72,7 +70,7 @@
 
                 {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                 with {
-                    count: test.test.urlCount,
+                    count: test.urlCount,
                     name:'url',
                     include_icon: false,
                     split: true,
@@ -84,7 +82,7 @@
             <div class="col-lg-3 col-md-3 col-sm-4 col-xs-6 summary-col">
                 {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                 with {
-                    count: test.test.warningCount,
+                    count: test.warningCount,
                     name:'warning',
                     anchor: [results_url, '?filter=with-warnings']|join(''),
                     include_icon: false,
@@ -94,7 +92,7 @@
 
                 {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                 with {
-                    count: test.test.taskCount,
+                    count: test.taskCount,
                     name:'test',
                     include_icon: false,
                     split: true,
@@ -103,7 +101,7 @@
                 } %}
             </div>
             <div class="col-lg-6 col-md-6 col-sm-4 col-xs-12">
-                {% include 'Partials/Test/Results/errors-by-task-type.html.twig' with {'test': test.test, 'remote_test':test.remote_test, 'type':null, 'filter':null} %}
+                {% include 'Partials/Test/Results/errors-by-task-type.html.twig' with {'test': test, 'type':null, 'filter':null} %}
             </div>
         {% endif %}
     </div>

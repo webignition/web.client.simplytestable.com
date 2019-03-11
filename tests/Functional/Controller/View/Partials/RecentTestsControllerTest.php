@@ -7,8 +7,7 @@ use App\Controller\View\Partials\RecentTestsController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
 
-use App\Model\RemoteTest\RemoteTest;
-use App\Model\TestList;
+use App\Model\DecoratedTestList;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -109,11 +108,11 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                                 array_keys($parameters)
                             );
 
-                            /* @var TestList $testList */
-                            $testList = $parameters['test_list'];
-                            $this->assertInstanceOf(TestList::class, $testList);
+                            /* @var DecoratedTestList $decoratedTestList */
+                            $decoratedTestList = $parameters['test_list'];
+                            $this->assertInstanceOf(DecoratedTestList::class, $decoratedTestList);
 
-                            $this->assertTestList($testList, [
+                            $this->assertTestList($decoratedTestList, [
                                 'maxResults' => 0,
                                 'length' => 0,
                             ]);
@@ -169,10 +168,10 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                                 array_keys($parameters)
                             );
 
-                            $testList = $parameters['test_list'];
-                            $this->assertInstanceOf(TestList::class, $testList);
+                            $decoratedTestList = $parameters['test_list'];
+                            $this->assertInstanceOf(DecoratedTestList::class, $decoratedTestList);
 
-                            $this->assertTestList($testList, [
+                            $this->assertTestList($decoratedTestList, [
                                 'maxResults' => 999,
                                 'length' => 1,
                             ]);
@@ -242,10 +241,10 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                                 array_keys($parameters)
                             );
 
-                            $testList = $parameters['test_list'];
-                            $this->assertInstanceOf(TestList::class, $testList);
+                            $decoratedTestList = $parameters['test_list'];
+                            $this->assertInstanceOf(DecoratedTestList::class, $decoratedTestList);
 
-                            $this->assertTestList($testList, [
+                            $this->assertTestList($decoratedTestList, [
                                 'maxResults' => 999,
                                 'length' => 1,
                             ]);
@@ -259,19 +258,12 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
         ];
     }
 
-    private function assertTestList(TestList $testList, array $expectedValues)
+    private function assertTestList(DecoratedTestList $testList, array $expectedValues)
     {
         $this->assertEquals(RecentTestsController::LIMIT, $testList->getLimit());
         $this->assertEquals(0, $testList->getOffset());
         $this->assertEquals($expectedValues['maxResults'], $testList->getMaxResults());
         $this->assertEquals($expectedValues['length'], $testList->getLength());
-
-        $tests = $testList->get();
-
-        foreach ($tests as $test) {
-            $this->assertInstanceOf(RemoteTest::class, $test['remote_test']);
-            $this->assertInstanceOf(Test::class, $test['test']);
-        }
     }
 
     /**

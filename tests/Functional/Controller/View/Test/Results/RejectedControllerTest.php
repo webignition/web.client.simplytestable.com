@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\RejectedController;
 use App\Entity\Test\Test;
-use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Model\User\Summary as UserSummary;
 use App\Services\UserManager;
 use Symfony\Component\DomCrawler\Crawler;
@@ -376,7 +376,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
                                     'user',
                                     'is_logged_in',
                                     'website',
-                                    'remote_test',
+                                    'test',
                                     'plans',
                                 ],
                                 array_keys($parameters)
@@ -385,11 +385,11 @@ class RejectedControllerTest extends AbstractViewControllerTest
                             $this->assertIsArray($parameters['website']);
                             $this->assertIsArray($parameters['plans']);
 
-                            /* @var RemoteTest $remoteTest */
-                            $remoteTest = $parameters['remote_test'];
-                            $this->assertInstanceOf(RemoteTest::class, $remoteTest);
-                            $this->assertEquals(self::TEST_ID, $remoteTest->getId());
-                            $this->assertEquals(self::WEBSITE, $remoteTest->getWebsite());
+                            /* @var DecoratedTest $test */
+                            $test = $parameters['test'];
+                            $this->assertInstanceOf(DecoratedTest::class, $test);
+                            $this->assertEquals(self::TEST_ID, $test->getTestId());
+                            $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
                             return true;
                         },
@@ -439,7 +439,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
                                     'user',
                                     'is_logged_in',
                                     'website',
-                                    'remote_test',
+                                    'test',
                                     'plans',
                                     'userSummary',
                                 ],
@@ -449,11 +449,11 @@ class RejectedControllerTest extends AbstractViewControllerTest
                             $this->assertIsArray($parameters['website']);
                             $this->assertIsArray($parameters['plans']);
 
-                            /* @var RemoteTest $remoteTest */
-                            $remoteTest = $parameters['remote_test'];
-                            $this->assertInstanceOf(RemoteTest::class, $remoteTest);
-                            $this->assertEquals(self::TEST_ID, $remoteTest->getId());
-                            $this->assertEquals(self::WEBSITE, $remoteTest->getWebsite());
+                            /* @var DecoratedTest $test */
+                            $test = $parameters['test'];
+                            $this->assertInstanceOf(DecoratedTest::class, $test);
+                            $this->assertEquals(self::TEST_ID, $test->getTestId());
+                            $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
                             /* @var UserSummary $userSummary */
                             $userSummary = $parameters['userSummary'];

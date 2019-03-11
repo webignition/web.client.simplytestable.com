@@ -6,8 +6,8 @@ use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheableResponseFactory;
+use App\Services\DecoratedTestListFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestListService;
 use App\Services\RemoteTestService;
@@ -29,6 +29,7 @@ class HistoryController extends AbstractBaseViewController
     private $remoteTestService;
     private $taskService;
     private $remoteTestListService;
+    private $decoratedTestListFactory;
 
     public function __construct(
         RouterInterface $router,
@@ -38,7 +39,8 @@ class HistoryController extends AbstractBaseViewController
         TestService $testService,
         RemoteTestService $remoteTestService,
         TaskService $taskService,
-        RemoteTestListService $remoteTestListService
+        RemoteTestListService $remoteTestListService,
+        DecoratedTestListFactory $decoratedTestListFactory
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -46,6 +48,7 @@ class HistoryController extends AbstractBaseViewController
         $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
         $this->remoteTestListService = $remoteTestListService;
+        $this->decoratedTestListFactory = $decoratedTestListFactory;
     }
 
     /**
@@ -72,35 +75,30 @@ class HistoryController extends AbstractBaseViewController
 
         $testListOffset = ($pageNumber - 1) * self::TEST_LIST_LIMIT;
 
-        $testList = $this->remoteTestListService->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
+        $remoteTestList = $this->remoteTestListService->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
+        $decoratedTestList = $this->decoratedTestListFactory->create($remoteTestList);
 
-        foreach ($testList->get() as $testObject) {
-            /* @var RemoteTest $remoteTest */
-            $remoteTest = $testObject['remote_test'];
-
-            $test = $this->testService->get($remoteTest->getWebsite(), $remoteTest->getId());
-
-            $testList->addTest($test);
-
-            if ($testList->requiresResults($test) && $remoteTest->isSingleUrl()) {
-                $this->taskService->getCollection($test);
+        foreach ($decoratedTestList as $decoratedTest) {
+            if ($decoratedTest->requiresRemoteTasks() && $decoratedTest->isSingleUrl()) {
+                $this->taskService->getCollection($decoratedTest->getTest());
             }
         }
 
-        $isPageNumberAboveRange = $pageNumber > $testList->getPageCount() && $testList->getPageCount() > 0;
+        $isPageNumberAboveRange =
+            $pageNumber > $decoratedTestList->getPageCount() && $decoratedTestList->getPageCount() > 0;
 
         if ($isPageNumberAboveRange) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_history',
                 [
-                    'page_number' => $testList->getPageCount(),
+                    'page_number' => $decoratedTestList->getPageCount(),
                     'filter' => $filter,
                 ]
             ));
         }
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
-            'test_list_hash' => $testList->getHash(),
+            'test_list_hash' => $decoratedTestList->getHash(),
             'filter' => $filter,
             'page_number' => $pageNumber
         ]);
@@ -114,8 +112,8 @@ class HistoryController extends AbstractBaseViewController
         return $this->renderWithDefaultViewParameters(
             'test-history.html.twig',
             [
-                'test_list' => $testList,
-                'pagination_page_numbers' => $testList->getPageNumbers(),
+                'test_list' => $decoratedTestList,
+                'pagination_page_numbers' => $decoratedTestList->getPageNumbers(),
                 'filter' => $filter,
                 'websites_source' => $websitesSourceUrl
             ],

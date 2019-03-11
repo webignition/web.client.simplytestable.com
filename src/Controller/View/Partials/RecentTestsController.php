@@ -6,8 +6,8 @@ use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheableResponseFactory;
+use App\Services\DecoratedTestListFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestListService;
 use App\Services\RemoteTestService;
@@ -24,9 +24,8 @@ class RecentTestsController extends AbstractBaseViewController
     private $testService;
     private $remoteTestService;
     private $taskService;
-
     private $remoteTestListService;
-
+    private $decoratedTestListFactory;
 
     public function __construct(
         RouterInterface $router,
@@ -36,7 +35,8 @@ class RecentTestsController extends AbstractBaseViewController
         TestService $testService,
         RemoteTestService $remoteTestService,
         TaskService $taskService,
-        RemoteTestListService $remoteTestListService
+        RemoteTestListService $remoteTestListService,
+        DecoratedTestListFactory $decoratedTestListFactory
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -44,6 +44,7 @@ class RecentTestsController extends AbstractBaseViewController
         $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
         $this->remoteTestListService = $remoteTestListService;
+        $this->decoratedTestListFactory = $decoratedTestListFactory;
     }
 
     /**
@@ -55,25 +56,17 @@ class RecentTestsController extends AbstractBaseViewController
      */
     public function indexAction()
     {
-        $testList = $this->remoteTestListService->getRecent(self::LIMIT);
+        $remoteTestList = $this->remoteTestListService->getRecent(self::LIMIT);
+        $decoratedTestList = $this->decoratedTestListFactory->create($remoteTestList);
 
-        foreach ($testList->get() as $testObject) {
-            /* @var RemoteTest $remoteTest */
-            $remoteTest = $testObject['remote_test'];
-
-            $test = $this->testService->get($remoteTest->getWebsite(), $remoteTest->getId());
-
-            $testList->addTest($test);
-
-            if ($testList->requiresResults($test)) {
-                if ($remoteTest->isSingleUrl()) {
-                    $this->taskService->getCollection($test);
-                }
+        foreach ($decoratedTestList as $decoratedTest) {
+            if ($decoratedTest->requiresRemoteTasks() && $decoratedTest->isSingleUrl()) {
+                $this->taskService->getCollection($decoratedTest->getTest());
             }
         }
 
         return $this->render('Partials/Dashboard/recent-tests.html.twig', [
-            'test_list' => $testList,
+            'test_list' => $decoratedTestList,
         ]);
     }
 }

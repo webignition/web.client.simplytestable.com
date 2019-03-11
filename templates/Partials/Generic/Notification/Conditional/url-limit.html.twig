@@ -1,6 +1,8 @@
 {% set alert_classes = alert_classes is defined ? alert_classes : '' %}
 
-{% if remote_test.ammendments is defined and remote_test.ammendments[0].constraint is defined %}
+{% if test.amendments is not empty and test.amendments[0].constraint is defined %}
+    {% set amendment = test.amendments[0] %}
+
     {% include 'Partials/alert.html.twig' with {
         type: 'info',
         wrap_in_container: true,
@@ -9,8 +11,8 @@
         view_parameters: {
             is_public_user_test: is_public_user_test,
             is_logged_in: is_logged_in,
-            limit: remote_test.ammendments[0].constraint.limit,
-            total: remote_test.ammendments[0].reason|replace({'plan-url-limit-reached:discovered-url-count-': ''})
+            limit: amendment.constraint.limit,
+            total: amendment.reason|replace({'plan-url-limit-reached:discovered-url-count-': ''})
         },
         alert_classes: alert_classes
     } only %}

@@ -7,6 +7,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
@@ -210,14 +211,15 @@ class ResultsController extends AbstractResultsController
 
         $isOwner = $this->remoteTestService->owns($test, $user);
 
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
+
         return $this->renderWithDefaultViewParameters(
             'test-results.html.twig',
             [
                 'website' => $this->urlViewValues->create($website),
-                'test' => $test,
+                'test' => $decoratedTest,
                 'is_public' => $remoteTest->getIsPublic(),
                 'is_public_user_test' => $isPublicUserTest,
-                'remote_test' => $remoteTest,
                 'is_owner' => $isOwner,
                 'type' => $taskType,
                 'type_label' => $this->getTaskTypeLabel($taskType),

@@ -1,4 +1,4 @@
-{% set curl_error_number = remote_test.rejection.reason|slice(5, 2) %}
+{% set curl_error_number = reason|slice(5, 2) %}
 
 {% if curl_error_number == 7 %}
     {% set intro = 'there doesn\'t appear to be a web server there to talk to' %}

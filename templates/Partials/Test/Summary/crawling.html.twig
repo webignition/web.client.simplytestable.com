@@ -3,12 +3,12 @@
 {% block container_class %}incomplete{% endblock %}
 
 {% block url_button_label %}Live progress{% endblock %}
-{% set url = path('view_test_progress', {'website': test.test.website, 'test_id':test.test.testId}) %}
+{% set url = path('view_test_progress', {'website': test.website, 'test_id':test.testId}) %}
 
 {% set container_attributes = [
-    'data-completion-percent="' ~ test.remote_test.completionPercent ~ '"',
-    'data-processed-url-count="' ~ test.remote_test.crawl.processed_url_count ~ '"',
-    'data-discovered-url-count="' ~ test.remote_test.crawl.discovered_url_count ~ '"'
+    'data-completion-percent="' ~ test.completionPercent ~ '"',
+    'data-processed-url-count="' ~ test.crawlData.processed_url_count ~ '"',
+    'data-discovered-url-count="' ~ test.crawlData.discovered_url_count ~ '"'
 ]|join(' ')  %}
 
 {% block stats %}
@@ -16,7 +16,7 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="progress">
-                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ test.remote_test.completionPercent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ test.remote_test.completionPercent }}%;">
+                <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{ test.completionPercent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ test.completionPercent }}%;">
                 </div>
             </div>
         </div>
@@ -25,7 +25,7 @@
     <div class="row summary-stats">
         <div class="col-lg-12">
             <p>
-                Finding URLs to test: <span class="processed-url-count">{{ test.remote_test.crawl.processed_url_count }}</span> examined, <span class="discovered-url-count">{{ test.remote_test.crawl.discovered_url_count }}</span> of <span>{{ test.remote_test.crawl.limit }}</span> found
+                Finding URLs to test: <span class="processed-url-count">{{ test.crawlData.processed_url_count }}</span> examined, <span class="discovered-url-count">{{ test.crawlData.discovered_url_count }}</span> of <span>{{ test.crawlData.limit }}</span> found
             </p>
         </div>
     </div>

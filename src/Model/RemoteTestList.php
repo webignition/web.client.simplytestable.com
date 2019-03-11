@@ -4,82 +4,49 @@ namespace App\Model;
 
 use App\Entity\Test\Test;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test\DecoratedTest;
 
-class TestList
+class RemoteTestList
 {
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;
 
-    /**
-     * @var int
-     */
     private $maxResults = 0;
-
-    /**
-     * @var int
-     */
     private $offset = 0;
-
-    /**
-     * @var int
-     */
     private $limit = 1;
 
     /**
-     * @var Test[]
+     * @var array
      */
     private $tests = array();
 
-    /**
-     * @param int $maxResults
-     */
-    public function setMaxResults($maxResults)
+    public function __construct(array $remoteTests, int $maxResults, int $offset, int $limit)
     {
         $this->maxResults = $maxResults;
+        $this->offset = $offset;
+        $this->limit = $limit;
+
+        foreach ($remoteTests as $remoteTest) {
+            if (is_object($remoteTest) && $remoteTest instanceof RemoteTest) {
+                $this->addRemoteTest($remoteTest);
+            }
+        }
     }
 
-    /**
-     * @return int
-     */
-    public function getMaxResults()
+    public function getMaxResults(): int
     {
         return $this->maxResults;
     }
 
-    /**
-     * @param int $offset
-     */
-    public function setOffset($offset)
-    {
-        $this->offset = $offset;
-    }
-
-    /**
-     * @return int
-     */
-    public function getOffset()
+    public function getOffset(): int
     {
         return $this->offset;
     }
 
-    /**
-     * @param int $limit
-     */
-    public function setLimit($limit)
-    {
-        $this->limit = $limit;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLimit()
+    public function getLimit(): int
     {
         return $this->limit;
     }
 
-    /**
-     * @param RemoteTest $remoteTest
-     */
     public function addRemoteTest(RemoteTest $remoteTest)
     {
         if (!isset($this->tests[$remoteTest->getId()])) {
@@ -89,9 +56,6 @@ class TestList
         $this->tests[$remoteTest->getId()]['remote_test'] = $remoteTest;
     }
 
-    /**
-     * @param Test $test
-     */
     public function addTest(Test $test)
     {
         if (!isset($this->tests[$test->getTestId()])) {
@@ -101,77 +65,51 @@ class TestList
         $this->tests[$test->getTestId()]['test'] = $test;
     }
 
-    /**
-     * @return Test[]
-     */
-    public function get()
+    public function get(): array
     {
         return $this->tests;
     }
 
-    /**
-     * @return int
-     */
-    public function getLength()
+    public function getLength(): int
     {
         return count($this->tests);
     }
 
-    /**
-     * @return bool
-     */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return $this->getLength() === 0;
     }
 
-    /**
-     * @return int
-     */
-    public function getPageNumber()
+    public function getPageNumber(): int
     {
         return $this->getPageIndex() + 1;
     }
 
-    /**
-     * @return int
-     */
-    public function getPageCount()
+    public function getPageCount(): int
     {
         return (int)ceil($this->getMaxResults() / $this->getLimit());
     }
 
-    /**
-     * @return int
-     */
-    public function getPageIndex()
+    public function getPageIndex(): int
     {
         return $this->getOffset() / $this->getLimit();
     }
 
-    /**
-     * @param Test $test
-     *
-     * @return bool|null
-     */
-    public function requiresResults(Test $test)
+    public function requiresResults(Test $test): bool
     {
         if (!$this->containsLocal($test->getTestId()) || !$this->containsRemote($test->getTestId())) {
-            return null;
+            return false;
         }
 
         /* @var RemoteTest $remoteTest */
         $remoteTest = $this->tests[$test->getTestId()]['remote_test'];
 
-        return $remoteTest->getTaskCount() != $test->getTaskCount();
+        $decoratedTest = new DecoratedTest($test, $remoteTest);
+
+        return $decoratedTest->requiresRemoteTasks();
     }
 
-    /**
-     * @param int $testId
-     *
-     * @return bool
-     */
-    private function containsRemote($testId)
+    private function containsRemote(int $testId): bool
     {
         if (!isset($this->tests[$testId])) {
             return false;
@@ -180,12 +118,7 @@ class TestList
         return isset($this->tests[$testId]['remote_test']);
     }
 
-    /**
-     * @param int $testId
-     *
-     * @return bool
-     */
-    private function containsLocal($testId)
+    private function containsLocal(int $testId): bool
     {
         if (!isset($this->tests[$testId])) {
             return false;
@@ -194,18 +127,12 @@ class TestList
         return isset($this->tests[$testId]['test']);
     }
 
-    /**
-     * @return int
-     */
-    public function getPageCollectionNumber()
+    public function getPageCollectionNumber(): int
     {
         return $this->getPageIndex() + 1;
     }
 
-    /**
-     * @return int
-     */
-    public function getPageCollectionIndex()
+    public function getPageCollectionIndex(): int
     {
         return (int)floor($this->getPageIndex() / self::PAGINATION_PAGE_COLLECTION_SIZE);
     }
@@ -213,17 +140,16 @@ class TestList
     /**
      * @return int[]
      */
-    public function getPageNumbers()
+    public function getPageNumbers(): array
     {
-        if ($this->getMaxResults() <= $this->getLimit()) {
-            return array();
-        }
+        $pageNumbers = [];
 
+        if ($this->getMaxResults() <= $this->getLimit()) {
+            return $pageNumbers;
+        }
 
         $start = $this->getPageCollectionIndex() * $this->getLimit();
         $end = $start + $this->getLimit() - 1;
-
-        $pageNumbers = array();
 
         for ($pageIndex = $start; $pageIndex <= $end; $pageIndex++) {
             if ($this->isValidPageIndex($pageIndex)) {
@@ -234,28 +160,17 @@ class TestList
         return $pageNumbers;
     }
 
-    /**
-     * @param int $index
-     *
-     * @return bool
-     */
-    private function isValidPageIndex($index)
+    private function isValidPageIndex(int $index): bool
     {
         return $this->getMaxResults() > ($index) * $this->getLimit();
     }
 
-    /**
-     * @return string
-     */
-    public function getHash()
+    public function getHash(): string
     {
         return md5($this->getHashableContent());
     }
 
-    /**
-     * @return string
-     */
-    private function getHashableContent()
+    private function getHashableContent(): string
     {
         $hashableContent = json_encode($this->getPropertiesString());
 
@@ -279,10 +194,7 @@ class TestList
         return $hashableContent;
     }
 
-    /**
-     * @return string
-     */
-    private function getPropertiesString()
+    private function getPropertiesString(): string
     {
         return json_encode(array(
             'max_results' => $this->getMaxResults(),

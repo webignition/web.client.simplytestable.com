@@ -1,17 +1,16 @@
 {% set is_disabled = app.request.get('_route') == 'view_test_progress' or ((is_owner is defined and is_owner == false) and (is_public_user_test is defined and is_public_user_test == false)) %}
 {% set is_enabled = (is_disabled == false) %}
-{% set has_http_auth = (test_options['http-auth-username'] is defined and test_options['http-auth-username'] != '') or (remote_test is defined and remote_test.hasParameter('http-auth-username') and remote_test.parameter('http-auth-username') != '') %}
 
 <div class="row test-options-set full-single-options-set">
     <div class="col-lg-6 col-md-6 col-sm-6 full-single-option">
         <label class="radio">
-            <input type="radio" name="full-single" value="full" {% if remote_test.type == 'Full site' %}checked{% endif %}> Full site test
+            <input type="radio" name="full-single" value="full" {% if test.isFullSite %}checked{% endif %}> Full site test
             <span class="help-block">Test your entire site by finding URLs in your sitemap and by crawling your site</span>
         </label>
     </div>
     <div class="col-lg-6 col-md-6 col-sm-6 full-single-option">
         <label class="radio">
-            <input type="radio" name="full-single" value="single" {% if remote_test.type != 'Full site' %}checked{% endif %}> Single URL test
+            <input type="radio" name="full-single" value="single" {% if test.isSingleUrl %}checked{% endif %}> Single URL test
             <span class="help-block">Test just the above URL only</span>
         </label>
     </div>
