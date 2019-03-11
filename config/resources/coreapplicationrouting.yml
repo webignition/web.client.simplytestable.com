@@ -44,9 +44,7 @@ test_tasks:
   path: /job/{test_id}/tasks/
 
 test_task_ids:
-  path: /job/{canonical_url}/{test_id}/tasks/ids/
-  requirements:
-    canonical_url: ".+"
+  path: /job/{test_id}/tasks/ids/
 
 user_card_associate:
   path: /user/{email}/card/{stripe_card_token}/associate/

@@ -63,7 +63,7 @@ class TaskServiceGetRemoteTaskIdsTest extends AbstractTaskServiceTest
                 ],
                 'expectedRemoteTaskIds' => [2, 3],
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
+                    'http://null/job/1/tasks/ids/',
                 ],
             ],
             'already set' => [

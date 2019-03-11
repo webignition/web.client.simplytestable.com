@@ -372,7 +372,6 @@ class TaskService
         $response = $this->coreApplicationHttpClient->get(
             'test_task_ids',
             [
-                'canonical_url' => $test->getWebsite(),
                 'test_id' => $test->getTestId(),
             ]
         );

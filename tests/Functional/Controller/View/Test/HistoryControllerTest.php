@@ -171,7 +171,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                 'expectedRequestUrls' => [
                     'http://null/jobs/list/10/90/?exclude-states%5B0%5D=rejected&exclude-current=1',
                     'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/tasks/ids/',
+                    'http://null/job/1/tasks/ids/',
                     'http://null/job/1/tasks/',
                 ],
             ],
