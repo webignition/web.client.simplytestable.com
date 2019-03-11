@@ -131,6 +131,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
+                    'url' => self::CANONICAL_URL,
                 ],
             ],
             'custom cookies' => [
@@ -160,6 +161,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                             ],
                         ],
                     ],
+                    'url' => self::CANONICAL_URL,
                 ],
             ],
             'custom cookies; invalid url' => [
@@ -179,6 +181,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                 'expectedRequestUrl' => 'http://null/job/foo/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
+                    'url' => 'foo',
                 ],
             ],
         ];

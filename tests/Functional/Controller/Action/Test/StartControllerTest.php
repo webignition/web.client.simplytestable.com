@@ -225,6 +225,7 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'HTTP 500' => [
@@ -257,6 +258,7 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'HTTP 500; with http auth' => [
@@ -296,6 +298,7 @@ class StartControllerTest extends AbstractControllerTest
                         'http-auth-username' => 'user',
                         'http-auth-password' => 'pass',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; type=full site' => [
@@ -318,6 +321,7 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; type=single' => [
@@ -341,6 +345,7 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; private user' => [
@@ -363,6 +368,7 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; private user; link integrity' => [
@@ -392,6 +398,7 @@ class StartControllerTest extends AbstractControllerTest
                             ],
                         ],
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; public user' => [
@@ -414,6 +421,7 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; public user; schemeless website' => [
@@ -436,6 +444,7 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; public user; http auth' => [
@@ -464,6 +473,7 @@ class StartControllerTest extends AbstractControllerTest
                         'http-auth-username' => 'user',
                         'http-auth-password' => 'pass',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; public user; empty http auth' => [
@@ -488,6 +498,7 @@ class StartControllerTest extends AbstractControllerTest
                     'test-types' => [
                         'HTML validation',
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
             'success; public user; cookies' => [
@@ -507,6 +518,7 @@ class StartControllerTest extends AbstractControllerTest
                             'value' => 'cookie-value-1',
                         ],
                     ],
+                    'url' => self::WEBSITE,
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
@@ -526,6 +538,7 @@ class StartControllerTest extends AbstractControllerTest
                             ],
                         ],
                     ],
+                    'url' => self::WEBSITE,
                 ],
             ],
         ];
