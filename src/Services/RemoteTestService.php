@@ -61,6 +61,7 @@ class RemoteTestService
             ],
             array_merge(
                 [
+                    'url' => $canonicalUrl,
                     'type' => $testType,
                 ],
                 $testOptions->__toArray()
