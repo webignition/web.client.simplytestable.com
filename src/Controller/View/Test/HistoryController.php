@@ -6,7 +6,6 @@ use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DecoratedTestListFactory;
 use App\Services\DefaultViewParameters;
@@ -85,15 +84,6 @@ class HistoryController extends AbstractBaseViewController
             }
         }
 
-        foreach ($remoteTestList->get() as $testObject) {
-            /* @var RemoteTest $remoteTest */
-            $remoteTest = $testObject['remote_test'];
-
-            $test = $this->testService->get($remoteTest->getWebsite(), $remoteTest->getId());
-
-            $remoteTestList->addTest($test);
-        }
-
         $isPageNumberAboveRange =
             $pageNumber > $decoratedTestList->getPageCount() && $decoratedTestList->getPageCount() > 0;
 
@@ -122,7 +112,7 @@ class HistoryController extends AbstractBaseViewController
         return $this->renderWithDefaultViewParameters(
             'test-history.html.twig',
             [
-                'test_list' => $remoteTestList,
+                'test_list' => $decoratedTestList,
                 'pagination_page_numbers' => $decoratedTestList->getPageNumbers(),
                 'filter' => $filter,
                 'websites_source' => $websitesSourceUrl

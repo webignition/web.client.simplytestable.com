@@ -8,7 +8,7 @@
 <div class="summary-prose hidden-xs">
     {% if test.errorCount > 0 or test.warningCount > 0 %}
 
-        {% for task_type in remote_test.tasktypes %}
+        {% for task_type in test.tasktypes %}
             {% set task_error_count = test.getErrorCountByTaskType(task_type) %}
             {% set task_warning_count = test.getWarningCountByTaskType(task_type) %}
 

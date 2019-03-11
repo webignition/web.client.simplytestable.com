@@ -113,6 +113,16 @@ class DecoratedTest implements \JsonSerializable
         return $this->test;
     }
 
+    public function getCrawlData(): array
+    {
+        return $this->remoteTest->getCrawl();
+    }
+
+    public function getUrlCount(): ?int
+    {
+        return $this->remoteTest->getUrlCount();
+    }
+
     public function jsonSerialize(): array
     {
         return array_merge($this->test->jsonSerialize(), [

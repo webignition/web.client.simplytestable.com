@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Controller\View\Test\History;
 use App\Controller\View\Test\HistoryController;
 use App\Entity\Task\Task;
 use App\Entity\Test\Test;
-use App\Model\RemoteTestList;
+use App\Model\DecoratedTestList;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -254,7 +254,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInstanceOf(RemoteTestList::class, $parameters['test_list']);
+                            $this->assertInstanceOf(DecoratedTestList::class, $parameters['test_list']);
                             $this->assertEquals(
                                 [
                                     1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -295,7 +295,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                               $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInstanceOf(RemoteTestList::class, $parameters['test_list']);
+                            $this->assertInstanceOf(DecoratedTestList::class, $parameters['test_list']);
                             $this->assertEquals(
                                 [
                                     1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -334,7 +334,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInstanceOf(RemoteTestList::class, $parameters['test_list']);
+                            $this->assertInstanceOf(DecoratedTestList::class, $parameters['test_list']);
                             $this->assertEquals(
                                 [
                                     1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -389,7 +389,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInstanceOf(RemoteTestList::class, $parameters['test_list']);
+                            $this->assertInstanceOf(DecoratedTestList::class, $parameters['test_list']);
                             $this->assertEquals(
                                 [
                                     11, 12, 13, 14, 15, 16, 17, 18, 19, 20
