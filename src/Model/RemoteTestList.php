@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
 

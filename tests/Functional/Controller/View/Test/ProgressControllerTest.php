@@ -4,7 +4,7 @@
 namespace App\Tests\Functional\Controller\View\Test\Progress;
 
 use App\Controller\View\Test\ProgressController;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\Test\DecoratedTest;
 use App\Services\SystemUserService;
 use App\Services\UserManager;

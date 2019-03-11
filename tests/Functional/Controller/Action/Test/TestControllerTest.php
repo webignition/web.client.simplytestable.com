@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\Action\Test;
 
 use App\Controller\Action\Test\TestController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;

@@ -2,7 +2,7 @@
 
 namespace App\Model\Test;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\RemoteTest\RemoteTest;
 
 class DecoratedTest implements \JsonSerializable

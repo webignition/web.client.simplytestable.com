@@ -3,7 +3,7 @@
 namespace App\Controller\Action\Test;
 
 use App\Controller\AbstractController;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;

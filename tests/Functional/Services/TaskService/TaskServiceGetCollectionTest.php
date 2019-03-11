@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Services\TaskService;
 
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Entity\TimePeriod;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;

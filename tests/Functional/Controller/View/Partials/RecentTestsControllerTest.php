@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\RecentTestsController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 
 use App\Model\DecoratedTestList;
 use App\Tests\Factory\HttpResponseFactory;

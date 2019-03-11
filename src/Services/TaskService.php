@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Entity\Task\Task;
 use App\Entity\Task\Output;
 use App\Exception\CoreApplicationReadOnlyException;

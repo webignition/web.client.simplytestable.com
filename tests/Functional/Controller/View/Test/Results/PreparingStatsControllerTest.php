@@ -5,7 +5,7 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\PreparingStatsController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;

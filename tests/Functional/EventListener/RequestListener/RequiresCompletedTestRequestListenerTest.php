@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\EventListener\RequiresCompletedTestRequestListener;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;

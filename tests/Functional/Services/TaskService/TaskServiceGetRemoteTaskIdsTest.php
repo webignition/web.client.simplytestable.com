@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\Services\TaskService;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 

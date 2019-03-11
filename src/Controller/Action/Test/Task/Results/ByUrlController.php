@@ -5,7 +5,7 @@ namespace App\Controller\Action\Test\Task\Results;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\AbstractController;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 

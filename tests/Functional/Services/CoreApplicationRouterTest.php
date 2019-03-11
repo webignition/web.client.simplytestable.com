@@ -4,7 +4,7 @@
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Services\CoreApplicationRouter;
 use App\Tests\Functional\AbstractBaseTestCase;
 

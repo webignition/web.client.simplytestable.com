@@ -4,7 +4,7 @@
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\FailedNoUrlsDetectedController;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;

@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Services;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Repository\TaskRepository;
 use App\Services\TaskCollectionFilterService;
 

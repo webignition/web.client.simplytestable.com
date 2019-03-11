@@ -4,7 +4,7 @@ namespace App\Repository;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use App\Entity\Task\Task;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 
 class TaskRepository extends EntityRepository
 {

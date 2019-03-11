@@ -4,7 +4,7 @@
 namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\TestFinishedSummaryController;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\Test\DecoratedTest;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;

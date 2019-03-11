@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Entity\Test;
+namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\TimePeriod;
 use App\Entity\Task\Task;
 use webignition\NormalisedUrl\NormalisedUrl;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;

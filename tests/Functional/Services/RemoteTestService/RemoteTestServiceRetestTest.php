@@ -2,7 +2,7 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\RemoteTest\RemoteTest;
 use App\Tests\Factory\HttpResponseFactory;
 

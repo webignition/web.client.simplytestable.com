@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\RemoteTestList;
 use App\Services\RemoteTestListService;
 use App\Tests\Factory\HttpResponseFactory;

@@ -4,7 +4,7 @@
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\RejectedController;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\Test\DecoratedTest;
 use App\Model\User\Summary as UserSummary;
 use App\Services\UserManager;

@@ -3,7 +3,7 @@
 
 namespace App\Tests\Unit\Model;
 
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Model\DecoratedTestList;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;

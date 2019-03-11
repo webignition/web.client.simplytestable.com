@@ -3,7 +3,7 @@
 namespace App\Entity\Task;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Test\Test;
+use App\Entity\Test;
 use App\Entity\TimePeriod;
 use App\Entity\Task\Output as TaskOutput;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -95,7 +95,7 @@ class Task
     /**
      * @var Test
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Test\Test", inversedBy="tasks")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Test", inversedBy="tasks")
      * @ORM\JoinColumn(name="test_id", referencedColumnName="id", nullable=false)
      */
     protected $test;
