@@ -31,17 +31,17 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
         $this->remoteTestService->cancel($this->test);
 
         $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/cancel/',
+            'http://null/job/1/cancel/',
             $this->httpHistory->getLastRequestUrl()
         );
     }
 
     public function testCancelByTestProperties()
     {
-        $this->remoteTestService->cancelByTestProperties(2, 'http://foo.example.com');
+        $this->remoteTestService->cancelByTestProperties(2);
 
         $this->assertEquals(
-            'http://null/job/http%3A%2F%2Ffoo.example.com/2/cancel/',
+            'http://null/job/2/cancel/',
             $this->httpHistory->getLastRequestUrl()
         );
     }

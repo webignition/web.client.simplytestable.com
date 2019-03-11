@@ -167,22 +167,20 @@ class RemoteTestService
     public function cancel(?Test $test)
     {
         if ($test) {
-            $this->cancelByTestProperties($test->getTestId(), $test->getWebsite());
+            $this->cancelByTestProperties($test->getTestId());
         }
     }
 
     /**
      * @param int $testId
-     * @param string $website
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function cancelByTestProperties(int $testId, string $website)
+    public function cancelByTestProperties(int $testId)
     {
         $this->coreApplicationHttpClient->post('test_cancel', [
-            'canonical_url' => $website,
             'test_id' => $testId,
         ]);
     }

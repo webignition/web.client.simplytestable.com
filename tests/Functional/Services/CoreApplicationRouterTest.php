@@ -80,10 +80,9 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
             'test_cancel' => [
                 'route' => 'test_cancel',
                 'parameters' => [
-                    'canonical_url' => 'http://example.com',
                     'test_id' => 1,
                 ],
-                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/1/cancel/',
+                'expectedUrl' => 'http://null/job/1/cancel/',
             ],
             'test_retest' => [
                 'route' => 'test_retest',
