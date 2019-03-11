@@ -40,32 +40,28 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
         return [
             'test_start, no test type, no test options' => [
                 'route' => 'test_start',
-                'parameters' => [
-                    'canonical_url' => 'http://example.com',
-                ],
-                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
+                'parameters' => [],
+                'expectedUrl' => 'http://null/job/start/',
             ],
             'test_start, has test type, no test options' => [
                 'route' => 'test_start',
                 'parameters' => [
-                    'canonical_url' => 'http://example.com',
                     'type' => strtolower(Test::TYPE_FULL_SITE),
                 ],
-                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/?' . $this->createHttpQuery([
+                'expectedUrl' => 'http://null/job/start/?' . $this->createHttpQuery([
                     'type' => strtolower(Test::TYPE_FULL_SITE),
                 ]),
             ],
             'test_start, has test type, has test options' => [
                 'route' => 'test_start',
                 'parameters' => [
-                    'canonical_url' => 'http://example.com',
                     'type' => strtolower(Test::TYPE_FULL_SITE),
                     'test_types' => [
                         Task::TYPE_HTML_VALIDATION,
                         Task::TYPE_CSS_VALIDATION,
                     ],
                 ],
-                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/?' . $this->createHttpQuery([
+                'expectedUrl' => 'http://null/job/start/?' . $this->createHttpQuery([
                     'type' => strtolower(Test::TYPE_FULL_SITE),
                     'test_types' => [
                         Task::TYPE_HTML_VALIDATION,

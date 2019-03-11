@@ -56,9 +56,7 @@ class RemoteTestService
 
         $response = $this->coreApplicationHttpClient->post(
             'test_start',
-            [
-                'canonical_url' => $canonicalUrl,
-            ],
+            [],
             array_merge(
                 [
                     'url' => $canonicalUrl,

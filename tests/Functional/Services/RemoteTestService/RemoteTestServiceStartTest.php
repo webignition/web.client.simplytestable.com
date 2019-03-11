@@ -118,7 +118,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
         $postedData = [];
         parse_str($lastRequest->getBody()->getContents(), $postedData);
 
-        $this->assertEquals($expectedRequestUrl, $lastRequest->getUri());
+        $this->assertEquals($expectedRequestUrl, (string) $lastRequest->getUri());
         $this->assertEquals($expectedPostData, $postedData);
     }
 
@@ -128,7 +128,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
             'default' => [
                 'url' => self::CANONICAL_URL,
                 'testOptions' => ModelFactory::createTestOptions(),
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'url' => self::CANONICAL_URL,
@@ -148,7 +148,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                         ],
                     ],
                 ]),
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'parameters' => [
@@ -178,7 +178,7 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
                         ],
                     ],
                 ]),
-                'expectedRequestUrl' => 'http://null/job/foo/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'url' => 'foo',

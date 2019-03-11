@@ -219,7 +219,7 @@ class StartControllerTest extends AbstractControllerTest
                         28,
                     ],
                 ],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -252,7 +252,7 @@ class StartControllerTest extends AbstractControllerTest
                         'web_resource_exception',
                     ],
                 ],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -288,7 +288,7 @@ class StartControllerTest extends AbstractControllerTest
                         'web_resource_exception',
                     ],
                 ],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -315,7 +315,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -339,7 +339,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_SINGLE_URL,
                     'test-types' => [
@@ -362,7 +362,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -385,7 +385,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -415,7 +415,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -438,7 +438,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -463,7 +463,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -492,7 +492,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
@@ -522,7 +522,7 @@ class StartControllerTest extends AbstractControllerTest
                 ]),
                 'expectedRedirectUrl' => $expectedProgressRedirectUrl,
                 'expectedFlashBagValues' => [],
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/start/',
+                'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
                     'type' => Test::TYPE_FULL_SITE,
                     'test-types' => [
