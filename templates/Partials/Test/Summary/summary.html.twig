@@ -1,11 +1,11 @@
-{% set container_class %}row listed-test state-{{ test.test.state }} {% block container_class %}{% endblock %}{% endset %}
+{% set container_class %}row listed-test state-{{ test.state }} {% block container_class %}{% endblock %}{% endset %}
 
 {% if icon is not defined %}
     {% set icon = 'fa-spin fa-spinner' %}
 {% endif %}
 
 {% if url is not defined %}
-    {% set url = path('redirect_website_test', {'website': test.test.website, 'test_id':test.test.testId}) %}
+    {% set url = path('redirect_website_test', {'website': test.website, 'test_id':test.testId}) %}
 {% endif %}
 
 {% if container_attributes is not defined %}
@@ -14,13 +14,13 @@
 
 {% block test %}
 
-<div {{ container_attributes|raw }} data-test-id="{{ test.test.testId }}" data-state="{{ test.test.state }}" class="{{ container_class }}">
+<div {{ container_attributes|raw }} data-test-id="{{ test.testId }}" data-state="{{ test.state }}" class="{{ container_class }}">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="row">
             <a class="url" href="{{ url }}">
                 <div class="col-lg-9 col-md-9 col-sm-9">
                     <i class="primary fa faw-fw {{ icon }}"></i>
-                    <span class="website">{{ test.test.formattedWebsite }}</span> (#{{ test.test.testId }})
+                    <span class="website">{{ test.formattedWebsite }}</span> (#{{ test.testId }})
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-3 button hidden-xs">
                     <span class="btn btn-default btn-sm">

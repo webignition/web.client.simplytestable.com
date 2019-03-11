@@ -123,6 +123,11 @@ class DecoratedTest implements \JsonSerializable
         return $this->remoteTest->getUrlCount();
     }
 
+    public function getFormattedWebsite(): string
+    {
+        return $this->test->getFormattedWebsite();
+    }
+
     public function jsonSerialize(): array
     {
         return array_merge($this->test->jsonSerialize(), [
