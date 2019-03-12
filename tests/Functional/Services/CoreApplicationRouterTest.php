@@ -129,13 +129,6 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
                 ],
                 'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/latest/',
             ],
-            'test_is_authorised' => [
-                'route' => 'test_is_authorised',
-                'parameters' => [
-                    'test_id' => 1,
-                ],
-                'expectedUrl' => 'http://null/job/1/is-authorised/',
-            ],
         ];
     }
 
