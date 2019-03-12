@@ -96,8 +96,6 @@ class Test implements \JsonSerializable
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", nullable=true)
      */
     private $type;
 
