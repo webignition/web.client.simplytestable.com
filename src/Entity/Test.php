@@ -85,9 +85,7 @@ class Test implements \JsonSerializable
     private $taskIds = null;
 
     /**
-     * @var DoctrineCollection
-     *
-     * @ORM\Column(type="array", nullable=false)
+     * @var array
      */
     private $taskTypes;
 
