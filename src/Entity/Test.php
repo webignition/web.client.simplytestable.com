@@ -13,9 +13,6 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
  * @ORM\Table(
  *     name="Test",
  *     indexes={
- *         @ORM\Index(name="user_idx", columns={"user"}),
- *         @ORM\Index(name="website_idx", columns={"website"}),
- *         @ORM\Index(name="state_idx", columns={"state"}),
  *         @ORM\Index(name="testId_idx", columns={"testId"})
  *     }
  * )
@@ -55,22 +52,16 @@ class Test implements \JsonSerializable
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", nullable=false)
      */
     private $user;
 
     /**
      * @var NormalisedUrl
-     *
-     * @ORM\Column(type="text", nullable=false)
      */
     private $website;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", nullable=false)
      */
     private $state;
 
@@ -94,23 +85,17 @@ class Test implements \JsonSerializable
     private $taskIds = null;
 
     /**
-     * @var DoctrineCollection
-     *
-     * @ORM\Column(type="array", nullable=false)
+     * @var array
      */
     private $taskTypes;
 
     /**
      * @var TimePeriod
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\TimePeriod", cascade={"persist"})
      */
     private $timePeriod;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", nullable=true)
      */
     private $type;
 
