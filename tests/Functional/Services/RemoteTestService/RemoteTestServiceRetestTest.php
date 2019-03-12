@@ -34,13 +34,13 @@ class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
 
     public function testRetest()
     {
-        $remoteTest = $this->remoteTestService->retest($this->test->getTestId(), $this->test->getWebsite());
+        $remoteTest = $this->remoteTestService->retest($this->test->getTestId());
 
         $this->assertInstanceOf(RemoteTest::class, $remoteTest);
         $this->assertEquals(self::NEW_TEST_ID, $remoteTest->getId());
 
         $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/re-test/',
+            'http://null/job/1/re-test/',
             $this->httpHistory->getLastRequestUrl()
         );
     }

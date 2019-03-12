@@ -240,7 +240,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'user' => $privateUser,
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
-                'expectedRedirectUrl' => '/http://example.com//1/re-test/',
+                'expectedRedirectUrl' => '/1/re-test/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'invalid remote test' => [

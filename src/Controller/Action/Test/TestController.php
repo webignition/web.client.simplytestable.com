@@ -154,7 +154,6 @@ class TestController extends AbstractController
     }
 
     /**
-     * @param string $website
      * @param string $test_id
      *
      * @return RedirectResponse
@@ -164,9 +163,9 @@ class TestController extends AbstractController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retestAction($website, $test_id)
+    public function retestAction($test_id)
     {
-        $remoteTest = $this->remoteTestService->retest((int) $test_id, $website);
+        $remoteTest = $this->remoteTestService->retest((int) $test_id);
 
         return new RedirectResponse($this->generateUrl(
             'view_test_progress',
