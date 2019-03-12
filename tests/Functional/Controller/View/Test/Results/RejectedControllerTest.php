@@ -310,7 +310,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
                 ],
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
-                'expectedRedirectUrl' => '/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/rejected/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
@@ -322,15 +322,6 @@ class RejectedControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-                'expectedRequestUrl' => 'http://null/job/1/',
-            ],
-            'invalid remote test' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
-                ],
-                'request' => new Request(),
-                'website' => self::WEBSITE,
-                'expectedRedirectUrl' => '/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
         ];

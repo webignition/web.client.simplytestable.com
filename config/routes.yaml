@@ -228,14 +228,6 @@ view_test_unauthorised:
        website: '.+'
        test_id: '\d+'
 
-action_test_task_results_byurl:
-    path: /{website}/{test_id}/{task_url}/{task_type}/results/
-    defaults: { _controller: App\Controller\Action\Test\Task\Results\ByUrlController::indexAction }
-    requirements:
-        website: '.+'
-        test_id: '\d+'
-        task_url: '.+'
-
 action_test_lock:
     path: /{test_id}/lock/
     defaults: { _controller: App\Controller\Action\Test\TestController::lockAction }

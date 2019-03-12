@@ -135,20 +135,11 @@ class ResultsController extends AbstractResultsController
     {
         $user = $this->userManager->getUser();
         $test = $this->testService->get($website, $test_id);
-
-        if (empty($test)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
-
         $remoteTest = $this->remoteTestService->get($test->getTestId());
-
-        if (empty($remoteTest)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
 
         if ($website !== $remoteTest->getWebsite()) {
             return new RedirectResponse($this->generateUrl(
-                'redirect_website_test',
+                'view_test_results',
                 [
                     'website' => $remoteTest->getWebsite(),
                     'test_id' => $test_id

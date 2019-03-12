@@ -241,7 +241,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
-                'expectedRedirectUrl' => '/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrls' => [
                     'http://null/job/1/',
                     'http://null/job/1/tasks/',
@@ -263,7 +263,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
-                'expectedRedirectUrl' => '/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrls' => [
                     'http://null/job/1/',
                     'http://null/job/1/tasks/',
@@ -282,7 +282,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
-                'expectedRedirectUrl' => '/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrls' => [
                     'http://null/job/1/',
                     'http://null/job/1/tasks/',

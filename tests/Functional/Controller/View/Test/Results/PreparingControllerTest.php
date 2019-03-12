@@ -102,12 +102,13 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $this->assertTrue($response->isSuccessful());
     }
 
-    public function testIndexActionNoRemoteTasks()
+    /**
+     * @dataProvider indexActionNoRemoteTasksDataProvider
+     */
+    public function testIndexActionNoRemoteTasks(array $remoteTestData, string $expectedRedirectUrl)
     {
         $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                'task_count' => 0,
-            ])),
+            HttpResponseFactory::createJsonResponse($remoteTestData),
         ]);
 
         /* @var PreparingController $preparingController */
@@ -115,7 +116,33 @@ class PreparingControllerTest extends AbstractViewControllerTest
 
         $response = $preparingController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('/http://example.com//1/', $response->getTargetUrl());
+        $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
+    }
+
+    public function indexActionNoRemoteTasksDataProvider()
+    {
+        return [
+            'not finished' => [
+                'remoteTestData' => array_merge(
+                    $this->remoteTestData,
+                    [
+                        'task_count' => 0,
+                        'state' => Test::STATE_IN_PROGRESS,
+                    ]
+                ),
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
+            ],
+            'finished' => [
+                'remoteTestData' => array_merge(
+                    $this->remoteTestData,
+                    [
+                        'task_count' => 0,
+                        'state' => Test::STATE_COMPLETED,
+                    ]
+                ),
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
+            ],
+        ];
     }
 
     /**
@@ -157,7 +184,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
-                'expectedRedirectUrl' => '/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
@@ -170,16 +197,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-                'expectedRequestUrls' => 'http://null/job/1/',
-            ],
-            'invalid remote test' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::create(200),
-                ],
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
-                'website' => self::WEBSITE,
-                'expectedRedirectUrl' => '/',
                 'expectedRequestUrls' => 'http://null/job/1/',
             ],
         ];
