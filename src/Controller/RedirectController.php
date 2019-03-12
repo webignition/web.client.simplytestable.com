@@ -86,23 +86,6 @@ class RedirectController extends AbstractController
                 ));
             }
 
-            /* @var Test $latestTest */
-            $latestTest = $testRepository->findOneBy([
-                'website' => (string)$normalisedWebsite,
-            ], [
-                'testId' => 'DESC',
-            ]);
-
-            if (!empty($latestTest)) {
-                return new RedirectResponse($this->generateUrl(
-                    'redirect_website_test',
-                    [
-                        'website' => $normalisedWebsite,
-                        'test_id' => $latestTest->getTestId(),
-                    ]
-                ));
-            }
-
             return new RedirectResponse($this->generateUrl('view_dashboard'));
         }
 
