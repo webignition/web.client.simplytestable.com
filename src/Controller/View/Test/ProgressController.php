@@ -157,7 +157,6 @@ class ProgressController extends AbstractBaseViewController
                 $request,
                 'action_test_retest',
                 [
-                    'website' => $testWebsite,
                     'test_id' => $test_id
                 ]
             );

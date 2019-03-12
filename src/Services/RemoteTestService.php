@@ -186,7 +186,6 @@ class RemoteTestService
 
     /**
      * @param int $testId
-     * @param string $website
      *
      * @return RemoteTest
      *
@@ -195,12 +194,11 @@ class RemoteTestService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retest(int $testId, string $website): RemoteTest
+    public function retest(int $testId): RemoteTest
     {
         $response = $this->coreApplicationHttpClient->post(
             'test_retest',
             [
-                'canonical_url' => (string)$website,
                 'test_id' => $testId
             ]
         );

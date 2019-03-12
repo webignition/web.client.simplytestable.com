@@ -8,7 +8,7 @@ test_cancel:
   path: /job/{test_id}/cancel/
 
 test_retest:
-  path: /job/{canonical_url}/{test_id}/re-test/
+  path: /job/{test_id}/re-test/
   requirements:
     canonical_url: ".+"
 

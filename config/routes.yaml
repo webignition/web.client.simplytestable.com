@@ -249,10 +249,10 @@ action_test_unlock:
        website: '.+'
 
 action_test_retest:
-    path: /{website}/{test_id}/re-test/
+    path: /{test_id}/re-test/
     defaults: { _controller: App\Controller\Action\Test\TestController::retestAction }
     requirements:
-       website: '.+'
+       test_id: '\d+'
 
 view_test_results_failed_no_urls_detected:
     path: /{website}/{test_id}/results/failed/no-urls-detected/
