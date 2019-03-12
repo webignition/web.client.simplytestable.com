@@ -74,15 +74,17 @@ class TestProgress {
 
             this.summaryData = event.detail.response;
 
-            let state = this.summaryData.test.state;
-            let taskCount = this.summaryData.test.task_count;
-            let isStateQueuedOrInProgress = ['queued', 'in-progress'].indexOf(state) !== -1;
+            if (this.summaryData.test) {
+                let state = this.summaryData.test.state;
+                let taskCount = this.summaryData.test.task_count;
+                let isStateQueuedOrInProgress = ['queued', 'in-progress'].indexOf(state) !== -1;
 
-            this._setBodyJobClass(this.document.body.classList, state);
-            this.summary.render(this.summaryData);
+                this._setBodyJobClass(this.document.body.classList, state);
+                this.summary.render(this.summaryData);
 
-            if (taskCount > 0 && isStateQueuedOrInProgress && !this.taskListIsInitialized && !this.taskList.isInitializing) {
-                this.taskList.init();
+                if (taskCount > 0 && isStateQueuedOrInProgress && !this.taskListIsInitialized && !this.taskList.isInitializing) {
+                    this.taskList.init();
+                }
             }
         }
 
