@@ -202,22 +202,18 @@ class RemoteTestService
         return new RemoteTest($responseData);
     }
 
-    public function lock(?Test $test)
+    public function lock(int $testId)
     {
-        if ($test) {
-            $this->coreApplicationHttpClient->post('test_set_private', [
-                'test_id' => $test->getTestId()
-            ]);
-        }
+        $this->coreApplicationHttpClient->post('test_set_private', [
+            'test_id' => $testId,
+        ]);
     }
 
-    public function unlock(?Test $test)
+    public function unlock(int $testId)
     {
-        if ($test) {
-            $this->coreApplicationHttpClient->post('test_set_public', [
-                'test_id' => $test->getTestId()
-            ]);
-        }
+        $this->coreApplicationHttpClient->post('test_set_public', [
+            'test_id' => $testId,
+        ]);
     }
 
     /**

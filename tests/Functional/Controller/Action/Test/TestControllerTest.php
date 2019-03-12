@@ -83,7 +83,6 @@ class TestControllerTest extends AbstractControllerTest
                 ],
                 'routeName' => 'action_test_lock',
                 'routeParameters' => [
-                    'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
                 ],
             ],
@@ -94,7 +93,6 @@ class TestControllerTest extends AbstractControllerTest
                 ],
                 'routeName' => 'action_test_unlock',
                 'routeParameters' => [
-                    'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
                 ],
             ],
@@ -105,7 +103,6 @@ class TestControllerTest extends AbstractControllerTest
                 ],
                 'routeName' => 'action_test_lock',
                 'routeParameters' => [
-                    'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
                 ],
             ],
@@ -116,7 +113,6 @@ class TestControllerTest extends AbstractControllerTest
                 ],
                 'routeName' => 'action_test_unlock',
                 'routeParameters' => [
-                    'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
                 ],
             ],
