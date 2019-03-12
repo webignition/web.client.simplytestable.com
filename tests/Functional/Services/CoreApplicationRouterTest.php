@@ -94,18 +94,16 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
             'test_set_public' => [
                 'route' => 'test_set_public',
                 'parameters' => [
-                    'canonical_url' => 'http://example.com',
                     'test_id' => 1,
                 ],
-                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/1/set-public/',
+                'expectedUrl' => 'http://null/job/1/set-public/',
             ],
             'test_set_private' => [
                 'route' => 'test_set_private',
                 'parameters' => [
-                    'canonical_url' => 'http://example.com',
                     'test_id' => 1,
                 ],
-                'expectedUrl' => 'http://null/job/http%3A%2F%2Fexample.com/1/set-private/',
+                'expectedUrl' => 'http://null/job/1/set-private/',
             ],
             'tests_list' => [
                 'route' => 'tests_list',
