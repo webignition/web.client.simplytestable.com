@@ -2,9 +2,7 @@ test_start:
   path: /job/start/
 
 test_status:
-  path: /job/{canonical_url}/{test_id}/
-  requirements:
-    canonical_url: ".+"
+  path: /job/{test_id}/
 
 test_cancel:
   path: /job/{test_id}/cancel/

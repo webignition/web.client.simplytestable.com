@@ -101,7 +101,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
+        $this->assertEquals($expectedRequestUrl, (string) $this->httpHistory->getLastRequestUrl());
     }
 
     public function indexActionBadRequestDataProvider(): array
@@ -115,7 +115,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
                 'expectedRedirectUrl' => '/http://example.com//1/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Ffoo.example.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
                 'httpFixtures' => [
@@ -127,7 +127,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'not public user' => [
                 'httpFixtures' => [
@@ -137,7 +137,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
         ];
     }

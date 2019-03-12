@@ -297,7 +297,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'taskType' => '',
                 'filter' => '',
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'invalid task type' => [
                 'httpFixtures' => [
@@ -308,7 +308,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'taskType' => 'foo',
                 'filter' => '',
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
-                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrls' => 'http://null/job/1/',
             ],
             'empty filter' => [
                 'httpFixtures' => [
@@ -319,7 +319,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => '',
                 'expectedRedirectUrl' => '/http://example.com//1/results/html+validation/by-error/',
-                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrls' => 'http://null/job/1/',
             ],
             'invalid filter' => [
                 'httpFixtures' => [
@@ -330,7 +330,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => 'foo',
                 'expectedRedirectUrl' => '/http://example.com//1/results/html+validation/by-error/',
-                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrls' => 'http://null/job/1/',
             ],
             'requires preparation' => [
                 'httpFixtures' => [
@@ -343,7 +343,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
                 'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
-                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrls' => 'http://null/job/1/',
             ],
             'invalid remote test' => [
                 'httpFixtures' => [
@@ -354,7 +354,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
                 'expectedRedirectUrl' => '/',
-                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrls' => 'http://null/job/1/',
             ],
         ];
     }

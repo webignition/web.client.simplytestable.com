@@ -144,7 +144,6 @@ class RemoteTestService
             $response = $this->coreApplicationHttpClient->get(
                 'test_status',
                 [
-                    'canonical_url' => $test->getWebsite(),
                     'test_id' => $test->getTestId(),
                 ]
             );

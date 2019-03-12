@@ -158,7 +158,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
                 'expectedRedirectUrl' => '/http://example.com//1/',
-                'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
                 'httpFixtures' => [
@@ -170,7 +170,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrls' => 'http://null/job/1/',
             ],
             'invalid remote test' => [
                 'httpFixtures' => [
@@ -180,7 +180,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/',
-                'expectedRequestUrls' => 'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                'expectedRequestUrls' => 'http://null/job/1/',
             ],
         ];
     }

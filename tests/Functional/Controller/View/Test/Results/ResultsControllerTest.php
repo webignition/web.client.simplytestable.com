@@ -347,7 +347,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/1/',
                 ],
             ],
             'invalid filter' => [
@@ -362,7 +362,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=with-errors',
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/1/',
                     'http://null/job/1/tasks/ids/',
                     'http://null/job/1/tasks/',
                 ],
@@ -393,7 +393,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=without-errors',
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/1/',
                     'http://null/job/1/tasks/ids/',
                     'http://null/job/1/tasks/',
                 ],
@@ -424,7 +424,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=with-warnings',
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/1/',
                     'http://null/job/1/tasks/ids/',
                     'http://null/job/1/tasks/',
                 ],
@@ -437,7 +437,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'request' => new Request(),
                 'expectedRedirectUrl' => '/',
                 'expectedRequestUrls' => [
-                    'http://null/job/http%3A%2F%2Fexample.com%2F/1/',
+                    'http://null/job/1/',
                 ],
             ],
         ];
