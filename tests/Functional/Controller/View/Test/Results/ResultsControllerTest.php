@@ -488,6 +488,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                        'owners' => [
+                            SystemUserService::PUBLIC_USER_USERNAME,
+                        ],
                         'is_public' => true,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
@@ -540,6 +543,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                        'owners' => [
+                            SystemUserService::PUBLIC_USER_USERNAME,
+                        ],
                         'is_public' => true,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
@@ -592,6 +598,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                        'owners' => [
+                            SystemUserService::PUBLIC_USER_USERNAME,
+                        ],
                         'is_public' => true,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
@@ -644,6 +653,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                        'owners' => [
+                            SystemUserService::PUBLIC_USER_USERNAME,
+                        ],
                         'is_public' => true,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
@@ -695,6 +707,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => self::USER_EMAIL,
+                        'owners' => [
+                            self::USER_EMAIL,
+                        ],
                         'is_public' => false,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
@@ -748,6 +763,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => self::USER_EMAIL,
+                        'owners' => [
+                            self::USER_EMAIL,
+                        ],
                         'is_public' => false,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),

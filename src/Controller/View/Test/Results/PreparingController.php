@@ -72,7 +72,11 @@ class PreparingController extends AbstractBaseViewController
     public function indexAction(Request $request, $website, $test_id)
     {
         $test = $this->testService->get($website, $test_id);
-        $remoteTest = $this->remoteTestService->get($test);
+        if (empty($test)) {
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
+        }
+
+        $remoteTest = $this->remoteTestService->get($test->getTestId());
         if (empty($remoteTest)) {
             return new RedirectResponse($this->generateUrl('view_dashboard'));
         }

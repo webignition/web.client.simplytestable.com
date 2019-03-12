@@ -107,7 +107,12 @@ class ByTaskTypeController extends AbstractResultsController
     {
         $user = $this->userManager->getUser();
         $test = $this->testService->get($website, $test_id);
-        $remoteTest = $this->remoteTestService->get($test);
+
+        if (empty($test)) {
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
+        }
+
+        $remoteTest = $this->remoteTestService->get($test->getTestId());
 
         if (empty($remoteTest)) {
             return new RedirectResponse($this->generateUrl('view_dashboard'));
@@ -194,7 +199,7 @@ class ByTaskTypeController extends AbstractResultsController
         return $this->renderWithDefaultViewParameters(
             'test-results-by-task-type.html.twig',
             [
-                'is_owner' => $this->remoteTestService->owns($test, $user),
+                'is_owner' => $remoteTest->getOwners()->contains($user->getUsername()),
                 'is_public_user_test' => $test->getUser() === SystemUserService::getPublicUser()->getUsername(),
                 'website' => $this->urlViewValues->create($website),
                 'test' => $decoratedTest,

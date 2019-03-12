@@ -134,9 +134,13 @@ class ResultsController extends AbstractResultsController
     public function indexAction(Request $request, $website, $test_id)
     {
         $user = $this->userManager->getUser();
-
         $test = $this->testService->get($website, $test_id);
-        $remoteTest = $this->remoteTestService->get($test);
+
+        if (empty($test)) {
+            return new RedirectResponse($this->generateUrl('view_dashboard'));
+        }
+
+        $remoteTest = $this->remoteTestService->get($test->getTestId());
 
         if (empty($remoteTest)) {
             return new RedirectResponse($this->generateUrl('view_dashboard'));
@@ -209,7 +213,7 @@ class ResultsController extends AbstractResultsController
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
 
-        $isOwner = $this->remoteTestService->owns($test, $user);
+        $isOwner = $remoteTest->getOwners()->contains($user->getUsername());
 
         $decoratedTest = new DecoratedTest($test, $remoteTest);
 

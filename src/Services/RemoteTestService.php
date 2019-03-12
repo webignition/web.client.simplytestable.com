@@ -9,7 +9,6 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\TestOptions;
-use webignition\SimplyTestableUserInterface\UserInterface;
 
 class RemoteTestService
 {
@@ -95,56 +94,22 @@ class RemoteTestService
     }
 
     /**
-     * @param Test $test
-     * @param UserInterface $user
-     *
-     * @return bool
-     *
-     * @throws CoreApplicationRequestException
-     */
-    public function owns(Test $test, UserInterface $user): bool
-    {
-        if ($user->getUsername() === $test->getUser()) {
-            return true;
-        }
-
-        try {
-            $remoteTest = $this->get($test);
-            if (empty($remoteTest)) {
-                return false;
-            }
-
-            $owners = $remoteTest->getOwners();
-
-            return $owners->contains($user->getUsername());
-        } catch (InvalidCredentialsException $invalidCredentialsException) {
-            // Does not own
-        }
-
-        return false;
-    }
-
-    /**
-     * @param Test $test
+     * @param int $testId
      *
      * @return RemoteTest|null
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function get(?Test $test): ?RemoteTest
+    public function get(int $testId): ?RemoteTest
     {
         $remoteTest = null;
-
-        if (null === $test) {
-            return $remoteTest;
-        }
 
         try {
             $response = $this->coreApplicationHttpClient->get(
                 'test_status',
                 [
-                    'test_id' => $test->getTestId(),
+                    'test_id' => $testId,
                 ]
             );
 
@@ -157,17 +122,15 @@ class RemoteTestService
     }
 
     /**
-     * @param Test $test
+     * @param int $testId
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function cancel(?Test $test)
+    public function cancel(int $testId)
     {
-        if ($test) {
-            $this->cancelByTestProperties($test->getTestId());
-        }
+        $this->cancelByTestProperties($testId);
     }
 
     /**
@@ -208,22 +171,18 @@ class RemoteTestService
         return new RemoteTest($responseData);
     }
 
-    public function lock(?Test $test)
+    public function lock(int $testId)
     {
-        if ($test) {
-            $this->coreApplicationHttpClient->post('test_set_private', [
-                'test_id' => $test->getTestId()
-            ]);
-        }
+        $this->coreApplicationHttpClient->post('test_set_private', [
+            'test_id' => $testId,
+        ]);
     }
 
-    public function unlock(?Test $test)
+    public function unlock(int $testId)
     {
-        if ($test) {
-            $this->coreApplicationHttpClient->post('test_set_public', [
-                'test_id' => $test->getTestId()
-            ]);
-        }
+        $this->coreApplicationHttpClient->post('test_set_public', [
+            'test_id' => $testId,
+        ]);
     }
 
     /**

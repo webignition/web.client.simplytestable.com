@@ -57,7 +57,9 @@ class PreparingStatsController extends AbstractBaseViewController
         $localTaskCount = 0;
         $remoteTaskCount = 0;
 
-        $remoteTest = $this->remoteTestService->get($test);
+        $remoteTest = $test
+            ? $this->remoteTestService->get($test->getTestId())
+            : null;
 
         if (!empty($remoteTest)) {
             $localTaskCount = $test->getTaskCount();
