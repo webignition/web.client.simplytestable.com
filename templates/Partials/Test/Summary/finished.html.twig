@@ -4,6 +4,7 @@
 {% set no_urls = test.state == 'failed-no-sitemap' and test.crawlData is not empty %}
 {% set icon = 'fa-bar-chart-o' %}
 {% set results_url = path('view_test_results', {'website': test.website, 'test_id': test.testid}) %}
+{% set url = path('view_test_results', {'website': test.website, 'test_id':test.testId}) %}
 
 {% block container_class %}finished {% if was_not_started %}not-started{% endif %} {% if test.requiresRemoteTasks %}requires-results{% endif %}{% endblock %}
 

@@ -4,10 +4,6 @@
     {% set icon = 'fa-spin fa-spinner' %}
 {% endif %}
 
-{% if url is not defined %}
-    {% set url = path('redirect_website_test', {'website': test.website, 'test_id':test.testId}) %}
-{% endif %}
-
 {% if container_attributes is not defined %}
     {% set container_attributes = '' %}
 {% endif %}
