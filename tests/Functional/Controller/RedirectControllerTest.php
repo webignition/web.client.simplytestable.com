@@ -10,7 +10,6 @@ use App\Entity\Test;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
-use App\Tests\Factory\TestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Tests\Services\HttpMockHandler;
@@ -116,7 +115,6 @@ class RedirectControllerTest extends AbstractControllerTest
      */
     public function testTestAction(
         array $httpFixtures,
-        array $testValues,
         Request $request,
         ?string $website,
         ?int $testId,
@@ -124,17 +122,24 @@ class RedirectControllerTest extends AbstractControllerTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        if (!empty($testValues)) {
-            $testFactory = new TestFactory(self::$container);
-            $testFactory->create($testValues);
-        }
+        /* @var TestService $testService */
+        $testService = self::$container->get(TestService::class);
+
+        /* @var RemoteTestService $remoteTestService */
+        $remoteTestService = self::$container->get(RemoteTestService::class);
+
+        /* @var EntityManagerInterface $entityManager */
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+
+        /* @var LoggerInterface $logger */
+        $logger = self::$container->get(LoggerInterface::class);
 
         /* @var RedirectResponse $response */
         $response = $this->redirectController->testAction(
-            self::$container->get(TestService::class),
-            self::$container->get(RemoteTestService::class),
-            self::$container->get(EntityManagerInterface::class),
-            self::$container->get(LoggerInterface::class),
+            $testService,
+            $remoteTestService,
+            $entityManager,
+            $logger,
             $request,
             $website,
             $testId
@@ -149,7 +154,6 @@ class RedirectControllerTest extends AbstractControllerTest
         return [
             'task results url without trailing slash' => [
                 'httpFixtures' => [],
-                'testValues' => [],
                 'request' => new Request(),
                 'website' => 'http://example.com//1/2/results',
                 'testId' => null,
@@ -157,7 +161,6 @@ class RedirectControllerTest extends AbstractControllerTest
             ],
             'task results url with trailing slash' => [
                 'httpFixtures' => [],
-                'testValues' => [],
                 'request' => new Request(),
                 'website' => 'http://example.com//3/4/results/',
                 'testId' => null,
@@ -170,7 +173,6 @@ class RedirectControllerTest extends AbstractControllerTest
                         'website' => 'http://example.com/'
                     ]),
                 ],
-                'testValues' => [],
                 'request' => new Request([], [
                     'website' => 'http://example.com/',
                 ]),
@@ -178,26 +180,10 @@ class RedirectControllerTest extends AbstractControllerTest
                 'testId' => null,
                 'expectedRedirectUrl' => '/http://example.com//99/',
             ],
-            'posted website, no latest test, has test in repository' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createNotFoundResponse(),
-                ],
-                'testValues' => [
-                    TestFactory::KEY_WEBSITE => 'http://example.com',
-                    TestFactory::KEY_TEST_ID => 2,
-                ],
-                'request' => new Request([], [
-                    'website' => 'http://example.com/',
-                ]),
-                'website' => 'http://example.com/',
-                'testId' => null,
-                'expectedRedirectUrl' => '/http://example.com//2/',
-            ],
             'get website, no latest test, does not have test in repository' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'testValues' => [],
                 'request' => new Request([
                     'website' => 'http://example.com/',
                 ]),
@@ -209,7 +195,6 @@ class RedirectControllerTest extends AbstractControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'testValues' => [],
                 'request' => new Request(),
                 'website' => 'http://example.com/',
                 'testId' => null,
@@ -219,7 +204,6 @@ class RedirectControllerTest extends AbstractControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'testValues' => [],
                 'request' => new Request([], [
                     'website' => 'http://example.com/',
                 ]),
@@ -231,7 +215,6 @@ class RedirectControllerTest extends AbstractControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'testValues' => [],
                 'request' => new Request([], [
                     'website' => 'example.com/',
                 ]),
@@ -243,7 +226,6 @@ class RedirectControllerTest extends AbstractControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'testValues' => [],
                 'request' => new Request([], [
                     'website' => '/',
                 ]),
@@ -255,7 +237,6 @@ class RedirectControllerTest extends AbstractControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'testValues' => [],
                 'request' => new Request([], [
                     'website' => 'http://example.com/1/',
                 ]),
@@ -267,7 +248,6 @@ class RedirectControllerTest extends AbstractControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
-                'testValues' => [],
                 'request' => new Request(),
                 'website' => 'http://example.com/',
                 'testId' => 1,
@@ -283,7 +263,6 @@ class RedirectControllerTest extends AbstractControllerTest
                         'state' => Test::STATE_COMPLETED,
                     ]),
                 ],
-                'testValues' => [],
                 'request' => new Request(),
                 'website' => 'http://example.com/',
                 'testId' => 1,
@@ -299,7 +278,6 @@ class RedirectControllerTest extends AbstractControllerTest
                         'state' => Test::STATE_IN_PROGRESS,
                     ]),
                 ],
-                'testValues' => [],
                 'request' => new Request(),
                 'website' => 'http://example.com/',
                 'testId' => 1,
@@ -307,7 +285,6 @@ class RedirectControllerTest extends AbstractControllerTest
             ],
             'no website, no test id' => [
                 'httpFixtures' => [],
-                'testValues' => [],
                 'request' => new Request(),
                 'website' => null,
                 'testId' => null,
