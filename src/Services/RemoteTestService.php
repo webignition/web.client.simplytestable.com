@@ -109,7 +109,7 @@ class RemoteTestService
         }
 
         try {
-            $remoteTest = $this->get($test);
+            $remoteTest = $this->get($test->getTestId());
             if (empty($remoteTest)) {
                 return false;
             }
@@ -125,26 +125,22 @@ class RemoteTestService
     }
 
     /**
-     * @param Test $test
+     * @param int $testId
      *
      * @return RemoteTest|null
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function get(?Test $test): ?RemoteTest
+    public function get(int $testId): ?RemoteTest
     {
         $remoteTest = null;
-
-        if (null === $test) {
-            return $remoteTest;
-        }
 
         try {
             $response = $this->coreApplicationHttpClient->get(
                 'test_status',
                 [
-                    'test_id' => $test->getTestId(),
+                    'test_id' => $testId,
                 ]
             );
 

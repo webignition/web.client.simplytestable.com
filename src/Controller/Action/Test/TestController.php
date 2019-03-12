@@ -132,7 +132,10 @@ class TestController extends AbstractController
     {
         try {
             $test = $this->testService->get($website, $test_id);
-            $remoteTest = $this->remoteTestService->get($test);
+
+            $remoteTest = $test
+                ? $this->remoteTestService->get($test->getTestId())
+                : null;
 
             if ($remoteTest) {
                 $crawlData = $remoteTest->getCrawl();
