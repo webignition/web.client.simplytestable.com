@@ -99,7 +99,7 @@ class TestService
         }
 
         try {
-            $remoteTest = $this->remoteTestService->get($test);
+            $remoteTest = $this->remoteTestService->get($test->getTestId());
         } catch (InvalidCredentialsException $invalidCredentialsException) {
             return null;
         }
