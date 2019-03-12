@@ -171,7 +171,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         'website' => 'http://foo.example.com/',
                     ])),
                 ],
-                'expectedRedirectUrl' => '/http://foo.example.com//1/',
+                'expectedRedirectUrl' => '/http://foo.example.com//1/results/',
             ],
             'failed test' => [
                 'httpFixtures' => [
@@ -427,17 +427,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     'http://null/job/1/',
                     'http://null/job/1/tasks/ids/',
                     'http://null/job/1/tasks/',
-                ],
-            ],
-            'invalid remote test' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
-                ],
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
-                'expectedRedirectUrl' => '/',
-                'expectedRequestUrls' => [
-                    'http://null/job/1/',
                 ],
             ],
         ];
