@@ -213,7 +213,7 @@ class ResultsController extends AbstractResultsController
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
 
-        $isOwner = $this->remoteTestService->owns($test, $user);
+        $isOwner = $remoteTest->getOwners()->contains($user->getUsername());
 
         $decoratedTest = new DecoratedTest($test, $remoteTest);
 
