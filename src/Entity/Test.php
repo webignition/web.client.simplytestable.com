@@ -91,8 +91,6 @@ class Test implements \JsonSerializable
 
     /**
      * @var TimePeriod
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\TimePeriod", cascade={"persist"})
      */
     private $timePeriod;
 
