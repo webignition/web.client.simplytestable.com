@@ -331,6 +331,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                        'owners' => [
+                            SystemUserService::PUBLIC_USER_USERNAME,
+                        ],
                     ])),
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
@@ -358,6 +361,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                        'owners' => [
+                            SystemUserService::PUBLIC_USER_USERNAME,
+                        ],
                     ])),
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
@@ -383,7 +389,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ],
             'private user, private test' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
+                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
+                        'user' => self::USER_EMAIL,
+                        'owners' => [
+                            self::USER_EMAIL,
+                        ],
+                    ])),
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
                 'user' => new User(self::USER_EMAIL),

@@ -9,7 +9,6 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\TestOptions;
-use webignition\SimplyTestableUserInterface\UserInterface;
 
 class RemoteTestService
 {
@@ -92,36 +91,6 @@ class RemoteTestService
 
         $cookieOptions['cookies'] = $cookies;
         $testOptions->setFeatureOptions('cookies', $cookieOptions);
-    }
-
-    /**
-     * @param Test $test
-     * @param UserInterface $user
-     *
-     * @return bool
-     *
-     * @throws CoreApplicationRequestException
-     */
-    public function owns(Test $test, UserInterface $user): bool
-    {
-        if ($user->getUsername() === $test->getUser()) {
-            return true;
-        }
-
-        try {
-            $remoteTest = $this->get($test->getTestId());
-            if (empty($remoteTest)) {
-                return false;
-            }
-
-            $owners = $remoteTest->getOwners();
-
-            return $owners->contains($user->getUsername());
-        } catch (InvalidCredentialsException $invalidCredentialsException) {
-            // Does not own
-        }
-
-        return false;
     }
 
     /**

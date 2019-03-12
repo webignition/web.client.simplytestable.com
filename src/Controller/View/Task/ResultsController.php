@@ -113,7 +113,20 @@ class ResultsController extends AbstractBaseViewController
     {
         $user = $this->userManager->getUser();
         $test = $this->testService->get($website, $test_id);
-        $isOwner = $this->remoteTestService->owns($test, $user);
+
+        $remoteTest = empty($test)
+            ? null
+            : $this->remoteTestService->get($test->getTestId());
+
+        if (empty($remoteTest)) {
+            return new RedirectResponse($this->generateUrl(
+                'redirect_website_test',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ]
+            ));
+        }
 
         $task = $this->taskService->get($test, $task_id);
 
@@ -141,6 +154,7 @@ class ResultsController extends AbstractBaseViewController
         }
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
+        $isOwner = $remoteTest->getOwners()->contains($user->getUsername());
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
