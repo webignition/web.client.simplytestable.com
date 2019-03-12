@@ -237,22 +237,22 @@ action_test_task_results_byurl:
         task_url: '.+'
 
 action_test_lock:
-    path: /{website}/{test_id}/lock/
+    path: /{test_id}/lock/
     defaults: { _controller: App\Controller\Action\Test\TestController::lockAction }
     requirements:
-       website: '.+'
+      test_id: '\d+'
 
 action_test_unlock:
-    path: /{website}/{test_id}/unlock/
+    path: /{test_id}/unlock/
     defaults: { _controller: App\Controller\Action\Test\TestController::unlockAction }
     requirements:
-       website: '.+'
+      test_id: '\d+'
 
 action_test_retest:
     path: /{test_id}/re-test/
     defaults: { _controller: App\Controller\Action\Test\TestController::retestAction }
     requirements:
-       test_id: '\d+'
+      test_id: '\d+'
 
 view_test_results_failed_no_urls_detected:
     path: /{website}/{test_id}/results/failed/no-urls-detected/
