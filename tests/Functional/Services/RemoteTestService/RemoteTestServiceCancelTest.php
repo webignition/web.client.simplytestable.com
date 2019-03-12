@@ -28,7 +28,7 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 
     public function testCancel()
     {
-        $this->remoteTestService->cancel($this->test);
+        $this->remoteTestService->cancel($this->test->getTestId());
 
         $this->assertEquals(
             'http://null/job/1/cancel/',

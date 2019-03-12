@@ -100,7 +100,10 @@ class TestController extends AbstractController
 
         try {
             $test = $this->testService->get($website, $test_id);
-            $this->remoteTestService->cancel($test);
+
+            if ($test) {
+                $this->remoteTestService->cancel($test->getTestId());
+            }
         } catch (InvalidCredentialsException $invalidCredentialsException) {
             return new RedirectResponse($this->generateUrl('view_dashboard'));
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
