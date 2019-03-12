@@ -153,17 +153,15 @@ class RemoteTestService
     }
 
     /**
-     * @param Test $test
+     * @param int $testId
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function cancel(?Test $test)
+    public function cancel(int $testId)
     {
-        if ($test) {
-            $this->cancelByTestProperties($test->getTestId());
-        }
+        $this->cancelByTestProperties($testId);
     }
 
     /**
