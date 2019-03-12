@@ -72,24 +72,21 @@ class PreparingController extends AbstractBaseViewController
     public function indexAction(Request $request, $website, $test_id)
     {
         $test = $this->testService->get($website, $test_id);
-        if (empty($test)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
-
         $remoteTest = $this->remoteTestService->get($test->getTestId());
-        if (empty($remoteTest)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
 
         $localTaskCount = $test->getTaskCount();
         $remoteTaskCount = $remoteTest->getTaskCount();
 
         if (0 === $remoteTaskCount) {
+            $routeName = $this->testService->isFinished($test)
+                ? 'view_test_results'
+                : 'view_test_progress';
+
             return new RedirectResponse($this->generateUrl(
-                'redirect_website_test',
+                $routeName,
                 [
                     'website' => $test->getWebsite(),
-                    'test_id' => $test_id,
+                    'test_id' => $test->getTestId(),
                 ]
             ));
         }
@@ -120,7 +117,7 @@ class PreparingController extends AbstractBaseViewController
 
         if ($test->getWebsite() != $website) {
             return new RedirectResponse($this->generateUrl(
-                'redirect_website_test',
+                'view_test_results_preparing',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id,
