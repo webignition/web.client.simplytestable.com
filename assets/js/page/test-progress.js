@@ -72,6 +72,8 @@ class TestProgress {
                 return;
             }
 
+            console.log(event.detail.response);
+
             this.summaryData = event.detail.response;
 
             let state = this.summaryData.test.state;
