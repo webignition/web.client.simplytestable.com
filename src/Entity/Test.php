@@ -316,7 +316,7 @@ class Test implements \JsonSerializable
             'website' => (string)$this->website,
             'state' => $this->state,
             'taskTypes' => $this->taskTypes,
-            'timePeriod' => $this->timePeriod->jsonSerialize(),
+            'timePeriod' => $this->timePeriod,
         ];
     }
 }
