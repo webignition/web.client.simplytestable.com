@@ -83,16 +83,7 @@ class RejectedController extends AbstractBaseViewController
     public function indexAction(Request $request, $website, $test_id)
     {
         $test = $this->testService->get($website, $test_id);
-
-        if (empty($test)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
-
         $remoteTest = $this->remoteTestService->get($test->getTestId());
-
-        if (empty($remoteTest)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
 
         $cacheValidatorParameters = [
             'website' => $website,
@@ -119,7 +110,7 @@ class RejectedController extends AbstractBaseViewController
 
         if ($test->getWebsite() != $website) {
             return new RedirectResponse($this->generateUrl(
-                'redirect_website_test',
+                'view_test_results_rejected',
                 [
                     'website' => $test->getWebsite(),
                     'test_id' => $test_id
