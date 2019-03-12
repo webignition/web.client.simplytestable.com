@@ -114,7 +114,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
-                'expectedRedirectUrl' => '/http://example.com//1/',
+                'expectedRedirectUrl' => '/http://example.com//1/results/failed/no-urls-detected/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
