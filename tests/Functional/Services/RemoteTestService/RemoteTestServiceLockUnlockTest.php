@@ -30,7 +30,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
     {
         $this->remoteTestService->lock($this->test);
         $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-private/',
+            'http://null/job/1/set-private/',
             $this->httpHistory->getLastRequestUrl()
         );
     }
@@ -39,7 +39,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
     {
         $this->remoteTestService->unlock($this->test);
         $this->assertEquals(
-            'http://null/job/http%3A%2F%2Fexample.com%2F/1/set-public/',
+            'http://null/job/1/set-public/',
             $this->httpHistory->getLastRequestUrl()
         );
     }

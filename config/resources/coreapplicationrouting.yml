@@ -13,12 +13,12 @@ test_retest:
     canonical_url: ".+"
 
 test_set_public:
-  path: /job/{canonical_url}/{test_id}/set-public/
+  path: /job/{test_id}/set-public/
   requirements:
     canonical_url: ".+"
 
 test_set_private:
-  path: /job/{canonical_url}/{test_id}/set-private/
+  path: /job/{test_id}/set-private/
   requirements:
     canonical_url: ".+"
 

@@ -214,7 +214,6 @@ class RemoteTestService
     {
         if ($test) {
             $this->coreApplicationHttpClient->post('test_set_private', [
-                'canonical_url' => $test->getWebsite(),
                 'test_id' => $test->getTestId()
             ]);
         }
@@ -224,7 +223,6 @@ class RemoteTestService
     {
         if ($test) {
             $this->coreApplicationHttpClient->post('test_set_public', [
-                'canonical_url' => $test->getWebsite(),
                 'test_id' => $test->getTestId()
             ]);
         }
