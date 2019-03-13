@@ -79,13 +79,6 @@ class Task
     private $type;
 
     /**
-     * @var TimePeriod
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\TimePeriod", cascade={"persist"})
-     */
-    private $timePeriod;
-
-    /**
      * @var TaskOutput
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Task\Output")
@@ -99,12 +92,6 @@ class Task
      * @ORM\JoinColumn(name="test_id", referencedColumnName="id", nullable=false)
      */
     protected $test;
-
-
-    public function __construct()
-    {
-        $this->timePeriod = new TimePeriod();
-    }
 
     /**
      * @return int
