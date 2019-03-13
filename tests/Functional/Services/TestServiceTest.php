@@ -53,9 +53,9 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
     }
 
     /**
-     * @dataProvider getDataProvider
+     * @dataProvider getSuccessDataProvider
      */
-    public function testGet(
+    public function testGetSuccess(
         array $httpFixtures,
         array $testValues,
         string $canonicalUrl,
@@ -82,7 +82,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         $this->assertEquals($expectedTestValues['taskIds'], $test->getTaskIds());
     }
 
-    public function getDataProvider(): array
+    public function getSuccessDataProvider(): array
     {
         return [
             'has not locally, remote state not prepared' => [
@@ -122,7 +122,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                     'taskIds' => [],
                 ],
             ],
-            'has locally, update, is finished' => [
+            'has locally, not has task ids, is finished' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'id' => 1,
@@ -147,6 +147,45 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                 'testValues' => [
                     TestFactory::KEY_WEBSITE => 'http://example.com/',
                     TestFactory::KEY_TEST_ID => 1,
+                ],
+                'canonicalUrl' => 'http://example.com/',
+                'testId' => 1,
+                'expectedTestValues' => [
+                    'testId' => 1,
+                    'state' => Test::STATE_COMPLETED,
+                    'website' => 'http://example.com/',
+                    'urlCount' => 99,
+                    'type' => Test::TYPE_FULL_SITE,
+                    'taskTypes' => [
+                        Task::TYPE_HTML_VALIDATION,
+                        Task::TYPE_CSS_VALIDATION,
+                    ],
+                    'taskIds' => [1, 2, 3],
+                ],
+            ],
+            'has locally, has task ids, is finished' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => 1,
+                        'website' => 'http://example.com/',
+                        'task_types' => [
+                            [
+                                'name' => Task::TYPE_HTML_VALIDATION,
+                            ],
+                            [
+                                'name' => Task::TYPE_CSS_VALIDATION,
+                            ],
+                        ],
+                        'user' => self::USERNAME,
+                        'state' => Test::STATE_COMPLETED,
+                        'url_count' => 99,
+                        'type' => Test::TYPE_FULL_SITE,
+                    ]),
+                ],
+                'testValues' => [
+                    TestFactory::KEY_WEBSITE => 'http://example.com/',
+                    TestFactory::KEY_TEST_ID => 1,
+                    TestFactory::KEY_TASK_IDS => '1,2,3',
                 ],
                 'canonicalUrl' => 'http://example.com/',
                 'testId' => 1,

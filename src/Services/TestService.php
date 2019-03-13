@@ -122,7 +122,7 @@ class TestService
 
         $this->hydrateFromRemoteTest($test, $remoteTest);
 
-        if (in_array($test->getState(), $this->preparedStates)) {
+        if (in_array($test->getState(), $this->preparedStates) && !$test->hasTaskIds()) {
             $remoteTaskIds = $this->taskService->retrieveRemoteTaskIds($test);
             $test->setTaskIdCollection(implode(',', $remoteTaskIds));
         }
