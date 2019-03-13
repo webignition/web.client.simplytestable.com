@@ -4,7 +4,6 @@ namespace App\Entity\Task;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Test;
-use App\Entity\TimePeriod;
 use App\Entity\Task\Output as TaskOutput;
 use webignition\NormalisedUrl\NormalisedUrl;
 
@@ -79,13 +78,6 @@ class Task
     private $type;
 
     /**
-     * @var TimePeriod
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\TimePeriod", cascade={"persist"})
-     */
-    private $timePeriod;
-
-    /**
      * @var TaskOutput
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Task\Output")
@@ -99,12 +91,6 @@ class Task
      * @ORM\JoinColumn(name="test_id", referencedColumnName="id", nullable=false)
      */
     protected $test;
-
-
-    public function __construct()
-    {
-        $this->timePeriod = new TimePeriod();
-    }
 
     /**
      * @return int
@@ -206,26 +192,6 @@ class Task
     public function getType()
     {
         return $this->type;
-    }
-
-    /**
-     * @param TimePeriod $timePeriod
-     *
-     * @return Task
-     */
-    public function setTimePeriod(TimePeriod $timePeriod = null)
-    {
-        $this->timePeriod = $timePeriod;
-
-        return $this;
-    }
-
-    /**
-     * @return TimePeriod
-     */
-    public function getTimePeriod()
-    {
-        return $this->timePeriod;
     }
 
     /**
