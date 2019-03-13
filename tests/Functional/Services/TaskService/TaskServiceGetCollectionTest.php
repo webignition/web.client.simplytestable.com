@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Services\TaskService;
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
 use App\Entity\Test;
-use App\Entity\TimePeriod;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;
@@ -54,29 +53,6 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                 $this->assertEquals($expectedOutput['errorCount'], $output->getErrorCount());
                 $this->assertEquals($expectedOutput['warningCount'], $output->getWarningCount());
             }
-
-            $expectedTimePeriodData = $expectedTaskData['timePeriod'];
-            $timePeriod = $task->getTimePeriod();
-
-            $this->assertInstanceOf(TimePeriod::class, $timePeriod);
-
-            if (is_null($expectedTimePeriodData['startDateTime'])) {
-                $this->assertNull($timePeriod->getStartDateTime());
-            } else {
-                $this->assertEquals(
-                    $expectedTimePeriodData['startDateTime'],
-                    $timePeriod->getStartDateTime()->format(DATE_ATOM)
-                );
-            }
-
-            if (is_null($expectedTimePeriodData['endDateTime'])) {
-                $this->assertNull($timePeriod->getEndDateTime());
-            } else {
-                $this->assertEquals(
-                    $expectedTimePeriodData['endDateTime'],
-                    $timePeriod->getEndDateTime()->format(DATE_ATOM)
-                );
-            }
         }
 
         $this->assertEquals($expectedRequestUrls, $this->httpHistory->getRequestUrlsAsStrings());
@@ -115,18 +91,10 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                     2 => [
                         'state' => Task::STATE_COMPLETED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                     3 => [
                         'state' => Task::STATE_COMPLETED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                 ],
                 'expectedRequestUrls' => [
@@ -161,18 +129,10 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                     2 => [
                         'state' => Task::STATE_COMPLETED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                     3 => [
                         'state' => Task::STATE_COMPLETED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                 ],
                 'expectedRequestUrls' => [
@@ -203,18 +163,10 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                     2 => [
                         'state' => Task::STATE_COMPLETED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
-                    ],
+                     ],
                     3 => [
                         'state' => Task::STATE_COMPLETED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                 ],
                 'expectedRequestUrls' => [],
@@ -274,26 +226,14 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                     2 => [
                         'state' => Task::STATE_CANCELLED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                     3 => [
                         'state' => Task::STATE_CANCELLED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                     4 => [
                         'state' => Task::STATE_FAILED,
                         'hasOutput' => false,
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                 ],
                 'expectedRequestUrls' => [
@@ -314,10 +254,6 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                                 'content_type' => 'application/json',
                                 'error_count' => 0,
                                 'warning_count' => 0,
-                            ],
-                            'time_period' => [
-                                'start_date_time' => '2018-01-10T10:55:12+00:00',
-                                'end_date_time' => '2018-01-10T10:55:13+00:00',
                             ],
                         ],
                     ]),
@@ -342,11 +278,6 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                             'output' => '{"messages":[]}',
                             'errorCount' => 0,
                             'warningCount' => 0,
-                        ],
-                        'hasTimePeriod' => true,
-                        'timePeriod' => [
-                            'startDateTime' => '2018-01-10T10:55:12+00:00',
-                            'endDateTime' => '2018-01-10T10:55:13+00:00',
                         ],
                     ],
                 ],
@@ -412,10 +343,6 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                             'errorCount' => 0,
                             'warningCount' => 0,
                         ],
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
-                        ],
                     ],
                     3 => [
                         'state' => Task::STATE_COMPLETED,
@@ -424,10 +351,6 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                             'output' => '{"messages":[]}',
                             'errorCount' => 0,
                             'warningCount' => 0,
-                        ],
-                        'timePeriod' => [
-                            'startDateTime' => null,
-                            'endDateTime' => null,
                         ],
                     ],
                 ],

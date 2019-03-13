@@ -5,7 +5,6 @@ namespace App\Tests\Unit\Model\RemoteTest;
 
 use App\Entity\Task\Task;
 use App\Entity\Test;
-use App\Entity\TimePeriod;
 use App\Model\RemoteTest\Rejection;
 use App\Model\RemoteTest\RemoteTest;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -88,92 +87,6 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($website, $remoteTest->getWebsite());
         $this->assertEquals($id, $remoteTest->getId());
         $this->assertEquals($ammendments, $remoteTest->getAmmendments());
-    }
-
-    /**
-     * @dataProvider getTimePeriodDataProvider
-     */
-    public function testGetTimePeriod(
-        array $remoteTestData,
-        bool $expectedHasTimePeriod,
-        bool $expectedHasStartDateTime,
-        bool $expectedHasEndDateTime
-    ) {
-        $remoteTest = new RemoteTest($remoteTestData);
-
-        $timePeriod = $remoteTest->getTimePeriod();
-
-        if ($expectedHasTimePeriod) {
-            $this->assertInstanceOf(TimePeriod::class, $timePeriod);
-
-            $startDateTime = $timePeriod->getStartDateTime();
-            $endDateTime = $timePeriod->getEndDateTime();
-
-            if ($expectedHasStartDateTime) {
-                $this->assertInstanceOf(\DateTime::class, $startDateTime);
-            } else {
-                $this->assertNull($startDateTime);
-            }
-
-            if ($expectedHasEndDateTime) {
-                $this->assertInstanceOf(\DateTime::class, $endDateTime);
-            } else {
-                $this->assertNull($endDateTime);
-            }
-        } else {
-            $this->assertNull($timePeriod);
-        }
-    }
-
-    public function getTimePeriodDataProvider(): array
-    {
-        return [
-            'no time period' => [
-                'remoteTestData' => [],
-                'expectedHasTimePeriod' => false,
-                'expectedHasStartDateTime' => false,
-                'expectedHasEndDateTime' => false,
-            ],
-            'empty time period' => [
-                'remoteTestData' => [
-                    'time_period' => [],
-                ],
-                'expectedHasTimePeriod' => true,
-                'expectedHasStartDateTime' => false,
-                'expectedHasEndDateTime' => false,
-            ],
-            'time period with start_date_time' => [
-                'remoteTestData' => [
-                    'time_period' => [
-                        'start_date_time' => (new \DateTime())->format('c'),
-                    ],
-                ],
-                'expectedHasTimePeriod' => true,
-                'expectedHasStartDateTime' => true,
-                'expectedHasEndDateTime' => false,
-            ],
-            'time period with end_date_time' => [
-                'remoteTestData' => [
-                    'time_period' => [
-                        'end_date_time' => (new \DateTime())->format('c'),
-                    ],
-                ],
-                'expectedHasTimePeriod' => true,
-                'expectedHasStartDateTime' => false,
-                'expectedHasEndDateTime' => true,
-            ],
-            'time period with start_date_time and end_date_time' => [
-                'remoteTestData' => [
-                    'time_period' => [
-                        'start_date_time' => (new \DateTime())->format('c'),
-                        'end_date_time' => (new \DateTime())->format('c'),
-                    ],
-                ],
-                'expectedHasTimePeriod' => true,
-                'expectedHasStartDateTime' => true,
-                'expectedHasEndDateTime' => true,
-            ],
-        ];
     }
 
     /**

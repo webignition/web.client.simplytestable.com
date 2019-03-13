@@ -45,17 +45,12 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTaskData['worker'], $task->getWorker());
         $this->assertEquals($expectedTaskData['type'], $task->getType());
         $this->assertEquals($expectedTaskData['hasOutput'], $task->hasOutput());
-
-        $timePeriod = $task->getTimePeriod();
-
-        $this->assertEquals($expectedTaskData['timePeriod']['startDateTime'], $timePeriod->getStartDateTime());
-        $this->assertEquals($expectedTaskData['timePeriod']['endDateTime'], $timePeriod->getEndDateTime());
     }
 
     public function hydrateDataProvider(): array
     {
         return [
-            'no output, no time period' => [
+            'no output' => [
                 'taskOutputFactory' => MockFactory::createTaskOutputFactory(),
                 'task' => new Task(),
                 'taskData' => [
@@ -71,62 +66,6 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
                     'state' => Task::STATE_IN_PROGRESS,
                     'worker' => 'foo.worker.simplytestable.com',
                     'type' => Task::TYPE_HTML_VALIDATION,
-                    'timePeriod' => [
-                        'startDateTime' => null,
-                        'endDateTime' => null,
-                    ],
-                    'hasOutput' => false,
-                ],
-            ],
-            'no output, has start date time' => [
-                'taskOutputFactory' => MockFactory::createTaskOutputFactory(),
-                'task' => new Task(),
-                'taskData' => [
-                    'id' => 1,
-                    'url' => 'http://example.com/',
-                    'state' => Task::STATE_IN_PROGRESS,
-                    'worker' => 'foo.worker.simplytestable.com',
-                    'type' => Task::TYPE_HTML_VALIDATION,
-                    'time_period' => [
-                        'start_date_time' => '2018-02-14 10:00',
-                    ],
-                ],
-                'expectedTaskData' => [
-                    'taskId' => 1,
-                    'url' => 'http://example.com/',
-                    'state' => Task::STATE_IN_PROGRESS,
-                    'worker' => 'foo.worker.simplytestable.com',
-                    'type' => Task::TYPE_HTML_VALIDATION,
-                    'timePeriod' => [
-                        'startDateTime' => new \DateTime('2018-02-14 10:00'),
-                        'endDateTime' => null,
-                    ],
-                    'hasOutput' => false,
-                ],
-            ],
-            'no output, has end date time' => [
-                'taskOutputFactory' => MockFactory::createTaskOutputFactory(),
-                'task' => new Task(),
-                'taskData' => [
-                    'id' => 1,
-                    'url' => 'http://example.com/',
-                    'state' => Task::STATE_IN_PROGRESS,
-                    'worker' => 'foo.worker.simplytestable.com',
-                    'type' => Task::TYPE_HTML_VALIDATION,
-                    'time_period' => [
-                        'end_date_time' => '2018-02-14 10:00',
-                    ],
-                ],
-                'expectedTaskData' => [
-                    'taskId' => 1,
-                    'url' => 'http://example.com/',
-                    'state' => Task::STATE_IN_PROGRESS,
-                    'worker' => 'foo.worker.simplytestable.com',
-                    'type' => Task::TYPE_HTML_VALIDATION,
-                    'timePeriod' => [
-                        'startDateTime' => null,
-                        'endDateTime' => new \DateTime('2018-02-14 10:00'),
-                    ],
                     'hasOutput' => false,
                 ],
             ],
@@ -163,10 +102,6 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
                     'state' => Task::STATE_IN_PROGRESS,
                     'worker' => 'foo.worker.simplytestable.com',
                     'type' => Task::TYPE_HTML_VALIDATION,
-                    'timePeriod' => [
-                        'startDateTime' => null,
-                        'endDateTime' => null,
-                    ],
                     'hasOutput' => true,
                 ],
             ],

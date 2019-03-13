@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Entity\TimePeriod;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
@@ -125,12 +124,6 @@ class TestService
         $test->setTestId($remoteTest->getId());
         $test->setType((string) $remoteTest->getType());
         $test->setTaskTypes($remoteTest->getTaskTypes());
-
-        $remoteTimePeriod = $remoteTest->getTimePeriod();
-
-        if (!is_null($remoteTimePeriod)) {
-            $test->setTimePeriod(TimePeriod::fromTimePeriod($remoteTimePeriod));
-        }
     }
 
     /**

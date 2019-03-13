@@ -90,11 +90,6 @@ class Test implements \JsonSerializable
     private $taskTypes;
 
     /**
-     * @var TimePeriod
-     */
-    private $timePeriod;
-
-    /**
      * @var string
      */
     private $type;
@@ -108,7 +103,6 @@ class Test implements \JsonSerializable
     {
         $this->tasks = new ArrayCollection();
         $this->taskIds = [];
-        $this->timePeriod = new TimePeriod();
         $this->taskIdCollection = '';
     }
 
@@ -182,11 +176,6 @@ class Test implements \JsonSerializable
     public function getTasks()
     {
         return $this->tasks;
-    }
-
-    public function setTimePeriod(TimePeriod $timePeriod)
-    {
-        $this->timePeriod = $timePeriod;
     }
 
     public function setTestId(int $testId)
@@ -316,7 +305,6 @@ class Test implements \JsonSerializable
             'website' => (string)$this->website,
             'state' => $this->state,
             'taskTypes' => $this->taskTypes,
-            'timePeriod' => $this->timePeriod,
         ];
     }
 }

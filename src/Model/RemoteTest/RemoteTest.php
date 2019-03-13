@@ -3,7 +3,6 @@
 namespace App\Model\RemoteTest;
 
 use App\Entity\Test;
-use App\Entity\TimePeriod;
 use App\Model\AbstractArrayBasedModel;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -65,22 +64,6 @@ class RemoteTest extends AbstractArrayBasedModel
         $taskCount = $this->getProperty('task_count');
 
         return empty($taskCount) ? 0 : $taskCount;
-    }
-
-    public function getTimePeriod(): ?TimePeriod
-    {
-        $remoteTimePeriodData = $this->getProperty('time_period');
-        if (null === $remoteTimePeriodData) {
-            return null;
-        }
-
-        $startDateTimeValue = $remoteTimePeriodData['start_date_time'] ?? null;
-        $endDateTimeValue = $remoteTimePeriodData['end_date_time'] ?? null;
-
-        return TimePeriod::create(
-            $startDateTimeValue ? new \DateTime($startDateTimeValue) : null,
-            $endDateTimeValue ? new \DateTime($endDateTimeValue) : null
-        );
     }
 
     /**

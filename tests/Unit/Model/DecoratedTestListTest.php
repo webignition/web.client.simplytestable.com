@@ -374,67 +374,49 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    /**
-     * @dataProvider getHashDataProvider
-     */
-    public function testGetHash(DecoratedTestList $decoratedTestList, string $expectedHash)
+    public function testGetHash()
     {
-        $this->assertEquals($expectedHash, $decoratedTestList->getHash());
-    }
-
-    public function getHashDataProvider(): array
-    {
-        return [
-            'empty collection' => [
-                'decoratedTestList' => new DecoratedTestList([], 0, 0, 0),
-                'expectedHash' => '5087ab5bb6fff5750c18c697294fb7f1',
-            ],
-            'maxResults changes hash' => [
-                'decoratedTestList' => new DecoratedTestList([], 1, 0, 0),
-                'expectedHash' => '377f59d6e8ede3b212a7f85825b1685c',
-            ],
-            'foo' => [
-                'decoratedTestList' => new DecoratedTestList([], 0, 0, 0),
-                'expectedHash' => '5087ab5bb6fff5750c18c697294fb7f1',
-            ],
-            'offset changes hash' => [
-                'decoratedTestList' => new DecoratedTestList([], 0, 1, 0),
-                'expectedHash' => '9e218821ffa3de6f06f232a39ba33c9e',
-            ],
-            'limit changes hash' => [
-                'decoratedTestList' => new DecoratedTestList([], 0, 0, 1),
-                'expectedHash' => 'fbb50652521d14044d8d82b06939f412',
-            ],
-            'single test, not requiring remote tasks' => [
-                'decoratedTestList' => new DecoratedTestList(
-                    [
-                        new DecoratedTest(
-                            Test::create(1, 'http://example.com/'),
-                            new RemoteTest([])
-                        ),
-                    ],
-                    0,
-                    0,
-                    0
-                ),
-                'expectedHash' => '3226578dd6020326a0b45d92ff0a44e8',
-            ],
-            'single test, requiring remote tasks' => [
-                'decoratedTestList' => new DecoratedTestList(
-                    [
-                        new DecoratedTest(
-                            Test::create(1, 'http://example.com/'),
-                            new RemoteTest([
-                                'task_count' => 1,
-                            ])
-                        ),
-                    ],
-                    0,
-                    0,
-                    0
-                ),
-                'expectedHash' => 'f948e5c159192a2b3816f6f48cbf44e6',
-            ],
+        /* @var DecoratedTestList[] $decoratedTestLists */
+        $decoratedTestLists =[
+            'empty collection' =>  new DecoratedTestList([], 0, 0, 0),
+            'maxResults changes hash' => new DecoratedTestList([], 1, 0, 0),
+            'offset changes hash' => new DecoratedTestList([], 0, 1, 0),
+            'limit changes hash' => new DecoratedTestList([], 0, 0, 1),
+            'single test, not requiring remote tasks' => new DecoratedTestList(
+                [
+                    new DecoratedTest(
+                        Test::create(1, 'http://example.com/'),
+                        new RemoteTest([])
+                    ),
+                ],
+                0,
+                0,
+                0
+            ),
+            'single test, requiring remote tasks' => new DecoratedTestList(
+                [
+                    new DecoratedTest(
+                        Test::create(1, 'http://example.com/'),
+                        new RemoteTest([
+                            'task_count' => 1,
+                        ])
+                    ),
+                ],
+                0,
+                0,
+                0
+            ),
         ];
+
+        $hashes = [];
+
+        foreach ($decoratedTestLists as $decoratedTestList) {
+            $hash = $decoratedTestList->getHash();
+
+            $this->assertRegExp('/[a-f0-9]{32}/', $hash);
+            $this->assertNotContains($hash, $hashes);
+
+            $hashes[] = $hash;
+        }
     }
 }
