@@ -9,6 +9,7 @@ use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
 use App\Tests\Services\ObjectReflector;
+use Psr\Http\Message\ResponseInterface;
 
 class TestServiceTest extends AbstractCoreApplicationServiceTest
 {
@@ -30,6 +31,28 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
     }
 
     /**
+     * @dataProvider getReturnsNullDataProvider
+     */
+    public function testGetReturnsNull(ResponseInterface $httpResponse)
+    {
+        $this->httpMockHandler->appendFixtures([$httpResponse]);
+
+        $this->assertNull($this->testService->get('http://example.com', 1));
+    }
+
+    public function getReturnsNullDataProvider(): array
+    {
+        return [
+            'not authorised' => [
+                'httpResponse' => HttpResponseFactory::createForbiddenResponse(),
+            ],
+            'invalid response content type' => [
+                'httpResponse' => HttpResponseFactory::createSuccessResponse(),
+            ],
+        ];
+    }
+
+    /**
      * @dataProvider getDataProvider
      */
     public function testGet(
@@ -37,7 +60,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
         array $testValues,
         string $canonicalUrl,
         int $testId,
-        ?array $expectedTestValues
+        array $expectedTestValues
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -48,21 +71,57 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
 
         $test = $this->testService->get($canonicalUrl, $testId);
 
-        if (empty($expectedTestValues)) {
-            $this->assertNull($test);
-        } else {
-            $this->assertEquals($expectedTestValues['testId'], $test->getTestId());
-            $this->assertEquals($expectedTestValues['state'], $test->getState());
-            $this->assertEquals($expectedTestValues['website'], $test->getWebsite());
-            $this->assertEquals($expectedTestValues['urlCount'], $test->getUrlCount());
-            $this->assertEquals($expectedTestValues['type'], ObjectReflector::getProperty($test, 'type'));
-            $this->assertEquals($expectedTestValues['taskTypes'], ObjectReflector::getProperty($test, 'taskTypes'));
-        }
+        $this->assertInstanceOf(Test::class, $test);
+
+        $this->assertEquals($expectedTestValues['testId'], $test->getTestId());
+        $this->assertEquals($expectedTestValues['state'], $test->getState());
+        $this->assertEquals($expectedTestValues['website'], $test->getWebsite());
+        $this->assertEquals($expectedTestValues['urlCount'], $test->getUrlCount());
+        $this->assertEquals($expectedTestValues['type'], ObjectReflector::getProperty($test, 'type'));
+        $this->assertEquals($expectedTestValues['taskTypes'], ObjectReflector::getProperty($test, 'taskTypes'));
+        $this->assertEquals($expectedTestValues['taskIds'], $test->getTaskIds());
     }
 
     public function getDataProvider(): array
     {
         return [
+            'has not locally, remote state not prepared' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse([
+                        'id' => 1,
+                        'website' => 'http://example.com/',
+                        'task_types' => [
+                            [
+                                'name' => Task::TYPE_HTML_VALIDATION,
+                            ],
+                            [
+                                'name' => Task::TYPE_CSS_VALIDATION,
+                            ],
+                        ],
+                        'user' => self::USERNAME,
+                        'state' => Test::STATE_STARTING,
+                        'type' => Test::TYPE_FULL_SITE,
+                    ])
+                ],
+                'testValues' => [
+                    TestFactory::KEY_WEBSITE => 'http://example.com/',
+                    TestFactory::KEY_TEST_ID => 1,
+                ],
+                'canonicalUrl' => 'http://example.com/',
+                'testId' => 1,
+                'expectedTestValues' => [
+                    'testId' => 1,
+                    'state' => Test::STATE_STARTING,
+                    'website' => 'http://example.com/',
+                    'urlCount' => 0,
+                    'type' => Test::TYPE_FULL_SITE,
+                    'taskTypes' => [
+                        Task::TYPE_HTML_VALIDATION,
+                        Task::TYPE_CSS_VALIDATION,
+                    ],
+                    'taskIds' => [],
+                ],
+            ],
             'has locally, update, is finished' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
@@ -81,11 +140,13 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                         'url_count' => 99,
                         'type' => Test::TYPE_FULL_SITE,
                     ]),
+                    HttpResponseFactory::createJsonResponse([
+                        1, 2, 3,
+                    ])
                 ],
                 'testValues' => [
                     TestFactory::KEY_WEBSITE => 'http://example.com/',
                     TestFactory::KEY_TEST_ID => 1,
-                    TestFactory::KEY_TYPE => Test::TYPE_FULL_SITE,
                 ],
                 'canonicalUrl' => 'http://example.com/',
                 'testId' => 1,
@@ -99,42 +160,8 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                         Task::TYPE_HTML_VALIDATION,
                         Task::TYPE_CSS_VALIDATION,
                     ],
+                    'taskIds' => [1, 2, 3],
                 ],
-            ],
-            'has locally, update, state change in-progess->completed' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        'id' => 1,
-                        'website' => 'http://example.com/',
-                        'task_types' => [
-                            [
-                                'name' => Task::TYPE_HTML_VALIDATION,
-                            ],
-                        ],
-                        'user' => self::USERNAME,
-                        'state' => Test::STATE_COMPLETED,
-                        'url_count' => 99,
-                        'type' => Test::TYPE_FULL_SITE,
-                    ]),
-                ],
-                'testValues' => [
-                    TestFactory::KEY_WEBSITE => 'http://example.com/',
-                    TestFactory::KEY_TEST_ID => 1,
-                    TestFactory::KEY_TYPE => Test::TYPE_FULL_SITE,
-                    TestFactory::KEY_STATE => Test::STATE_IN_PROGRESS,
-                ],
-                'canonicalUrl' => 'http://example.com/',
-                'testId' => 1,
-                'expectedTestValues' => [
-                    'testId' => 1,
-                    'state' => Test::STATE_COMPLETED,
-                    'website' => 'http://example.com/',
-                    'urlCount' => 99,
-                    'type' => Test::TYPE_FULL_SITE,
-                    'taskTypes' => [
-                        Task::TYPE_HTML_VALIDATION,
-                    ],
-                 ],
             ],
             'has not locally, has remotely, create' => [
                 'httpFixtures' => [
@@ -151,6 +178,9 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                         'url_count' => 99,
                         'type' => Test::TYPE_FULL_SITE,
                     ]),
+                    HttpResponseFactory::createJsonResponse([
+                        4, 5, 6,
+                    ])
                 ],
                 'testValues' => [],
                 'canonicalUrl' => 'http://example.com/',
@@ -164,25 +194,8 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                     'taskTypes' => [
                         Task::TYPE_HTML_VALIDATION,
                     ],
+                    'taskIds' => [4, 5, 6],
                 ],
-            ],
-            'has not locally, has not remotely, do not create' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createForbiddenResponse(),
-                ],
-                'testValues' => [],
-                'canonicalUrl' => 'http://example.com/',
-                'testId' => 1,
-                'expectedTestValues' => null,
-            ],
-            'has not locally, invalid remote test, do not create' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse(),
-                ],
-                'testValues' => [],
-                'canonicalUrl' => 'http://example.com/',
-                'testId' => 1,
-                'expectedTestValues' => null,
             ],
         ];
     }
