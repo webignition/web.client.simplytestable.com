@@ -15,7 +15,6 @@ use App\Services\TestService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
-use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -284,8 +283,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
-        $this->setTestServiceInController($byTaskTypeController, $testService);
-        $this->setRemoteTestServiceInController($byTaskTypeController, $remoteTestService);
+        $this->setTestServiceOnController($byTaskTypeController, $testService);
+        $this->setRemoteTestServiceOnController($byTaskTypeController, $remoteTestService);
 
         /* @var RedirectResponse $response */
         $response = $byTaskTypeController->indexAction(
@@ -378,8 +377,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
-        $this->setTestServiceInController($byTaskTypeController, $testService);
-        $this->setRemoteTestServiceInController($byTaskTypeController, $remoteTestService);
+        $this->setTestServiceOnController($byTaskTypeController, $testService);
+        $this->setRemoteTestServiceOnController($byTaskTypeController, $remoteTestService);
 
         $this->setTwigOnController($twig, $byTaskTypeController);
 
@@ -684,8 +683,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
-        $this->setTestServiceInController($byTaskTypeController, $testService);
-        $this->setRemoteTestServiceInController($byTaskTypeController, $remoteTestService);
+        $this->setTestServiceOnController($byTaskTypeController, $testService);
+        $this->setRemoteTestServiceOnController($byTaskTypeController, $remoteTestService);
 
         $response = $byTaskTypeController->indexAction(
             $request,
@@ -803,28 +802,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             ->andReturn($remoteTest);
 
         return $remoteTestService;
-    }
-
-    private function setTestServiceInController(ByTaskTypeController $byTaskTypeController, TestService $testService)
-    {
-        ObjectReflector::setProperty(
-            $byTaskTypeController,
-            ByTaskTypeController::class,
-            'testService',
-            $testService
-        );
-    }
-
-    private function setRemoteTestServiceInController(
-        ByTaskTypeController $byTaskTypeController,
-        RemoteTestService $remoteTestService
-    ) {
-        ObjectReflector::setProperty(
-            $byTaskTypeController,
-            ByTaskTypeController::class,
-            'remoteTestService',
-            $remoteTestService
-        );
     }
 
     /**
