@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Entity\TimePeriod;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
