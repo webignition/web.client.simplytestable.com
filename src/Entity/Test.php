@@ -184,11 +184,6 @@ class Test implements \JsonSerializable
         return $this->tasks;
     }
 
-    public function setTimePeriod(TimePeriod $timePeriod)
-    {
-        $this->timePeriod = $timePeriod;
-    }
-
     public function setTestId(int $testId)
     {
         $this->testId = $testId;
