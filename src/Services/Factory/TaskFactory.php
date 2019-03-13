@@ -4,7 +4,6 @@ namespace App\Services\Factory;
 
 use App\Entity\Task\Task;
 use App\Entity\Test;
-use App\Entity\TimePeriod;
 
 class TaskFactory
 {
@@ -45,20 +44,6 @@ class TaskFactory
         $task->setState($taskData['state']);
         $task->setWorker($taskData['worker']);
         $task->setType($taskData['type']);
-
-        $timePeriodData = $taskData['time_period'] ?? null;
-
-        if ($timePeriodData) {
-            $startDateTimeValue = $timePeriodData['start_date_time'] ?? null;
-            $endDateTimeValue = $timePeriodData['end_date_time'] ?? null;
-
-            $timePeriod = TimePeriod::create(
-                $startDateTimeValue ? new \DateTime($startDateTimeValue) : null,
-                $endDateTimeValue ? new \DateTime($endDateTimeValue) : null
-            );
-
-            $task->setTimePeriod($timePeriod);
-        }
 
         if (array_key_exists('output', $taskData)) {
             if (!$task->hasOutput()) {

@@ -209,18 +209,6 @@ class Task
     }
 
     /**
-     * @param TimePeriod $timePeriod
-     *
-     * @return Task
-     */
-    public function setTimePeriod(TimePeriod $timePeriod = null)
-    {
-        $this->timePeriod = $timePeriod;
-
-        return $this;
-    }
-
-    /**
      * @param TaskOutput $output
      *
      * @return Task
