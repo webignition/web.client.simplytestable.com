@@ -388,10 +388,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @param string $website
-     * @param int $testId
-     * @param Test $test
-     *
      * @return TestService|MockInterface
      */
     private function createTestService(string $website, int $testId, Test $test, bool $isFinished)
@@ -411,9 +407,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @param int $testId
-     * @param RemoteTest $remoteTest
-     *
      * @return RemoteTestService|MockInterface
      */
     private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
