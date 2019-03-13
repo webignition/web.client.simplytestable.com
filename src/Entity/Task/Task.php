@@ -4,7 +4,6 @@ namespace App\Entity\Task;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Test;
-use App\Entity\TimePeriod;
 use App\Entity\Task\Output as TaskOutput;
 use webignition\NormalisedUrl\NormalisedUrl;
 
