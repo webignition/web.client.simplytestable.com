@@ -5,7 +5,6 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Task\Task;
 use App\Entity\Test;
-use App\Entity\TimePeriod;
 use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TestFactory;
@@ -58,12 +57,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
             $this->assertEquals($expectedTestValues['urlCount'], $test->getUrlCount());
             $this->assertEquals($expectedTestValues['type'], ObjectReflector::getProperty($test, 'type'));
             $this->assertEquals($expectedTestValues['taskTypes'], ObjectReflector::getProperty($test, 'taskTypes'));
-
-            $timePeriod = ObjectReflector::getProperty($test, 'timePeriod');
-
-            $this->assertInstanceOf(TimePeriod::class, $timePeriod);
-            $this->assertEquals($expectedTestValues['timePeriod']['startDateTime'], $timePeriod->getStartDateTime());
-            $this->assertEquals($expectedTestValues['timePeriod']['endDateTime'], $timePeriod->getEndDateTime());
         }
     }
 
@@ -106,10 +99,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                         Task::TYPE_HTML_VALIDATION,
                         Task::TYPE_CSS_VALIDATION,
                     ],
-                    'timePeriod' => [
-                        'startDateTime' => null,
-                        'endDateTime' => null,
-                    ],
                 ],
             ],
             'has locally, update, state change in-progess->completed' => [
@@ -126,10 +115,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                         'state' => Test::STATE_COMPLETED,
                         'url_count' => 99,
                         'type' => Test::TYPE_FULL_SITE,
-                        'time_period' => [
-                            'start_date_time' => (new \DateTime('2010-01-01 00:00:00'))->format(DATE_ATOM),
-                            'end_date_time' => (new \DateTime('2010-01-01 00:01:00'))->format(DATE_ATOM),
-                        ],
                     ]),
                 ],
                 'testValues' => [
@@ -149,11 +134,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                     'taskTypes' => [
                         Task::TYPE_HTML_VALIDATION,
                     ],
-                    'timePeriod' => [
-                        'startDateTime' => new \DateTime('2010-01-01 00:00:00'),
-                        'endDateTime' => new \DateTime('2010-01-01 00:01:00'),
-                    ],
-                ],
+                 ],
             ],
             'has not locally, has remotely, create' => [
                 'httpFixtures' => [
@@ -182,10 +163,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                     'type' => Test::TYPE_FULL_SITE,
                     'taskTypes' => [
                         Task::TYPE_HTML_VALIDATION,
-                    ],
-                    'timePeriod' => [
-                        'startDateTime' => null,
-                        'endDateTime' => null,
                     ],
                 ],
             ],

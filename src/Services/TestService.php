@@ -125,12 +125,6 @@ class TestService
         $test->setTestId($remoteTest->getId());
         $test->setType((string) $remoteTest->getType());
         $test->setTaskTypes($remoteTest->getTaskTypes());
-
-        $remoteTimePeriod = $remoteTest->getTimePeriod();
-
-        if (!is_null($remoteTimePeriod)) {
-            $test->setTimePeriod(TimePeriod::fromTimePeriod($remoteTimePeriod));
-        }
     }
 
     /**
