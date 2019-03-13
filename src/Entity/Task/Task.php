@@ -221,14 +221,6 @@ class Task
     }
 
     /**
-     * @return TimePeriod
-     */
-    public function getTimePeriod()
-    {
-        return $this->timePeriod;
-    }
-
-    /**
      * @param TaskOutput $output
      *
      * @return Task
