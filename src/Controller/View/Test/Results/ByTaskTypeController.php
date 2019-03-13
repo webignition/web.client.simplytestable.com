@@ -114,10 +114,6 @@ class ByTaskTypeController extends AbstractResultsController
 
         $remoteTest = $this->remoteTestService->get($test->getTestId());
 
-        if (empty($remoteTest)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
-
         $requestTaskType = str_replace('+', ' ', $task_type);
         $selectedTaskType = $this->getSelectedTaskType($remoteTest, $requestTaskType);
 
