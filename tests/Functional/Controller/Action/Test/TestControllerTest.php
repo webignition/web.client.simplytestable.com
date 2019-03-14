@@ -195,44 +195,24 @@ class TestControllerTest extends AbstractControllerTest
 
     public function cancelCrawlActionGetRequestDataProvider(): array
     {
-        $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
-        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
-
         return [
             'invalid owner' => [
                 'httpFixtures' => [
-                    $forbiddenResponse,
-                    $forbiddenResponse,
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
             ],
             'CURL exception' => [
                 'httpFixtures' => [
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
+                    ConnectExceptionFactory::create(28, 'Operation timed out'),
                 ],
             ],
             'Success' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'crawl' => [
-                            'id' => 2,
-                        ]
-                    ])),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
             ],

@@ -107,26 +107,17 @@ class TestController extends AbstractController
      * @param int $test_id
      *
      * @return RedirectResponse
-     *
-     * @throws CoreApplicationReadOnlyException
      */
     public function cancelCrawlAction($website, $test_id)
     {
         try {
-            $test = $this->testService->get($website, $test_id);
-
-            $remoteTest = $test
-                ? $this->remoteTestService->get($test->getTestId())
-                : null;
-
-            if ($remoteTest) {
-                $crawlData = $remoteTest->getCrawl();
-                $this->remoteTestService->cancelByTestProperties((int) $crawlData['id']);
-            }
-        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            // Nothing happens, we redirect to the test progress page regardless
+            $this->remoteTestService->cancel((int) $test_id);
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            // Nothing happens, we redirect to the test progress page regardless
+            // Do nothing
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            // Do nothing
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            // Do nothing
         }
 
         return new RedirectResponse($this->generateUrl(
