@@ -155,6 +155,7 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                         'task_type_options' => [],
                         'task_count' => 4,
                     ]),
+                    HttpResponseFactory::createJsonResponse([]),
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
