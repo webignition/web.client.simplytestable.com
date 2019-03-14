@@ -80,7 +80,7 @@ class RejectedController extends AbstractBaseViewController
      * @throws InvalidCredentialsException
      * @throws InvalidContentTypeException
      */
-    public function indexAction(Request $request, $website, $test_id)
+    public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $test = $this->testService->get($website, $test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
