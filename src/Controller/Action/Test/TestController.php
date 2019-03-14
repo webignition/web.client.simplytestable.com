@@ -47,7 +47,7 @@ class TestController extends AbstractController
      *
      * @return Response
      */
-    public function lockAction($test_id): Response
+    public function lockAction(int $test_id): Response
     {
         try {
             $this->remoteTestService->lock($test_id);
@@ -63,7 +63,7 @@ class TestController extends AbstractController
      *
      * @return Response
      */
-    public function unlockAction($test_id): Response
+    public function unlockAction(int $test_id): Response
     {
         try {
             $this->remoteTestService->unlock($test_id);
