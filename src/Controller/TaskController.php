@@ -93,7 +93,7 @@ class TaskController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retrieveAction(Request $request, $website, $test_id)
+    public function retrieveAction(Request $request, string $website, int $test_id): Response
     {
         $test = $this->testService->get($website, $test_id);
 
