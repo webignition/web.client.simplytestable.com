@@ -14,6 +14,9 @@ use App\Services\TestService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Factory\OutputFactory;
+use App\Tests\Factory\TaskFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -327,18 +330,23 @@ class ResultsControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRedirectDataProvider
      */
     public function testIndexActionRedirect(
+        array $taskValuesCollection,
         array $remoteTestModifications,
-        array $httpFixtures,
         Request $request,
         string $expectedRedirectUrl
     ) {
         $test = Test::create(self::TEST_ID, self::WEBSITE);
         $remoteTest = new RemoteTest(array_merge($this->remoteTestData, $remoteTestModifications));
 
-        $userManager = self::$container->get(UserManager::class);
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
 
+        $taskFactory = new TaskFactory(self::$container);
+        $taskFactory->createCollection($test, $taskValuesCollection);
+
+        $userManager = self::$container->get(UserManager::class);
         $userManager->setUser(SystemUserService::getPublicUser());
-        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
@@ -364,69 +372,55 @@ class ResultsControllerTest extends AbstractViewControllerTest
     {
         return [
             'requires preparation' => [
+                'taskValuesCollection' => [],
                 'remoteTestModifications' => [
                     'task_count' => 1000,
                 ],
-                'httpFixtures' => [],
                 'request' => new Request(),
                 'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
             ],
             'invalid filter' => [
-                'remoteTestModifications' => [],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
+                'taskValuesCollection' => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 1,
+                        TaskFactory::KEY_OUTPUT => [
+                            OutputFactory::KEY_ERROR_COUNT => 1,
+                        ],
+                    ],
                 ],
+                'remoteTestModifications' => [],
                 'request' => new Request([
                     'filter' => 'foo',
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=with-errors',
             ],
             'non-relevant filter; filter=with-errors, one task with no errors' => [
-                'remoteTestModifications' => [],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'id' => 1,
-                            'url' => 'http://example.com/',
-                            'state' => Task::STATE_COMPLETED,
-                            'worker' => '',
-                            'type' => Task::TYPE_HTML_VALIDATION,
-                            'output' => [
-                                'output' => '',
-                                'content-type' => 'application/json',
-                                'error_count' => 0,
-                                'warning_count' => 0,
-                            ],
+                'taskValuesCollection' => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 1,
+                        TaskFactory::KEY_OUTPUT => [
+                            OutputFactory::KEY_ERROR_COUNT => 0,
+                            OutputFactory::KEY_WARNING_COUNT => 0,
                         ],
-                    ]),
+                    ],
                 ],
+                'remoteTestModifications' => [],
                 'request' => new Request([
                     'filter' => ResultsController::FILTER_WITH_ERRORS,
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=without-errors',
             ],
             'non-relevant filter; filter=with-errors, one task with no errors and with warnings' => [
-                'remoteTestModifications' => [],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'id' => 1,
-                            'url' => 'http://example.com/',
-                            'state' => Task::STATE_COMPLETED,
-                            'worker' => '',
-                            'type' => Task::TYPE_HTML_VALIDATION,
-                            'output' => [
-                                'output' => '',
-                                'content-type' => 'application/json',
-                                'error_count' => 0,
-                                'warning_count' => 1,
-                            ],
+                'taskValuesCollection' => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 1,
+                        TaskFactory::KEY_OUTPUT => [
+                            OutputFactory::KEY_ERROR_COUNT => 0,
+                            OutputFactory::KEY_WARNING_COUNT => 1,
                         ],
-                    ]),
+                    ],
                 ],
+                'remoteTestModifications' => [],
                 'request' => new Request([
                     'filter' => ResultsController::FILTER_WITH_ERRORS,
                 ]),
