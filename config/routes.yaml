@@ -206,6 +206,7 @@ view_test_progress:
     defaults: { _controller: App\Controller\View\Test\ProgressController::indexAction }
     requirements:
         website: '.+'
+        test_id: '\d+'
 
 view_test_results_verbose:
     path: /website/{website}/test_id/{test_id}/results/
@@ -251,30 +252,35 @@ view_test_results_failed_no_urls_detected:
     defaults: { _controller: App\Controller\View\Test\Results\FailedNoUrlsDetectedController::indexAction }
     requirements:
        website: '.+'
+       test_id: '\d+'
 
 view_test_results_rejected:
     path: /{website}/{test_id}/results/rejected/
     defaults: { _controller: App\Controller\View\Test\Results\RejectedController::indexAction }
     requirements:
        website: '.+'
+       test_id: '\d+'
 
 view_test_results_preparing:
     path: /{website}/{test_id}/results/preparing/
     defaults: { _controller: App\Controller\View\Test\Results\PreparingController::indexAction }
     requirements:
        website: '.+'
+       test_id: '\d+'
 
 view_test_results_preparing_stats:
     path: /{website}/{test_id}/results/preparing/stats/
     defaults: { _controller: App\Controller\View\Test\Results\PreparingStatsController::indexAction, _format: json }
     requirements:
        website: '.+'
+       test_id: '\d+'
 
 task_results_retrieve:
     path: /{website}/{test_id}/results/retrieve/
     defaults: { _controller: App\Controller\TaskController::retrieveAction }
     requirements:
        website: '.+'
+       test_id: '\d+'
 
 view_test_results_by_task_type:
     path: /{website}/{test_id}/results/{task_type}/
@@ -302,12 +308,14 @@ test_task_ids:
     defaults: { _controller: App\Controller\TaskController::idCollectionAction, _format: json }
     requirements:
         website: '.+'
+        test_id: '\d+'
 
 test_task_ids_unretrieved:
     path: /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
     defaults: { _controller: App\Controller\TaskController::unretrievedIdCollectionAction, _format: json }
     requirements:
         website: '.+'
+        test_id: '\d+'
 
 action_test_start:
     path: /test/start/
@@ -318,18 +326,21 @@ action_test_cancel:
     defaults: { _controller: App\Controller\Action\Test\TestController::cancelAction }
     requirements:
         website: '.+'
+        test_id: '\d+'
 
 action_test_cancel_crawl:
     path: /test/{website}/{test_id}/cancel-crawl/
     defaults: { _controller: App\Controller\Action\Test\TestController::cancelCrawlAction }
     requirements:
         website: '.+'
+        test_id: '\d+'
 
 redirect_website_test:
     path: /{website}/{test_id}/
     defaults: { _controller: App\Controller\RedirectController::testAction }
     requirements:
         website: '.+'
+        test_id: '\d+'
 
 redirect_website:
     path: /{website}/
