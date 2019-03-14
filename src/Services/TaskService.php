@@ -301,45 +301,16 @@ class TaskService
 
     /**
      * @param Test $test
-     *
-     * @return int[]
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
-     */
-    public function getRemoteTaskIds(Test $test)
-    {
-        if (($test->getState() == Test::STATE_STARTING || $test->getState() == Test::STATE_PREPARING)) {
-            return [];
-        }
-
-        if (!$test->hasTaskIds()) {
-            $test->setTaskIdCollection(implode(',', $this->retrieveRemoteTaskIds($test)));
-
-            $this->entityManager->persist($test);
-            $this->entityManager->flush();
-        }
-
-        return $test->getTaskIds();
-    }
-
-    /**
-     * @param Test $test
      * @param int $limit
      *
      * @return int[]
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function getUnretrievedRemoteTaskIds(Test $test, $limit)
     {
-        $remoteTaskIds = $this->getRemoteTaskIds($test);
         $retrievedRemoteTaskIds = $this->taskRepository->findRetrievedRemoteTaskIds($test);
 
         $unretrievedRemoteTaskIds = [];
+        $remoteTaskIds = $test->getTaskIds();
 
         foreach ($remoteTaskIds as $remoteTaskId) {
             if (!in_array($remoteTaskId, $retrievedRemoteTaskIds)) {
