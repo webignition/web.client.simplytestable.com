@@ -126,7 +126,7 @@ class TaskService
 
     /**
      * @param Test $test
-     * @param array|null $remoteTaskIds
+     * @param array $remoteTaskIds
      *
      * @return Task[]
      *
@@ -134,12 +134,8 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getCollection(Test $test, $remoteTaskIds = null)
+    public function getCollection(Test $test, array $remoteTaskIds)
     {
-        if (!is_array($remoteTaskIds)) {
-            $remoteTaskIds = $this->getRemoteTaskIds($test);
-        }
-
         $existenceResult = $this->taskRepository->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);
 
         $tasksToRetrieve = [];

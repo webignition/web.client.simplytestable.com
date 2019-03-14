@@ -61,47 +61,6 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
     public function getCollectionDataProvider(): array
     {
         return [
-            'no remote task ids, none exist locally' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        2, 3,
-                    ]),
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'id' => 2,
-                            'url' => 'http://example.com/foo/',
-                            'state' => Task::STATE_COMPLETED,
-                            'type' => Task::TYPE_HTML_VALIDATION,
-                            'worker' => '',
-                        ],
-                        [
-                            'id' => 3,
-                            'url' => 'http://example.com/foo/',
-                            'state' => Task::STATE_COMPLETED,
-                            'type' => Task::TYPE_CSS_VALIDATION,
-                            'worker' => '',
-                        ],
-                    ]),
-                ],
-                'testValues' => [
-                    TestFactory::KEY_TEST_ID => 1,
-                ],
-                'remoteTaskIds' => null,
-                'expectedTaskDataCollection' => [
-                    2 => [
-                        'state' => Task::STATE_COMPLETED,
-                        'hasOutput' => false,
-                    ],
-                    3 => [
-                        'state' => Task::STATE_COMPLETED,
-                        'hasOutput' => false,
-                    ],
-                ],
-                'expectedRequestUrls' => [
-                    'http://null/job/1/tasks/ids/',
-                    'http://null/job/1/tasks/',
-                ],
-            ],
             'all remote task ids, none exist locally' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
