@@ -54,7 +54,7 @@ class TestTaskListController extends AbstractBaseViewController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function indexAction(Request $request, $website, $test_id)
+    public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $requestData = $request->request;
         $taskIds = $this->getTaskIdsFromRequest($requestData);

@@ -80,7 +80,7 @@ class TestController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function cancelAction($website, $test_id)
+    public function cancelAction(string $website, int $test_id): RedirectResponse
     {
         $routeName = 'view_test_results';
 
@@ -108,7 +108,7 @@ class TestController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function cancelCrawlAction($website, $test_id)
+    public function cancelCrawlAction(string $website, int $test_id): RedirectResponse
     {
         try {
             $this->remoteTestService->cancel((int) $test_id);
