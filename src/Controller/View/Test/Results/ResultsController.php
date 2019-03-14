@@ -157,8 +157,6 @@ class ResultsController extends AbstractResultsController
             ));
         }
 
-        $this->taskService->getCollection($test);
-
         $filter = trim($request->query->get('filter'));
         $taskType = trim($request->query->get('type'));
         $defaultFilter = $this->getDefaultRequestFilter($test);
@@ -198,6 +196,10 @@ class ResultsController extends AbstractResultsController
             $filter,
             $taskType
         );
+
+        if (empty($remoteTaskIds)) {
+            $remoteTaskIds = $test->getTaskIds();
+        }
 
         $tasks = $this->taskService->getCollection($test, $remoteTaskIds);
 

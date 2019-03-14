@@ -53,57 +53,41 @@ class ResultsControllerTest extends AbstractViewControllerTest
         'task_count' => 12,
     ];
 
-    private $remoteTasksData = [
+    private $taskValuesCollection = [
         [
-            'id' => 1,
-            'url' => 'http://example.com/',
-            'state' => Task::STATE_COMPLETED,
-            'worker' => '',
-            'type' => Task::TYPE_HTML_VALIDATION,
-            'output' => [
-                'output' => '',
-                'content-type' => 'application/json',
-                'error_count' => 1,
-                'warning_count' => 0,
+            TaskFactory::KEY_TASK_ID => 1,
+            TaskFactory::KEY_URL => 'http://example.com/',
+            TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+            TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+            TaskFactory::KEY_OUTPUT => [
+                OutputFactory::KEY_ERROR_COUNT => 1,
             ],
         ],
         [
-            'id' => 2,
-            'url' => 'http://example.com/',
-            'state' => Task::STATE_COMPLETED,
-            'worker' => '',
-            'type' => Task::TYPE_CSS_VALIDATION,
-            'output' => [
-                'output' => '',
-                'content-type' => 'application/json',
-                'error_count' => 0,
-                'warning_count' => 0,
+            TaskFactory::KEY_TASK_ID => 2,
+            TaskFactory::KEY_URL => 'http://example.com/',
+            TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+            TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
+            TaskFactory::KEY_OUTPUT => [
+                OutputFactory::KEY_ERROR_COUNT => 0,
             ],
         ],
         [
-            'id' => 3,
-            'url' => 'http://example.com/foo',
-            'state' => Task::STATE_COMPLETED,
-            'worker' => '',
-            'type' => Task::TYPE_HTML_VALIDATION,
-            'output' => [
-                'output' => '',
-                'content-type' => 'application/json',
-                'error_count' => 1,
-                'warning_count' => 0,
+            TaskFactory::KEY_TASK_ID => 3,
+            TaskFactory::KEY_URL => 'http://example.com/foo',
+            TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+            TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+            TaskFactory::KEY_OUTPUT => [
+                OutputFactory::KEY_ERROR_COUNT => 1,
             ],
         ],
         [
-            'id' => 4,
-            'url' => 'http://example.com/',
-            'state' => Task::STATE_COMPLETED,
-            'worker' => '',
-            'type' => Task::TYPE_CSS_VALIDATION,
-            'output' => [
-                'output' => '',
-                'content-type' => 'application/json',
-                'error_count' => 1,
-                'warning_count' => 0,
+            TaskFactory::KEY_TASK_ID => 4,
+            TaskFactory::KEY_URL => 'http://example.com/foo',
+            TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+            TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
+            TaskFactory::KEY_OUTPUT => [
+                OutputFactory::KEY_ERROR_COUNT => 1,
             ],
         ],
     ];
@@ -228,14 +212,14 @@ class ResultsControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @dataProvider indexActionPublicUserGetRequestDataProvider
+     * @dataProvider indexActionPublicUserGetRequestNoTasksDataProvider
      */
-    public function testIndexActionPublicUserGetRequest(
+    public function testIndexActionPublicUserGetRequestNoTasks(
         string $website,
         int $testId,
         string $filter,
         array $httpFixtures,
-        string $expectedLastRequestUrl
+        string $expectedRedirectUrl
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -248,24 +232,23 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ])
         );
 
-        /* @var Response $response */
+        /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isSuccessful());
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
 
         $this->assertEquals(
             [
                 'http://null/user/public/authenticate/',
                 'http://null/job/1/',
                 'http://null/job/1/tasks/ids/',
-                'http://null/job/1/tasks/',
-                $expectedLastRequestUrl,
             ],
             $this->httpHistory->getRequestUrlsAsStrings()
         );
     }
 
-    public function indexActionPublicUserGetRequestDataProvider(): array
+    public function indexActionPublicUserGetRequestNoTasksDataProvider(): array
     {
         return [
             'default' => [
@@ -276,11 +259,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-                    HttpResponseFactory::createSuccessResponse(),
                 ],
-                'expectedLastRequestUrl' => 'http://null/jobs/list/count/'.
-                    '?exclude-states%5B0%5D=rejected&exclude-current=1&url-filter=http%3A%2F%2Fexample.com%2F'
+                'expectedRedirectUrl' => '/http://example.com//1/results/?filter=without-errors',
             ],
             'integer in website url path' => [
                 'website' => 'http://example.com/articles/foo/bar/6875374/foobar/',
@@ -292,12 +272,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         'website' => 'http://example.com/articles/foo/bar/6875374/foobar/',
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-                    HttpResponseFactory::createSuccessResponse(),
                 ],
-                'expectedLastRequestUrl' => 'http://null/jobs/list/count/'
-                    .'?exclude-states%5B0%5D=rejected&exclude-current=1'
-                    .'&url-filter=http%3A%2F%2Fexample.com%2Farticles%2Ffoo%2Fbar%2F6875374%2Ffoobar%2F'
+                'expectedRedirectUrl' =>
+                    '/http://example.com/articles/foo/bar/6875374/foobar//1/results/?filter=without-errors',
             ],
         ];
     }
@@ -308,8 +285,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-            HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-            HttpResponseFactory::createSuccessResponse(),
         ]);
 
         $this->client->request(
@@ -320,10 +295,11 @@ class ResultsControllerTest extends AbstractViewControllerTest
             )
         );
 
-        /* @var Response $response */
+        /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
 
-        $this->assertTrue($response->isSuccessful());
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('/http://example.com//1/results/?filter=without-errors', $response->getTargetUrl());
     }
 
     /**
@@ -435,7 +411,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
     public function testIndexActionRender(
         User $owner,
         array $remoteTestModifications,
-        array $httpFixtures,
         User $user,
         ?string $taskType,
         string $filter,
@@ -443,7 +418,15 @@ class ResultsControllerTest extends AbstractViewControllerTest
         Twig_Environment $twig
     ) {
         $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test->setTaskIdCollection('1,2,3,4');
         $test->setUser($owner->getUsername());
+
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
+
+        $taskFactory = new TaskFactory(self::$container);
+        $taskFactory->createCollection($test, $this->taskValuesCollection);
 
         $remoteTest = new RemoteTest(array_merge($this->remoteTestData, $remoteTestModifications, [
             'user' => $owner->getUsername(),
@@ -454,8 +437,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
-
-        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
@@ -493,10 +474,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $publicUser,
                 'remoteTestModifications' => [
                     'is_public' => true,
-                ],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
                 'user' => $publicUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -545,10 +522,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'remoteTestModifications' => [
                     'is_public' => true,
                 ],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-                ],
                 'user' => $publicUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ResultsController::FILTER_WITH_ERRORS,
@@ -595,10 +568,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $publicUser,
                 'remoteTestModifications' => [
                     'is_public' => true,
-                ],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
                 'user' => $publicUser,
                 'taskType' => null,
@@ -647,10 +616,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'remoteTestModifications' => [
                     'is_public' => true,
                 ],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-                ],
                 'user' => $privateUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ResultsController::FILTER_WITH_ERRORS,
@@ -696,10 +661,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $privateUser,
                 'remoteTestModifications' => [
                     'is_public' => false,
-                ],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
                 'user' => $privateUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -748,10 +709,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $privateUser,
                 'remoteTestModifications' => [
                     'is_public' => false,
-                ],
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
                 'user' => $privateUser,
                 'taskType' => Task::TYPE_CSS_VALIDATION,
@@ -802,12 +759,15 @@ class ResultsControllerTest extends AbstractViewControllerTest
     public function testIndexActionCachedResponse()
     {
         $test = Test::create(self::TEST_ID, self::WEBSITE);
-        $remoteTest = new RemoteTest($this->remoteTestData);
 
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
-            HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-        ]);
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
+
+        $taskFactory = new TaskFactory(self::$container);
+        $taskFactory->createCollection($test, $this->taskValuesCollection);
+
+        $remoteTest = new RemoteTest($this->remoteTestData);
 
         $request = new Request([
             'filter' => ResultsController::FILTER_WITH_ERRORS,
