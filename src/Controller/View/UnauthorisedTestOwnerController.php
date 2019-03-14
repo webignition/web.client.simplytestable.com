@@ -53,7 +53,7 @@ class UnauthorisedTestOwnerController extends AbstractBaseViewController
         $this->urlViewValues = $urlViewValues;
     }
 
-    public function renderAction($test_id, $website)
+    public function renderAction(int $test_id, string $website)
     {
         $test = $this->testService->get($website, $test_id);
 
