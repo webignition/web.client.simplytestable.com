@@ -541,7 +541,6 @@ class RejectedControllerTest extends AbstractViewControllerTest
         return $remoteTestService;
     }
 
-
     /**
      * {@inheritdoc}
      */
