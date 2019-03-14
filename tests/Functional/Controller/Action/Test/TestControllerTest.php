@@ -222,7 +222,7 @@ class TestControllerTest extends AbstractControllerTest
     public function testRetestActionGetRequest()
     {
         $this->httpMockHandler->appendFixtures([
-            new \GuzzleHttp\Psr7\Response(),
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                 'id' => 2,
             ])),
