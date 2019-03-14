@@ -49,9 +49,8 @@ class TaskController
     public function idCollectionAction($website, $test_id)
     {
         $test = $this->testService->get($website, $test_id);
-        $taskIds = $this->taskService->getRemoteTaskIds($test);
 
-        return new JsonResponse($taskIds);
+        return new JsonResponse($test->getTaskIds());
     }
 
     /**
