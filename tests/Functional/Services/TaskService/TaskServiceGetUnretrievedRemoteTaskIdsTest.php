@@ -3,8 +3,8 @@
 
 namespace App\Tests\Functional\Services\TaskService;
 
-use App\Tests\Factory\HttpResponseFactory;
-use App\Tests\Factory\TestFactory;
+use App\Entity\Test;
+use Doctrine\ORM\EntityManagerInterface;
 
 class TaskServiceGetUnretrievedRemoteTaskIdsTest extends AbstractTaskServiceTest
 {
@@ -12,16 +12,18 @@ class TaskServiceGetUnretrievedRemoteTaskIdsTest extends AbstractTaskServiceTest
      * @dataProvider getUnretrievedRemoteTaskIdsDataProvider
      */
     public function testGetUnretrievedRemoteTaskIds(
-        array $httpFixtures,
-        array $testValues,
+        string $testTaskIds,
         int $limit,
         array $expectedUnretrievedRemoteTaskIds
     ) {
-        $this->httpMockHandler->appendFixtures($httpFixtures);
+        $testId = 1;
 
-        $testFactory = new TestFactory(self::$container);
+        $test = Test::create($testId, 'http://example.com/');
+        $test->setTaskIdCollection($testTaskIds);
 
-        $test = $testFactory->create($testValues);
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
 
         $unretrievedRemoteTaskIds = $this->taskService->getUnretrievedRemoteTaskIds($test, $limit);
 
@@ -32,44 +34,17 @@ class TaskServiceGetUnretrievedRemoteTaskIdsTest extends AbstractTaskServiceTest
     {
         return [
             'none retrieved, limit not reached' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        2, 3,
-                    ]),
-                ],
-                'testValues' => [
-                    TestFactory::KEY_TEST_ID => 1,
-                ],
+                'testTaskIds' => '2,3',
                 'limit' => 10,
                 'expectedUnretrievedRemoteTaskIds' => [2, 3],
             ],
             'none retrieved, limit reached' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        2, 3, 4, 5
-                    ]),
-                ],
-                'testValues' => [
-                    TestFactory::KEY_TEST_ID => 1,
-                ],
+                'testTaskIds' => '2,3,4,5',
                 'limit' => 3,
                 'expectedUnretrievedRemoteTaskIds' => [2, 3, 4],
             ],
-            'all retrieved, limit not reached' => [
-                'httpFixtures' => [],
-                'testValues' => [
-                    TestFactory::KEY_TEST_ID => 1,
-                    TestFactory::KEY_TASK_IDS => '2, 3'
-                ],
-                'limit' => 10,
-                'expectedUnretrievedRemoteTaskIds' => [2, 3,],
-            ],
             'all retrieved, limit reached' => [
-                'httpFixtures' => [],
-                'testValues' => [
-                    TestFactory::KEY_TEST_ID => 1,
-                    TestFactory::KEY_TASK_IDS => '2, 3, 4, 5'
-                ],
+                'testTaskIds' => '2,3,4,5',
                 'limit' => 3,
                 'expectedUnretrievedRemoteTaskIds' => [2, 3, 4],
             ],

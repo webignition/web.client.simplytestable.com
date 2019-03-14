@@ -329,17 +329,13 @@ class TaskService
      * @param int $limit
      *
      * @return int[]
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function getUnretrievedRemoteTaskIds(Test $test, $limit)
     {
-        $remoteTaskIds = $this->getRemoteTaskIds($test);
         $retrievedRemoteTaskIds = $this->taskRepository->findRetrievedRemoteTaskIds($test);
 
         $unretrievedRemoteTaskIds = [];
+        $remoteTaskIds = $test->getTaskIds();
 
         foreach ($remoteTaskIds as $remoteTaskId) {
             if (!in_array($remoteTaskId, $retrievedRemoteTaskIds)) {
