@@ -104,8 +104,13 @@ class ByTaskTypeController extends AbstractBaseViewController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function indexAction(Request $request, $website, $test_id, $task_type, $filter = null)
-    {
+    public function indexAction(
+        Request $request,
+        string $website,
+        int $test_id,
+        string $task_type,
+        ?string $filter = null
+    ): Response {
         $user = $this->userManager->getUser();
         $test = $this->testService->get($website, $test_id);
 
