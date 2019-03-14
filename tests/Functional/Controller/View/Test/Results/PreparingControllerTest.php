@@ -6,12 +6,15 @@ namespace App\Tests\Functional\Controller\View\Test\Results\Preparing;
 use App\Controller\View\Test\Results\PreparingController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
+use App\Model\RemoteTest\RemoteTest;
+use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
+use App\Services\TestService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
-use App\Tests\Factory\TaskFactory;
-use App\Tests\Factory\TestFactory;
+use Doctrine\ORM\EntityManagerInterface;
+use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +42,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         'user' => self::USER_EMAIL,
         'state' => Test::STATE_COMPLETED,
         'task_type_options' => [],
-        'task_count' => 12,
+        'task_count' => 4,
     ];
 
     public function testIsIEFiltered()
@@ -100,46 +103,64 @@ class PreparingControllerTest extends AbstractViewControllerTest
         /* @var Response $response */
         $response = $this->client->getResponse();
         $this->assertTrue($response->isSuccessful());
+
+        $this->assertEquals(
+            [
+                'http://null/user/public/authenticate/',
+                'http://null/job/1/',
+                'http://null/job/1/tasks/ids/',
+            ],
+            $this->httpHistory->getRequestUrlsAsStrings()
+        );
     }
 
     /**
      * @dataProvider indexActionNoRemoteTasksDataProvider
      */
-    public function testIndexActionNoRemoteTasks(array $remoteTestData, string $expectedRedirectUrl)
-    {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($remoteTestData),
-        ]);
+    public function testIndexActionNoRemoteTasks(
+        RemoteTest $remoteTest,
+        bool $testServiceIsFinished,
+        string $expectedRedirectUrl
+    ) {
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
 
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, $testServiceIsFinished);
+        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+
+        $this->setTestServiceOnController($preparingController, $testService);
+        $this->setRemoteTestServiceOnController($preparingController, $remoteTestService);
 
         $response = $preparingController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
     }
 
-    public function indexActionNoRemoteTasksDataProvider()
+    public function indexActionNoRemoteTasksDataProvider(): array
     {
         return [
             'not finished' => [
-                'remoteTestData' => array_merge(
+                'remoteTest' => new RemoteTest(array_merge(
                     $this->remoteTestData,
                     [
                         'task_count' => 0,
                         'state' => Test::STATE_IN_PROGRESS,
                     ]
-                ),
+                )),
+                'testServiceIsFinished' => false,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'finished' => [
-                'remoteTestData' => array_merge(
+                'remoteTest' => new RemoteTest(array_merge(
                     $this->remoteTestData,
                     [
                         'task_count' => 0,
                         'state' => Test::STATE_COMPLETED,
                     ]
-                ),
+                )),
+                'testServiceIsFinished' => true,
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
         ];
@@ -149,38 +170,41 @@ class PreparingControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionBadRequestDataProvider
      */
     public function testIndexActionBadRequest(
-        array $httpFixtures,
+        Test $test,
+        RemoteTest $remoteTest,
+        bool $testServiceIsFinished,
         User $user,
         Request $request,
         string $website,
-        string $expectedRedirectUrl,
-        string $expectedRequestUrl
+        string $expectedRedirectUrl
     ) {
         $userManager = self::$container->get(UserManager::class);
-
         $userManager->setUser($user);
-        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
+
+        $testService = $this->createTestService($website, self::TEST_ID, $test, $testServiceIsFinished);
+        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+
+        $this->setTestServiceOnController($preparingController, $testService);
+        $this->setRemoteTestServiceOnController($preparingController, $remoteTestService);
 
         $response = $preparingController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, (string) $this->httpHistory->getLastRequestUrl());
     }
 
     public function indexActionBadRequestDataProvider(): array
     {
         return [
             'website mismatch' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'website' => 'http://foo.example.com/',
-                    ])),
-                ],
+                'test' => Test::create(self::TEST_ID, self::WEBSITE),
+                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                    'website' => 'http://foo.example.com/',
+                ])),
+                'testServiceIsFinished' => true,
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => 'http://foo.example.com/',
@@ -188,11 +212,11 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'state' => Test::STATE_IN_PROGRESS,
-                    ])),
-                ],
+                'test' => Test::create(self::TEST_ID, self::WEBSITE),
+                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                    'state' => Test::STATE_IN_PROGRESS,
+                ])),
+                'testServiceIsFinished' => false,
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => self::WEBSITE,
@@ -205,17 +229,20 @@ class PreparingControllerTest extends AbstractViewControllerTest
     /**
      * @dataProvider indexActionRenderDataProvider
      */
-    public function testIndexActionRender(array $httpFixtures, array $testValues, Twig_Environment $twig)
-    {
-        $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($testValues)) {
-            $testFactory = new TestFactory(self::$container);
-            $testFactory->create($testValues);
-        }
-
+    public function testIndexActionRender(
+        callable $testCreator,
+        RemoteTest $remoteTest,
+        Twig_Environment $twig
+    ) {
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
+
+        $test = $testCreator();
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, true);
+        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+
+        $this->setTestServiceOnController($preparingController, $testService);
+        $this->setRemoteTestServiceOnController($preparingController, $remoteTestService);
         $this->setTwigOnController($twig, $preparingController);
 
         $response = $preparingController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -226,11 +253,13 @@ class PreparingControllerTest extends AbstractViewControllerTest
     {
         return [
             'no remote tasks retrieved' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([1, 2, 3,]),
-                ],
-                'testValues' => [],
+                'testCreator' => function () {
+                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test->setTaskIdCollection('1,2,3');
+
+                    return $test;
+                },
+                'remoteTest' => new RemoteTest($this->remoteTestData),
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -247,8 +276,8 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
                             $this->assertEquals(0, $parameters['local_task_count']);
-                            $this->assertEquals(12, $parameters['remote_task_count']);
-                            $this->assertEquals(12, $parameters['remaining_tasks_to_retrieve_count']);
+                            $this->assertEquals(4, $parameters['remote_task_count']);
+                            $this->assertEquals(4, $parameters['remaining_tasks_to_retrieve_count']);
 
                             return true;
                         },
@@ -257,30 +286,27 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'some remote tasks retrieved' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
-                ],
-                'testValues' => [
-                    TestFactory::KEY_TEST_ID => self::TEST_ID,
-                    TestFactory::KEY_TASKS => [
-                        [
-                            TaskFactory::KEY_TASK_ID => 1,
-                            TaskFactory::KEY_URL => 'http://example.com/',
-                            TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
-                        ],
-                        [
-                            TaskFactory::KEY_TASK_ID => 2,
-                            TaskFactory::KEY_URL => 'http://example.com/',
-                            TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
-                        ],
-                        [
-                            TaskFactory::KEY_TASK_ID => 4,
-                            TaskFactory::KEY_URL => 'http://example.com/',
-                            TaskFactory::KEY_TYPE => Task::TYPE_LINK_INTEGRITY,
-                        ],
-                    ],
-                ],
+                'testCreator' => function () {
+                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test->setTaskIdCollection('1,2,3,4');
+                    $test->setState(TestService::STATE_COMPLETED);
+
+                    $task1 = new Task();
+                    $task1->setState(Task::STATE_COMPLETED);
+                    $task1->setTaskId(1);
+                    $task1->setUrl('http://example.com/');
+                    $task1->setType(Task::TYPE_HTML_VALIDATION);
+                    $task1->setTest($test);
+
+                    $test->addTask($task1);
+
+                    $entityManager = self::$container->get(EntityManagerInterface::class);
+                    $entityManager->persist($test);
+                    $entityManager->flush();
+
+                    return $test;
+                },
+                'remoteTest' => new RemoteTest($this->remoteTestData),
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -296,9 +322,9 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
                             $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
-                            $this->assertEquals(3, $parameters['local_task_count']);
-                            $this->assertEquals(12, $parameters['remote_task_count']);
-                            $this->assertEquals(9, $parameters['remaining_tasks_to_retrieve_count']);
+                            $this->assertEquals(1, $parameters['local_task_count']);
+                            $this->assertEquals(4, $parameters['remote_task_count']);
+                            $this->assertEquals(3, $parameters['remaining_tasks_to_retrieve_count']);
 
                             return true;
                         },
@@ -311,10 +337,9 @@ class PreparingControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-            HttpResponseFactory::createJsonResponse([1, 2, 3,]),
-        ]);
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test->setTaskIdCollection('1,2,3');
+        $remoteTest = new RemoteTest($this->remoteTestData);
 
         $request = new Request();
 
@@ -322,6 +347,12 @@ class PreparingControllerTest extends AbstractViewControllerTest
 
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, true);
+        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+
+        $this->setTestServiceOnController($preparingController, $testService);
+        $this->setRemoteTestServiceOnController($preparingController, $remoteTestService);
 
         $response = $preparingController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
@@ -354,6 +385,39 @@ class PreparingControllerTest extends AbstractViewControllerTest
             ],
             array_keys($parameters)
         );
+    }
+
+    /**
+     * @return TestService|MockInterface
+     */
+    private function createTestService(string $website, int $testId, Test $test, bool $isFinished)
+    {
+        $testService = \Mockery::mock(TestService::class);
+        $testService
+            ->shouldReceive('get')
+            ->with($website, $testId)
+            ->andReturn($test);
+
+        $testService
+            ->shouldReceive('isFinished')
+            ->with($test)
+            ->andReturn($isFinished);
+
+        return $testService;
+    }
+
+    /**
+     * @return RemoteTestService|MockInterface
+     */
+    private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
+    {
+        $remoteTestService = \Mockery::mock(RemoteTestService::class);
+        $remoteTestService
+            ->shouldReceive('get')
+            ->with($testId)
+            ->andReturn($remoteTest);
+
+        return $remoteTestService;
     }
 
     /**

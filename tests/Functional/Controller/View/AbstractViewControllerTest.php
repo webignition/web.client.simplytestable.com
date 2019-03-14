@@ -2,7 +2,9 @@
 
 namespace App\Tests\Functional\Controller\View;
 
-use ReflectionClass;
+use App\Services\RemoteTestService;
+use App\Services\TestService;
+use App\Tests\Services\ObjectReflector;
 use App\Controller\AbstractBaseViewController;
 use App\Tests\Functional\Controller\AbstractControllerTest;
 use App\Tests\Services\HttpMockHandler;
@@ -37,12 +39,12 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
 
     protected function setTwigOnController(Twig_Environment $twig, AbstractBaseViewController $controller)
     {
-        $reflectionClass = new ReflectionClass(AbstractBaseViewController::class);
-
-        $reflectionProperty = $reflectionClass->getProperty('twig');
-        $reflectionProperty->setAccessible(true);
-
-        $reflectionProperty->setValue($controller, $twig);
+        ObjectReflector::setProperty(
+            $controller,
+            AbstractBaseViewController::class,
+            'twig',
+            $twig
+        );
     }
 
     protected function issueIERequest(string $routeName, array $routeParameters = [])
@@ -61,5 +63,29 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(getenv('MARKETING_SITE'), $response->getTargetUrl());
+    }
+
+    protected function setTestServiceOnController(
+        AbstractBaseViewController $controller,
+        TestService $testService
+    ) {
+        ObjectReflector::setProperty(
+            $controller,
+            get_class($controller),
+            'testService',
+            $testService
+        );
+    }
+
+    protected function setRemoteTestServiceOnController(
+        AbstractBaseViewController $controller,
+        RemoteTestService $remoteTestService
+    ) {
+        ObjectReflector::setProperty(
+            $controller,
+            get_class($controller),
+            'remoteTestService',
+            $remoteTestService
+        );
     }
 }

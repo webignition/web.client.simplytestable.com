@@ -6,9 +6,11 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 use App\Controller\View\Test\Results\FailedNoUrlsDetectedController;
 use App\Entity\Test;
 use App\Services\SystemUserService;
+use App\Services\TestService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,68 +78,61 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         /* @var Response $response */
         $response = $this->client->getResponse();
         $this->assertTrue($response->isSuccessful());
+
+        $this->assertEquals(
+            [
+                'http://null/user/public/authenticate/',
+                'http://null/job/1/',
+            ],
+            $this->httpHistory->getRequestUrlsAsStrings()
+        );
     }
 
     /**
      * @dataProvider indexActionBadRequestDataProvider
      */
     public function testIndexActionBadRequest(
-        array $httpFixtures,
+        Test $test,
         User $user,
-        Request $request,
         string $website,
-        string $expectedRedirectUrl,
-        string $expectedRequestUrl
+        string $expectedRedirectUrl
     ) {
         $userManager = self::$container->get(UserManager::class);
-
         $userManager->setUser($user);
-        $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
         $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
 
-        $response = $failedNoUrlsDetectedController->indexAction($request, $website, self::TEST_ID);
+        $testService = $this->createTestService($website, self::TEST_ID, $test);
+        $this->setTestServiceOnController($failedNoUrlsDetectedController, $testService);
+
+        $response = $failedNoUrlsDetectedController->indexAction(new Request(), $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
 
         $this->assertEquals($expectedRedirectUrl, $response->getTargetUrl());
-        $this->assertEquals($expectedRequestUrl, (string) $this->httpHistory->getLastRequestUrl());
     }
 
     public function indexActionBadRequestDataProvider(): array
     {
         return [
             'website mismatch' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                ],
+                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
                 'website' => 'http://foo.example.com/',
                 'expectedRedirectUrl' => '/http://example.com//1/results/failed/no-urls-detected/',
-                'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'state' => Test::STATE_IN_PROGRESS,
-                    ])),
-                ],
+                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'not public user' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                ],
+                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'user' => new User(self::USER_EMAIL),
-                'request' => new Request(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
-                'expectedRequestUrl' => 'http://null/job/1/',
             ],
         ];
     }
@@ -183,16 +178,18 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
-
         $request = new Request();
 
         self::$container->get('request_stack')->push($request);
 
         /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
         $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
+
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test->setState(TestService::STATE_FAILED_NO_SITEMAP);
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $this->setTestServiceOnController($failedNoUrlsDetectedController, $testService);
 
         $response = $failedNoUrlsDetectedController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
@@ -221,6 +218,24 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
             ],
             array_keys($parameters)
         );
+    }
+
+    /**
+     * @param string $website
+     * @param int $testId
+     * @param Test $test
+     *
+     * @return TestService|MockInterface
+     */
+    private function createTestService(string $website, int $testId, Test $test)
+    {
+        $testService = \Mockery::mock(TestService::class);
+        $testService
+            ->shouldReceive('get')
+            ->with($website, $testId)
+            ->andReturn($test);
+
+        return $testService;
     }
 
     /**

@@ -5,8 +5,8 @@ namespace App\Tests\Functional\EventListener\RequestListener;
 
 use App\Entity\Test;
 use App\EventListener\RequiresValidTestOwnerRequestListener;
-use App\Tests\Factory\HttpResponseFactory;
-use App\Tests\Factory\TestFactory;
+use App\Services\TestService;
+use App\Tests\Services\ObjectReflector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -28,16 +28,22 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
     /**
      * @dataProvider dataProvider
      */
-    public function testOnKernelController(array $httpFixtures, array $testValues, bool $expectedHasResponse)
+    public function testOnKernelController(?Test $testServiceGetReturnValue, bool $expectedHasResponse)
     {
+        $testService = \Mockery::mock(TestService::class);
+        $testService
+            ->shouldReceive('get')
+            ->with(self::WEBSITE, self::TEST_ID)
+            ->andReturn($testServiceGetReturnValue);
+
+        ObjectReflector::setProperty(
+            $this->requestListener,
+            RequiresValidTestOwnerRequestListener::class,
+            'testService',
+            $testService
+        );
+
         $router = self::$container->get(RouterInterface::class);
-
-        $this->httpMockHandler->appendFixtures($httpFixtures);
-
-        if (!empty($testValues)) {
-            $testFactory = new TestFactory(self::$container);
-            $testFactory->create($testValues);
-        }
 
         $url = $router->generate(
             'view_test_results',
@@ -70,38 +76,15 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
     {
         return [
             'invalid test' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createSuccessResponse([
-                        'content-type' => 'text/plain',
-                    ], 'foo'),
-                ],
-                'testValues' => [],
+                'testServiceGetReturnValue' => null,
                 'expectedHasResponse' => true,
             ],
             'invalid test owner' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createForbiddenResponse(),
-                ],
-                'testValues' => [
-                    TestFactory::KEY_WEBSITE => self::WEBSITE,
-                    TestFactory::KEY_TEST_ID => self::TEST_ID,
-                ],
+                'testServiceGetReturnValue' => null,
                 'expectedHasResponse' => true,
             ],
             'valid test owner' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        'id' => self::TEST_ID,
-                        'website' => self::WEBSITE,
-                        'task_types' => [],
-                        'user' => 'user@example.com',
-                        'state' => Test::STATE_COMPLETED,
-                    ]),
-                ],
-                'testValues' => [
-                    TestFactory::KEY_WEBSITE => self::WEBSITE,
-                    TestFactory::KEY_TEST_ID => self::TEST_ID,
-                ],
+                'testServiceGetReturnValue' => Test::create(self::TEST_ID, self::WEBSITE),
                 'expectedHasResponse' => false,
             ],
         ];

@@ -83,6 +83,7 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($remoteTestData),
+            HttpResponseFactory::createJsonResponse([]),
         ]);
 
         $this->client->request(
@@ -212,10 +213,12 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse($remoteTestData),
+            HttpResponseFactory::createJsonResponse([]),
         ]);
 
         $request = new Request();
 
+        /* @var TestUrlLimitNotificationController $urlLimitController */
         $urlLimitController = self::$container->get(TestUrlLimitNotificationController::class);
 
         $response = $urlLimitController->indexAction($request, self::WEBSITE, self::TEST_ID);
@@ -233,20 +236,5 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
-    }
-
-    public function testIndexActionInvalidRemoteTest()
-    {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        /* @var TestUrlLimitNotificationController $testUrlLimitNotificationController */
-        $testUrlLimitNotificationController = self::$container->get(TestUrlLimitNotificationController::class);
-
-        $response = $testUrlLimitNotificationController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
-
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertEmpty($response->getContent());
     }
 }

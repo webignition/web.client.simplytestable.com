@@ -2,8 +2,6 @@
 
 namespace App\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
 use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
@@ -33,7 +31,6 @@ class RedirectController extends AbstractController
     /**
      * @param TestService $testService
      * @param RemoteTestService $remoteTestService
-     * @param EntityManagerInterface $entityManager
      * @param LoggerInterface $logger
      * @param Request $request
      * @param string $website
@@ -44,15 +41,11 @@ class RedirectController extends AbstractController
     public function testAction(
         TestService $testService,
         RemoteTestService $remoteTestService,
-        EntityManagerInterface $entityManager,
         LoggerInterface $logger,
         Request $request,
         $website,
         $test_id = null
     ) {
-        /* @var EntityRepository $testRepository */
-        $testRepository = $entityManager->getRepository(Test::class);
-
         $isTaskResultsUrl = preg_match(self::TASK_RESULTS_URL_PATTERN, $website) > 0;
 
         if ($isTaskResultsUrl) {
@@ -85,8 +78,6 @@ class RedirectController extends AbstractController
                     ]
                 ));
             }
-
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
         }
 
         if ($hasWebsite && $hasTestId) {
