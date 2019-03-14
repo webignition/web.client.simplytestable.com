@@ -6,8 +6,11 @@ namespace App\Tests\Functional\Controller\View\Partials;
 use App\Controller\View\Partials\TestTaskListController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
+use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
+use Doctrine\ORM\EntityManagerInterface;
+use Mockery\MockInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -95,6 +98,7 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
+            HttpResponseFactory::createJsonResponse([]),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
@@ -111,17 +115,23 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
 
         $this->assertTrue($response->isSuccessful());
         $this->assertNotEmpty($response->getContent());
+
+        $this->assertEquals(
+            [
+                'http://null/user/public/authenticate/',
+                'http://null/job/1/',
+                'http://null/job/1/tasks/ids/',
+                'http://null/job/1/tasks/',
+            ],
+            $this->httpHistory->getRequestUrlsAsStrings()
+        );
     }
 
     /**
-     * @dataProvider indexActionRenderEmptyContentDataProvider
+     * @dataProvider indexActionRenderInvalidTaskIdsDataProvider
      */
-    public function testIndexActionRenderEmptyContent(
-        array $httpFixtures,
-        Request $request
-    ) {
-        $this->httpMockHandler->appendFixtures($httpFixtures);
-
+    public function testIndexActionRenderInvalidTaskIds(Request $request)
+    {
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
 
@@ -135,38 +145,48 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         $this->assertEmpty($response->getContent());
     }
 
-    public function indexActionRenderEmptyContentDataProvider(): array
+    public function indexActionRenderInvalidTaskIdsDataProvider(): array
     {
         return [
             'no request task ids' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([]),
-                ],
                 'request' => new Request(),
             ],
             'invalid request task ids' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([]),
-                ],
                 'request' => new Request([], [
                     'taskIds' => [
                         'foo', 'bar', true, false,
                     ],
                 ]),
             ],
-            'valid request task ids, no tasks' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([]),
-                ],
-                'request' => new Request([], [
-                    'taskIds' => [1, 2, 3],
-                ]),
-                'expectedResponseIsEmpty' => true,
-            ],
         ];
+    }
+
+    public function testIndexActionRenderNoTasks()
+    {
+        $test = $this->createTest();
+
+        $request = new Request([], [
+            'taskIds' => [1, 2, 3],
+        ]);
+
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createJsonResponse([]),
+        ]);
+
+        /* @var TestTaskListController $testTaskListController */
+        $testTaskListController = self::$container->get(TestTaskListController::class);
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $this->setTestServiceOnController($testTaskListController, $testService);
+
+        $response = $testTaskListController->indexAction(
+            $request,
+            self::WEBSITE,
+            self::TEST_ID
+        );
+
+        $this->assertInstanceOf(Response::class, $response);
+        $this->assertEmpty($response->getContent());
     }
 
     /**
@@ -178,10 +198,15 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         int $expectedPageIndex,
         array $expectedTaskSetCollection
     ) {
+        $test = $this->createTest();
+
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $this->setTestServiceOnController($testTaskListController, $testService);
 
         $response = $testTaskListController->indexAction(
             $request,
@@ -244,7 +269,6 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         return [
             'single task, no errors, no warnings' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
                             'id' => 2,
@@ -276,7 +300,6 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
             ],
             'single task, has errors, has warnings' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
                             'id' => 2,
@@ -314,7 +337,6 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
             ],
             'multiple tasks, no errors, no warnings' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
                             'id' => 2,
@@ -393,8 +415,9 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
+        $test = $this->createTest();
+
         $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
         ]);
 
@@ -404,6 +427,9 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
 
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $this->setTestServiceOnController($testTaskListController, $testService);
 
         $response = $testTaskListController->indexAction(
             $request,
@@ -427,5 +453,30 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
+    }
+
+    /**
+     * @return TestService|MockInterface
+     */
+    private function createTestService(string $website, int $testId, Test $test)
+    {
+        $testService = \Mockery::mock(TestService::class);
+        $testService
+            ->shouldReceive('get')
+            ->with($website, $testId)
+            ->andReturn($test);
+
+        return $testService;
+    }
+
+    private function createTest(): Test
+    {
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
+
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
+
+        return $test;
     }
 }
