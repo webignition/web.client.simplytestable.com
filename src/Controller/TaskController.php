@@ -97,7 +97,10 @@ class TaskController
     {
         $test = $this->testService->get($website, $test_id);
 
-        $this->taskService->getCollection($test, $this->getRequestRemoteTaskIds($request));
+        $remoteTaskIds = $this->getRequestRemoteTaskIds($request);
+        $remoteTaskIds = $remoteTaskIds ?? $test->getTaskIds();
+
+        $this->taskService->getCollection($test, $remoteTaskIds);
 
         return new Response();
     }
