@@ -74,7 +74,6 @@ class PreparingController extends AbstractBaseViewController
         $test = $this->testService->get($website, $test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
 
-        $localTaskCount = $test->getTaskCount();
         $remoteTaskCount = $remoteTest->getTaskCount();
 
         if (0 === $remoteTaskCount) {
@@ -91,6 +90,7 @@ class PreparingController extends AbstractBaseViewController
             ));
         }
 
+        $localTaskCount = $test->getTaskCount();
         $completionPercent = (int)round(($localTaskCount / $remoteTaskCount) * 100);
         $tasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
 
@@ -123,10 +123,6 @@ class PreparingController extends AbstractBaseViewController
                     'test_id' => $test_id,
                 ]
             ));
-        }
-
-        if (!$test->hasTaskIds()) {
-            $this->taskService->getRemoteTaskIds($test);
         }
 
         return $this->renderWithDefaultViewParameters(

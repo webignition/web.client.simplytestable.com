@@ -3,11 +3,14 @@
 
 namespace App\Tests\Functional\Controller;
 
+use App\Services\TestService;
+use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\TaskController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
 use App\Tests\Factory\HttpResponseFactory;
+use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,20 +31,6 @@ class TaskControllerTest extends AbstractControllerTest
      * @var HttpMockHandler
      */
     private $httpMockHandler;
-
-    private $remoteTestData = [
-        'id' => self::TEST_ID,
-        'website' => self::WEBSITE,
-        'task_types' => [
-            [
-                'name' => Task::TYPE_HTML_VALIDATION,
-            ],
-        ],
-        'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
-        'task_type_options' => [],
-        'task_count' => 12,
-    ];
 
     private $remoteTasksData = [
         [
@@ -168,10 +157,11 @@ class TaskControllerTest extends AbstractControllerTest
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-            HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
-        ]);
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test->setTaskIdCollection(implode(',', $taskIds));
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $this->setTestServiceOnController($this->taskController, $testService);
 
         /* @var JsonResponse $response */
         $response = $this->taskController->idCollectionAction(self::WEBSITE, self::TEST_ID);
@@ -190,10 +180,15 @@ class TaskControllerTest extends AbstractControllerTest
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-            HttpResponseFactory::createJsonResponse($taskIds),
-        ]);
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test->setTaskIdCollection(implode(',', $taskIds));
+
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $this->setTestServiceOnController($this->taskController, $testService);
 
         /* @var JsonResponse $response */
         $response = $this->taskController->unretrievedIdCollectionAction(
@@ -224,18 +219,17 @@ class TaskControllerTest extends AbstractControllerTest
     /**
      * @dataProvider retrieveActionRenderDataProvider
      */
-    public function testRetrieveActionRender(array $httpFixtures, Request $request)
+    public function testRetrieveActionRender(array $existingTestTaskIds, array $httpFixtures, Request $request)
     {
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test->setTaskIdCollection(implode(',', $existingTestTaskIds));
+
         $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
 
-        $testRepository = $entityManager->getRepository(Test::class);
-
-        /* @var Test $test */
-        $test = $testRepository->findOneBy([
-            'testId' => self::TEST_ID,
-        ]);
-
-        $this->assertNull($test);
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $this->setTestServiceOnController($this->taskController, $testService);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -244,6 +238,8 @@ class TaskControllerTest extends AbstractControllerTest
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
+
+        $testRepository = $entityManager->getRepository(Test::class);
 
         /* @var Test $test */
         $test = $testRepository->findOneBy([
@@ -263,17 +259,16 @@ class TaskControllerTest extends AbstractControllerTest
     public function retrieveActionRenderDataProvider(): array
     {
         return [
-            'no task ids' => [
+            'no task ids requested' => [
+                'existingTestTaskIds' => [1, 2, 3, 4,],
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
-                    HttpResponseFactory::createJsonResponse([1, 2, 3, 4,]),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
                 'request' => new Request(),
             ],
             'has task ids; comma-separated list' => [
+                'existingTestTaskIds' => [],
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
                 'request' => new Request([], [
@@ -281,8 +276,8 @@ class TaskControllerTest extends AbstractControllerTest
                 ]),
             ],
             'has task ids; range' => [
+                'existingTestTaskIds' => [],
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createJsonResponse($this->remoteTasksData),
                 ],
                 'request' => new Request([], [
@@ -290,5 +285,29 @@ class TaskControllerTest extends AbstractControllerTest
                 ]),
             ],
         ];
+    }
+
+    /**
+     * @return TestService|MockInterface
+     */
+    private function createTestService(string $website, int $testId, ?Test $test)
+    {
+        $testService = \Mockery::mock(TestService::class);
+        $testService
+            ->shouldReceive('get')
+            ->with($website, $testId)
+            ->andReturn($test);
+
+        return $testService;
+    }
+
+    protected function setTestServiceOnController($controller, TestService $testService)
+    {
+        ObjectReflector::setProperty(
+            $controller,
+            get_class($controller),
+            'testService',
+            $testService
+        );
     }
 }

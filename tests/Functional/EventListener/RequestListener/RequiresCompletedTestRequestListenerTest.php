@@ -5,8 +5,9 @@ namespace App\Tests\Functional\EventListener\RequestListener;
 
 use App\Entity\Test;
 use App\EventListener\RequiresCompletedTestRequestListener;
-use App\Tests\Factory\HttpResponseFactory;
+use App\Services\TestService;
 use App\Tests\Factory\TestFactory;
+use App\Tests\Services\ObjectReflector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
@@ -32,18 +33,32 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
     public function testOnKernelRequest(
         string $route,
         string $testState,
+        int $isFinished,
         bool $expectedHasResponse,
         ?string $expectedRedirectUrl = null
     ) {
-        $httpFixture = HttpResponseFactory::createJsonResponse([
-            'id' => self::TEST_ID,
-            'website' => self::WEBSITE,
-            'task_types' => [],
-            'user' => 'user@example.com',
-            'state' => $testState,
-        ]);
+        $test = \Mockery::mock(Test::class);
+        $test
+            ->shouldReceive('getState')
+            ->andReturn($testState);
 
-        $this->httpMockHandler->appendFixtures([$httpFixture]);
+        $testService = \Mockery::mock(TestService::class);
+        $testService
+            ->shouldReceive('get')
+            ->with(self::WEBSITE, self::TEST_ID)
+            ->andReturn($test);
+
+        $testService
+            ->shouldReceive('isFinished')
+            ->with($test)
+            ->andReturn($isFinished);
+
+        ObjectReflector::setProperty(
+            $this->requestListener,
+            RequiresCompletedTestRequestListener::class,
+            'testService',
+            $testService
+        );
 
         $router = self::$container->get(RouterInterface::class);
         $testFactory = new TestFactory(self::$container);
@@ -98,39 +113,46 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
             'view_test_results, state: failed no sitemap' => [
                 'route' => 'view_test_results',
                 'testState' => Test::STATE_FAILED_NO_SITEMAP,
+                'isFinished' => true,
                 'expectedHasResponse' => true,
                 'expectedRedirectUrl' => '/http://example.com//1/results/failed/no-urls-detected/',
             ],
             'view_test_results_failed_no_urls_detected, state: failed no sitemap' => [
                 'route' => 'view_test_results_failed_no_urls_detected',
                 'testState' => Test::STATE_FAILED_NO_SITEMAP,
+                'isFinished' => true,
                 'expectedHasResponse' => false,
             ],
             'view_test_results, state: rejected' => [
                 'route' => 'view_test_results',
                 'testState' => Test::STATE_REJECTED,
+                'isFinished' => true,
                 'expectedHasResponse' => true,
                 'expectedRedirectUrl' => '/http://example.com//1/results/rejected/',
             ],
             'view_test_results_rejected, state: rejected' => [
                 'route' => 'view_test_results_rejected',
                 'testState' => Test::STATE_REJECTED,
+                'isFinished' => true,
                 'expectedHasResponse' => false,
             ],
             'view_test_results, state: in progress' => [
                 'route' => 'view_test_results',
                 'testState' => Test::STATE_IN_PROGRESS,
+                'isFinished' => false,
                 'expectedHasResponse' => true,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'view_test_progress, state: in progress' => [
                 'route' => 'view_test_progress',
                 'testState' => Test::STATE_IN_PROGRESS,
+                'isFinished' => false,
                 'expectedHasResponse' => false,
             ],
             'view_test_results, state: completed' => [
                 'route' => 'view_test_results',
                 'testState' => Test::STATE_COMPLETED,
+                'isFinished' => true,
                 'expectedHasResponse' => false,
             ],
         ];

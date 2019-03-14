@@ -118,22 +118,7 @@ class ProgressController extends AbstractBaseViewController
     {
         $user = $this->userManager->getUser();
         $test = $this->testService->get($website, $test_id);
-
-        if (empty($test)) {
-            return $this->createRedirectResponse(
-                $request,
-                'view_dashboard'
-            );
-        }
-
         $remoteTest = $this->remoteTestService->get($test->getTestId());
-
-        if (empty($remoteTest)) {
-            return $this->createRedirectResponse(
-                $request,
-                'view_dashboard'
-            );
-        }
 
         $testWebsite = $test->getWebsite();
 

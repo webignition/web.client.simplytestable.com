@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exception\InvalidContentTypeException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
@@ -60,6 +61,16 @@ class TestService
     );
 
     /**
+     * @var string[]
+     */
+    private $preparedStates = [
+        self::STATE_QUEUED,
+        self::STATE_IN_PROGRESS,
+        self::STATE_COMPLETED,
+        self::STATE_CANCELLED,
+    ];
+
+    /**
      * @param EntityManagerInterface $entityManager
      * @param LoggerInterface $logger
      * @param TaskService $taskService
@@ -86,6 +97,8 @@ class TestService
      * @return Test|null
      *
      * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function get($canonicalUrl, $testId)
     {
@@ -108,6 +121,11 @@ class TestService
         }
 
         $this->hydrateFromRemoteTest($test, $remoteTest);
+
+        if (in_array($test->getState(), $this->preparedStates) && !$test->hasTaskIds()) {
+            $remoteTaskIds = $this->taskService->retrieveRemoteTaskIds($test);
+            $test->setTaskIdCollection(implode(',', $remoteTaskIds));
+        }
 
         $this->entityManager->persist($test);
         $this->entityManager->flush();

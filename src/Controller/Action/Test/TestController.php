@@ -79,41 +79,27 @@ class TestController extends AbstractController
      * @param int $test_id
      *
      * @return RedirectResponse
-     *
-     * @throws CoreApplicationReadOnlyException
      */
     public function cancelAction($website, $test_id)
     {
+        $routeName = 'view_test_results';
+
         $routeParameters = [
             'website' => $website,
             'test_id' => $test_id,
         ];
 
-        $test = null;
-
         try {
-            $test = $this->testService->get($website, $test_id);
-
-            if ($test) {
-                $this->remoteTestService->cancel($test->getTestId());
-            }
+            $this->remoteTestService->cancel((int) $test_id);
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
+            $routeName = 'view_test_progress';
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            return new RedirectResponse($this->generateUrl(
-                'view_test_progress',
-                $routeParameters
-            ));
+            $routeName = 'view_test_progress';
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            $routeName = 'view_test_progress';
         }
 
-        if (empty($test)) {
-            return new RedirectResponse($this->generateUrl('view_dashboard'));
-        }
-
-        return new RedirectResponse($this->generateUrl(
-            'view_test_results',
-            $routeParameters
-        ));
+        return new RedirectResponse($this->generateUrl($routeName, $routeParameters));
     }
 
     /**
@@ -121,26 +107,17 @@ class TestController extends AbstractController
      * @param int $test_id
      *
      * @return RedirectResponse
-     *
-     * @throws CoreApplicationReadOnlyException
      */
     public function cancelCrawlAction($website, $test_id)
     {
         try {
-            $test = $this->testService->get($website, $test_id);
-
-            $remoteTest = $test
-                ? $this->remoteTestService->get($test->getTestId())
-                : null;
-
-            if ($remoteTest) {
-                $crawlData = $remoteTest->getCrawl();
-                $this->remoteTestService->cancelByTestProperties((int) $crawlData['id']);
-            }
-        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-            // Nothing happens, we redirect to the test progress page regardless
+            $this->remoteTestService->cancel((int) $test_id);
         } catch (InvalidCredentialsException $invalidCredentialsException) {
-            // Nothing happens, we redirect to the test progress page regardless
+            // Do nothing
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            // Do nothing
+        } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
+            // Do nothing
         }
 
         return new RedirectResponse($this->generateUrl(

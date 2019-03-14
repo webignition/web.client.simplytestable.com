@@ -5,9 +5,13 @@ namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\TestFinishedSummaryController;
 use App\Entity\Test;
+use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
+use App\Services\RemoteTestService;
+use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -95,32 +99,23 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
         $this->assertTrue($response->isSuccessful());
     }
 
-    public function testIndexActionInvalidRemoteTest()
-    {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createSuccessResponse(),
-        ]);
-
-        /* @var TestFinishedSummaryController $testFinishedSummaryController */
-        $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
-
-        $response = $testFinishedSummaryController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
-
-        $this->assertInstanceOf(Response::class, $response);
-        $this->assertEmpty($response->getContent());
-    }
-
     /**
      * @dataProvider indexActionRenderDataProvider
      */
     public function testIndexActionRender(Twig_Environment $twig)
     {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $remoteTest = new RemoteTest($this->remoteTestData);
 
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
         $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+
+        $this->setTestServiceOnController($testFinishedSummaryController, $testService);
+        $this->setRemoteTestServiceOnController($testFinishedSummaryController, $remoteTestService);
+
         $this->setTwigOnController($twig, $testFinishedSummaryController);
 
         $response = $testFinishedSummaryController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -154,14 +149,18 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
-
+        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $remoteTest = new RemoteTest($this->remoteTestData);
         $request = new Request();
 
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
         $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
+
+        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+
+        $this->setTestServiceOnController($testFinishedSummaryController, $testService);
+        $this->setRemoteTestServiceOnController($testFinishedSummaryController, $remoteTestService);
 
         $response = $testFinishedSummaryController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
@@ -189,6 +188,34 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
             ],
             array_keys($parameters)
         );
+    }
+
+    /**
+     * @return TestService|MockInterface
+     */
+    private function createTestService(string $website, int $testId, ?Test $test)
+    {
+        $testService = \Mockery::mock(TestService::class);
+        $testService
+            ->shouldReceive('get')
+            ->with($website, $testId)
+            ->andReturn($test);
+
+        return $testService;
+    }
+
+    /**
+     * @return RemoteTestService|MockInterface
+     */
+    private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
+    {
+        $remoteTestService = \Mockery::mock(RemoteTestService::class);
+        $remoteTestService
+            ->shouldReceive('get')
+            ->with($testId)
+            ->andReturn($remoteTest);
+
+        return $remoteTestService;
     }
 
     /**

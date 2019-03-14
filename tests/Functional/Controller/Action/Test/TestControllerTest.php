@@ -143,43 +143,27 @@ class TestControllerTest extends AbstractControllerTest
 
     public function cancelActionGetRequestDataProvider(): array
     {
-        $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
-        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
-
         return [
             'invalid owner' => [
                 'httpFixtures' => [
-                    $forbiddenResponse,
-                    $forbiddenResponse,
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
-                'expectedRedirectUrl' => '/',
+                'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'CURL exception' => [
                 'httpFixtures' => [
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
+                    ConnectExceptionFactory::create(28, 'Operation timed out'),
                 ],
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'Success' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
@@ -211,44 +195,24 @@ class TestControllerTest extends AbstractControllerTest
 
     public function cancelCrawlActionGetRequestDataProvider(): array
     {
-        $forbiddenResponse = HttpResponseFactory::createForbiddenResponse();
-        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
-
         return [
             'invalid owner' => [
                 'httpFixtures' => [
-                    $forbiddenResponse,
-                    $forbiddenResponse,
+                    HttpResponseFactory::createForbiddenResponse(),
                 ],
             ],
             'HTTP 500' => [
                 'httpFixtures' => [
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
+                    HttpResponseFactory::createInternalServerErrorResponse(),
                 ],
             ],
             'CURL exception' => [
                 'httpFixtures' => [
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
+                    ConnectExceptionFactory::create(28, 'Operation timed out'),
                 ],
             ],
             'Success' => [
                 'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'crawl' => [
-                            'id' => 2,
-                        ]
-                    ])),
                     HttpResponseFactory::createSuccessResponse(),
                 ],
             ],
@@ -258,7 +222,7 @@ class TestControllerTest extends AbstractControllerTest
     public function testRetestActionGetRequest()
     {
         $this->httpMockHandler->appendFixtures([
-            new \GuzzleHttp\Psr7\Response(),
+            HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                 'id' => 2,
             ])),
