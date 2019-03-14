@@ -260,7 +260,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
                 ],
-                'expectedRedirectUrl' => '/http://example.com//1/results/?filter=without-errors',
+                'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
             ],
             'integer in website url path' => [
                 'website' => 'http://example.com/articles/foo/bar/6875374/foobar/',
@@ -274,7 +274,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
                 ],
                 'expectedRedirectUrl' =>
-                    '/http://example.com/articles/foo/bar/6875374/foobar//1/results/?filter=without-errors',
+                    '/http://example.com/articles/foo/bar/6875374/foobar//1/results/preparing/',
             ],
         ];
     }
@@ -299,7 +299,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $response = $this->client->getResponse();
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
-        $this->assertEquals('/http://example.com//1/results/?filter=without-errors', $response->getTargetUrl());
+        $this->assertEquals('/http://example.com//1/results/preparing/', $response->getTargetUrl());
     }
 
     /**
@@ -364,7 +364,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         ],
                     ],
                 ],
-                'remoteTestModifications' => [],
+                'remoteTestModifications' => [
+                    'task_count' => 0,
+                ],
                 'request' => new Request([
                     'filter' => 'foo',
                 ]),
@@ -380,7 +382,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         ],
                     ],
                 ],
-                'remoteTestModifications' => [],
+                'remoteTestModifications' => [
+                    'task_count' => 0,
+                ],
                 'request' => new Request([
                     'filter' => ResultsController::FILTER_WITH_ERRORS,
                 ]),
@@ -396,7 +400,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         ],
                     ],
                 ],
-                'remoteTestModifications' => [],
+                'remoteTestModifications' => [
+                    'task_count' => 0,
+                ],
                 'request' => new Request([
                     'filter' => ResultsController::FILTER_WITH_ERRORS,
                 ]),
@@ -474,6 +480,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $publicUser,
                 'remoteTestModifications' => [
                     'is_public' => true,
+                    'task_count' => 0,
                 ],
                 'user' => $publicUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -521,6 +528,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $publicUser,
                 'remoteTestModifications' => [
                     'is_public' => true,
+                    'task_count' => 0,
                 ],
                 'user' => $publicUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -568,6 +576,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $publicUser,
                 'remoteTestModifications' => [
                     'is_public' => true,
+                    'task_count' => 0,
                 ],
                 'user' => $publicUser,
                 'taskType' => null,
@@ -615,6 +624,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $publicUser,
                 'remoteTestModifications' => [
                     'is_public' => true,
+                    'task_count' => 0,
                 ],
                 'user' => $privateUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -661,6 +671,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $privateUser,
                 'remoteTestModifications' => [
                     'is_public' => false,
+                    'task_count' => 0,
                 ],
                 'user' => $privateUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -709,6 +720,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'owner' => $privateUser,
                 'remoteTestModifications' => [
                     'is_public' => false,
+                    'task_count' => 0,
                 ],
                 'user' => $privateUser,
                 'taskType' => Task::TYPE_CSS_VALIDATION,
@@ -767,7 +779,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $taskFactory = new TaskFactory(self::$container);
         $taskFactory->createCollection($test, $this->taskValuesCollection);
 
-        $remoteTest = new RemoteTest($this->remoteTestData);
+        $remoteTest = new RemoteTest(array_merge($this->remoteTestData, [
+            'task_count' => 0,
+        ]));
 
         $request = new Request([
             'filter' => ResultsController::FILTER_WITH_ERRORS,
