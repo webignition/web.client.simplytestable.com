@@ -123,12 +123,12 @@ class RedirectController extends AbstractController
 
     /**
      * @param $website
-     * @param string $test_id
+     * @param int $test_id
      * @param int $task_id
      *
      * @return RedirectResponse
      */
-    public function taskAction($website, $test_id, $task_id)
+    public function taskAction(string $website, int $test_id, int $task_id): RedirectResponse
     {
         return new RedirectResponse($this->generateUrl(
             'view_task_results',

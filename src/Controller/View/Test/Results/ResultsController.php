@@ -132,7 +132,7 @@ class ResultsController extends AbstractBaseViewController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function indexAction(Request $request, $website, $test_id)
+    public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $user = $this->userManager->getUser();
         $test = $this->testService->get($website, $test_id);

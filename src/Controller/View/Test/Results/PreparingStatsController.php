@@ -48,7 +48,7 @@ class PreparingStatsController extends AbstractBaseViewController
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function indexAction($website, $test_id)
+    public function indexAction(string $website, int $test_id): JsonResponse
     {
         $test = $this->testService->get($website, $test_id);
 

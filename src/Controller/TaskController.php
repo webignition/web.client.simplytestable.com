@@ -46,7 +46,7 @@ class TaskController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function idCollectionAction($website, $test_id)
+    public function idCollectionAction(string $website, int $test_id): JsonResponse
     {
         $test = $this->testService->get($website, $test_id);
 
@@ -64,7 +64,7 @@ class TaskController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function unretrievedIdCollectionAction($website, $test_id, $limit = null)
+    public function unretrievedIdCollectionAction(string $website, int $test_id, ?int $limit = null): JsonResponse
     {
         $test = $this->testService->get($website, $test_id);
 
@@ -93,7 +93,7 @@ class TaskController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retrieveAction(Request $request, $website, $test_id)
+    public function retrieveAction(Request $request, string $website, int $test_id): Response
     {
         $test = $this->testService->get($website, $test_id);
 

@@ -51,7 +51,7 @@ class TestFinishedSummaryController extends AbstractBaseViewController
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function indexAction(Request $request, $website, $test_id)
+    public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
