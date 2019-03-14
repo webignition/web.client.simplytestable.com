@@ -46,7 +46,7 @@ class RequiresValidTestOwnerRequestListener
 
         $requestAttributes = $request->attributes;
         $website = $requestAttributes->get('website');
-        $testId = $requestAttributes->get('test_id');
+        $testId = (int) $requestAttributes->get('test_id');
 
         if ($requiresValidTestOwner && !$this->testService->get($website, $testId)) {
             $response = $this->requiresValidTestOwnerResponseProvider->getResponse($request);

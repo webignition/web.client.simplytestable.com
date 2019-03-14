@@ -45,7 +45,7 @@ class RequiresCompletedTestRequestListener
         $route = $requestAttributes->get('_route');
 
         $website = $requestAttributes->get('website');
-        $testId = $requestAttributes->get('test_id');
+        $testId = (int) $requestAttributes->get('test_id');
 
         $test = $this->testService->get($website, $testId);
 
