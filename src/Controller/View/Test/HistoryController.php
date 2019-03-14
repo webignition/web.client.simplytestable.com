@@ -80,7 +80,8 @@ class HistoryController extends AbstractBaseViewController
 
         foreach ($decoratedTestList as $decoratedTest) {
             if ($decoratedTest->requiresRemoteTasks() && $decoratedTest->isSingleUrl()) {
-                $this->taskService->getCollection($decoratedTest->getTest());
+                $test = $decoratedTest->getTest();
+                $this->taskService->getCollection($test, $test->getTaskIds());
             }
         }
 

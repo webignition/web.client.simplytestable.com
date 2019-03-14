@@ -178,7 +178,6 @@ class ByTaskTypeController extends AbstractResultsController
         $this->taskCollectionFilterService->setOutcomeFilter('with-errors');
         $this->taskCollectionFilterService->setTypeFilter($selectedTaskType);
 
-        $this->taskService->getCollection($test);
         $filteredRemoteTaskIds = $this->taskCollectionFilterService->getRemoteIds();
 
         $filteredTasks = $this->taskService->getCollection($test, $filteredRemoteTaskIds);
