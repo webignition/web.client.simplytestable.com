@@ -183,11 +183,11 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             $requestUrl
         );
 
-        /* @var Response $response */
+        /* @var RedirectResponse $response */
         $response = $this->client->getResponse();
-        $this->assertTrue($response->isSuccessful());
 
-        $requestUrls = $this->httpHistory->getRequestUrlsAsStrings();
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals('/http://example.com//1/results/preparing/', $response->getTargetUrl());
 
         $this->assertEquals(
             [
@@ -195,7 +195,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'http://null/job/1/',
                 'http://null/job/1/tasks/ids/',
             ],
-            $requestUrls
+            $this->httpHistory->getRequestUrlsAsStrings()
         );
     }
 
@@ -636,7 +636,9 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         ]);
 
         $test = Test::create(self::TEST_ID, self::WEBSITE);
-        $remoteTest = new RemoteTest($this->remoteTestData);
+        $remoteTest = new RemoteTest(array_merge($this->remoteTestData, [
+            'task_count' => 0,
+        ]));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $entityManager->persist($test);

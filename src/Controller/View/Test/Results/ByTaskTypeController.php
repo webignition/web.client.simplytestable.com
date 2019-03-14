@@ -2,6 +2,7 @@
 
 namespace App\Controller\View\Test\Results;
 
+use App\Controller\AbstractBaseViewController;
 use App\Entity\Task\Task;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -24,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class ByTaskTypeController extends AbstractResultsController
+class ByTaskTypeController extends AbstractBaseViewController
 {
     const FILTER_BY_PAGE = 'by-page';
     const FILTER_BY_ERROR = 'by-error';
@@ -164,7 +165,7 @@ class ByTaskTypeController extends AbstractResultsController
             return $response;
         }
 
-        if ($this->requiresPreparation($remoteTest, $test)) {
+        if ($remoteTest->getTaskCount() > $test->getTaskCount()) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_results_preparing',
                 [
