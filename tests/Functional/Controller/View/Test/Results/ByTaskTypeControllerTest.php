@@ -15,6 +15,8 @@ use App\Services\TestService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Factory\OutputFactory;
+use App\Tests\Factory\TaskFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -59,61 +61,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         'state' => Test::STATE_COMPLETED,
         'task_type_options' => [],
         'task_count' => 12,
-    ];
-
-    private $remoteTasksData = [
-        [
-            'id' => 1,
-            'url' => 'http://example.com/',
-            'state' => Task::STATE_COMPLETED,
-            'worker' => '',
-            'type' => Task::TYPE_HTML_VALIDATION,
-            'output' => [
-                'output' => '',
-                'content-type' => 'application/json',
-                'error_count' => 1,
-                'warning_count' => 0,
-            ],
-        ],
-        [
-            'id' => 2,
-            'url' => 'http://example.com/',
-            'state' => Task::STATE_COMPLETED,
-            'worker' => '',
-            'type' => Task::TYPE_CSS_VALIDATION,
-            'output' => [
-                'output' => '',
-                'content-type' => 'application/json',
-                'error_count' => 0,
-                'warning_count' => 0,
-            ],
-        ],
-        [
-            'id' => 3,
-            'url' => 'http://example.com/foo',
-            'state' => Task::STATE_COMPLETED,
-            'worker' => '',
-            'type' => Task::TYPE_HTML_VALIDATION,
-            'output' => [
-                'output' => '',
-                'content-type' => 'application/json',
-                'error_count' => 1,
-                'warning_count' => 0,
-            ],
-        ],
-        [
-            'id' => 4,
-            'url' => 'http://example.com/',
-            'state' => Task::STATE_COMPLETED,
-            'worker' => '',
-            'type' => Task::TYPE_CSS_VALIDATION,
-            'output' => [
-                'output' => '',
-                'content-type' => 'application/json',
-                'error_count' => 1,
-                'warning_count' => 0,
-            ],
-        ],
     ];
 
     public function testIsIEFilteredDefaultRoute()
@@ -221,15 +168,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createSuccessResponse(),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1,]),
-            HttpResponseFactory::createJsonResponse([
-                [
-                    'id' => 1,
-                    'url' => 'http://example.com/',
-                    'state' => Task::STATE_COMPLETED,
-                    'worker' => '',
-                    'type' => Task::TYPE_HTML_VALIDATION,
-                ],
-            ]),
         ]);
 
         $router = self::$container->get('router');
@@ -256,7 +194,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'http://null/user/public/authenticate/',
                 'http://null/job/1/',
                 'http://null/job/1/tasks/ids/',
-                'http://null/job/1/tasks/',
             ],
             $requestUrls
         );
@@ -356,9 +293,9 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRenderDataProvider
      */
     public function testIndexActionRender(
-        array $httpFixtures,
         callable $testCreator,
         RemoteTest $remoteTest,
+        array $taskValuesCollection,
         User $user,
         string $taskType,
         string $filter,
@@ -366,7 +303,12 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     ) {
         $test = $testCreator();
 
-        $this->httpMockHandler->appendFixtures($httpFixtures);
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
+
+        $taskFactory = new TaskFactory(self::$container);
+        $taskFactory->createCollection($test, $taskValuesCollection);
 
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
@@ -394,11 +336,47 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
     public function indexActionRenderDataProvider(): array
     {
+        $taskValuesCollection = [
+            [
+                TaskFactory::KEY_TASK_ID => 1,
+                TaskFactory::KEY_URL => 'http://example.com/',
+                TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+                TaskFactory::KEY_OUTPUT => [
+                    OutputFactory::KEY_ERROR_COUNT => 1,
+                ],
+            ],
+            [
+                TaskFactory::KEY_TASK_ID => 2,
+                TaskFactory::KEY_URL => 'http://example.com/',
+                TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
+                TaskFactory::KEY_OUTPUT => [
+                    OutputFactory::KEY_ERROR_COUNT => 0,
+                ],
+            ],
+            [
+                TaskFactory::KEY_TASK_ID => 3,
+                TaskFactory::KEY_URL => 'http://example.com/foo',
+                TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+                TaskFactory::KEY_OUTPUT => [
+                    OutputFactory::KEY_ERROR_COUNT => 1,
+                ],
+            ],
+            [
+                TaskFactory::KEY_TASK_ID => 4,
+                TaskFactory::KEY_URL => 'http://example.com/foo',
+                TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                TaskFactory::KEY_TYPE => Task::TYPE_CSS_VALIDATION,
+                TaskFactory::KEY_OUTPUT => [
+                    OutputFactory::KEY_ERROR_COUNT => 1,
+                ],
+            ],
+        ];
+
         return [
             'public user, private test, no tasks' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([]),
-                ],
                 'testCreator' => function () {
                     return Test::create(self::TEST_ID, self::WEBSITE);
                 },
@@ -408,6 +386,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                         self::USER_EMAIL,
                     ],
                 ])),
+                'taskValuesCollection' => [],
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -433,9 +412,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, public test, no tasks' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([]),
-                ],
                 'testCreator' => function () {
                     $test = Test::create(self::TEST_ID, self::WEBSITE);
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
@@ -448,6 +424,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                         SystemUserService::PUBLIC_USER_USERNAME,
                     ],
                 ])),
+                'taskValuesCollection' => [],
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -473,9 +450,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'private user, private test, no tasks' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([]),
-                ],
                 'testCreator' => function () {
                     $test = Test::create(self::TEST_ID, self::WEBSITE);
                     $test->setUser(self::USER_EMAIL);
@@ -488,6 +462,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                         self::USER_EMAIL,
                     ],
                 ])),
+                'taskValuesCollection' => [],
                 'user' => new User(self::USER_EMAIL),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -513,23 +488,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, public test, has tasks, no errors' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'id' => 1,
-                            'url' => 'http://example.com/',
-                            'state' => Task::STATE_COMPLETED,
-                            'worker' => '',
-                            'type' => Task::TYPE_HTML_VALIDATION,
-                            'output' => [
-                                'output' => '',
-                                'content-type' => 'application/json',
-                                'error_count' => 0,
-                                'warning_count' => 0,
-                            ],
-                        ],
-                    ]),
-                ],
                 'testCreator' => function () {
                     $test = Test::create(self::TEST_ID, self::WEBSITE);
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
@@ -547,6 +505,17 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                         SystemUserService::PUBLIC_USER_USERNAME,
                     ],
                 ])),
+                'taskValuesCollection' => [
+                    [
+                        TaskFactory::KEY_TASK_ID => 1,
+                        TaskFactory::KEY_URL => 'http://example.com/',
+                        TaskFactory::KEY_STATE => Task::STATE_COMPLETED,
+                        TaskFactory::KEY_TYPE => Task::TYPE_HTML_VALIDATION,
+                        TaskFactory::KEY_OUTPUT => [
+                            OutputFactory::KEY_ERROR_COUNT => 0,
+                        ],
+                    ],
+                ],
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -572,9 +541,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, public test, has tasks, has errors, html validation' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-                ],
                 'testCreator' => function () {
                     $test = Test::create(self::TEST_ID, self::WEBSITE);
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
@@ -592,6 +558,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                         SystemUserService::PUBLIC_USER_USERNAME,
                     ],
                 ])),
+                'taskValuesCollection' => $taskValuesCollection,
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -617,9 +584,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, public test, has tasks, has errors, css validation' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse($this->remoteTasksData),
-                ],
                 'testCreator' => function () {
                     $test = Test::create(self::TEST_ID, self::WEBSITE);
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
@@ -637,6 +601,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                         SystemUserService::PUBLIC_USER_USERNAME,
                     ],
                 ])),
+                'taskValuesCollection' => $taskValuesCollection,
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_CSS_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
@@ -672,6 +637,10 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
         $test = Test::create(self::TEST_ID, self::WEBSITE);
         $remoteTest = new RemoteTest($this->remoteTestData);
+
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        $entityManager->persist($test);
+        $entityManager->flush();
 
         $request = new Request();
 

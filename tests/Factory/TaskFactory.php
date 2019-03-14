@@ -3,6 +3,7 @@
 
 namespace App\Tests\Factory;
 
+use App\Entity\Task\Output;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Task\Task;
 use App\Entity\Test;
@@ -36,6 +37,8 @@ class TaskFactory
 
     public function create(array $taskValues): Task
     {
+        $outputFactory = new OutputFactory($this->container);
+
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get(EntityManagerInterface::class);
 
@@ -54,7 +57,13 @@ class TaskFactory
         $task->setTest($taskValues[self::KEY_TEST]);
 
         if (isset($taskValues[self::KEY_OUTPUT])) {
-            $task->setOutput($taskValues[self::KEY_OUTPUT]);
+            $outputValue = $taskValues[self::KEY_OUTPUT];
+
+            if (is_array($outputValue)) {
+                $outputValue = $outputFactory->create($outputValue);
+            }
+
+            $task->setOutput($outputValue);
         }
 
         $entityManager->persist($task);
