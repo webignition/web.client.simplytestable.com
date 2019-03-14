@@ -130,7 +130,7 @@ class TestController extends AbstractController
     }
 
     /**
-     * @param string $test_id
+     * @param int $test_id
      *
      * @return RedirectResponse
      *
@@ -139,7 +139,7 @@ class TestController extends AbstractController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retestAction($test_id)
+    public function retestAction(int $test_id): RedirectResponse
     {
         $remoteTest = $this->remoteTestService->retest((int) $test_id);
 
