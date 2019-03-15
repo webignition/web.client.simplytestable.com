@@ -2,9 +2,11 @@
 
 namespace App\Model;
 
+use App\Entity\Test as TestEntity;
+
 class Test
 {
-    private $testId;
+    private $entity;
     private $website;
     private $user;
     private $state;
@@ -13,7 +15,7 @@ class Test
     private $urlCount;
 
     public function __construct(
-        int $testId,
+        TestEntity $entity,
         string $website,
         string $user,
         string $state,
@@ -21,7 +23,7 @@ class Test
         array $taskTypes,
         int $urlCount
     ) {
-        $this->testId = $testId;
+        $this->entity = $entity;
         $this->website = $website;
         $this->user = $user;
         $this->state = $state;
