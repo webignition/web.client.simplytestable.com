@@ -181,10 +181,7 @@ class RemoteTest extends AbstractArrayBasedModel
         return $crawlData ? $crawlData : [];
     }
 
-    /**
-     * @return int|float
-     */
-    public function getCompletionPercent()
+    public function getCompletionPercent(): int
     {
         $crawlData = $this->getCrawl();
 
@@ -196,7 +193,7 @@ class RemoteTest extends AbstractArrayBasedModel
                 return 0;
             }
 
-            return round(($discoveredUrlCount / $crawl['limit']) * 100);
+            return (int) round(($discoveredUrlCount / $crawl['limit']) * 100);
         }
 
         if (0 === $this->getTaskCount()) {
@@ -217,10 +214,10 @@ class RemoteTest extends AbstractArrayBasedModel
         $requiredPrecision = floor(log10($this->getTaskCount())) - 1;
 
         if ($requiredPrecision == 0) {
-            return floor(($finishedCount / $this->getTaskCount()) * 100);
+            return (int) floor(($finishedCount / $this->getTaskCount()) * 100);
         }
 
-        return round(($finishedCount / $this->getTaskCount()) * 100, $requiredPrecision);
+        return (int) round(($finishedCount / $this->getTaskCount()) * 100, $requiredPrecision);
     }
 
     /**

@@ -23,6 +23,7 @@ class Test
     private $cancelledTaskCount;
     private $parameters;
     private $amendments;
+    private $completionPercent;
 
     public function __construct(
         TestEntity $entity,
@@ -38,7 +39,8 @@ class Test
         int $tasksWithErrorsCount,
         int $cancelledTaskCount,
         string $encodedParameters,
-        array $amendments
+        array $amendments,
+        int $completionPercent
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -57,6 +59,7 @@ class Test
         $this->parameters = is_array($decodedParameters) ? $decodedParameters : [];
 
         $this->amendments = $amendments;
+        $this->completionPercent = $completionPercent;
     }
 
     public function getTestId(): int
@@ -151,5 +154,10 @@ class Test
     public function getAmendments(): array
     {
         return $this->amendments;
+    }
+
+    public function getCompletionPercent(): int
+    {
+        return $this->completionPercent;
     }
 }
