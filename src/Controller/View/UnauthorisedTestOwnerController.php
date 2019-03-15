@@ -55,7 +55,7 @@ class UnauthorisedTestOwnerController extends AbstractBaseViewController
 
     public function renderAction(int $test_id, string $website)
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         if (!empty($test)) {
             return new RedirectResponse($this->router->generate(

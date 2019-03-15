@@ -47,7 +47,7 @@ class RequiresCompletedTestRequestListener
         $website = $requestAttributes->get('website');
         $testId = (int) $requestAttributes->get('test_id');
 
-        $test = $this->testService->get($website, $testId);
+        $test = $this->testService->get($testId);
 
         $isFailedNoUrlsDetectedRequest = self::ROUTE_FAILED_NO_URLS_DETECTED === $route;
         $isRejectedRequest = self::ROUTE_REJECTED === $route;

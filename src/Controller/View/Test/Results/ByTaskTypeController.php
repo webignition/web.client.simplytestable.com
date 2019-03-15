@@ -112,7 +112,7 @@ class ByTaskTypeController extends AbstractBaseViewController
         ?string $filter = null
     ): Response {
         $user = $this->userManager->getUser();
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         if (empty($test)) {
             return new RedirectResponse($this->generateUrl('view_dashboard'));

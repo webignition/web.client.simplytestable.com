@@ -84,7 +84,7 @@ class RedirectController extends AbstractController
             $test = null;
 
             try {
-                $test = $testService->get($normalisedWebsite, $normalisedTestId);
+                $test = $testService->get($normalisedTestId);
             } catch (CoreApplicationRequestException $coreApplicationRequestException) {
                 $logger->error(
                     sprintf(

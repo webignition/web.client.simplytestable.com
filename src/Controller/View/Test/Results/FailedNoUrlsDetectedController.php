@@ -81,7 +81,7 @@ class FailedNoUrlsDetectedController extends AbstractBaseViewController
         }
 
         $user = $this->userManager->getUser();
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         if ($test->getWebsite() != $website) {
             return new RedirectResponse($this->generateUrl(
