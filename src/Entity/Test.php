@@ -106,11 +106,10 @@ class Test implements \JsonSerializable
         $this->taskIdCollection = '';
     }
 
-    public static function create(int $testId, string $website): Test
+    public static function create(int $testId): Test
     {
         $test = new Test();
         $test->testId = $testId;
-        $test->website = $website;
 
         return $test;
     }
@@ -145,7 +144,7 @@ class Test implements \JsonSerializable
         $this->website = $website;
     }
 
-    public function getWebsite(): string
+    public function getWebsite(): ?string
     {
         return (string) $this->website;
     }

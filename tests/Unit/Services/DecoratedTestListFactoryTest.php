@@ -51,7 +51,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
             'id' => 1,
             'website' => 'http://example.com/1/',
         ]);
-        $test1 = Test::create(1, 'http://example.com/1/');
+        $test1 = Test::create(1);
 
         return [
             'empty remote test list' => [

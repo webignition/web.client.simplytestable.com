@@ -84,7 +84,7 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
                 'expectedHasResponse' => true,
             ],
             'valid test owner' => [
-                'testServiceGetReturnValue' => Test::create(self::TEST_ID, self::WEBSITE),
+                'testServiceGetReturnValue' => Test::create(self::TEST_ID),
                 'expectedHasResponse' => false,
             ],
         ];

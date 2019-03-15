@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
@@ -92,11 +93,13 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionBadRequestDataProvider
      */
     public function testIndexActionBadRequest(
-        Test $test,
         User $user,
         string $website,
         string $expectedRedirectUrl
     ) {
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
 
@@ -116,20 +119,17 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
     {
         return [
             'website mismatch' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'user' => SystemUserService::getPublicUser(),
                 'website' => 'http://foo.example.com/',
                 'expectedRedirectUrl' => '/http://example.com//1/results/failed/no-urls-detected/',
             ],
             'incorrect state' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'user' => SystemUserService::getPublicUser(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'not public user' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'user' => new User(self::USER_EMAIL),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
@@ -185,7 +185,8 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
         $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
 
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $test->setState(TestService::STATE_FAILED_NO_SITEMAP);
 
         $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);

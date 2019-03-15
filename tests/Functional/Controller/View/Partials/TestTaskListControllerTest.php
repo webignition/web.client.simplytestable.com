@@ -15,6 +15,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use webignition\NormalisedUrl\NormalisedUrl;
 
 class TestTaskListControllerTest extends AbstractViewControllerTest
 {
@@ -471,7 +472,8 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
 
     private function createTest(): Test
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $entityManager->persist($test);

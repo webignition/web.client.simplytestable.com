@@ -18,7 +18,7 @@ class TaskServiceGetUnretrievedRemoteTaskIdsTest extends AbstractTaskServiceTest
     ) {
         $testId = 1;
 
-        $test = Test::create($testId, 'http://example.com/');
+        $test = Test::create($testId);
         $test->setTaskIdCollection($testTaskIds);
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
