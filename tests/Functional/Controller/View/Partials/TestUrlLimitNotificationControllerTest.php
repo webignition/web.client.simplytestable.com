@@ -221,7 +221,7 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
         /* @var TestUrlLimitNotificationController $urlLimitController */
         $urlLimitController = self::$container->get(TestUrlLimitNotificationController::class);
 
-        $response = $urlLimitController->indexAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $urlLimitController->indexAction($request, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -232,7 +232,7 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
         $newRequest = $request->duplicate();
 
         $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
-        $newResponse = $urlLimitController->indexAction($newRequest, self::WEBSITE, self::TEST_ID);
+        $newResponse = $urlLimitController->indexAction($newRequest, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());

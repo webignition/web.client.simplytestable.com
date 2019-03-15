@@ -43,7 +43,6 @@ class TestUrlLimitNotificationController extends AbstractBaseViewController
 
     /**
      * @param Request $request
-     * @param string $website
      * @param int $test_id
      *
      * @return Response
@@ -51,7 +50,7 @@ class TestUrlLimitNotificationController extends AbstractBaseViewController
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function indexAction(Request $request, string $website, int $test_id): Response
+    public function indexAction(Request $request, int $test_id): Response
     {
         $test = $this->testService->get($test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
