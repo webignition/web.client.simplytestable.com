@@ -269,10 +269,9 @@ view_test_results_preparing:
        test_id: '\d+'
 
 view_test_results_preparing_stats:
-    path: /{website}/{test_id}/results/preparing/stats/
+    path: /{test_id}/results/preparing/stats/
     defaults: { _controller: App\Controller\View\Test\Results\PreparingStatsController::indexAction, _format: json }
     requirements:
-       website: '.+'
        test_id: '\d+'
 
 task_results_retrieve:

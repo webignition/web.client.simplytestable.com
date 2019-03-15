@@ -114,7 +114,7 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
         $this->setTestServiceOnController($preparingStatsController, $testService);
         $this->setRemoteTestServiceOnController($preparingStatsController, $remoteTestService);
 
-        $response = $preparingStatsController->indexAction(self::WEBSITE, self::TEST_ID);
+        $response = $preparingStatsController->indexAction(self::TEST_ID);
         $this->assertInstanceOf(JsonResponse::class, $response);
 
         $responseData = json_decode($response->getContent(), true);
