@@ -23,7 +23,8 @@ class TestFactory
             $remoteTest->getTaskCount(),
             $remoteTest->getErroredTaskCount(),
             $remoteTest->getCancelledTaskCount(),
-            $remoteTest->getEncodedParameters()
+            $remoteTest->getEncodedParameters(),
+            $remoteTest->getAmmendments()
         );
     }
 }

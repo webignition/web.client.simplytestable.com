@@ -71,7 +71,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     0,
                     0,
                     0,
-                    ''
+                    '',
+                    []
                 ),
             ],
             'has tasks' => [
@@ -115,7 +116,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     2,
                     0,
                     0,
-                    ''
+                    '',
+                    []
                 ),
             ],
         ];

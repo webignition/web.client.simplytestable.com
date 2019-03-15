@@ -309,12 +309,11 @@ class RemoteTest extends AbstractArrayBasedModel
         return (int) $this->getProperty('id');
     }
 
-    /**
-     * @return array
-     */
-    public function getAmmendments()
+    public function getAmmendments(): array
     {
-        return $this->getProperty('ammendments');
+        $amendments = $this->getProperty('ammendments');
+
+        return is_array($amendments) ? $amendments : [];
     }
 
     /**
