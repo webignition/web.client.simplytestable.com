@@ -22,7 +22,8 @@ class TestFactory
             $entity->getWarningCount(),
             $remoteTest->getTaskCount(),
             $remoteTest->getErroredTaskCount(),
-            $remoteTest->getCancelledTaskCount()
+            $remoteTest->getCancelledTaskCount(),
+            $remoteTest->getEncodedParameters()
         );
     }
 }

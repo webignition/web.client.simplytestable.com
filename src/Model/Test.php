@@ -21,6 +21,7 @@ class Test
     private $remoteTaskCount;
     private $tasksWithErrorsCount;
     private $cancelledTaskCount;
+    private $parameters;
 
     public function __construct(
         TestEntity $entity,
@@ -34,7 +35,8 @@ class Test
         int $warningCount,
         int $remoteTaskCount,
         int $tasksWithErrorsCount,
-        int $cancelledTaskCount
+        int $cancelledTaskCount,
+        string $encodedParameters
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -48,6 +50,9 @@ class Test
         $this->remoteTaskCount = $remoteTaskCount;
         $this->tasksWithErrorsCount = $tasksWithErrorsCount;
         $this->cancelledTaskCount = $cancelledTaskCount;
+
+        $decodedParameters = $parameters = json_decode($encodedParameters, true);
+        $this->parameters = is_array($decodedParameters) ? $decodedParameters : [];
     }
 
     public function getTestId(): int
@@ -127,5 +132,15 @@ class Test
     public function getCancelledTaskCount(): int
     {
         return $this->cancelledTaskCount;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getParameter(string $key)
+    {
+        return $this->parameters[$key] ?? null;
     }
 }

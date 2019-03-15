@@ -120,6 +120,11 @@ class RemoteTest extends AbstractArrayBasedModel
             : null;
     }
 
+    public function getEncodedParameters(): string
+    {
+        return trim($this->getProperty('parameters'));
+    }
+
     /**
      * @param string $key
      * @return bool
