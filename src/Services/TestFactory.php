@@ -26,7 +26,8 @@ class TestFactory
             $remoteTest->getEncodedParameters(),
             $remoteTest->getAmmendments(),
             $remoteTest->getCompletionPercent(),
-            $remoteTest->getTaskCountByState()
+            $remoteTest->getTaskCountByState(),
+            $remoteTest->getRejection()
         );
     }
 }

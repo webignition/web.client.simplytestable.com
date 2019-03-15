@@ -81,7 +81,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'cancelled' => 0,
                         'failed' => 0,
                         'skipped' => 0,
-                    ]
+                    ],
+                    null
                 ),
             ],
             'has tasks' => [
@@ -135,7 +136,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'cancelled' => 0,
                         'failed' => 0,
                         'skipped' => 0,
-                    ]
+                    ],
+                    null
                 ),
             ],
         ];

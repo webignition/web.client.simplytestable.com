@@ -310,16 +310,15 @@ class RemoteTest extends AbstractArrayBasedModel
         return is_array($amendments) ? $amendments : [];
     }
 
-    /**
-     * @return Rejection
-     */
-    public function getRejection()
+    public function getRejection(): ?Rejection
     {
-        if (!$this->hasProperty('rejection')) {
+        $rejectionData = $this->getProperty('rejection');
+
+        if (null === $rejectionData) {
             return null;
         }
 
-        return new Rejection($this->getProperty('rejection'));
+        return new Rejection($rejectionData);
     }
 
     /**

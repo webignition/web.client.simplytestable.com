@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\Entity\Task\Task;
 use App\Entity\Test as TestEntity;
+use App\Model\RemoteTest\Rejection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
@@ -25,6 +26,7 @@ class Test
     private $amendments;
     private $completionPercent;
     private $taskCountByState;
+    private $rejection;
 
     public function __construct(
         TestEntity $entity,
@@ -42,7 +44,8 @@ class Test
         string $encodedParameters,
         array $amendments,
         int $completionPercent,
-        array $taskCountByState
+        array $taskCountByState,
+        ?Rejection $rejection
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -63,6 +66,7 @@ class Test
         $this->amendments = $amendments;
         $this->completionPercent = $completionPercent;
         $this->taskCountByState = $taskCountByState;
+        $this->rejection = $rejection;
     }
 
     public function getTestId(): int
@@ -167,5 +171,10 @@ class Test
     public function getTaskCountByState(): array
     {
         return $this->taskCountByState;
+    }
+
+    public function getRejection(): ?Rejection
+    {
+        return $this->rejection;
     }
 }
