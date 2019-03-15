@@ -31,4 +31,39 @@ class Test
         $this->taskTypes = $taskTypes;
         $this->urlCount = $urlCount;
     }
+
+    public function getTestId(): int
+    {
+        return $this->entity->getTestId();
+    }
+
+    public function getWebsite(): string
+    {
+        return $this->website;
+    }
+
+    public function getUser(): string
+    {
+        return $this->user;
+    }
+
+    public function getState(): string
+    {
+        return $this->state;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getTaskTypes(): array
+    {
+        return $this->taskTypes;
+    }
+
+    public function getUrlCount(): int
+    {
+        return $this->urlCount;
+    }
 }
