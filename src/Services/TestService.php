@@ -100,7 +100,7 @@ class TestService
      * @throws InvalidCredentialsException
      * @throws InvalidContentTypeException
      */
-    public function get($canonicalUrl, $testId)
+    public function get(string $canonicalUrl, int $testId): ?Test
     {
         $test = $this->testRepository->findOneBy([
             'testId' => $testId

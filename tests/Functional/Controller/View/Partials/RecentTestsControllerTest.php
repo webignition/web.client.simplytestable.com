@@ -6,10 +6,14 @@ namespace App\Tests\Functional\Controller\View\Partials;
 use App\Controller\View\Partials\RecentTestsController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
-
 use App\Model\DecoratedTestList;
+use App\Model\RemoteTest\RemoteTest;
+use App\Model\RemoteTestList;
+use App\Services\RemoteTestListService;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Services\ObjectReflector;
+use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
@@ -71,13 +75,19 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionDataProvider
      */
     public function testIndexAction(
+        RemoteTestList $remoteTestList,
         array $httpFixtures,
         Twig_Environment $twig
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
+
         /* @var RecentTestsController $recentTestsController */
         $recentTestsController = self::$container->get(RecentTestsController::class);
+
+        $remoteTestListService = $this->createRemoteTestListService($remoteTestList);
+
+        $this->setRemoteTestListServiceOnController($recentTestsController, $remoteTestListService);
         $this->setTwigOnController($twig, $recentTestsController);
 
         $response = $recentTestsController->indexAction();
@@ -88,14 +98,8 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
     {
         return [
             'no recent tests' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        'max_results' => 0,
-                        'offset' => 0,
-                        'limit' => RecentTestsController::LIMIT,
-                        'jobs' => [],
-                    ]),
-                ],
+                'remoteTestList' => new RemoteTestList([], 0, 0, RecentTestsController::LIMIT),
+                'httpFixtures' => [],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -124,24 +128,25 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'has recent tests' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        'max_results' => 999,
-                        'offset' => 0,
-                        'limit' => RecentTestsController::LIMIT,
-                        'jobs' => [
-                            [
-                                'id' => 1,
-                                'user' => self::USER_EMAIL,
-                                'state' => Test::STATE_COMPLETED,
-                                'task_types' => [
-                                    [
-                                        'name' => Task::TYPE_HTML_VALIDATION,
-                                    ],
+                'remoteTestList' => new RemoteTestList(
+                    [
+                        new RemoteTest([
+                            'id' => 1,
+                            'website' => 'http://example.com/',
+                            'user' => self::USER_EMAIL,
+                            'state' => Test::STATE_COMPLETED,
+                            'task_types' => [
+                                [
+                                    'name' => Task::TYPE_HTML_VALIDATION,
                                 ],
                             ],
-                        ],
-                    ]),
+                        ]),
+                    ],
+                    999,
+                    0,
+                    RecentTestsController::LIMIT
+                ),
+                'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'id' => 1,
                         'website' => 'http://example.com/',
@@ -184,26 +189,27 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'has recent tests; require results' => [
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        'max_results' => 999,
-                        'offset' => 0,
-                        'limit' => RecentTestsController::LIMIT,
-                        'jobs' => [
-                            [
-                                'id' => 1,
-                                'user' => self::USER_EMAIL,
-                                'state' => Test::STATE_COMPLETED,
-                                'type' => Test::TYPE_SINGLE_URL,
-                                'task_types' => [
-                                    [
-                                        'name' => Task::TYPE_HTML_VALIDATION,
-                                    ],
+                'remoteTestList' => new RemoteTestList(
+                    [
+                        new RemoteTest([
+                            'id' => 1,
+                            'website' => 'http://example.com/',
+                            'user' => self::USER_EMAIL,
+                            'state' => Test::STATE_COMPLETED,
+                            'type' => Test::TYPE_SINGLE_URL,
+                            'task_types' => [
+                                [
+                                    'name' => Task::TYPE_HTML_VALIDATION,
                                 ],
-                                'task_count' => 999,
                             ],
-                        ],
-                    ]),
+                            'task_count' => 999,
+                        ]),
+                    ],
+                    999,
+                    0,
+                    RecentTestsController::LIMIT
+                ),
+                'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         'id' => 1,
                         'website' => 'http://example.com/',
@@ -265,6 +271,32 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
         $this->assertEquals(0, $testList->getOffset());
         $this->assertEquals($expectedValues['maxResults'], $testList->getMaxResults());
         $this->assertEquals($expectedValues['length'], $testList->getLength());
+    }
+
+    /**
+     * @return RemoteTestListService|MockInterface
+     */
+    private function createRemoteTestListService(RemoteTestList $remoteTestList)
+    {
+        $remoteTestListService = \Mockery::mock(RemoteTestListService::class);
+        $remoteTestListService
+            ->shouldReceive('getRecent')
+            ->with(RecentTestsController::LIMIT)
+            ->andReturn($remoteTestList);
+
+        return $remoteTestListService;
+    }
+
+    private function setRemoteTestListServiceOnController(
+        RecentTestsController $recentTestsController,
+        RemoteTestListService $remoteTestListService
+    ) {
+        ObjectReflector::setProperty(
+            $recentTestsController,
+            RecentTestsController::class,
+            'remoteTestListService',
+            $remoteTestListService
+        );
     }
 
     /**

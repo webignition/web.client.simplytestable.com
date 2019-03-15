@@ -47,7 +47,7 @@ class TestController extends AbstractController
      *
      * @return Response
      */
-    public function lockAction($test_id): Response
+    public function lockAction(int $test_id): Response
     {
         try {
             $this->remoteTestService->lock($test_id);
@@ -63,7 +63,7 @@ class TestController extends AbstractController
      *
      * @return Response
      */
-    public function unlockAction($test_id): Response
+    public function unlockAction(int $test_id): Response
     {
         try {
             $this->remoteTestService->unlock($test_id);
@@ -80,7 +80,7 @@ class TestController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function cancelAction($website, $test_id)
+    public function cancelAction(string $website, int $test_id): RedirectResponse
     {
         $routeName = 'view_test_results';
 
@@ -108,7 +108,7 @@ class TestController extends AbstractController
      *
      * @return RedirectResponse
      */
-    public function cancelCrawlAction($website, $test_id)
+    public function cancelCrawlAction(string $website, int $test_id): RedirectResponse
     {
         try {
             $this->remoteTestService->cancel((int) $test_id);
@@ -130,7 +130,7 @@ class TestController extends AbstractController
     }
 
     /**
-     * @param string $test_id
+     * @param int $test_id
      *
      * @return RedirectResponse
      *
@@ -139,7 +139,7 @@ class TestController extends AbstractController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retestAction($test_id)
+    public function retestAction(int $test_id): RedirectResponse
     {
         $remoteTest = $this->remoteTestService->retest((int) $test_id);
 
