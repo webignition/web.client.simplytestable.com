@@ -2,7 +2,10 @@
 
 namespace App\Model;
 
+use App\Entity\Task\Task;
 use App\Entity\Test as TestEntity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 class Test
 {
@@ -81,5 +84,19 @@ class Test
     public function getWarningCount(): int
     {
         return $this->warningCount;
+    }
+
+    /**
+     * @return DoctrineCollection|Task[]
+     */
+    public function getTasks(): DoctrineCollection
+    {
+        $tasks = $this->entity->getTasks();
+
+        if (!$tasks instanceof DoctrineCollection) {
+            $tasks = new ArrayCollection();
+        }
+
+        return $tasks;
     }
 }

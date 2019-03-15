@@ -61,6 +61,34 @@ class DecoratedTest implements \JsonSerializable
     {
         return $this->test->getWarningCount();
     }
+
+    public function getErrorCountByTaskType(string $type): int
+    {
+        $tasks = $this->test->getTasks();
+        $count = 0;
+
+        foreach ($tasks as $task) {
+            if ($task->hasOutput() && $task->getType() === $type) {
+                $count += $task->getOutput()->getErrorCount();
+            }
+        }
+
+        return $count;
+    }
+
+    public function getWarningCountByTaskType(string $type): int
+    {
+        $tasks = $this->test->getTasks();
+        $count = 0;
+
+        foreach ($tasks as $task) {
+            if ($task->hasOutput() && $task->getType() === $type) {
+                $count += $task->getOutput()->getWarningCount();
+            }
+        }
+
+        return $count;
+    }
 //
 //    public function getErrorCountByTaskType(string $taskType): int
 //    {
