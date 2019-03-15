@@ -258,19 +258,13 @@ class ResultsController extends AbstractBaseViewController
         return $filteredTaskCounts[$modifiedFilter] > 0;
     }
 
-
-    /**
-     * @param Test $test
-     *
-     * @return string
-     */
-    private function getDefaultRequestFilter(Test $test)
+    private function getDefaultRequestFilter(Test $test): string
     {
-        if ($test->hasErrors()) {
+        if ($test->getErrorCount() > 0) {
             return 'with-errors';
         }
 
-        if ($test->hasWarnings()) {
+        if ($test->getWarningCount() > 0) {
             return 'with-warnings';
         }
 
