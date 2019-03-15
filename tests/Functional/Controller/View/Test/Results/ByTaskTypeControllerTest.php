@@ -220,7 +220,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($byTaskTypeController, $testService);
@@ -314,7 +314,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($byTaskTypeController, $testService);
@@ -658,7 +658,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($byTaskTypeController, $testService);
@@ -748,27 +748,20 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @param string $website
-     * @param int $testId
-     * @param Test $test
-     *
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, Test $test)
+    private function createTestService(int $testId, Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;
     }
 
     /**
-     * @param int $testId
-     * @param RemoteTest $remoteTest
-     *
      * @return RemoteTestService|MockInterface
      */
     private function createRemoteTestService(int $testId, RemoteTest $remoteTest)

@@ -53,7 +53,7 @@ class TestUrlLimitNotificationController extends AbstractBaseViewController
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
 
         $ammendments = $remoteTest->getAmmendments();

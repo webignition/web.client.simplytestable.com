@@ -112,7 +112,7 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
         $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($testFinishedSummaryController, $testService);
@@ -160,7 +160,7 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
         $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($testFinishedSummaryController, $testService);
@@ -197,12 +197,12 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, ?Test $test)
+    private function createTestService(int $testId, ?Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;

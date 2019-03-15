@@ -63,7 +63,7 @@ class TestTaskListController extends AbstractBaseViewController
             return new Response('');
         }
 
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
         $tasks = $this->taskService->getCollection($test, $taskIds);
         $taskCollection = new TaskCollection($tasks);
 

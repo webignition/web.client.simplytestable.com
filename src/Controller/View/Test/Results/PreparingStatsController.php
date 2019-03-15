@@ -50,7 +50,7 @@ class PreparingStatsController extends AbstractBaseViewController
      */
     public function indexAction(string $website, int $test_id): JsonResponse
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         $completionPercent = 0;
         $remainingTasksToRetrieveCount = 0;

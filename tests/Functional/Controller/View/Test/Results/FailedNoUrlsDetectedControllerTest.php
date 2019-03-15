@@ -106,7 +106,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
         $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
 
-        $testService = $this->createTestService($website, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($failedNoUrlsDetectedController, $testService);
 
         $response = $failedNoUrlsDetectedController->indexAction(new Request(), $website, self::TEST_ID);
@@ -189,7 +189,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $test->setState(TestService::STATE_FAILED_NO_SITEMAP);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($failedNoUrlsDetectedController, $testService);
 
         $response = $failedNoUrlsDetectedController->indexAction($request, self::WEBSITE, self::TEST_ID);
@@ -222,18 +222,14 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @param string $website
-     * @param int $testId
-     * @param Test $test
-     *
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, Test $test)
+    private function createTestService(int $testId, Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;

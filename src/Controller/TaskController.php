@@ -48,7 +48,7 @@ class TaskController
      */
     public function idCollectionAction(string $website, int $test_id): JsonResponse
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         return new JsonResponse($test->getTaskIds());
     }
@@ -66,7 +66,7 @@ class TaskController
      */
     public function unretrievedIdCollectionAction(string $website, int $test_id, ?int $limit = null): JsonResponse
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         $limit = filter_var($limit, FILTER_VALIDATE_INT);
         if (false === $limit) {
@@ -95,7 +95,7 @@ class TaskController
      */
     public function retrieveAction(Request $request, string $website, int $test_id): Response
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         $remoteTaskIds = $this->getRequestRemoteTaskIds($request);
         $remoteTaskIds = $remoteTaskIds ?? $test->getTaskIds();

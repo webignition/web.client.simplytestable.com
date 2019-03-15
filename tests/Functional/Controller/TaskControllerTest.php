@@ -160,7 +160,7 @@ class TaskControllerTest extends AbstractControllerTest
         $test = Test::create(self::TEST_ID);
         $test->setTaskIdCollection(implode(',', $taskIds));
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($this->taskController, $testService);
 
         /* @var JsonResponse $response */
@@ -187,7 +187,7 @@ class TaskControllerTest extends AbstractControllerTest
         $entityManager->persist($test);
         $entityManager->flush();
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($this->taskController, $testService);
 
         /* @var JsonResponse $response */
@@ -228,7 +228,7 @@ class TaskControllerTest extends AbstractControllerTest
         $entityManager->persist($test);
         $entityManager->flush();
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($this->taskController, $testService);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -290,12 +290,12 @@ class TaskControllerTest extends AbstractControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, ?Test $test)
+    private function createTestService(int $testId, ?Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;
