@@ -126,7 +126,7 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
         return [
             'no remote tasks' => [
                 'testCreator' => function () {
-                    return Test::create(self::TEST_ID, self::WEBSITE);
+                    return Test::create(self::TEST_ID);
                 },
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'task_count' => 0,
@@ -141,7 +141,7 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
             ],
             'no remote tasks retrieved' => [
                 'testCreator' => function () {
-                    return Test::create(self::TEST_ID, self::WEBSITE);
+                    return Test::create(self::TEST_ID);
                 },
                 'remoteTest' => new RemoteTest($this->remoteTestData),
                 'expectedResponseData' => [
@@ -154,7 +154,7 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
             ],
             'some remote tasks retrieved' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
 
                     $test->addTask(new Task());
                     $test->addTask(new Task());

@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class ResultsControllerTest extends AbstractViewControllerTest
@@ -311,7 +312,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         Request $request,
         string $expectedRedirectUrl
     ) {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
         $remoteTest = new RemoteTest(array_merge($this->remoteTestData, $remoteTestModifications));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -423,7 +424,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
         int $domainTestCount,
         Twig_Environment $twig
     ) {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $test->setTaskIdCollection('1,2,3,4');
         $test->setUser($owner->getUsername());
 
@@ -770,7 +772,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $entityManager->persist($test);

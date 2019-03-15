@@ -157,7 +157,7 @@ class TaskControllerTest extends AbstractControllerTest
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
         $test->setTaskIdCollection(implode(',', $taskIds));
 
         $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
@@ -180,7 +180,7 @@ class TaskControllerTest extends AbstractControllerTest
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
         $test->setTaskIdCollection(implode(',', $taskIds));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
@@ -221,7 +221,7 @@ class TaskControllerTest extends AbstractControllerTest
      */
     public function testRetrieveActionRender(array $existingTestTaskIds, array $httpFixtures, Request $request)
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
         $test->setTaskIdCollection(implode(',', $existingTestTaskIds));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);

@@ -27,9 +27,8 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
     public function createDataProvider(): array
     {
         $testId = 7;
-        $website = 'http://example.com/';
 
-        $test = Test::create($testId, $website);
+        $test = Test::create($testId);
         $remoteTest = new RemoteTest([]);
 
         $decoratedTest = new DecoratedTest($test, $remoteTest);
@@ -81,15 +80,15 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
     {
         $decoratedTests = [
             new DecoratedTest(
-                Test::create(1, 'http://example.com/1/'),
+                Test::create(1),
                 new RemoteTest([])
             ),
             new DecoratedTest(
-                Test::create(2, 'http://example.com/2/'),
+                Test::create(2),
                 new RemoteTest([])
             ),
             new DecoratedTest(
-                Test::create(3, 'http://example.com/3/'),
+                Test::create(3),
                 new RemoteTest([])
             )
         ];
@@ -121,7 +120,7 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
             'one test' => [
                 'decoratedTests' => [
                     new DecoratedTest(
-                        Test::create(1, 'http://example.com/1/'),
+                        Test::create(1),
                         new RemoteTest([])
                     )
                 ],
@@ -130,15 +129,15 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
             'three tests' => [
                 'decoratedTests' => [
                     new DecoratedTest(
-                        Test::create(1, 'http://example.com/1/'),
+                        Test::create(1),
                         new RemoteTest([])
                     ),
                     new DecoratedTest(
-                        Test::create(2, 'http://example.com/2/'),
+                        Test::create(2),
                         new RemoteTest([])
                     ),
                     new DecoratedTest(
-                        Test::create(3, 'http://example.com/3/'),
+                        Test::create(3),
                         new RemoteTest([])
                     )
                 ],
@@ -385,7 +384,7 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
             'single test, not requiring remote tasks' => new DecoratedTestList(
                 [
                     new DecoratedTest(
-                        Test::create(1, 'http://example.com/'),
+                        Test::create(1),
                         new RemoteTest([])
                     ),
                 ],
@@ -396,7 +395,7 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
             'single test, requiring remote tasks' => new DecoratedTestList(
                 [
                     new DecoratedTest(
-                        Test::create(1, 'http://example.com/'),
+                        Test::create(1),
                         new RemoteTest([
                             'task_count' => 1,
                         ])

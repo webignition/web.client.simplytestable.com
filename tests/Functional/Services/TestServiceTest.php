@@ -244,7 +244,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testIsFinished(string $state, bool $expectedIsFinished)
     {
-        $test = Test::create(1, 'http://example.com/');
+        $test = Test::create(1);
         $test->setState($state);
 
         $this->assertEquals($expectedIsFinished, $this->testService->isFinished($test));

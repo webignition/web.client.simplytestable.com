@@ -19,7 +19,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = Test::create(1, 'http://example.com/');
+        $this->test = Test::create(1);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),

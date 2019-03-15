@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 
 class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 {
@@ -104,7 +105,8 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionRender(Twig_Environment $twig)
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $remoteTest = new RemoteTest($this->remoteTestData);
 
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
@@ -149,7 +151,9 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+
         $remoteTest = new RemoteTest($this->remoteTestData);
         $request = new Request();
 
