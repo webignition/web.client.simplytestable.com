@@ -275,7 +275,7 @@ view_test_results_preparing_stats:
        test_id: '\d+'
 
 task_results_retrieve:
-    path: /{website}/{test_id}/results/retrieve/
+    path: /{test_id}/results/retrieve/
     defaults: { _controller: App\Controller\TaskController::retrieveAction }
     requirements:
        website: '.+'

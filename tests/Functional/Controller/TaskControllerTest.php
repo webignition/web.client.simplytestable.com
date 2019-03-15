@@ -234,7 +234,7 @@ class TaskControllerTest extends AbstractControllerTest
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var Response $response */
-        $response = $this->taskController->retrieveAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $this->taskController->retrieveAction($request, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
