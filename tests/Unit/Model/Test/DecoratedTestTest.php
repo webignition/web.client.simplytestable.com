@@ -22,6 +22,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     const URL_COUNT = 12;
     const ERROR_COUNT = 13;
     const WARNING_COUNT = 14;
+    const REMOTE_TASK_COUNT = 0;
+    const TASKS_WITH_ERRORS_COUNT = 0;
+    const CANCELLED_TASK_COUNT = 0;
 
     private $testProperties = [
         'test_id' => self::TEST_ID,
@@ -33,6 +36,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'urlCount' => self::URL_COUNT,
         'errorCount' => self::ERROR_COUNT,
         'warningCount' => self::WARNING_COUNT,
+        'remoteTaskCount' => self::REMOTE_TASK_COUNT,
+        'tasksWithErrorsCount' => self::TASKS_WITH_ERRORS_COUNT,
+        'cancelledTaskCount' => self::CANCELLED_TASK_COUNT,
     ];
 
     public function testGetScalarProperties()
@@ -49,6 +55,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(self::URL_COUNT, $decoratedTest->getUrlCount());
         $this->assertEquals(self::ERROR_COUNT, $decoratedTest->getErrorCount());
         $this->assertEquals(self::WARNING_COUNT, $decoratedTest->getWarningCount());
+//        $this->assertEquals(self::TASK_COUNT, $decoratedTest->getT());
     }
 
     /**
@@ -178,6 +185,63 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider getErrorFreeTaskCountDataProvider
+     */
+    public function testGetErrorFreeTaskCount(
+        int $remoteTaskCount,
+        int $tasksWithErrorsCount,
+        int $cancelledTaskCount,
+        int $expectedErrorFreeTaskCount
+    ) {
+        $testModel = $this->createTest([
+            'remoteTaskCount' => $remoteTaskCount,
+            'tasksWithErrorsCount' => $tasksWithErrorsCount,
+            'cancelledTaskCount' => $cancelledTaskCount,
+        ]);
+        $remoteTest = new RemoteTest([]);
+
+        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+
+        $this->assertEquals($expectedErrorFreeTaskCount, $decoratedTest->getErrorFreeTaskCount());
+    }
+
+    public function getErrorFreeTaskCountDataProvider(): array
+    {
+        return [
+            'no counts' => [
+                'remoteTaskCount' => 0,
+                'tasksWithErrorsCount' => 0,
+                'cancelledTaskCount' => 0,
+                'expectedErrorFreeTaskCount' => 0,
+            ],
+            'has remote tasks, none errored, none cancelled' => [
+                'remoteTaskCount' => 10,
+                'tasksWithErrorsCount' => 0,
+                'cancelledTaskCount' => 0,
+                'expectedErrorFreeTaskCount' => 10,
+            ],
+            'has remote tasks, some errored, none cancelled' => [
+                'remoteTaskCount' => 10,
+                'tasksWithErrorsCount' => 1,
+                'cancelledTaskCount' => 0,
+                'expectedErrorFreeTaskCount' => 9,
+            ],
+            'has remote tasks, none errored, some cancelled' => [
+                'remoteTaskCount' => 10,
+                'tasksWithErrorsCount' => 0,
+                'cancelledTaskCount' => 2,
+                'expectedErrorFreeTaskCount' => 8,
+            ],
+            'has remote tasks, some errored, some cancelled' => [
+                'remoteTaskCount' => 10,
+                'tasksWithErrorsCount' => 1,
+                'cancelledTaskCount' => 2,
+                'expectedErrorFreeTaskCount' => 7,
+            ],
+        ];
+    }
+
     private function createTest(array $properties = []): TestModel
     {
         $properties = array_merge($this->testProperties, $properties);
@@ -195,7 +259,10 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['taskTypes'],
             $properties['urlCount'],
             $properties['errorCount'],
-            $properties['warningCount']
+            $properties['warningCount'],
+            $properties['remoteTaskCount'],
+            $properties['tasksWithErrorsCount'],
+            $properties['cancelledTaskCount']
         );
     }
 

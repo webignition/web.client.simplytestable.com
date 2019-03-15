@@ -89,22 +89,15 @@ class DecoratedTest implements \JsonSerializable
 
         return $count;
     }
-//
-//    public function getErrorCountByTaskType(string $taskType): int
-//    {
-//        return $this->test->getErrorCountByTaskType($taskType);
-//    }
-//
-//    public function getWarningCountByTaskType(string $taskType): int
-//    {
-//        return $this->test->getWarningCountByTaskType($taskType);
-//    }
-//
-//
-//    public function getErrorFreeTaskCount(): int
-//    {
-//        return $this->remoteTest->getErrorFreeTaskCount();
-//    }
+
+    public function getErrorFreeTaskCount()
+    {
+        $remoteTaskCount = $this->test->getRemoteTaskCount();
+        $tasksWithErrorsCount = $this->test->getTasksWithErrorsCount();
+        $cancelledTaskCount = $this->test->getCancelledTaskCount();
+
+        return $remoteTaskCount - $tasksWithErrorsCount - $cancelledTaskCount;
+    }
 //
 //    public function getTaskCount(): int
 //    {

@@ -18,6 +18,9 @@ class Test
     private $urlCount;
     private $errorCount;
     private $warningCount;
+    private $remoteTaskCount;
+    private $tasksWithErrorsCount;
+    private $cancelledTaskCount;
 
     public function __construct(
         TestEntity $entity,
@@ -28,7 +31,10 @@ class Test
         array $taskTypes,
         int $urlCount,
         int $errorCount,
-        int $warningCount
+        int $warningCount,
+        int $remoteTaskCount,
+        int $tasksWithErrorsCount,
+        int $cancelledTaskCount
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -39,6 +45,9 @@ class Test
         $this->urlCount = $urlCount;
         $this->errorCount = $errorCount;
         $this->warningCount = $warningCount;
+        $this->remoteTaskCount = $remoteTaskCount;
+        $this->tasksWithErrorsCount = $tasksWithErrorsCount;
+        $this->cancelledTaskCount = $cancelledTaskCount;
     }
 
     public function getTestId(): int
@@ -98,5 +107,25 @@ class Test
         }
 
         return $tasks;
+    }
+
+    public function getLocalTaskCount(): int
+    {
+        return count($this->getTasks());
+    }
+
+    public function getRemoteTaskCount(): int
+    {
+        return $this->remoteTaskCount;
+    }
+
+    public function getTasksWithErrorsCount(): int
+    {
+        return $this->tasksWithErrorsCount;
+    }
+
+    public function getCancelledTaskCount(): int
+    {
+        return $this->cancelledTaskCount;
     }
 }
