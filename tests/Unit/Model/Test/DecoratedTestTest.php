@@ -36,6 +36,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'failed' => 0,
         'skipped' => 0,
     ];
+    const REJECTION = null;
 
     private $testProperties = [
         'test_id' => self::TEST_ID,
@@ -54,6 +55,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'amendments' => self::AMENDMENTS,
         'completionPercent' => self::COMPLETION_PERCENT,
         'taskCountByState' => self::TASK_COUNT_BY_STATE,
+        'rejection' => self::REJECTION,
     ];
 
     public function testGetScalarProperties()
@@ -74,6 +76,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(self::AMENDMENTS, $decoratedTest->getAmendments());
         $this->assertEquals(self::COMPLETION_PERCENT, $decoratedTest->getCompletionPercent());
         $this->assertEquals(self::TASK_COUNT_BY_STATE, $decoratedTest->getTaskCountByState());
+        $this->assertEquals(self::REJECTION, $decoratedTest->getRejection());
     }
 
     /**
@@ -364,7 +367,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['encodedParameters'],
             $properties['amendments'],
             $properties['completionPercent'],
-            $properties['taskCountByState']
+            $properties['taskCountByState'],
+            $properties['rejection']
         );
     }
 
