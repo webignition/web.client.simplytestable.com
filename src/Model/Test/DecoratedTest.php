@@ -118,13 +118,11 @@ class DecoratedTest implements \JsonSerializable
     {
         return $this->test->getParameter($key);
     }
-//
-//    public function getAmendments()
-//    {
-//        $amendments = $this->remoteTest->getAmmendments();
-//
-//        return $amendments ?? [];
-//    }
+
+    public function getAmendments()
+    {
+        return $this->test->getAmendments();
+    }
 //
 //    public function getCompletionPercent()
 //    {
