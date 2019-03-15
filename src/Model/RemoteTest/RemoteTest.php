@@ -134,10 +134,7 @@ class RemoteTest extends AbstractArrayBasedModel
         return !is_null($this->getParameter($key));
     }
 
-    /**
-     * @return array
-     */
-    public function getTaskCountByState()
+    public function getTaskCountByState(): array
     {
         $taskStates = [
             'in-progress' => 'in_progress',

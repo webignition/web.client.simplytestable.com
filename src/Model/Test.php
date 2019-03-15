@@ -24,6 +24,7 @@ class Test
     private $parameters;
     private $amendments;
     private $completionPercent;
+    private $taskCountByState;
 
     public function __construct(
         TestEntity $entity,
@@ -40,7 +41,8 @@ class Test
         int $cancelledTaskCount,
         string $encodedParameters,
         array $amendments,
-        int $completionPercent
+        int $completionPercent,
+        array $taskCountByState
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -60,6 +62,7 @@ class Test
 
         $this->amendments = $amendments;
         $this->completionPercent = $completionPercent;
+        $this->taskCountByState = $taskCountByState;
     }
 
     public function getTestId(): int
@@ -159,5 +162,10 @@ class Test
     public function getCompletionPercent(): int
     {
         return $this->completionPercent;
+    }
+
+    public function getTaskCountByState(): array
+    {
+        return $this->taskCountByState;
     }
 }

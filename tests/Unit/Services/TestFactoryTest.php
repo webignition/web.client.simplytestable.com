@@ -73,7 +73,15 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     0,
                     '',
                     [],
-                    0
+                    0,
+                    [
+                        'in_progress' => 0,
+                        'queued' => 0,
+                        'completed' => 0,
+                        'cancelled' => 0,
+                        'failed' => 0,
+                        'skipped' => 0,
+                    ]
                 ),
             ],
             'has tasks' => [
@@ -119,7 +127,15 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     0,
                     '',
                     [],
-                    0
+                    0,
+                    [
+                        'in_progress' => 0,
+                        'queued' => 0,
+                        'completed' => 0,
+                        'cancelled' => 0,
+                        'failed' => 0,
+                        'skipped' => 0,
+                    ]
                 ),
             ],
         ];
