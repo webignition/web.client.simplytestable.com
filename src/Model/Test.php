@@ -69,6 +69,11 @@ class Test
         $this->rejection = $rejection;
     }
 
+    public function getEntity(): TestEntity
+    {
+        return $this->entity;
+    }
+
     public function getTestId(): int
     {
         return $this->entity->getTestId();

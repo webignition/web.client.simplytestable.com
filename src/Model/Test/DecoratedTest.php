@@ -144,11 +144,11 @@ class DecoratedTest implements \JsonSerializable
     {
         return $this->getRemoteTaskCount() > $this->getLocalTaskCount();
     }
-//
-//    public function getTest(): Test
-//    {
-//        return $this->test;
-//    }
+
+    public function getEntity(): TestEntity
+    {
+        return $this->test->getEntity();
+    }
 //
 //    public function getCrawlData(): array
 //    {
