@@ -22,8 +22,8 @@
         } %}
 
         {% set status_url = path('view_test_results_preparing_stats', { test_id: test.testid }) %}
-        {% set unretrieved_task_ids_url = path('test_task_ids_unretrieved', route_parameters|merge({limit: 100})) %}
-        {% set retrieve_tasks_url = path('task_results_retrieve', { test_id: test.testId }) %}
+        {% set unretrieved_task_ids_url = path('test_task_ids_unretrieved', { test_id: test.testid }|merge({limit: 100})) %}
+        {% set retrieve_tasks_url = path('task_results_retrieve', { test_id: test.testid }) %}
         {% set summary_url = path('view_partials_test_finished_summary', route_parameters) %}
 
         <div class="row preparing js-urls"
