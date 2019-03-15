@@ -128,11 +128,11 @@ class DecoratedTest implements \JsonSerializable
     {
         return $this->test->getCompletionPercent();
     }
-//
-//    public function getTaskCountByState()
-//    {
-//        return $this->remoteTest->getTaskCountByState();
-//    }
+
+    public function getTaskCountByState()
+    {
+        return $this->test->getTaskCountByState();
+    }
 //
 //    public function getRejection()
 //    {
