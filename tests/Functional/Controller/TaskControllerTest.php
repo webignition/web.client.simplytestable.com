@@ -164,7 +164,7 @@ class TaskControllerTest extends AbstractControllerTest
         $this->setTestServiceOnController($this->taskController, $testService);
 
         /* @var JsonResponse $response */
-        $response = $this->taskController->idCollectionAction(self::WEBSITE, self::TEST_ID);
+        $response = $this->taskController->idCollectionAction(self::TEST_ID);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
 
