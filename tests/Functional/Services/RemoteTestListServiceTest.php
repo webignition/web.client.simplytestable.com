@@ -4,6 +4,7 @@
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
+use App\Model\RemoteTest\RemoteTest;
 use App\Model\RemoteTestList;
 use App\Services\RemoteTestListService;
 use App\Tests\Factory\HttpResponseFactory;
@@ -38,14 +39,14 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $finishedList = $this->remoteTestListService->getFinished($limit, $offset, $filter);
+        $list = $this->remoteTestListService->getFinished($limit, $offset, $filter);
 
-        $this->assertInstanceOf(RemoteTestList::class, $finishedList);
+        $this->assertInstanceOf(RemoteTestList::class, $list);
 
-        $this->assertEquals($expectedMaxResults, $finishedList->getMaxResults());
-        $this->assertEquals($expectedLimit, $finishedList->getLimit());
-        $this->assertEquals($expectedOffset, $finishedList->getOffset());
-        $this->assertEquals($expectedTestCount, $finishedList->getLength());
+        $this->assertEquals($expectedMaxResults, $list->getMaxResults());
+        $this->assertEquals($expectedLimit, $list->getLimit());
+        $this->assertEquals($expectedOffset, $list->getOffset());
+        $this->assertEquals($expectedTestCount, $list->getLength());
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
@@ -136,15 +137,25 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $finishedList = $this->remoteTestListService->getRecent($limit);
+        $list = $this->remoteTestListService->getRecent($limit);
 
-        $this->assertInstanceOf(RemoteTestList::class, $finishedList);
+        $this->assertInstanceOf(RemoteTestList::class, $list);
 
-        $this->assertEquals($expectedMaxResults, $finishedList->getMaxResults());
-        $this->assertEquals($expectedLimit, $finishedList->getLimit());
-        $this->assertEquals($expectedOffset, $finishedList->getOffset());
-        $this->assertEquals($expectedTestCount, $finishedList->getLength());
-        $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
+        $this->assertEquals($expectedMaxResults, $list->getMaxResults());
+        $this->assertEquals($expectedLimit, $list->getLimit());
+        $this->assertEquals($expectedOffset, $list->getOffset());
+        $this->assertEquals($expectedTestCount, $list->getLength());
+        $this->assertEquals($expectedRequestUrl, (string) $this->httpHistory->getLastRequestUrl());
+
+        if ($expectedTestCount > 0) {
+            foreach ($list->get() as $testData) {
+                $this->assertIsArray($testData);
+                $this->assertArrayHasKey('remote_test', $testData);
+
+                $remoteTest = $testData['remote_test'];
+                $this->assertInstanceOf(RemoteTest::class, $remoteTest);
+            }
+        }
     }
 
     public function getRecentDataProvider(): array
@@ -185,6 +196,36 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
                 'expectedRequestUrl' => 'http://null/jobs/list/3/0/?exclude-states%5B0%5D=new&'
                     . 'exclude-states%5B1%5D=preparing&exclude-states%5B2%5D=resolving'
                     . '&exclude-states%5B3%5D=resolved&exclude-states%5B4%5D=rejected&exclude-states%5B5%5D=queued',
+            ],
+            'one' => [
+                'httpFixtures' => [
+                    HttpResponseFactory::createJsonResponse([
+                        'max_results' => 10,
+                        'limit' => 100,
+                        'offset' => 0,
+                        'jobs' => [
+                            [
+                                'id' => 1,
+                                'user' => 'user@example.com',
+                                'website' => 'http://example.com/',
+                                'state' => 'completed',
+                                'url_count' => 12,
+                                'task_types' => [],
+                                'task_type_options' => [],
+                                'type' => Test::TYPE_FULL_SITE,
+                                'parameters' => '',
+                            ],
+                        ],
+                    ]),
+                ],
+                'limit' => 3,
+                'expectedMaxResults' => 10,
+                'expectedLimit' => 100,
+                'expectedOffset' => 0,
+                'expectedTestCount' => 1,
+                'expectedRequestUrl' => 'http://null/jobs/list/3/0/?exclude-states%5B0%5D=new'
+                    .'&exclude-states%5B1%5D=preparing&exclude-states%5B2%5D=resolving'
+                    .'&exclude-states%5B3%5D=resolved&exclude-states%5B4%5D=rejected&exclude-states%5B5%5D=queued',
             ],
         ];
     }
