@@ -310,7 +310,7 @@ test_task_ids:
         test_id: '\d+'
 
 test_task_ids_unretrieved:
-    path: /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
+    path: /{test_id}/tasks/ids/unretrieved/{limit}/
     defaults: { _controller: App\Controller\TaskController::unretrievedIdCollectionAction, _format: json }
     requirements:
         website: '.+'

@@ -53,7 +53,6 @@ class TaskController
     }
 
     /**
-     * @param string $website
      * @param int $test_id
      * @param int|null $limit
      *
@@ -63,7 +62,7 @@ class TaskController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function unretrievedIdCollectionAction(string $website, int $test_id, ?int $limit = null): JsonResponse
+    public function unretrievedIdCollectionAction(int $test_id, ?int $limit = null): JsonResponse
     {
         $test = $this->testService->get($test_id);
 
