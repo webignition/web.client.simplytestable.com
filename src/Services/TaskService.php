@@ -326,7 +326,7 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param int $testId
      *
      * @return int[]
      *
@@ -334,12 +334,12 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retrieveRemoteTaskIds(Test $test)
+    public function retrieveRemoteTaskIds(int $testId)
     {
         $response = $this->coreApplicationHttpClient->get(
             'test_task_ids',
             [
-                'test_id' => $test->getTestId(),
+                'test_id' => $testId,
             ]
         );
 

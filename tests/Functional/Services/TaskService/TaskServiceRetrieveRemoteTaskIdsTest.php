@@ -3,7 +3,6 @@
 
 namespace App\Tests\Functional\Services\TaskService;
 
-use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -12,17 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class TaskServiceRetrieveRemoteTaskIdsTest extends AbstractTaskServiceTest
 {
-    /**
-     * @var Test
-     */
-    private $test;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->test = Test::create(1);
-    }
+    const TEST_ID = 1;
 
     public function testGetRemoteTaskIdsHttpClientException()
     {
@@ -32,7 +21,7 @@ class TaskServiceRetrieveRemoteTaskIdsTest extends AbstractTaskServiceTest
 
         $this->expectException(CoreApplicationRequestException::class);
 
-        $this->taskService->retrieveRemoteTaskIds($this->test);
+        $this->taskService->retrieveRemoteTaskIds(self::TEST_ID);
     }
 
     public function testGetRemoteTaskInvalidHttpResponse()
@@ -43,7 +32,7 @@ class TaskServiceRetrieveRemoteTaskIdsTest extends AbstractTaskServiceTest
 
         $this->expectException(InvalidContentTypeException::class);
 
-        $this->taskService->retrieveRemoteTaskIds($this->test);
+        $this->taskService->retrieveRemoteTaskIds(self::TEST_ID);
     }
 
     public function testGetRemoteTaskInvalidCredentials()
@@ -54,7 +43,7 @@ class TaskServiceRetrieveRemoteTaskIdsTest extends AbstractTaskServiceTest
 
         $this->expectException(InvalidCredentialsException::class);
 
-        $this->taskService->retrieveRemoteTaskIds($this->test);
+        $this->taskService->retrieveRemoteTaskIds(self::TEST_ID);
     }
 
     /**
@@ -64,7 +53,7 @@ class TaskServiceRetrieveRemoteTaskIdsTest extends AbstractTaskServiceTest
     {
         $this->httpMockHandler->appendFixtures([$httpResponse]);
 
-        $this->assertEquals($expectedTaskIds, $this->taskService->retrieveRemoteTaskIds($this->test));
+        $this->assertEquals($expectedTaskIds, $this->taskService->retrieveRemoteTaskIds(self::TEST_ID));
     }
 
     public function getRemoteTaskIdsSuccessDataProvider(): array
