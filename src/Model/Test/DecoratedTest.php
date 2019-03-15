@@ -52,15 +52,15 @@ class DecoratedTest implements \JsonSerializable
         return $this->test->getUrlCount();
     }
 
-//    public function getErrorCount(): int
-//    {
-//        return $this->test->getErrorCount();
-//    }
-//
-//    public function getWarningCount(): int
-//    {
-//        return $this->test->getWarningCount();
-//    }
+    public function getErrorCount(): int
+    {
+        return $this->test->getErrorCount();
+    }
+
+    public function getWarningCount(): int
+    {
+        return $this->test->getWarningCount();
+    }
 //
 //    public function getErrorCountByTaskType(string $taskType): int
 //    {

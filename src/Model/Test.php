@@ -13,6 +13,8 @@ class Test
     private $type;
     private $taskTypes;
     private $urlCount;
+    private $errorCount;
+    private $warningCount;
 
     public function __construct(
         TestEntity $entity,
@@ -21,7 +23,9 @@ class Test
         string $state,
         string $type,
         array $taskTypes,
-        int $urlCount
+        int $urlCount,
+        int $errorCount,
+        int $warningCount
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -30,6 +34,8 @@ class Test
         $this->type = $type;
         $this->taskTypes = $taskTypes;
         $this->urlCount = $urlCount;
+        $this->errorCount = $errorCount;
+        $this->warningCount = $warningCount;
     }
 
     public function getTestId(): int
@@ -65,5 +71,15 @@ class Test
     public function getUrlCount(): int
     {
         return $this->urlCount;
+    }
+
+    public function getErrorCount(): int
+    {
+        return $this->errorCount;
+    }
+
+    public function getWarningCount(): int
+    {
+        return $this->warningCount;
     }
 }

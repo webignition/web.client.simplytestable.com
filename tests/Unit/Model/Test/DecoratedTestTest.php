@@ -66,6 +66,14 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['urlCount'] = self::URL_COUNT;
         }
 
+        if (!isset($properties['errorCount'])) {
+            $properties['errorCount'] = self::URL_COUNT;
+        }
+
+        if (!isset($properties['warningCount'])) {
+            $properties['warningCount'] = self::URL_COUNT;
+        }
+
         return new TestModel(
             TestEntity::create($properties['testId']),
             $properties['website'],
@@ -73,7 +81,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['state'],
             $properties['type'],
             $properties['taskTypes'],
-            $properties['urlCount']
+            $properties['urlCount'],
+            $properties['errorCount'],
+            $properties['warningCount']
         );
     }
 }

@@ -17,7 +17,9 @@ class TestFactory
             $remoteTest->getState(),
             $remoteTest->getType(),
             $remoteTest->getTaskTypes(),
-            $remoteTest->getUrlCount()
+            $remoteTest->getUrlCount(),
+            $entity->getErrorCount(),
+            $entity->getWarningCount()
         );
     }
 }

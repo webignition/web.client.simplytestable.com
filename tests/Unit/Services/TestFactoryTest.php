@@ -49,7 +49,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
-                    'url_count' => 0,
+                    'url_count' => 1,
                 ]),
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -58,7 +58,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     TestEntity::STATE_COMPLETED,
                     TestEntity::TYPE_FULL_SITE,
                     [],
-                    0
+                    1,
+                    2,
+                    3
                 ),
             ],
         ];
