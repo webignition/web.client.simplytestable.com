@@ -164,7 +164,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService($website, self::TEST_ID, $test, $testServiceIsFinished);
+        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -196,7 +196,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService($website, self::TEST_ID, $test, $testServiceIsFinished);
+        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -307,7 +307,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, false);
+        $testService = $this->createTestService(self::TEST_ID, $test, false);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -467,7 +467,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, false);
+        $testService = $this->createTestService(self::TEST_ID, $test, false);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -577,7 +577,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, false);
+        $testService = $this->createTestService(self::TEST_ID, $test, false);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -652,12 +652,12 @@ class ProgressControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, Test $test, bool $isFinished)
+    private function createTestService(int $testId, Test $test, bool $isFinished)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         $testService

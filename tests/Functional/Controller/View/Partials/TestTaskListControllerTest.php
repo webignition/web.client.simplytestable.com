@@ -177,7 +177,7 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($testTaskListController, $testService);
 
         $response = $testTaskListController->indexAction(
@@ -206,7 +206,7 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($testTaskListController, $testService);
 
         $response = $testTaskListController->indexAction(
@@ -429,7 +429,7 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($testTaskListController, $testService);
 
         $response = $testTaskListController->indexAction(
@@ -459,12 +459,12 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, Test $test)
+    private function createTestService(int $testId, Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;

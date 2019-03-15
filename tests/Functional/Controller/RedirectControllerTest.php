@@ -326,7 +326,7 @@ class RedirectControllerTest extends AbstractControllerTest
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with(self::WEBSITE, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         /* @var RemoteTestService $remoteTestService */

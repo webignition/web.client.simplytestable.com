@@ -129,7 +129,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, $testServiceIsFinished);
+        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($preparingController, $testService);
@@ -188,7 +188,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService($website, self::TEST_ID, $test, $testServiceIsFinished);
+        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($preparingController, $testService);
@@ -240,7 +240,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $preparingController = self::$container->get(PreparingController::class);
 
         $test = $testCreator();
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, true);
+        $testService = $this->createTestService(self::TEST_ID, $test, true);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($preparingController, $testService);
@@ -353,7 +353,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, true);
+        $testService = $this->createTestService(self::TEST_ID, $test, true);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($preparingController, $testService);
@@ -395,12 +395,12 @@ class PreparingControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, Test $test, bool $isFinished)
+    private function createTestService(int $testId, Test $test, bool $isFinished)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         $testService

@@ -328,7 +328,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($resultsController, $testService);
@@ -449,7 +449,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
         $remoteTestService
             ->shouldReceive('getFinishedCount')
@@ -795,7 +795,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
         $remoteTestService
             ->shouldReceive('getFinishedCount')
@@ -911,12 +911,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, ?Test $test)
+    private function createTestService(int $testId, ?Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;
