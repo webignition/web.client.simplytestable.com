@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class PreparingControllerTest extends AbstractViewControllerTest
@@ -122,12 +123,13 @@ class PreparingControllerTest extends AbstractViewControllerTest
         bool $testServiceIsFinished,
         string $expectedRedirectUrl
     ) {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
 
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, $testServiceIsFinished);
+        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($preparingController, $testService);
@@ -170,7 +172,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionBadRequestDataProvider
      */
     public function testIndexActionBadRequest(
-        Test $test,
         RemoteTest $remoteTest,
         bool $testServiceIsFinished,
         User $user,
@@ -178,13 +179,16 @@ class PreparingControllerTest extends AbstractViewControllerTest
         string $website,
         string $expectedRedirectUrl
     ) {
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
 
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService($website, self::TEST_ID, $test, $testServiceIsFinished);
+        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($preparingController, $testService);
@@ -200,7 +204,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
     {
         return [
             'website mismatch' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'website' => 'http://foo.example.com/',
                 ])),
@@ -212,7 +215,6 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'state' => Test::STATE_IN_PROGRESS,
                 ])),
@@ -238,7 +240,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $preparingController = self::$container->get(PreparingController::class);
 
         $test = $testCreator();
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, true);
+        $testService = $this->createTestService(self::TEST_ID, $test, true);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($preparingController, $testService);
@@ -254,7 +256,8 @@ class PreparingControllerTest extends AbstractViewControllerTest
         return [
             'no remote tasks retrieved' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setTaskIdCollection('1,2,3');
 
                     return $test;
@@ -287,7 +290,8 @@ class PreparingControllerTest extends AbstractViewControllerTest
             ],
             'some remote tasks retrieved' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setTaskIdCollection('1,2,3,4');
                     $test->setState(TestService::STATE_COMPLETED);
 
@@ -337,7 +341,8 @@ class PreparingControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $test->setTaskIdCollection('1,2,3');
         $remoteTest = new RemoteTest($this->remoteTestData);
 
@@ -348,7 +353,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, true);
+        $testService = $this->createTestService(self::TEST_ID, $test, true);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($preparingController, $testService);
@@ -390,12 +395,12 @@ class PreparingControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, Test $test, bool $isFinished)
+    private function createTestService(int $testId, Test $test, bool $isFinished)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         $testService

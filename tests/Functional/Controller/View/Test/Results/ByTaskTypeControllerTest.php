@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class ByTaskTypeControllerTest extends AbstractViewControllerTest
@@ -203,7 +204,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRedirectDataProvider
      */
     public function testIndexActionRedirect(
-        Test $test,
         RemoteTest $remoteTest,
         User $user,
         Request $request,
@@ -211,13 +211,16 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         string $filter,
         string $expectedRedirectUrl
     ) {
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
 
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($byTaskTypeController, $testService);
@@ -240,7 +243,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     {
         return [
             'empty task type' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest($this->remoteTestData),
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
@@ -249,7 +251,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
             'invalid task type' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest($this->remoteTestData),
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
@@ -258,7 +259,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
             'empty filter' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest($this->remoteTestData),
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
@@ -267,7 +267,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/results/html+validation/by-error/',
             ],
             'invalid filter' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest($this->remoteTestData),
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
@@ -276,7 +275,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/results/html+validation/by-error/',
             ],
             'requires preparation' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'task_count' => 1000,
                 ])),
@@ -316,7 +314,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($byTaskTypeController, $testService);
@@ -378,7 +376,10 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         return [
             'public user, private test, no tasks' => [
                 'testCreator' => function () {
-                    return Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+
+                    return $test;
                 },
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'user' => self::USER_EMAIL,
@@ -413,7 +414,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             ],
             'public user, public test, no tasks' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
 
                     return $test;
@@ -451,7 +453,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             ],
             'private user, private test, no tasks' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setUser(self::USER_EMAIL);
 
                     return $test;
@@ -489,7 +492,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             ],
             'public user, public test, has tasks, no errors' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
                     $test->setTaskIdCollection('1,2,3');
 
@@ -542,7 +546,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             ],
             'public user, public test, has tasks, has errors, html validation' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
                     $test->setTaskIdCollection('1,2,3,4');
 
@@ -585,7 +590,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             ],
             'public user, public test, has tasks, has errors, css validation' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
                     $test->setTaskIdCollection('1,2,3,4');
 
@@ -635,7 +641,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             HttpResponseFactory::createJsonResponse([]),
         ]);
 
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $remoteTest = new RemoteTest(array_merge($this->remoteTestData, [
             'task_count' => 0,
         ]));
@@ -651,7 +658,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($byTaskTypeController, $testService);
@@ -741,27 +748,20 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @param string $website
-     * @param int $testId
-     * @param Test $test
-     *
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, Test $test)
+    private function createTestService(int $testId, Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;
     }
 
     /**
-     * @param int $testId
-     * @param RemoteTest $remoteTest
-     *
      * @return RemoteTestService|MockInterface
      */
     private function createRemoteTestService(int $testId, RemoteTest $remoteTest)

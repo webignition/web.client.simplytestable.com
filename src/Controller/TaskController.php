@@ -37,7 +37,6 @@ class TaskController
     }
 
     /**
-     * @param string $website
      * @param int $test_id
      *
      * @return JsonResponse
@@ -46,15 +45,14 @@ class TaskController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function idCollectionAction(string $website, int $test_id): JsonResponse
+    public function idCollectionAction(int $test_id): JsonResponse
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         return new JsonResponse($test->getTaskIds());
     }
 
     /**
-     * @param string $website
      * @param int $test_id
      * @param int|null $limit
      *
@@ -64,9 +62,9 @@ class TaskController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function unretrievedIdCollectionAction(string $website, int $test_id, ?int $limit = null): JsonResponse
+    public function unretrievedIdCollectionAction(int $test_id, ?int $limit = null): JsonResponse
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         $limit = filter_var($limit, FILTER_VALIDATE_INT);
         if (false === $limit) {
@@ -84,7 +82,6 @@ class TaskController
 
     /**
      * @param Request $request
-     * @param string $website
      * @param int $test_id
      *
      * @return Response
@@ -93,9 +90,9 @@ class TaskController
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retrieveAction(Request $request, string $website, int $test_id): Response
+    public function retrieveAction(Request $request, int $test_id): Response
     {
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
 
         $remoteTaskIds = $this->getRequestRemoteTaskIds($request);
         $remoteTaskIds = $remoteTaskIds ?? $test->getTaskIds();

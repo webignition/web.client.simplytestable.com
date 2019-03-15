@@ -51,7 +51,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
             'id' => 1,
             'website' => 'http://example.com/1/',
         ]);
-        $test1 = Test::create(1, 'http://example.com/1/');
+        $test1 = Test::create(1);
 
         return [
             'empty remote test list' => [
@@ -63,7 +63,6 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
                 'testService' => $this->createTestService([
                     [
                         'expectedId' => 1,
-                        'expectedWebsite' => 'http://example.com/1/',
                         'test' => $test1,
                     ],
                 ]),
@@ -92,7 +91,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
         foreach ($getCalls as $getCall) {
             $testService
                 ->shouldReceive('get')
-                ->with($getCall['expectedWebsite'], $getCall['expectedId'])
+                ->with($getCall['expectedId'])
                 ->andReturn($getCall['test']);
         }
 

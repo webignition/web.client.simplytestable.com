@@ -52,8 +52,9 @@ class TestFactory
 
         $testValues[self::KEY_WEBSITE] = new NormalisedUrl($testValues[self::KEY_WEBSITE]);
 
-        $test = Test::create($testValues[self::KEY_TEST_ID], $testValues[self::KEY_WEBSITE]);
+        $test = Test::create($testValues[self::KEY_TEST_ID]);
 
+        $test->setWebsite($testValues[self::KEY_WEBSITE]);
         $test->setUser($testValues[self::KEY_USER]);
         $test->setState($testValues[self::KEY_STATE]);
         $test->setType($testValues[self::KEY_TYPE]);

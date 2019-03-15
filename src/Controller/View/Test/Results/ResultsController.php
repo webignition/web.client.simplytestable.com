@@ -135,7 +135,7 @@ class ResultsController extends AbstractBaseViewController
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $user = $this->userManager->getUser();
-        $test = $this->testService->get($website, $test_id);
+        $test = $this->testService->get($test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
 
         if ($website !== $remoteTest->getWebsite()) {

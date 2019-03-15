@@ -157,14 +157,14 @@ class TaskControllerTest extends AbstractControllerTest
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
         $test->setTaskIdCollection(implode(',', $taskIds));
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($this->taskController, $testService);
 
         /* @var JsonResponse $response */
-        $response = $this->taskController->idCollectionAction(self::WEBSITE, self::TEST_ID);
+        $response = $this->taskController->idCollectionAction(self::TEST_ID);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
 
@@ -180,22 +180,18 @@ class TaskControllerTest extends AbstractControllerTest
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
         $test->setTaskIdCollection(implode(',', $taskIds));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $entityManager->persist($test);
         $entityManager->flush();
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($this->taskController, $testService);
 
         /* @var JsonResponse $response */
-        $response = $this->taskController->unretrievedIdCollectionAction(
-            self::WEBSITE,
-            self::TEST_ID,
-            $limit
-        );
+        $response = $this->taskController->unretrievedIdCollectionAction(self::TEST_ID, $limit);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
 
@@ -221,20 +217,20 @@ class TaskControllerTest extends AbstractControllerTest
      */
     public function testRetrieveActionRender(array $existingTestTaskIds, array $httpFixtures, Request $request)
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
         $test->setTaskIdCollection(implode(',', $existingTestTaskIds));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $entityManager->persist($test);
         $entityManager->flush();
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $this->setTestServiceOnController($this->taskController, $testService);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var Response $response */
-        $response = $this->taskController->retrieveAction($request, self::WEBSITE, self::TEST_ID);
+        $response = $this->taskController->retrieveAction($request, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
@@ -290,12 +286,12 @@ class TaskControllerTest extends AbstractControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, ?Test $test)
+    private function createTestService(int $testId, ?Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;

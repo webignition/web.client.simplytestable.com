@@ -21,7 +21,7 @@ class TaskServiceRetrieveRemoteTaskIdsTest extends AbstractTaskServiceTest
     {
         parent::setUp();
 
-        $this->test = Test::create(1, 'http://example.com/');
+        $this->test = Test::create(1);
     }
 
     public function testGetRemoteTaskIdsHttpClientException()

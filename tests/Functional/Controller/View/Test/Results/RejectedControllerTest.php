@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class RejectedControllerTest extends AbstractViewControllerTest
@@ -292,15 +293,17 @@ class RejectedControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionBadRequestDataProvider
      */
     public function testIndexActionBadRequest(
-        Test $test,
         RemoteTest $remoteTest,
         string $website,
         string $expectedRedirectUrl
     ) {
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+
         /* @var RejectedController $rejectedController */
         $rejectedController = self::$container->get(RejectedController::class);
 
-        $testService = $this->createTestService($website, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($rejectedController, $testService);
@@ -317,7 +320,6 @@ class RejectedControllerTest extends AbstractViewControllerTest
     {
         return [
             'website mismatch' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'website' => 'http://foo.example.com/',
                 ])),
@@ -325,7 +327,6 @@ class RejectedControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/http://example.com//1/results/rejected/',
             ],
             'incorrect state' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'state' => Test::STATE_IN_PROGRESS,
                 ])),
@@ -339,11 +340,13 @@ class RejectedControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRenderDataProvider
      */
     public function testIndexActionRender(
-        Test $test,
         RemoteTest $remoteTest,
         array $httpFixtures,
         Twig_Environment $twig
     ) {
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+
         $userManager = self::$container->get(UserManager::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
@@ -354,7 +357,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         /* @var RejectedController $rejectedController */
         $rejectedController = self::$container->get(RejectedController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($rejectedController, $testService);
@@ -369,7 +372,6 @@ class RejectedControllerTest extends AbstractViewControllerTest
     {
         return [
             'unroutable' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'rejection' => [
                         'reason' => 'unroutable',
@@ -407,7 +409,6 @@ class RejectedControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'credit limit reached' => [
-                'test' => Test::create(self::TEST_ID, self::WEBSITE),
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'rejection' => [
                         'reason' => 'plan-constraint-limit-reached',
@@ -480,7 +481,8 @@ class RejectedControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $test->setState(Test::STATE_REJECTED);
         $remoteTest = new RemoteTest($this->remoteTestData);
 
@@ -491,7 +493,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         /* @var RejectedController $rejectedController */
         $rejectedController = self::$container->get(RejectedController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($rejectedController, $testService);
@@ -516,12 +518,12 @@ class RejectedControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, ?Test $test)
+    private function createTestService(int $testId, ?Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;

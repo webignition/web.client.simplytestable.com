@@ -91,7 +91,6 @@ class TestService
     }
 
     /**
-     * @param string $canonicalUrl
      * @param int $testId
      *
      * @return Test|null
@@ -100,14 +99,14 @@ class TestService
      * @throws InvalidCredentialsException
      * @throws InvalidContentTypeException
      */
-    public function get(string $canonicalUrl, int $testId): ?Test
+    public function get(int $testId): ?Test
     {
         $test = $this->testRepository->findOneBy([
             'testId' => $testId
         ]);
 
         if (empty($test)) {
-            $test = Test::create((int) $testId, (string) (new NormalisedUrl($canonicalUrl)));
+            $test = Test::create((int) $testId);
         }
 
         try {

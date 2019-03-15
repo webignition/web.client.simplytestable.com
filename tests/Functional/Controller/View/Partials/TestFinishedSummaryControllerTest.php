@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 
 class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 {
@@ -104,13 +105,14 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionRender(Twig_Environment $twig)
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $remoteTest = new RemoteTest($this->remoteTestData);
 
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
         $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($testFinishedSummaryController, $testService);
@@ -149,14 +151,16 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+
         $remoteTest = new RemoteTest($this->remoteTestData);
         $request = new Request();
 
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
         $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($testFinishedSummaryController, $testService);
@@ -193,12 +197,12 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, ?Test $test)
+    private function createTestService(int $testId, ?Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;

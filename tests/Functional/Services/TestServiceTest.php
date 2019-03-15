@@ -37,7 +37,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
     {
         $this->httpMockHandler->appendFixtures([$httpResponse]);
 
-        $this->assertNull($this->testService->get('http://example.com', 1));
+        $this->assertNull($this->testService->get(1));
     }
 
     public function getReturnsNullDataProvider(): array
@@ -58,7 +58,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
     public function testGetSuccess(
         array $httpFixtures,
         array $testValues,
-        string $canonicalUrl,
         int $testId,
         array $expectedTestValues
     ) {
@@ -69,7 +68,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
             $testFactory->create($testValues);
         }
 
-        $test = $this->testService->get($canonicalUrl, $testId);
+        $test = $this->testService->get($testId);
 
         $this->assertInstanceOf(Test::class, $test);
 
@@ -107,7 +106,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                     TestFactory::KEY_WEBSITE => 'http://example.com/',
                     TestFactory::KEY_TEST_ID => 1,
                 ],
-                'canonicalUrl' => 'http://example.com/',
                 'testId' => 1,
                 'expectedTestValues' => [
                     'testId' => 1,
@@ -148,7 +146,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                     TestFactory::KEY_WEBSITE => 'http://example.com/',
                     TestFactory::KEY_TEST_ID => 1,
                 ],
-                'canonicalUrl' => 'http://example.com/',
                 'testId' => 1,
                 'expectedTestValues' => [
                     'testId' => 1,
@@ -187,7 +184,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                     TestFactory::KEY_TEST_ID => 1,
                     TestFactory::KEY_TASK_IDS => '1,2,3',
                 ],
-                'canonicalUrl' => 'http://example.com/',
                 'testId' => 1,
                 'expectedTestValues' => [
                     'testId' => 1,
@@ -222,7 +218,6 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
                     ])
                 ],
                 'testValues' => [],
-                'canonicalUrl' => 'http://example.com/',
                 'testId' => 1,
                 'expectedTestValues' => [
                     'testId' => 1,
@@ -244,7 +239,7 @@ class TestServiceTest extends AbstractCoreApplicationServiceTest
      */
     public function testIsFinished(string $state, bool $expectedIsFinished)
     {
-        $test = Test::create(1, 'http://example.com/');
+        $test = Test::create(1);
         $test->setState($state);
 
         $this->assertEquals($expectedIsFinished, $this->testService->isFinished($test));

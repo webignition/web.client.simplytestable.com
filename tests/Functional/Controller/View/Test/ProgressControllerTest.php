@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class ProgressControllerTest extends AbstractViewControllerTest
@@ -163,7 +164,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService($website, self::TEST_ID, $test, $testServiceIsFinished);
+        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -195,7 +196,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService($website, self::TEST_ID, $test, $testServiceIsFinished);
+        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -220,7 +221,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
         return [
             'remote test website not match request website' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
 
                     return $test;
                 },
@@ -233,7 +235,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'finished test; state=completed' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
 
                     return $test;
                 },
@@ -249,7 +252,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'finished test; state=failed_no_sitemap; public user' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
 
                     return $test;
                 },
@@ -266,7 +270,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'finished test; state=failed_no_sitemap; private user' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setState(TestService::STATE_FAILED_NO_SITEMAP);
 
                     return $test;
@@ -302,7 +307,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, false);
+        $testService = $this->createTestService(self::TEST_ID, $test, false);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -318,7 +323,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
         return [
             'public user, in-progress, 79% done' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setState(Test::STATE_IN_PROGRESS);
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
 
@@ -357,7 +363,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'public user, queued, 0% done' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setState(Test::STATE_QUEUED);
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
 
@@ -396,7 +403,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'private user, crawling' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setState(Test::STATE_CRAWLING);
                     $test->setUser(self::USER_EMAIL);
 
@@ -459,7 +467,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, false);
+        $testService = $this->createTestService(self::TEST_ID, $test, false);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -493,7 +501,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
         return [
             'public user, in-progress, 79% done' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setState(Test::STATE_IN_PROGRESS);
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
 
@@ -513,7 +522,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'public user, queued, 0% done' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setState(Test::STATE_QUEUED);
                     $test->setUser(SystemUserService::getPublicUser()->getUsername());
 
@@ -530,7 +540,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'private user, crawling' => [
                 'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID, self::WEBSITE);
+                    $test = Test::create(self::TEST_ID);
+                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
                     $test->setState(Test::STATE_CRAWLING);
                     $test->setUser(self::USER_EMAIL);
 
@@ -555,7 +566,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $remoteTest = new RemoteTest($this->remoteTestData);
 
         $request = new Request();
@@ -565,7 +577,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test, false);
+        $testService = $this->createTestService(self::TEST_ID, $test, false);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($progressController, $testService);
@@ -640,12 +652,12 @@ class ProgressControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, Test $test, bool $isFinished)
+    private function createTestService(int $testId, Test $test, bool $isFinished)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         $testService

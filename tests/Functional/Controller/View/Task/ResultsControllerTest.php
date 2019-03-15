@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
+use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class ResultsControllerTest extends AbstractViewControllerTest
@@ -227,7 +228,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($resultsController, $testService);
@@ -313,7 +314,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($resultsController, $testService);
@@ -812,7 +813,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::WEBSITE, self::TEST_ID, $test);
+        $testService = $this->createTestService(self::TEST_ID, $test);
         $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
 
         $this->setTestServiceOnController($resultsController, $testService);
@@ -1211,12 +1212,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
     /**
      * @return TestService|MockInterface
      */
-    private function createTestService(string $website, int $testId, ?Test $test)
+    private function createTestService(int $testId, ?Test $test)
     {
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with($website, $testId)
+            ->with($testId)
             ->andReturn($test);
 
         return $testService;
@@ -1238,7 +1239,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     private function createTest(User $owner): Test
     {
-        $test = Test::create(self::TEST_ID, self::WEBSITE);
+        $test = Test::create(self::TEST_ID);
+        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
         $test->setUser($owner->getUsername());
 
         $entityManager = self::$container->get(EntityManagerInterface::class);

@@ -187,7 +187,7 @@ view_task_results:
         trailingSlash : "[/]{0,1}"
 
 view_partials_test_url_limit_notification:
-    path: /{website}/{test_id}/url-limit-notification/
+    path: /{test_id}/url-limit-notification/
     defaults: { _controller: App\Controller\View\Partials\TestUrlLimitNotificationController::indexAction }
     requirements:
         website: '.+'
@@ -269,14 +269,13 @@ view_test_results_preparing:
        test_id: '\d+'
 
 view_test_results_preparing_stats:
-    path: /{website}/{test_id}/results/preparing/stats/
+    path: /{test_id}/results/preparing/stats/
     defaults: { _controller: App\Controller\View\Test\Results\PreparingStatsController::indexAction, _format: json }
     requirements:
-       website: '.+'
        test_id: '\d+'
 
 task_results_retrieve:
-    path: /{website}/{test_id}/results/retrieve/
+    path: /{test_id}/results/retrieve/
     defaults: { _controller: App\Controller\TaskController::retrieveAction }
     requirements:
        website: '.+'
@@ -304,14 +303,14 @@ view_partials_test_task_list:
         test_id: '\d+'
 
 test_task_ids:
-    path: /{website}/{test_id}/tasks/ids/
+    path: /{test_id}/tasks/ids/
     defaults: { _controller: App\Controller\TaskController::idCollectionAction, _format: json }
     requirements:
         website: '.+'
         test_id: '\d+'
 
 test_task_ids_unretrieved:
-    path: /{website}/{test_id}/tasks/ids/unretrieved/{limit}/
+    path: /{test_id}/tasks/ids/unretrieved/{limit}/
     defaults: { _controller: App\Controller\TaskController::unretrievedIdCollectionAction, _format: json }
     requirements:
         website: '.+'

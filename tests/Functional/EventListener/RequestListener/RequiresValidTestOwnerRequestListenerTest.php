@@ -33,7 +33,7 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
         $testService = \Mockery::mock(TestService::class);
         $testService
             ->shouldReceive('get')
-            ->with(self::WEBSITE, self::TEST_ID)
+            ->with(self::TEST_ID)
             ->andReturn($testServiceGetReturnValue);
 
         ObjectReflector::setProperty(
@@ -84,7 +84,7 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
                 'expectedHasResponse' => true,
             ],
             'valid test owner' => [
-                'testServiceGetReturnValue' => Test::create(self::TEST_ID, self::WEBSITE),
+                'testServiceGetReturnValue' => Test::create(self::TEST_ID),
                 'expectedHasResponse' => false,
             ],
         ];
