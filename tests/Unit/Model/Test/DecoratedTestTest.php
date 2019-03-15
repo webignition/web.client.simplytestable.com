@@ -27,6 +27,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     const CANCELLED_TASK_COUNT = 0;
     const ENCODED_PARAMETERS = '';
     const AMENDMENTS = [];
+    const COMPLETION_PERCENT = 25;
 
     private $testProperties = [
         'test_id' => self::TEST_ID,
@@ -42,7 +43,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'tasksWithErrorsCount' => self::TASKS_WITH_ERRORS_COUNT,
         'cancelledTaskCount' => self::CANCELLED_TASK_COUNT,
         'encodedParameters' => self::ENCODED_PARAMETERS,
-        'amendments' => self::AMENDMENTS
+        'amendments' => self::AMENDMENTS,
+        'completionPercent' => self::COMPLETION_PERCENT,
     ];
 
     public function testGetScalarProperties()
@@ -61,6 +63,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(self::WARNING_COUNT, $decoratedTest->getWarningCount());
         $this->assertEquals(self::REMOTE_TASK_COUNT, $decoratedTest->getRemoteTaskCount());
         $this->assertEquals(self::AMENDMENTS, $decoratedTest->getAmendments());
+        $this->assertEquals(self::COMPLETION_PERCENT, $decoratedTest->getCompletionPercent());
     }
 
     /**
@@ -349,7 +352,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['tasksWithErrorsCount'],
             $properties['cancelledTaskCount'],
             $properties['encodedParameters'],
-            $properties['amendments']
+            $properties['amendments'],
+            $properties['completionPercent']
         );
     }
 

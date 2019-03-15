@@ -123,11 +123,11 @@ class DecoratedTest implements \JsonSerializable
     {
         return $this->test->getAmendments();
     }
-//
-//    public function getCompletionPercent()
-//    {
-//        return $this->remoteTest->getCompletionPercent();
-//    }
+
+    public function getCompletionPercent()
+    {
+        return $this->test->getCompletionPercent();
+    }
 //
 //    public function getTaskCountByState()
 //    {
