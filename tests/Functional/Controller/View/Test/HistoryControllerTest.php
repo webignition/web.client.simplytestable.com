@@ -363,6 +363,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                         'jobs' => [
                             [
                                 'id' => 1,
+                                'website' => 'http://example.com/',
                                 'task_types' => [],
                                 'user' => 'user@example.com',
                                 'state' => Test::STATE_COMPLETED,
