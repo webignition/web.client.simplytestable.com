@@ -10,7 +10,7 @@
     'data-remaining-tasks-to-retrieve-count="' ~ remaining_tasks_to_retrieve_count ~ '"',
     'data-unretrieved-remote-task-ids-url="' ~ path('test_task_ids_unretrieved', route_parameters|merge({limit: 100})) ~ '"',
     'data-results-retrieve-url="' ~ path('task_results_retrieve', route_parameters) ~ '"',
-    'data-preparing-stats-url="' ~ path('view_test_results_preparing_stats', route_parameters) ~ '"',
+    'data-preparing-stats-url="' ~ path('view_test_results_preparing_stats', { test_id: test.testid }) ~ '"',
     'data-results-url="' ~ path('view_test_results', route_parameters) ~ '"'
 ] %}
 

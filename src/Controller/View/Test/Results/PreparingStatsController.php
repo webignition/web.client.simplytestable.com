@@ -40,7 +40,6 @@ class PreparingStatsController extends AbstractBaseViewController
     }
 
     /**
-     * @param string $website
      * @param int $test_id
      *
      * @return JsonResponse
@@ -48,7 +47,7 @@ class PreparingStatsController extends AbstractBaseViewController
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
      */
-    public function indexAction(string $website, int $test_id): JsonResponse
+    public function indexAction(int $test_id): JsonResponse
     {
         $test = $this->testService->get($test_id);
 
