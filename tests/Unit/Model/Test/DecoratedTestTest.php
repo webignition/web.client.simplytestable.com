@@ -55,7 +55,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(self::URL_COUNT, $decoratedTest->getUrlCount());
         $this->assertEquals(self::ERROR_COUNT, $decoratedTest->getErrorCount());
         $this->assertEquals(self::WARNING_COUNT, $decoratedTest->getWarningCount());
-//        $this->assertEquals(self::TASK_COUNT, $decoratedTest->getT());
+        $this->assertEquals(self::REMOTE_TASK_COUNT, $decoratedTest->getRemoteTaskCount());
     }
 
     /**
@@ -238,6 +238,45 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
                 'tasksWithErrorsCount' => 1,
                 'cancelledTaskCount' => 2,
                 'expectedErrorFreeTaskCount' => 7,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getLocalTaskCountDataProvider
+     */
+    public function testGetLocalTaskCount(TestEntity $entity, int $expectedLocalTaskCount)
+    {
+        $testModel = $this->createTest([
+            'entity' => $entity,
+        ]);
+        $remoteTest = new RemoteTest([]);
+
+        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+
+        $this->assertEquals($expectedLocalTaskCount, $decoratedTest->getLocalTaskCount());
+    }
+
+    public function getLocalTaskCountDataProvider(): array
+    {
+        return [
+            'no tasks' => [
+                'entity' => $this->createTestEntity(1),
+                'expectedLocalTaskCount' => 0,
+            ],
+            'one task' => [
+                'entity' => $this->createTestEntity(1, [
+                    $this->createTask(Task::TYPE_HTML_VALIDATION),
+                ]),
+                'expectedLocalTaskCount' => 1,
+            ],
+            'three tasks' => [
+                'entity' => $this->createTestEntity(1, [
+                    $this->createTask(Task::TYPE_HTML_VALIDATION),
+                    $this->createTask(Task::TYPE_HTML_VALIDATION),
+                    $this->createTask(Task::TYPE_HTML_VALIDATION),
+                ]),
+                'expectedLocalTaskCount' => 3,
             ],
         ];
     }

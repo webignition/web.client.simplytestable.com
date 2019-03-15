@@ -98,11 +98,16 @@ class DecoratedTest implements \JsonSerializable
 
         return $remoteTaskCount - $tasksWithErrorsCount - $cancelledTaskCount;
     }
-//
-//    public function getTaskCount(): int
-//    {
-//        return $this->remoteTest->getTaskCount();
-//    }
+
+    public function getLocalTaskCount()
+    {
+        return $this->test->getLocalTaskCount();
+    }
+
+    public function getRemoteTaskCount()
+    {
+        return $this->test->getRemoteTaskCount();
+    }
 //
 //    public function getParameter(string $key)
 //    {
