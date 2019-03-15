@@ -90,7 +90,7 @@ class DecoratedTest implements \JsonSerializable
         return $count;
     }
 
-    public function getErrorFreeTaskCount()
+    public function getErrorFreeTaskCount(): int
     {
         $remoteTaskCount = $this->test->getRemoteTaskCount();
         $tasksWithErrorsCount = $this->test->getTasksWithErrorsCount();
@@ -99,20 +99,25 @@ class DecoratedTest implements \JsonSerializable
         return $remoteTaskCount - $tasksWithErrorsCount - $cancelledTaskCount;
     }
 
-    public function getLocalTaskCount()
+    public function getLocalTaskCount(): int
     {
         return $this->test->getLocalTaskCount();
     }
 
-    public function getRemoteTaskCount()
+    public function getRemoteTaskCount(): int
     {
         return $this->test->getRemoteTaskCount();
     }
-//
-//    public function getParameter(string $key)
-//    {
-//        return $this->remoteTest->getParameter($key);
-//    }
+
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
+    public function getParameter(string $key)
+    {
+        return $this->test->getParameter($key);
+    }
 //
 //    public function getAmendments()
 //    {

@@ -25,6 +25,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     const REMOTE_TASK_COUNT = 0;
     const TASKS_WITH_ERRORS_COUNT = 0;
     const CANCELLED_TASK_COUNT = 0;
+    const ENCODED_PARAMETERS = '';
 
     private $testProperties = [
         'test_id' => self::TEST_ID,
@@ -39,6 +40,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'remoteTaskCount' => self::REMOTE_TASK_COUNT,
         'tasksWithErrorsCount' => self::TASKS_WITH_ERRORS_COUNT,
         'cancelledTaskCount' => self::CANCELLED_TASK_COUNT,
+        'encodedParameters' => self::ENCODED_PARAMETERS,
     ];
 
     public function testGetScalarProperties()
@@ -281,6 +283,47 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider getParameterDataProvider
+     */
+    public function testGetParameter($encodedParameters, string $key, $expectedValue)
+    {
+        $testModel = $this->createTest([
+            'encodedParameters' => $encodedParameters,
+        ]);
+        $remoteTest = new RemoteTest([]);
+
+        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+
+        $this->assertEquals($expectedValue, $decoratedTest->getParameter($key));
+    }
+
+    public function getParameterDataProvider(): array
+    {
+        return [
+            'empty parameters' => [
+                'encodedParameters' => '',
+                'key' => 'key1',
+                'value' => null,
+            ],
+            'key not present' => [
+                'encodedParameters' => json_encode([
+                    'key2' => 'value2',
+                ]),
+                'key' => 'key1',
+                'value' => null,
+            ],
+            'key present' => [
+                'encodedParameters' => json_encode([
+                    'key1' => 'value1',
+                    'key2' => 'value2',
+                ]),
+                'key' => 'key1',
+                'value' => 'value1',
+            ],
+        ];
+    }
+
     private function createTest(array $properties = []): TestModel
     {
         $properties = array_merge($this->testProperties, $properties);
@@ -301,7 +344,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['warningCount'],
             $properties['remoteTaskCount'],
             $properties['tasksWithErrorsCount'],
-            $properties['cancelledTaskCount']
+            $properties['cancelledTaskCount'],
+            $properties['encodedParameters']
         );
     }
 
