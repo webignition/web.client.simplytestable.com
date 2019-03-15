@@ -177,4 +177,9 @@ class Test
     {
         return $this->rejection;
     }
+
+    public function requiresRemoteTasks(): bool
+    {
+        return $this->getRemoteTaskCount() > $this->getLocalTaskCount();
+    }
 }

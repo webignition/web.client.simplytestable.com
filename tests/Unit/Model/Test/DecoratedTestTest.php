@@ -343,6 +343,52 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider requiresRemoteTasksDataProvider
+     */
+    public function testRequiresRemoteTasks(
+        TestEntity $entity,
+        int $remoteTaskCount,
+        bool $expectedRequiresRemoteTasks
+    ) {
+        $testModel = $this->createTest([
+            'entity' => $entity,
+            'remoteTaskCount' => $remoteTaskCount,
+        ]);
+        $remoteTest = new RemoteTest([]);
+
+        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+
+        $this->assertEquals($expectedRequiresRemoteTasks, $decoratedTest->requiresRemoteTasks());
+    }
+
+    public function requiresRemoteTasksDataProvider(): array
+    {
+        return [
+            'no local tasks, no remote tasks' => [
+                'entity' => $this->createTestEntity(1),
+                'remoteTaskCount' => 0,
+                'expectedRequiresRemoteTasks' => false,
+            ],
+            'local task count === remote task count' => [
+                'entity' => $this->createTestEntity(1, [
+                    $this->createTask(Task::TYPE_HTML_VALIDATION),
+                    $this->createTask(Task::TYPE_HTML_VALIDATION),
+                    $this->createTask(Task::TYPE_HTML_VALIDATION),
+                ]),
+                'remoteTaskCount' => 3,
+                'expectedRequiresRemoteTasks' => false,
+            ],
+            'local task count < remote task count' => [
+                'entity' => $this->createTestEntity(1, [
+                    $this->createTask(Task::TYPE_HTML_VALIDATION),
+                ]),
+                'remoteTaskCount' => 3,
+                'expectedRequiresRemoteTasks' => true,
+            ],
+        ];
+    }
+
     private function createTest(array $properties = []): TestModel
     {
         $properties = array_merge($this->testProperties, $properties);
