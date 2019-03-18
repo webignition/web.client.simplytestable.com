@@ -428,6 +428,35 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider getFormattedWebsiteDataProvider
+     */
+    public function testGetFormattedWebsite(string $website, string $expectedWebsite)
+    {
+        $testModel = $this->createTest([
+            'website' => $website,
+        ]);
+        $remoteTest = new RemoteTest([]);
+
+        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+
+        $this->assertEquals($expectedWebsite, $decoratedTest->getFormattedWebsite());
+    }
+
+    public function getFormattedWebsiteDataProvider(): array
+    {
+        return [
+            'no percent-encoded characters' => [
+                'website' => 'http://example.com/',
+                'expectedWebsite' => 'http://example.com/',
+            ],
+            'with percent-encoded characters' => [
+                'website' => 'http://example.com/%3A',
+                'expectedWebsite' => 'http://example.com/:',
+            ],
+        ];
+    }
+
     private function createTest(array $properties = []): TestModel
     {
         $properties = array_merge($this->testProperties, $properties);

@@ -154,12 +154,12 @@ class DecoratedTest implements \JsonSerializable
     {
         return $this->test->getCrawlData();
     }
-//
-//    public function getFormattedWebsite(): string
-//    {
-//        return $this->test->getFormattedWebsite();
-//    }
-//
+
+    public function getFormattedWebsite(): string
+    {
+        return rawurldecode((string) $this->getWebsite());
+    }
+
     public function jsonSerialize(): array
     {
         return [];
