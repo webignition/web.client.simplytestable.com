@@ -13,6 +13,7 @@ use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\PlansService;
 use App\Services\RemoteTestService;
+use App\Services\TestFactory;
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
 use App\Services\UserService;
@@ -49,6 +50,8 @@ class RejectedController extends AbstractBaseViewController
      */
     private $urlViewValues;
 
+    private $testFactory;
+
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
@@ -58,7 +61,8 @@ class RejectedController extends AbstractBaseViewController
         TestService $testService,
         RemoteTestService $remoteTestService,
         UserService $userService,
-        PlansService $plansService
+        PlansService $plansService,
+        TestFactory $testFactory
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -67,6 +71,7 @@ class RejectedController extends AbstractBaseViewController
         $this->userService = $userService;
         $this->plansService = $plansService;
         $this->urlViewValues = $urlViewValues;
+        $this->testFactory = $testFactory;
     }
 
     /**
@@ -128,7 +133,8 @@ class RejectedController extends AbstractBaseViewController
             ));
         }
 
-        $decoratedTest = new DecoratedTest($test, $remoteTest);
+        $testModel = $this->testFactory->create($test, $remoteTest);
+        $decoratedTest = new DecoratedTest($testModel);
 
         $viewData = [
             'website' => $this->urlViewValues->create($website),
