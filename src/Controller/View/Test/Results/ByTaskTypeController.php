@@ -16,6 +16,7 @@ use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskCollectionFilterService;
 use App\Services\TaskService;
+use App\Services\TestFactory;
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
@@ -61,6 +62,8 @@ class ByTaskTypeController extends AbstractBaseViewController
      */
     private $userManager;
 
+    private $testFactory;
+
     /**
      * @var string[]
      */
@@ -79,7 +82,8 @@ class ByTaskTypeController extends AbstractBaseViewController
         TestService $testService,
         RemoteTestService $remoteTestService,
         TaskService $taskService,
-        TaskCollectionFilterService $taskCollectionFilterService
+        TaskCollectionFilterService $taskCollectionFilterService,
+        TestFactory $testFactory
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -89,6 +93,7 @@ class ByTaskTypeController extends AbstractBaseViewController
         $this->taskCollectionFilterService = $taskCollectionFilterService;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
+        $this->testFactory = $testFactory;
     }
 
     /**
@@ -195,7 +200,8 @@ class ByTaskTypeController extends AbstractBaseViewController
         $errorTaskMaps->sortMapsByOccurrenceCount();
         $errorTaskMaps->sortByOccurrenceCount();
 
-        $decoratedTest = new DecoratedTest($test, $remoteTest);
+        $testModel = $this->testFactory->create($test, $remoteTest);
+        $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
             'test-results-by-task-type.html.twig',
