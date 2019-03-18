@@ -2,23 +2,52 @@
 
 namespace App\Model\Test;
 
-use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
+use App\Entity\Test as TestEntity;
+use App\Model\RemoteTest\Rejection;
+use App\Model\Test;
 
 class DecoratedTest implements \JsonSerializable
 {
     private $test;
-    private $remoteTest;
 
-    public function __construct(Test $test, RemoteTest $remoteTest)
+    public function __construct(Test $test)
     {
         $this->test = $test;
-        $this->remoteTest = $remoteTest;
     }
 
     public function getTestId(): int
     {
         return $this->test->getTestId();
+    }
+
+    public function getWebsite(): string
+    {
+        return $this->test->getWebsite();
+    }
+
+    public function getState(): string
+    {
+        return $this->test->getState();
+    }
+
+    public function isFullSite(): bool
+    {
+        return TestEntity::TYPE_FULL_SITE === $this->test->getType();
+    }
+
+    public function isSingleUrl(): bool
+    {
+        return TestEntity::TYPE_SINGLE_URL === $this->test->getType();
+    }
+
+    public function getTaskTypes(): array
+    {
+        return $this->test->getTaskTypes();
+    }
+
+    public function getUrlCount(): ?int
+    {
+        return $this->test->getUrlCount();
     }
 
     public function getErrorCount(): int
@@ -31,115 +60,123 @@ class DecoratedTest implements \JsonSerializable
         return $this->test->getWarningCount();
     }
 
-    public function getErrorCountByTaskType(string $taskType): int
+    public function getErrorCountByTaskType(string $type): int
     {
-        return $this->test->getErrorCountByTaskType($taskType);
+        $tasks = $this->test->getTasks();
+        $count = 0;
+
+        foreach ($tasks as $task) {
+            if ($task->hasOutput() && $task->getType() === $type) {
+                $count += $task->getOutput()->getErrorCount();
+            }
+        }
+
+        return $count;
     }
 
-    public function getWarningCountByTaskType(string $taskType): int
+    public function getWarningCountByTaskType(string $type): int
     {
-        return $this->test->getWarningCountByTaskType($taskType);
-    }
+        $tasks = $this->test->getTasks();
+        $count = 0;
 
-    public function getWebsite(): string
-    {
-        return $this->test->getWebsite();
+        foreach ($tasks as $task) {
+            if ($task->hasOutput() && $task->getType() === $type) {
+                $count += $task->getOutput()->getWarningCount();
+            }
+        }
+
+        return $count;
     }
 
     public function getErrorFreeTaskCount(): int
     {
-        return $this->remoteTest->getErrorFreeTaskCount();
+        $remoteTaskCount = $this->test->getRemoteTaskCount();
+        $tasksWithErrorsCount = $this->test->getTasksWithErrorsCount();
+        $cancelledTaskCount = $this->test->getCancelledTaskCount();
+
+        return $remoteTaskCount - $tasksWithErrorsCount - $cancelledTaskCount;
     }
 
-    public function getTaskTypes(): array
+    public function getLocalTaskCount(): int
     {
-        return $this->remoteTest->getTaskTypes();
+        return $this->test->getLocalTaskCount();
     }
 
-    public function isFullSite(): bool
+    public function getRemoteTaskCount(): int
     {
-        return $this->remoteTest->isFullSite();
+        return $this->test->getRemoteTaskCount();
     }
 
-    public function isSingleUrl(): bool
-    {
-        return $this->remoteTest->isSingleUrl();
-    }
-
-    public function getTaskCount(): int
-    {
-        return $this->remoteTest->getTaskCount();
-    }
-
+    /**
+     * @param string $key
+     *
+     * @return mixed
+     */
     public function getParameter(string $key)
     {
-        return $this->remoteTest->getParameter($key);
+        return $this->test->getParameter($key);
     }
 
     public function getAmendments()
     {
-        $amendments = $this->remoteTest->getAmmendments();
-
-        return $amendments ?? [];
-    }
-
-    public function getState(): string
-    {
-        return $this->remoteTest->getState();
+        return $this->test->getAmendments();
     }
 
     public function getCompletionPercent()
     {
-        return $this->remoteTest->getCompletionPercent();
+        return $this->test->getCompletionPercent();
     }
 
     public function getTaskCountByState()
     {
-        return $this->remoteTest->getTaskCountByState();
+        return $this->test->getTaskCountByState();
     }
 
-    public function getRejection()
+    public function getRejection(): ?Rejection
     {
-        return $this->remoteTest->getRejection();
+        return $this->test->getRejection();
     }
 
     public function requiresRemoteTasks(): bool
     {
-        return $this->remoteTest->getTaskCount() !== $this->test->getTaskCount();
+        return $this->getRemoteTaskCount() > $this->getLocalTaskCount();
     }
 
-    public function getTest(): Test
+    public function getEntity(): TestEntity
     {
-        return $this->test;
+        return $this->test->getEntity();
     }
 
     public function getCrawlData(): array
     {
-        return $this->remoteTest->getCrawl();
-    }
-
-    public function getUrlCount(): ?int
-    {
-        return $this->remoteTest->getUrlCount();
+        return $this->test->getCrawlData();
     }
 
     public function getFormattedWebsite(): string
     {
-        return $this->test->getFormattedWebsite();
+        return rawurldecode((string) $this->getWebsite());
     }
 
     public function jsonSerialize(): array
     {
-        return array_merge($this->test->jsonSerialize(), [
-            'task_count' => $this->getTaskCount(),
+        return [
+            'user' => $this->test->getUser(),
+            'website' => $this->getWebsite(),
+            'state' => $this->getState(),
+            'taskTypes' => $this->getTaskTypes(),
+            'task_count' => $this->getRemoteTaskCount(),
             'completion_percent' => $this->getCompletionPercent(),
             'task_count_by_state' => $this->getTaskCountByState(),
             'amendments' => $this->getAmendments(),
-        ]);
+        ];
     }
 
-    public function __toArray(): array
+    public function getHash(): string
     {
-        return array_merge($this->test->jsonSerialize(), $this->remoteTest->__toArray());
+        return md5(json_encode([
+            'test_id' => $this->getTestId(),
+            'state' => $this->getState(),
+            'requires_remote_tasks' => $this->requiresRemoteTasks(),
+        ]));
     }
 }

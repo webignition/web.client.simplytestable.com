@@ -9,6 +9,7 @@ use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
+use App\Services\TestFactory;
 use App\Services\TestService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,18 +28,22 @@ class TestFinishedSummaryController extends AbstractBaseViewController
      */
     private $remoteTestService;
 
+    private $testFactory;
+
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
         TestService $testService,
-        RemoteTestService $remoteTestService
+        RemoteTestService $remoteTestService,
+        TestFactory $testFactory
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
+        $this->testFactory = $testFactory;
     }
 
     /**
@@ -64,7 +69,9 @@ class TestFinishedSummaryController extends AbstractBaseViewController
 
         $test = $this->testService->get($test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
-        $decoratedTest = new DecoratedTest($test, $remoteTest);
+
+        $testModel = $this->testFactory->create($test, $remoteTest);
+        $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
             'Partials/Test/Summary/finished.html.twig',

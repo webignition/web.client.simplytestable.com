@@ -17,7 +17,18 @@ class TestFactory
             $remoteTest->getState(),
             $remoteTest->getType(),
             $remoteTest->getTaskTypes(),
-            $remoteTest->getUrlCount()
+            $remoteTest->getUrlCount(),
+            $entity->getErrorCount(),
+            $entity->getWarningCount(),
+            $remoteTest->getTaskCount(),
+            $remoteTest->getErroredTaskCount(),
+            $remoteTest->getCancelledTaskCount(),
+            $remoteTest->getEncodedParameters(),
+            $remoteTest->getAmmendments(),
+            $remoteTest->getCompletionPercent(),
+            $remoteTest->getTaskCountByState(),
+            $remoteTest->getCrawl(),
+            $remoteTest->getRejection()
         );
     }
 }

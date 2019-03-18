@@ -14,6 +14,7 @@ use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskTypeService;
+use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
@@ -67,6 +68,8 @@ class ProgressController extends AbstractBaseViewController
      */
     private $userManager;
 
+    private $testFactory;
+
     /**
      * @var string[]
      */
@@ -91,7 +94,8 @@ class ProgressController extends AbstractBaseViewController
         RemoteTestService $remoteTestService,
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
-        CssValidationTestConfiguration $cssValidationTestConfiguration
+        CssValidationTestConfiguration $cssValidationTestConfiguration,
+        TestFactory $testFactory
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -102,6 +106,7 @@ class ProgressController extends AbstractBaseViewController
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
+        $this->testFactory = $testFactory;
     }
 
     /**
@@ -173,7 +178,8 @@ class ProgressController extends AbstractBaseViewController
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
 
-        $decoratedTest = new DecoratedTest($test, $remoteTest);
+        $testModel = $this->testFactory->create($test, $remoteTest);
+        $decoratedTest = new DecoratedTest($testModel);
 
         $commonViewData = [
             'test' => $decoratedTest,

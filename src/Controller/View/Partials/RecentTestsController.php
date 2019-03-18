@@ -61,7 +61,7 @@ class RecentTestsController extends AbstractBaseViewController
 
         foreach ($decoratedTestList as $decoratedTest) {
             if ($decoratedTest->requiresRemoteTasks() && $decoratedTest->isSingleUrl()) {
-                $test = $decoratedTest->getTest();
+                $test = $decoratedTest->getEntity();
                 $this->taskService->getCollection($test, $test->getTaskIds());
             }
         }

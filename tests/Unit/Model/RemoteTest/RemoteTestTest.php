@@ -466,7 +466,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
                         Task::STATE_COMPLETED => 1,
                     ],
                 ],
-                'expectedCompletionPercent' => 0.1,
+                'expectedCompletionPercent' => 0,
             ],
             'partially completed, requiredPrecision=3' => [
                 'remoteTestData' => [
@@ -475,7 +475,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
                         Task::STATE_COMPLETED => 1,
                     ],
                 ],
-                'expectedCompletionPercent' => 0.01,
+                'expectedCompletionPercent' => 0,
             ],
         ];
     }

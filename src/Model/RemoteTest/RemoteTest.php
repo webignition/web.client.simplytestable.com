@@ -24,13 +24,9 @@ class RemoteTest extends AbstractArrayBasedModel
      */
     private $owners = null;
 
-    /**
-     *
-     * @return string
-     */
-    public function getState()
+    public function getState(): string
     {
-        $state = $this->getProperty('state');
+        $state = trim($this->getProperty('state'));
         $crawlData = $this->getCrawl();
 
         if (Test::STATE_FAILED_NO_SITEMAP === $state && !empty($crawlData)) {
@@ -40,40 +36,28 @@ class RemoteTest extends AbstractArrayBasedModel
         return $state;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): string
     {
-        return $this->getProperty('type');
+        return trim($this->getProperty('type'));
     }
 
-    /**
-     * @return int|null
-     */
-    public function getUrlCount()
+    public function getUrlCount(): int
     {
-        return $this->getProperty('url_count');
+        return (int) $this->getProperty('url_count');
     }
 
-    /**
-     * @return int|null
-     */
-    public function getTaskCount()
+    public function getTaskCount(): int
     {
-        $taskCount = $this->getProperty('task_count');
-
-        return empty($taskCount) ? 0 : $taskCount;
+        return (int) $this->getProperty('task_count');
     }
 
-    /**
-     * @return array
-     */
-    public function getTaskTypes()
+    public function getTaskTypes(): array
     {
+        $sourceTaskTypes = $this->source['task_types'] ?? [];
+
         $taskTypes = [];
 
-        foreach ($this->source['task_types'] as $taskTypeData) {
+        foreach ($sourceTaskTypes as $taskTypeData) {
             $taskTypes[] = $taskTypeData['name'];
         }
 
@@ -120,6 +104,11 @@ class RemoteTest extends AbstractArrayBasedModel
             : null;
     }
 
+    public function getEncodedParameters(): string
+    {
+        return trim($this->getProperty('parameters'));
+    }
+
     /**
      * @param string $key
      * @return bool
@@ -129,10 +118,7 @@ class RemoteTest extends AbstractArrayBasedModel
         return !is_null($this->getParameter($key));
     }
 
-    /**
-     * @return array
-     */
-    public function getTaskCountByState()
+    public function getTaskCountByState(): array
     {
         $taskStates = [
             'in-progress' => 'in_progress',
@@ -166,20 +152,12 @@ class RemoteTest extends AbstractArrayBasedModel
         return $taskCountByState;
     }
 
-    /**
-     * @return array
-     */
-    public function getCrawl()
+    public function getCrawl(): array
     {
-        $crawlData = $this->getProperty('crawl');
-
-        return $crawlData ? $crawlData : [];
+        return $this->getProperty('crawl') ?? [];
     }
 
-    /**
-     * @return int|float
-     */
-    public function getCompletionPercent()
+    public function getCompletionPercent(): int
     {
         $crawlData = $this->getCrawl();
 
@@ -191,7 +169,7 @@ class RemoteTest extends AbstractArrayBasedModel
                 return 0;
             }
 
-            return round(($discoveredUrlCount / $crawl['limit']) * 100);
+            return (int) round(($discoveredUrlCount / $crawl['limit']) * 100);
         }
 
         if (0 === $this->getTaskCount()) {
@@ -212,10 +190,10 @@ class RemoteTest extends AbstractArrayBasedModel
         $requiredPrecision = floor(log10($this->getTaskCount())) - 1;
 
         if ($requiredPrecision == 0) {
-            return floor(($finishedCount / $this->getTaskCount()) * 100);
+            return (int) floor(($finishedCount / $this->getTaskCount()) * 100);
         }
 
-        return round(($finishedCount / $this->getTaskCount()) * 100, $requiredPrecision);
+        return (int) round(($finishedCount / $this->getTaskCount()) * 100, $requiredPrecision);
     }
 
     /**
@@ -232,12 +210,9 @@ class RemoteTest extends AbstractArrayBasedModel
         );
     }
 
-    /**
-     * @return string
-     */
     public function getUser()
     {
-        return $this->getProperty('user');
+        return trim($this->getProperty('user'));
     }
 
     /**
@@ -248,20 +223,14 @@ class RemoteTest extends AbstractArrayBasedModel
         return $this->getProperty('is_public');
     }
 
-    /**
-     * @return int
-     */
-    public function getErroredTaskCount()
+    public function getErroredTaskCount(): int
     {
-        return $this->getProperty('errored_task_count');
+        return (int) $this->getProperty('errored_task_count');
     }
 
-    /**
-     * @return int
-     */
-    public function getCancelledTaskCount()
+    public function getCancelledTaskCount(): int
     {
-        return $this->getProperty('cancelled_task_count');
+        return (int) $this->getProperty('cancelled_task_count');
     }
 
     /**
@@ -288,12 +257,9 @@ class RemoteTest extends AbstractArrayBasedModel
         return $this->getTaskCount() - $this->getErroredTaskCount() - $this->getCancelledTaskCount();
     }
 
-    /**
-     * @return string
-     */
-    public function getWebsite()
+    public function getWebsite(): string
     {
-        return $this->getProperty('website');
+        return trim($this->getProperty('website'));
     }
 
     /**
@@ -304,24 +270,22 @@ class RemoteTest extends AbstractArrayBasedModel
         return (int) $this->getProperty('id');
     }
 
-    /**
-     * @return array
-     */
-    public function getAmmendments()
+    public function getAmmendments(): array
     {
-        return $this->getProperty('ammendments');
+        $amendments = $this->getProperty('ammendments');
+
+        return is_array($amendments) ? $amendments : [];
     }
 
-    /**
-     * @return Rejection
-     */
-    public function getRejection()
+    public function getRejection(): ?Rejection
     {
-        if (!$this->hasProperty('rejection')) {
+        $rejectionData = $this->getProperty('rejection');
+
+        if (null === $rejectionData) {
             return null;
         }
 
-        return new Rejection($this->getProperty('rejection'));
+        return new Rejection($rejectionData);
     }
 
     /**

@@ -3,10 +3,12 @@
 
 namespace App\Tests\Unit\Model;
 
-use App\Entity\Test;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Model\DecoratedTestList;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
+use App\Services\TestFactory;
 use App\Tests\Services\ObjectReflector;
 
 class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
@@ -28,10 +30,13 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
     {
         $testId = 7;
 
-        $test = Test::create($testId);
+        $entity = TestEntity::create($testId);
         $remoteTest = new RemoteTest([]);
 
-        $decoratedTest = new DecoratedTest($test, $remoteTest);
+        $testFactory = new TestFactory();
+        $test = $testFactory->create($entity, $remoteTest);
+
+        $decoratedTest = new DecoratedTest($test);
 
         return [
             'no remote tests, default maxResults, offset, limit' => [
@@ -79,18 +84,9 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
     public function testIterator()
     {
         $decoratedTests = [
-            new DecoratedTest(
-                Test::create(1),
-                new RemoteTest([])
-            ),
-            new DecoratedTest(
-                Test::create(2),
-                new RemoteTest([])
-            ),
-            new DecoratedTest(
-                Test::create(3),
-                new RemoteTest([])
-            )
+            new DecoratedTest(\Mockery::mock(TestModel::class)),
+            new DecoratedTest(\Mockery::mock(TestModel::class)),
+            new DecoratedTest(\Mockery::mock(TestModel::class)),
         ];
 
         $decoratedTestList = new DecoratedTestList($decoratedTests, 3, 0, 3);
@@ -119,27 +115,15 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
             ],
             'one test' => [
                 'decoratedTests' => [
-                    new DecoratedTest(
-                        Test::create(1),
-                        new RemoteTest([])
-                    )
+                    new DecoratedTest(\Mockery::mock(TestModel::class)),
                 ],
                 'expectedLength' => 1,
             ],
             'three tests' => [
                 'decoratedTests' => [
-                    new DecoratedTest(
-                        Test::create(1),
-                        new RemoteTest([])
-                    ),
-                    new DecoratedTest(
-                        Test::create(2),
-                        new RemoteTest([])
-                    ),
-                    new DecoratedTest(
-                        Test::create(3),
-                        new RemoteTest([])
-                    )
+                    new DecoratedTest(\Mockery::mock(TestModel::class)),
+                    new DecoratedTest(\Mockery::mock(TestModel::class)),
+                    new DecoratedTest(\Mockery::mock(TestModel::class)),
                 ],
                 'expectedLength' => 3,
             ],
@@ -371,51 +355,5 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
                 'expectedPageNumbers' => [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
             ],
         ];
-    }
-
-    public function testGetHash()
-    {
-        /* @var DecoratedTestList[] $decoratedTestLists */
-        $decoratedTestLists =[
-            'empty collection' =>  new DecoratedTestList([], 0, 0, 0),
-            'maxResults changes hash' => new DecoratedTestList([], 1, 0, 0),
-            'offset changes hash' => new DecoratedTestList([], 0, 1, 0),
-            'limit changes hash' => new DecoratedTestList([], 0, 0, 1),
-            'single test, not requiring remote tasks' => new DecoratedTestList(
-                [
-                    new DecoratedTest(
-                        Test::create(1),
-                        new RemoteTest([])
-                    ),
-                ],
-                0,
-                0,
-                0
-            ),
-            'single test, requiring remote tasks' => new DecoratedTestList(
-                [
-                    new DecoratedTest(
-                        Test::create(1),
-                        new RemoteTest([
-                            'task_count' => 1,
-                        ])
-                    ),
-                ],
-                0,
-                0,
-                0
-            ),
-        ];
-
-        $hashes = [];
-
-        foreach ($decoratedTestLists as $decoratedTestList) {
-            $hash = $decoratedTestList->getHash();
-
-            $this->assertRegExp('/[a-f0-9]{32}/', $hash);
-            $this->assertNotContains($hash, $hashes);
-
-            $hashes[] = $hash;
-        }
     }
 }

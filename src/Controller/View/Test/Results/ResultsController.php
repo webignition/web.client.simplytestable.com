@@ -17,6 +17,7 @@ use App\Services\SystemUserService;
 use App\Services\TaskCollectionFilterService;
 use App\Services\TaskService;
 use App\Services\TaskTypeService;
+use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
@@ -81,6 +82,8 @@ class ResultsController extends AbstractBaseViewController
      */
     private $userManager;
 
+    private $testFactory;
+
     /**
      * @var string[]
      */
@@ -106,7 +109,8 @@ class ResultsController extends AbstractBaseViewController
         TaskTypeService $taskTypeService,
         TaskCollectionFilterService $taskCollectionFilterService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
-        CssValidationTestConfiguration $cssValidationTestConfiguration
+        CssValidationTestConfiguration $cssValidationTestConfiguration,
+        TestFactory $testFactory
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -119,6 +123,7 @@ class ResultsController extends AbstractBaseViewController
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
+        $this->testFactory = $testFactory;
     }
 
     /**
@@ -209,7 +214,8 @@ class ResultsController extends AbstractBaseViewController
 
         $isOwner = $remoteTest->getOwners()->contains($user->getUsername());
 
-        $decoratedTest = new DecoratedTest($test, $remoteTest);
+        $testModel = $this->testFactory->create($test, $remoteTest);
+        $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
             'test-results.html.twig',
