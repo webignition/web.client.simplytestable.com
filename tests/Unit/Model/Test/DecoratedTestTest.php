@@ -457,6 +457,66 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider jsonSerializeDataProvider
+     */
+    public function testJsonSerialize(array $testData, array $expectedSerializedArray)
+    {
+        $testModel = $this->createTest($testData);
+        $remoteTest = new RemoteTest([]);
+
+        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+
+        $this->assertEquals($expectedSerializedArray, $decoratedTest->jsonSerialize());
+    }
+
+    public function jsonSerializeDataProvider(): array
+    {
+        return [
+            'default' => [
+                'testData' => [
+                    'user' => 'user@example.com',
+                    'website' => 'http://example.com/',
+                    'state' => TestEntity::STATE_COMPLETED,
+                    'taskTypes' => [
+                        Task::TYPE_HTML_VALIDATION,
+                    ],
+                    'remoteTaskCount' => 100,
+                    'completionPercent' => 33,
+                    'taskCountByState' => [
+                        'in_progress' => 1,
+                        'queued' => 2,
+                        'completed' => 3,
+                        'cancelled' => 4,
+                        'failed' => 5,
+                        'skipped' => 6,
+                    ],
+                    'amendments' => [],
+                ],
+                'expectedSerializedArray' => [
+                    'user' => 'user@example.com',
+                    'website' => 'http://example.com/',
+                    'state' => TestEntity::STATE_COMPLETED,
+                    'taskTypes' => [
+                        Task::TYPE_HTML_VALIDATION,
+                    ],
+                    'task_count' => 100,
+                    'completion_percent' => 33,
+                    'task_count_by_state' => [
+                        'in_progress' => 1,
+                        'queued' => 2,
+                        'completed' => 3,
+                        'cancelled' => 4,
+                        'failed' => 5,
+                        'skipped' => 6,
+                    ],
+                    'amendments' => [],
+                ],
+            ],
+
+        ];
+    }
+
     private function createTest(array $properties = []): TestModel
     {
         $properties = array_merge($this->testProperties, $properties);

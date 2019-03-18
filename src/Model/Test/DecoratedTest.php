@@ -162,14 +162,16 @@ class DecoratedTest implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [];
-
-//        return array_merge($this->test->jsonSerialize(), [
-//            'task_count' => $this->getTaskCount(),
-//            'completion_percent' => $this->getCompletionPercent(),
-//            'task_count_by_state' => $this->getTaskCountByState(),
-//            'amendments' => $this->getAmendments(),
-//        ]);
+        return [
+            'user' => $this->test->getUser(),
+            'website' => $this->getWebsite(),
+            'state' => $this->getState(),
+            'taskTypes' => $this->getTaskTypes(),
+            'task_count' => $this->getRemoteTaskCount(),
+            'completion_percent' => $this->getCompletionPercent(),
+            'task_count_by_state' => $this->getTaskCountByState(),
+            'amendments' => $this->getAmendments(),
+        ];
     }
 //
 //    public function __toArray(): array
