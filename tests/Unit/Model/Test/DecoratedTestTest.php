@@ -517,6 +517,39 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    public function testGetHash()
+    {
+        /* @var DecoratedTest[] $decoratedTests */
+        $decoratedTests = [
+            'default' => new DecoratedTest($this->createTest([
+                'entity' => $this->createTestEntity(1),
+                'state' => TestEntity::STATE_COMPLETED,
+                'remoteTaskCount' => 0,
+            ]), new RemoteTest([])),
+            'state changes hash' => new DecoratedTest($this->createTest([
+                'entity' => $this->createTestEntity(1),
+                'state' => TestEntity::STATE_IN_PROGRESS,
+                'remoteTaskCount' => 0,
+            ]), new RemoteTest([])),
+            'remoteTaskCount != localTaskCount changes hash' => new DecoratedTest($this->createTest([
+                'entity' => $this->createTestEntity(1),
+                'state' => TestEntity::STATE_COMPLETED,
+                'remoteTaskCount' => 1,
+            ]), new RemoteTest([])),
+        ];
+
+        $hashes = [];
+
+        foreach ($decoratedTests as $decoratedTest) {
+            $hash = $decoratedTest->getHash();
+
+            $this->assertRegExp('/[a-f0-9]{32}/', $hash);
+            $this->assertNotContains($hash, $hashes);
+
+            $hashes[] = $hash;
+        }
+    }
+
     private function createTest(array $properties = []): TestModel
     {
         $properties = array_merge($this->testProperties, $properties);

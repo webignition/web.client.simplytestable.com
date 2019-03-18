@@ -173,9 +173,13 @@ class DecoratedTest implements \JsonSerializable
             'amendments' => $this->getAmendments(),
         ];
     }
-//
-//    public function __toArray(): array
-//    {
-//        return array_merge($this->test->jsonSerialize(), $this->remoteTest->__toArray());
-//    }
+
+    public function getHash(): string
+    {
+        return md5(json_encode([
+            'test_id' => $this->getTestId(),
+            'state' => $this->getState(),
+            'requires_remote_tasks' => $this->requiresRemoteTasks(),
+        ]));
+    }
 }
