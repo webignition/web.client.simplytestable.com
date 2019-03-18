@@ -27,6 +27,7 @@ class Test
     private $completionPercent;
     private $taskCountByState;
     private $rejection;
+    private $crawlData;
 
     public function __construct(
         TestEntity $entity,
@@ -45,6 +46,7 @@ class Test
         array $amendments,
         int $completionPercent,
         array $taskCountByState,
+        array $crawlData,
         ?Rejection $rejection
     ) {
         $this->entity = $entity;
@@ -66,6 +68,7 @@ class Test
         $this->amendments = $amendments;
         $this->completionPercent = $completionPercent;
         $this->taskCountByState = $taskCountByState;
+        $this->crawlData = $crawlData;
         $this->rejection = $rejection;
     }
 
@@ -186,5 +189,10 @@ class Test
     public function requiresRemoteTasks(): bool
     {
         return $this->getRemoteTaskCount() > $this->getLocalTaskCount();
+    }
+
+    public function getCrawlData(): array
+    {
+        return $this->crawlData;
     }
 }

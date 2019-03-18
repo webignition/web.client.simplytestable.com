@@ -149,11 +149,11 @@ class DecoratedTest implements \JsonSerializable
     {
         return $this->test->getEntity();
     }
-//
-//    public function getCrawlData(): array
-//    {
-//        return $this->remoteTest->getCrawl();
-//    }
+
+    public function getCrawlData(): array
+    {
+        return $this->test->getCrawlData();
+    }
 //
 //    public function getFormattedWebsite(): string
 //    {

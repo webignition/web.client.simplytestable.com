@@ -82,6 +82,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'failed' => 0,
                         'skipped' => 0,
                     ],
+                    [],
                     null
                 ),
             ],
@@ -137,6 +138,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'failed' => 0,
                         'skipped' => 0,
                     ],
+                    [],
                     null
                 ),
             ],

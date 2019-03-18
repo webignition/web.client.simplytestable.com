@@ -168,10 +168,7 @@ class RemoteTest extends AbstractArrayBasedModel
         return $taskCountByState;
     }
 
-    /**
-     * @return array
-     */
-    public function getCrawl()
+    public function getCrawl(): array
     {
         $crawlData = $this->getProperty('crawl');
 

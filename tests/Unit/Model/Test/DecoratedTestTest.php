@@ -36,6 +36,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'failed' => 0,
         'skipped' => 0,
     ];
+    const CRAWL_DATA = [];
     const REJECTION = null;
 
     private $testProperties = [
@@ -56,6 +57,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'completionPercent' => self::COMPLETION_PERCENT,
         'taskCountByState' => self::TASK_COUNT_BY_STATE,
         'rejection' => self::REJECTION,
+        'crawlData' => self::CRAWL_DATA,
     ];
 
     public function testGetScalarProperties()
@@ -394,6 +396,38 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider getCrawlDataDataProvider
+     */
+    public function testGetCrawlData(array $crawlData)
+    {
+        $testModel = $this->createTest([
+            'crawlData' => $crawlData,
+        ]);
+        $remoteTest = new RemoteTest([]);
+
+        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+
+        $this->assertEquals($crawlData, $decoratedTest->getCrawlData());
+    }
+
+    public function getCrawlDataDataProvider(): array
+    {
+        return [
+            'empty crawl data' => [
+                'crawlData' => [],
+            ],
+            'non-empty crawl data' => [
+                'crawlData' => [
+                    'state' => 'in-progress',
+                    'processed_url_count' => 10,
+                    'discovered_url_count' => 20,
+                    'limit' => 30,
+                ],
+            ],
+        ];
+    }
+
     private function createTest(array $properties = []): TestModel
     {
         $properties = array_merge($this->testProperties, $properties);
@@ -419,6 +453,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['amendments'],
             $properties['completionPercent'],
             $properties['taskCountByState'],
+            $properties['crawlData'],
             $properties['rejection']
         );
     }
