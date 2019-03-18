@@ -145,6 +145,57 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider createWithMissingRemoteTestPropertiesDataProvider
+     */
+    public function testCreateWithMissingRemoteTestProperties(array $remoteTestData, TestModel $expectedTest)
+    {
+        $test = $this->testFactory->create(
+            TestEntity::create(1),
+            new RemoteTest($remoteTestData)
+        );
+
+        $this->assertEquals($expectedTest, $test);
+    }
+
+    public function createWithMissingRemoteTestPropertiesDataProvider(): array
+    {
+        return [
+            'id only' => [
+                'remoteTestData' => [
+                    'id' => 1,
+                ],
+                'expectedTest' => new TestModel(
+                    TestEntity::create(1),
+                    '',
+                    '',
+                    '',
+                    '',
+                    [],
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    '',
+                    [],
+                    0,
+                    [
+                        'in_progress' => 0,
+                        'queued' => 0,
+                        'completed' => 0,
+                        'cancelled' => 0,
+                        'failed' => 0,
+                        'skipped' => 0,
+                    ],
+                    [],
+                    null
+                ),
+            ],
+        ];
+    }
+
     private function createTestEntity(int $testId, array $tasks = []): TestEntity
     {
         $test = TestEntity::create($testId);
