@@ -490,7 +490,6 @@ class ProgressControllerTest extends AbstractViewControllerTest
         ], array_keys($responseData));
 
         $this->assertIsArray($responseData['test']);
-        $this->assertEquals(self::TEST_ID, $responseData['test']['test_id']);
 
         $this->assertEquals('http://localhost/http://example.com//1/progress/', $responseData['this_url']);
         $this->assertEquals($expectedStateLabel, $responseData['state_label']);

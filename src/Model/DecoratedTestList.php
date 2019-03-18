@@ -149,16 +149,7 @@ class DecoratedTestList implements \Iterator
         ];
 
         foreach ($this->tests as $decoratedTest) {
-            $testHashableData = [];
-
-            $requiresRemoteTasks = $decoratedTest->requiresRemoteTasks();
-
-            $testHashableData['requires_remote_tasks'] = $requiresRemoteTasks;
-            if ($requiresRemoteTasks) {
-                $testHashableData['data'] = $decoratedTest->__toArray();
-            }
-
-            $hashableData['test_data'][$decoratedTest->getTestId()] = $testHashableData;
+            $hashableData['test_data'][$decoratedTest->getTestId()] = $decoratedTest->getHash();
         }
 
         return json_encode($hashableData);

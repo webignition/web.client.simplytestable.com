@@ -10,10 +10,12 @@ use App\Model\Test\DecoratedTest;
 class DecoratedTestListFactory
 {
     private $testService;
+    private $testFactory;
 
-    public function __construct(TestService $testService)
+    public function __construct(TestService $testService, TestFactory $testFactory)
     {
         $this->testService = $testService;
+        $this->testFactory = $testFactory;
     }
 
     public function create(RemoteTestList $remoteTestList): DecoratedTestList
@@ -25,7 +27,9 @@ class DecoratedTestListFactory
             $remoteTest = $testData['remote_test'];
             $test = $this->testService->get($remoteTest->getId());
 
-            $decoratedTests[] = new DecoratedTest($test, $remoteTest);
+            $testModel = $this->testFactory->create($test, $remoteTest);
+
+            $decoratedTests[] = new DecoratedTest($testModel);
         }
 
         return new DecoratedTestList(

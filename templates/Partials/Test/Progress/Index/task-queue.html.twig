@@ -2,7 +2,7 @@
 {% set value = value is defined ? value : 0 %}
 {% set label_type = label_type is defined ? label_type : 'default' %}
 {% set id = name|lower|replace({' ': '_'}) %}
-{% set width = test.taskcount == 0 ? 0 : (value / test.taskcount * 100)|round(0, 'ceil')  %}
+{% set width = test.remoteTaskCount == 0 ? 0 : (value / test.remoteTaskCount * 100)|round(0, 'ceil')  %}
 
 <div class="row queue" id="task-queue-{{ id }}" data-queue-id="{{ id }}">
     <div class="col-lg-2 col-md-2 col-sm-4 col-xs-3 name">

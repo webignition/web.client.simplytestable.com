@@ -3,12 +3,14 @@
 
 namespace App\Tests\Unit\Services;
 
-use App\Entity\Test;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Model\DecoratedTestList;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\RemoteTestList;
 use App\Model\Test\DecoratedTest;
 use App\Services\DecoratedTestListFactory;
+use App\Services\TestFactory;
 use App\Services\TestService;
 use App\Tests\Services\ObjectReflector;
 use Mockery\MockInterface;
@@ -20,7 +22,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreate(TestService $testService, RemoteTestList $remoteTestList, array $expectedDecoratedTests)
     {
-        $decoratedTestListFactory = new DecoratedTestListFactory($testService);
+        $decoratedTestListFactory = new DecoratedTestListFactory($testService, new TestFactory());
 
         $decoratedTestList = $decoratedTestListFactory->create($remoteTestList);
 
@@ -34,11 +36,11 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
             $expectedDecoratedTest = $expectedDecoratedTests[$decoratedTestIndex];
 
             $this->assertInstanceOf(DecoratedTest::class, $decoratedTest);
-            $this->assertSame(
+            $this->assertEquals(
                 ObjectReflector::getProperty($expectedDecoratedTest, 'test'),
                 ObjectReflector::getProperty($decoratedTest, 'test')
             );
-            $this->assertSame(
+            $this->assertEquals(
                 ObjectReflector::getProperty($expectedDecoratedTest, 'remoteTest'),
                 ObjectReflector::getProperty($decoratedTest, 'remoteTest')
             );
@@ -47,11 +49,15 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
 
     public function createDataProvider(): array
     {
+        $entity1 = TestEntity::create(1);
+
         $remoteTest1 = new RemoteTest([
             'id' => 1,
             'website' => 'http://example.com/1/',
         ]);
-        $test1 = Test::create(1);
+
+        $testFactory = new TestFactory();
+        $test1 = $testFactory->create($entity1, $remoteTest1);
 
         return [
             'empty remote test list' => [
@@ -63,7 +69,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
                 'testService' => $this->createTestService([
                     [
                         'expectedId' => 1,
-                        'test' => $test1,
+                        'test' => $entity1,
                     ],
                 ]),
                 'remoteTestList' => new RemoteTestList(
@@ -75,7 +81,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
                     10
                 ),
                 'expectedDecoratedTests' => [
-                    new DecoratedTest($test1, $remoteTest1),
+                    new DecoratedTest($test1),
                 ],
             ],
         ];
