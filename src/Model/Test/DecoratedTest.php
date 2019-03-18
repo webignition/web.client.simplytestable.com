@@ -5,17 +5,14 @@ namespace App\Model\Test;
 use App\Entity\Test as TestEntity;
 use App\Model\RemoteTest\Rejection;
 use App\Model\Test;
-use App\Model\RemoteTest\RemoteTest;
 
 class DecoratedTest implements \JsonSerializable
 {
     private $test;
-    private $remoteTest;
 
-    public function __construct(Test $test, RemoteTest $remoteTest)
+    public function __construct(Test $test)
     {
         $this->test = $test;
-        $this->remoteTest = $remoteTest;
     }
 
     public function getTestId(): int
