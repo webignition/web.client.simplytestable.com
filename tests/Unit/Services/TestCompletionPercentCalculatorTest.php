@@ -5,12 +5,12 @@ namespace App\Tests\Unit\Services;
 
 use App\Entity\Test as TestEntity;
 use App\Model\RemoteTest\RemoteTest;
-use App\Services\RemoteTestCompletionPercentCalculator;
+use App\Services\TestCompletionPercentCalculator;
 
-class RemoteTestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
+class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var RemoteTestCompletionPercentCalculator
+     * @var TestCompletionPercentCalculator
      */
     private $calculator;
 
@@ -18,7 +18,7 @@ class RemoteTestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestC
     {
         parent::setUp();
 
-        $this->calculator = new RemoteTestCompletionPercentCalculator();
+        $this->calculator = new TestCompletionPercentCalculator();
     }
 
     /**

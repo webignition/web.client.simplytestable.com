@@ -8,11 +8,11 @@ use App\Model\Test as TestModel;
 
 class TestFactory
 {
-    private $remoteTestCompletionPercentCalculator;
+    private $testCompletionPercentCalculator;
 
-    public function __construct(RemoteTestCompletionPercentCalculator $remoteTestCompletionPercentCalculator)
+    public function __construct(TestCompletionPercentCalculator $remoteTestCompletionPercentCalculator)
     {
-        $this->remoteTestCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
+        $this->testCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
     }
 
     public function create(TestEntity $entity, RemoteTest $remoteTest, array $testData): TestModel
@@ -37,7 +37,7 @@ class TestFactory
             $testData['cancelled_task_count'] ?? 0,
             $testData['parameters'] ?? '',
             $testData['amendments'] ?? [],
-            $this->remoteTestCompletionPercentCalculator->calculate(
+            $this->testCompletionPercentCalculator->calculate(
                 $state,
                 $taskCount,
                 $taskCountByState,

@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Entity\Test as TestEntity;
 
-class RemoteTestCompletionPercentCalculator
+class TestCompletionPercentCalculator
 {
     /**
      * @var string[]
