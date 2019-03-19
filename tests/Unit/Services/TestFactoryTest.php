@@ -10,6 +10,7 @@ use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test as TestModel;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
+use App\Services\TestTaskCountByStateNormaliser;
 
 class TestFactoryTest extends \PHPUnit\Framework\TestCase
 {
@@ -22,7 +23,10 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     {
         parent::setUp();
 
-        $this->testFactory = new TestFactory(new TestCompletionPercentCalculator());
+        $this->testFactory = new TestFactory(
+            new TestCompletionPercentCalculator(),
+            new TestTaskCountByStateNormaliser()
+        );
     }
 
     /**
@@ -61,6 +65,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
+                    'task_count_by_state' => [],
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -120,6 +125,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'task_types' => [
                         Task::TYPE_HTML_VALIDATION,
                     ],
+                    'task_count_by_state' => [],
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -214,61 +220,6 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [],
                     null
                 ),
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider calculateTaskCountByStateDataProvider
-     */
-    public function testCalculateTaskCountByState(array $remoteTestTaskCountByState, array $expectedTaskCountByState)
-    {
-        $test = $this->testFactory->create(
-            TestEntity::create(1),
-            new RemoteTest([
-                'task_count_by_state' => $remoteTestTaskCountByState,
-            ]),
-            []
-        );
-
-        $this->assertEquals($expectedTaskCountByState, $test->getTaskCountByState());
-    }
-
-    public function calculateTaskCountByStateDataProvider(): array
-    {
-        return [
-            'no remote task count by state' => [
-                'remoteTestTaskCountByState' => [],
-                'expectedTaskCountByState' => [
-                    'in_progress' => 0,
-                    'queued' => 0,
-                    'completed' => 0,
-                    'cancelled' => 0,
-                    'failed' => 0,
-                    'skipped' => 0,
-                ],
-            ],
-            'mixed' => [
-                'remoteTestTaskCountByState' => [
-                    'cancelled' => 1,
-                    'in-progress' => 2,
-                    'queued' => 4,
-                    'completed' => 8,
-                    'skipped' => 16,
-                    'queued-for-assignment' => 32,
-                    'awaiting-cancellation' => 64,
-                    'failed-no-retry-available' => 128,
-                    'failed-retry-available' => 256,
-                    'failed-retry-limit-reached' => 512,
-                ],
-                'expectedTaskCountByState' => [
-                    'cancelled' => 65,
-                    'in_progress' => 2,
-                    'queued' => 36,
-                    'completed' => 8,
-                    'skipped' => 16,
-                    'failed' => 896,
-                ],
             ],
         ];
     }

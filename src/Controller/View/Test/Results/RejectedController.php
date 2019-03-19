@@ -146,6 +146,7 @@ class RejectedController extends AbstractBaseViewController
             'amendments' => $remoteTest->getAmmendments(),
             'crawl' => $remoteTest->getCrawl(),
             'task_types' => $remoteTest->getTaskTypes(),
+            'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 

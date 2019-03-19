@@ -9,17 +9,21 @@ use App\Model\Test as TestModel;
 class TestFactory
 {
     private $testCompletionPercentCalculator;
+    private $testTaskCountByStateNormaliser;
 
-    public function __construct(TestCompletionPercentCalculator $remoteTestCompletionPercentCalculator)
-    {
+    public function __construct(
+        TestCompletionPercentCalculator $remoteTestCompletionPercentCalculator,
+        TestTaskCountByStateNormaliser $testTaskCountByStateNormaliser
+    ) {
         $this->testCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
+        $this->testTaskCountByStateNormaliser = $testTaskCountByStateNormaliser;
     }
 
     public function create(TestEntity $entity, RemoteTest $remoteTest, array $testData): TestModel
     {
         $state = $testData['state'] ?? '';
         $taskCount = $testData['task_count'] ?? 0;
-        $taskCountByState = $this->calculateTaskCountByState($remoteTest);
+        $taskCountByState = $this->testTaskCountByStateNormaliser->normalise($testData['task_count_by_state'] ?? []);
         $crawlData = $testData['crawl'] ?? [];
 
         return new TestModel(
@@ -47,37 +51,6 @@ class TestFactory
             $crawlData,
             $remoteTest->getRejection()
         );
-    }
-
-    private function calculateTaskCountByState(RemoteTest $remoteTest): array
-    {
-        $rawTaskCountByState = $remoteTest->getRawTaskCountByState();
-
-        $taskStates = [
-            'in-progress' => 'in_progress',
-            'queued' => 'queued',
-            'queued-for-assignment' => 'queued',
-            'completed' => 'completed',
-            'cancelled' => 'cancelled',
-            'awaiting-cancellation' => 'cancelled',
-            'failed' => 'failed',
-            'failed-no-retry-available' => 'failed',
-            'failed-retry-available' => 'failed',
-            'failed-retry-limit-reached' => 'failed',
-            'skipped' => 'skipped'
-        ];
-
-        $taskCountByState = [];
-
-        foreach ($taskStates as $taskState => $translatedState) {
-            if (!isset($taskCountByState[$translatedState])) {
-                $taskCountByState[$translatedState] = 0;
-            }
-
-            $taskCountByState[$translatedState] += $rawTaskCountByState[$taskState] ?? 0;
-        }
-
-        return $taskCountByState;
     }
 
     private function normaliseTaskTypes(array $taskTypes): array
