@@ -59,6 +59,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 ]),
                 'testData' => [
                     'website' => 'http://example.com/',
+                    'user' => 'user@example.com',
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -114,6 +115,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 ]),
                 'testData' => [
                     'website' => 'http://example.com/',
+                    'user' => 'user@example.com',
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [

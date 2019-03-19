@@ -180,6 +180,7 @@ class ProgressController extends AbstractBaseViewController
 
         $testModel = $this->testFactory->create($test, $remoteTest, [
             'website' => $remoteTest->getWebsite(),
+            'user' => $remoteTest->getUser(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 

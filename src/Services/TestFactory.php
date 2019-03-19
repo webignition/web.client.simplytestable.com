@@ -20,7 +20,7 @@ class TestFactory
         return new TestModel(
             $entity,
             $testData['website'] ?? '',
-            $remoteTest->getUser(),
+            $testData['user'] ?? '',
             $remoteTest->getState(),
             $remoteTest->getType(),
             $remoteTest->getTaskTypes(),
