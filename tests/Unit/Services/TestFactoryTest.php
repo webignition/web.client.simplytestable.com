@@ -8,6 +8,7 @@ use App\Entity\Task\Task;
 use App\Entity\Test as TestEntity;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test as TestModel;
+use App\Services\RemoteTestCompletionPercentCalculator;
 use App\Services\TestFactory;
 
 class TestFactoryTest extends \PHPUnit\Framework\TestCase
@@ -21,7 +22,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     {
         parent::setUp();
 
-        $this->testFactory = new TestFactory();
+        $this->testFactory = new TestFactory(new RemoteTestCompletionPercentCalculator());
     }
 
     /**

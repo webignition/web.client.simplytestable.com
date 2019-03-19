@@ -8,6 +8,13 @@ use App\Model\Test as TestModel;
 
 class TestFactory
 {
+    private $remoteTestCompletionPercentCalculator;
+
+    public function __construct(RemoteTestCompletionPercentCalculator $remoteTestCompletionPercentCalculator)
+    {
+        $this->remoteTestCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
+    }
+
     public function create(TestEntity $entity, RemoteTest $remoteTest): TestModel
     {
         return new TestModel(
@@ -25,7 +32,7 @@ class TestFactory
             $remoteTest->getCancelledTaskCount(),
             $remoteTest->getEncodedParameters(),
             $remoteTest->getAmmendments(),
-            $remoteTest->getCompletionPercent(),
+            $this->remoteTestCompletionPercentCalculator->calculate($remoteTest),
             $remoteTest->getTaskCountByState(),
             $remoteTest->getCrawl(),
             $remoteTest->getRejection()
