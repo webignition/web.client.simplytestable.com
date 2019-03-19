@@ -31,7 +31,9 @@ class RemoteTestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestC
             'crawl' => $crawlData,
         ]);
 
-        $this->assertEquals($expectedCompletionPercent, $this->calculator->calculate($crawlData, $remoteTest));
+        $completionPercent = $this->calculator->calculate(TestEntity::STATE_CRAWLING, $crawlData, $remoteTest);
+
+        $this->assertEquals($expectedCompletionPercent, $completionPercent);
     }
 
     public function calculateForCrawlDataProvider(): array
@@ -88,10 +90,13 @@ class RemoteTestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestC
             'task_count_by_state' => $taskCountByState,
         ]);
 
-        $this->assertEquals($expectedCompletionPercent, $this->calculator->calculate(
+        $completionPercent = $this->calculator->calculate(
+            TestEntity::STATE_COMPLETED,
             $remoteTest->getCrawl(),
             $remoteTest
-        ));
+        );
+
+        $this->assertEquals($expectedCompletionPercent, $completionPercent);
     }
 
     public function calculateWithAllTasksFinishedDataProvider(): array
@@ -180,10 +185,13 @@ class RemoteTestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestC
      */
     public function testCalculateCompletionPercent(RemoteTest $remoteTest, int $expectedCompletionPercent)
     {
-        $this->assertEquals($expectedCompletionPercent, $this->calculator->calculate(
+        $completionPercent = $this->calculator->calculate(
+            $remoteTest->getState(),
             $remoteTest->getCrawl(),
             $remoteTest
-        ));
+        );
+
+        $this->assertEquals($expectedCompletionPercent, $completionPercent);
     }
 
     public function calculateCompletionPercentDataProvider(): array

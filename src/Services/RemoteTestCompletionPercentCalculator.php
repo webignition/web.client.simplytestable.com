@@ -17,10 +17,8 @@ class RemoteTestCompletionPercentCalculator
         'skipped'
     ];
 
-    public function calculate(array $crawlData, RemoteTest $remoteTest): int
+    public function calculate(string $state, array $crawlData, RemoteTest $remoteTest): int
     {
-        $state = $remoteTest->getState();
-
         if (TestEntity::STATE_CRAWLING === $state && !empty($crawlData)) {
             return $this->calculateForCrawl($crawlData);
         }

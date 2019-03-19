@@ -32,7 +32,11 @@ class TestFactory
             $testData['cancelled_task_count'] ?? 0,
             $testData['parameters'] ?? '',
             $testData['amendments'] ?? [],
-            $this->remoteTestCompletionPercentCalculator->calculate($remoteTest->getCrawl(), $remoteTest),
+            $this->remoteTestCompletionPercentCalculator->calculate(
+                $remoteTest->getState(),
+                $remoteTest->getCrawl(),
+                $remoteTest
+            ),
             $this->calculateTaskCountByState($remoteTest),
             $testData['crawl'] ?? [],
             $remoteTest->getRejection()
