@@ -209,6 +209,7 @@ class ByTaskTypeController extends AbstractBaseViewController
             'task_count' => $remoteTest->getTaskCount(),
             'errored_task_count' => $remoteTest->getErroredTaskCount(),
             'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
+            'parameters' => $remoteTest->getEncodedParameters(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 

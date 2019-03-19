@@ -66,6 +66,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'task_count' => 0,
                     'errored_task_count' => 0,
                     'cancelled_task_count' => 0,
+                    'parameters' => '',
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -128,6 +129,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'task_count' => 2,
                     'errored_task_count' => 1,
                     'cancelled_task_count' => 2,
+                    'parameters' => json_encode(['foo' => 'bar']),
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -148,7 +150,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     2,
                     1,
                     2,
-                    '',
+                    json_encode(['foo' => 'bar']),
                     [],
                     0,
                     [

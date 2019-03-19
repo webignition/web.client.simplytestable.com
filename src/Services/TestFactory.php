@@ -30,7 +30,7 @@ class TestFactory
             $testData['task_count'] ?? 0,
             $testData['errored_task_count'] ?? 0,
             $testData['cancelled_task_count'] ?? 0,
-            $remoteTest->getEncodedParameters(),
+            $testData['parameters'] ?? '',
             $remoteTest->getAmmendments(),
             $this->remoteTestCompletionPercentCalculator->calculate($remoteTest),
             $this->calculateTaskCountByState($remoteTest),
