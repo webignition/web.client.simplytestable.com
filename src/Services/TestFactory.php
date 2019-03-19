@@ -53,37 +53,6 @@ class TestFactory
         );
     }
 
-    private function calculateTaskCountByState(RemoteTest $remoteTest): array
-    {
-        $rawTaskCountByState = $remoteTest->getRawTaskCountByState();
-
-        $taskStates = [
-            'in-progress' => 'in_progress',
-            'queued' => 'queued',
-            'queued-for-assignment' => 'queued',
-            'completed' => 'completed',
-            'cancelled' => 'cancelled',
-            'awaiting-cancellation' => 'cancelled',
-            'failed' => 'failed',
-            'failed-no-retry-available' => 'failed',
-            'failed-retry-available' => 'failed',
-            'failed-retry-limit-reached' => 'failed',
-            'skipped' => 'skipped'
-        ];
-
-        $taskCountByState = [];
-
-        foreach ($taskStates as $taskState => $translatedState) {
-            if (!isset($taskCountByState[$translatedState])) {
-                $taskCountByState[$translatedState] = 0;
-            }
-
-            $taskCountByState[$translatedState] += $rawTaskCountByState[$taskState] ?? 0;
-        }
-
-        return $taskCountByState;
-    }
-
     private function normaliseTaskTypes(array $taskTypes): array
     {
         $normalisedTaskTypes = [];
