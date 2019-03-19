@@ -241,9 +241,9 @@ class RemoteTestService
         return $finishedCount;
     }
 
-    public function retrieveLatest(string $canonicalUrl): ?RemoteTest
+    public function retrieveLatest(string $canonicalUrl): ?TestIdentifier
     {
-        $remoteTest = null;
+        $testIdentifier = null;
 
         try {
             $response = $this->coreApplicationHttpClient->get(
@@ -253,9 +253,12 @@ class RemoteTestService
                 ]
             );
 
-            $remoteTestData = $this->jsonResponseHandler->handle($response);
+            $responseData = $this->jsonResponseHandler->handle($response);
 
-            $remoteTest = new RemoteTest($remoteTestData);
+            $testIdentifier = new TestIdentifier(
+                $responseData['id'],
+                $responseData['website']
+            );
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             // Don't care
         } catch (InvalidContentTypeException $invalidContentTypeException) {
@@ -264,6 +267,6 @@ class RemoteTestService
             // Don't care
         }
 
-        return $remoteTest;
+        return $testIdentifier;
     }
 }

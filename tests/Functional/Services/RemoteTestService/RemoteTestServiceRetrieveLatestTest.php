@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use App\Model\RemoteTest\RemoteTest;
+use App\Model\TestIdentifier;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
 
@@ -17,13 +17,13 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
     public function testRetrieveLatest(
         array $httpFixtures,
         ?string $expectedRequestUrl,
-        ?RemoteTest $expectedLatestTest
+        ?TestIdentifier $expectedTestIdentifier
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $remoteTest = $this->remoteTestService->retrieveLatest(self::WEBSITE_URL);
+        $testIdentifier = $this->remoteTestService->retrieveLatest(self::WEBSITE_URL);
 
-        $this->assertEquals($expectedLatestTest, $remoteTest);
+        $this->assertEquals($expectedTestIdentifier, $testIdentifier);
 
         if (!is_null($expectedRequestUrl)) {
             $this->assertEquals(
@@ -35,10 +35,6 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
 
     public function retrieveLatestDataProvider(): array
     {
-        $remoteTest = new RemoteTest([
-            'id' => 1,
-        ]);
-
         $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
 
         return [
@@ -47,7 +43,7 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
                     HttpResponseFactory::createNotFoundResponse(),
                 ],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/latest/',
-                'expectedLatestTest' => null,
+                'expectedTestIdentifier' => null,
             ],
 
             'CURL 28' => [
@@ -60,7 +56,7 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
                     $curlTimeoutConnectException,
                 ],
                 'expectedRequestUrl' => null,
-                'expectedLatestTest' => null,
+                'expectedTestIdentifier' => null,
             ],
             'Invalid response content' => [
                 'httpFixtures' => [
@@ -69,16 +65,17 @@ class RemoteTestServiceRetrieveLatestTest extends AbstractRemoteTestServiceTest
                     ]),
                 ],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/latest/',
-                'expectedLatestTest' => null,
+                'expectedTestIdentifier' => null,
             ],
             'Success' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
-                        'id' => 1
+                        'id' => 1,
+                        'website' => 'http://example.com/',
                     ]),
                 ],
                 'expectedRequestUrl' => 'http://null/job/http%3A%2F%2Fexample.com%2F/latest/',
-                'expectedLatestTest' => $remoteTest,
+                'expectedTestIdentifier' => new TestIdentifier(1, 'http://example.com/'),
             ],
         ];
     }

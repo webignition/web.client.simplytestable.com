@@ -4,7 +4,7 @@
 namespace App\Tests\Functional\Controller;
 
 use App\Exception\CoreApplicationRequestException;
-use App\Model\RemoteTest\RemoteTest;
+use App\Model\TestIdentifier;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
@@ -164,10 +164,7 @@ class RedirectControllerTest extends AbstractControllerTest
 
     public function testTestActionWebsiteOnlyUsesLatest()
     {
-        $latestRemoteTest = new RemoteTest([
-            'id' => 99,
-            'website' => self::WEBSITE,
-        ]);
+        $testIdentifier = new TestIdentifier(99, self::WEBSITE);
 
         /* @var TestService $testService */
         $testService = self::$container->get(TestService::class);
@@ -176,7 +173,7 @@ class RedirectControllerTest extends AbstractControllerTest
         $remoteTestService
             ->shouldReceive('retrieveLatest')
             ->with(self::WEBSITE)
-            ->andReturn($latestRemoteTest);
+            ->andReturn($testIdentifier);
 
         /* @var LoggerInterface $logger */
         $logger = self::$container->get(LoggerInterface::class);
