@@ -2,7 +2,7 @@
 
 {% set dialog_width = 8 %}
 
-{% set constraint = test.rejection.constraint %}
+{% set constraint = test.rejection.constraint is defined ? test.rejection.constraint : null %}
 {% set constraint_name = constraint ? constraint.name : null %}
 {% set reason = test.rejection.reason %}
 
