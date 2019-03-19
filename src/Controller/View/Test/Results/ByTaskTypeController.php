@@ -212,6 +212,7 @@ class ByTaskTypeController extends AbstractBaseViewController
             'parameters' => $remoteTest->getEncodedParameters(),
             'amendments' => $remoteTest->getAmmendments(),
             'crawl' => $remoteTest->getCrawl(),
+            'task_types' => $remoteTest->getTaskTypes(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 

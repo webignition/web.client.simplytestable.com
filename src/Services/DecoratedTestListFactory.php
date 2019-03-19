@@ -39,6 +39,7 @@ class DecoratedTestListFactory
                 'parameters' => $remoteTest->getEncodedParameters(),
                 'amendments' => $remoteTest->getAmmendments(),
                 'crawl' => $remoteTest->getCrawl(),
+                'task_types' => $remoteTest->getTaskTypes(),
             ]);
 
             $decoratedTests[] = new DecoratedTest($testModel);
