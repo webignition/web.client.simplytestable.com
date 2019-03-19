@@ -31,7 +31,12 @@ class RemoteTestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestC
             'crawl' => $crawlData,
         ]);
 
-        $completionPercent = $this->calculator->calculate(TestEntity::STATE_CRAWLING, $crawlData, $remoteTest);
+        $completionPercent = $this->calculator->calculate(
+            TestEntity::STATE_CRAWLING,
+            $remoteTest->getTaskCount(),
+            [],
+            $crawlData
+        );
 
         $this->assertEquals($expectedCompletionPercent, $completionPercent);
     }
@@ -92,8 +97,9 @@ class RemoteTestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestC
 
         $completionPercent = $this->calculator->calculate(
             TestEntity::STATE_COMPLETED,
-            $remoteTest->getCrawl(),
-            $remoteTest
+            $remoteTest->getTaskCount(),
+            $remoteTest->getTaskCountByState(),
+            $remoteTest->getCrawl()
         );
 
         $this->assertEquals($expectedCompletionPercent, $completionPercent);
@@ -187,8 +193,9 @@ class RemoteTestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestC
     {
         $completionPercent = $this->calculator->calculate(
             $remoteTest->getState(),
-            $remoteTest->getCrawl(),
-            $remoteTest
+            $remoteTest->getTaskCount(),
+            $remoteTest->getTaskCountByState(),
+            $remoteTest->getCrawl()
         );
 
         $this->assertEquals($expectedCompletionPercent, $completionPercent);
