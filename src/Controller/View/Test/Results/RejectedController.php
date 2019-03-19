@@ -147,6 +147,7 @@ class RejectedController extends AbstractBaseViewController
             'crawl' => $remoteTest->getCrawl(),
             'task_types' => $remoteTest->getTaskTypes(),
             'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
+            'rejection' => $this->createRejectionData($remoteTest),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 
@@ -179,5 +180,24 @@ class RejectedController extends AbstractBaseViewController
         $constraint = $rejection->getConstraint();
 
         return 'credits_per_month' === $constraint['name'];
+    }
+
+    private function createRejectionData(RemoteTest $remoteTest): array
+    {
+        $rejectionData = [];
+        $remoteTestRejection = $remoteTest->getRejection();
+
+        if (empty($remoteTestRejection)) {
+            return $rejectionData;
+        }
+
+        $rejectionData['reason'] = $remoteTestRejection->getReason();
+
+        $constraint = $remoteTestRejection->getConstraint();
+        if ($constraint) {
+            $rejectionData['constraint'] = $constraint;
+        }
+
+        return $rejectionData;
     }
 }
