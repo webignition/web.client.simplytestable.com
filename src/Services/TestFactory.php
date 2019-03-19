@@ -15,26 +15,26 @@ class TestFactory
         $this->remoteTestCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
     }
 
-    public function create(TestEntity $entity, RemoteTest $remoteTest): TestModel
+    public function create(TestEntity $entity, RemoteTest $remoteTest, array $testData): TestModel
     {
         return new TestModel(
             $entity,
-            $remoteTest->getWebsite(),
-            $remoteTest->getUser(),
-            $remoteTest->getState(),
-            $remoteTest->getType(),
+            $testData['website'] ?? '',
+            $testData['user'] ?? '',
+            $testData['state'] ?? '',
+            $testData['type'] ?? '',
             $remoteTest->getTaskTypes(),
-            $remoteTest->getUrlCount(),
+            $testData['url_count'] ?? 0,
             $entity->getErrorCount(),
             $entity->getWarningCount(),
-            $remoteTest->getTaskCount(),
-            $remoteTest->getErroredTaskCount(),
-            $remoteTest->getCancelledTaskCount(),
-            $remoteTest->getEncodedParameters(),
-            $remoteTest->getAmmendments(),
+            $testData['task_count'] ?? 0,
+            $testData['errored_task_count'] ?? 0,
+            $testData['cancelled_task_count'] ?? 0,
+            $testData['parameters'] ?? '',
+            $testData['amendments'] ?? [],
             $this->remoteTestCompletionPercentCalculator->calculate($remoteTest),
             $this->calculateTaskCountByState($remoteTest),
-            $remoteTest->getCrawl(),
+            $testData['crawl'] ?? [],
             $remoteTest->getRejection()
         );
     }

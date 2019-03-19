@@ -70,7 +70,19 @@ class TestFinishedSummaryController extends AbstractBaseViewController
         $test = $this->testService->get($test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
 
-        $testModel = $this->testFactory->create($test, $remoteTest);
+        $testModel = $this->testFactory->create($test, $remoteTest, [
+            'website' => $remoteTest->getWebsite(),
+            'user' => $remoteTest->getUser(),
+            'state' => $remoteTest->getState(),
+            'type' => $remoteTest->getType(),
+            'url_count' => $remoteTest->getUrlCount(),
+            'task_count' => $remoteTest->getTaskCount(),
+            'errored_task_count' => $remoteTest->getErroredTaskCount(),
+            'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
+            'parameters' => $remoteTest->getEncodedParameters(),
+            'amendments' => $remoteTest->getAmmendments(),
+            'crawl' => $remoteTest->getCrawl(),
+        ]);
         $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(

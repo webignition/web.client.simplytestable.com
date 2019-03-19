@@ -28,9 +28,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider createDataProvider
      */
-    public function testCreate(TestEntity $entity, RemoteTest $remoteTest, TestModel $expectedTest)
+    public function testCreate(TestEntity $entity, RemoteTest $remoteTest, array $testData, TestModel $expectedTest)
     {
-        $test = $this->testFactory->create($entity, $remoteTest);
+        $test = $this->testFactory->create($entity, $remoteTest, $testData);
 
         $this->assertInstanceOf(TestModel::class, $test);
         $this->assertEquals($expectedTest, $test);
@@ -43,20 +43,25 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 'entity' => TestEntity::create(1),
                 'remoteTest' => new RemoteTest([
                     'id' => 1,
-                    'website' => 'http://example.com/',
-                    'user' => 'user@example.com',
-                    'state' => TestEntity::STATE_COMPLETED,
-                    'type' => TestEntity::TYPE_FULL_SITE,
                     'task_types' => [
                         [
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
+                ]),
+                'testData' => [
+                    'website' => 'http://example.com/',
+                    'user' => 'user@example.com',
+                    'state' => TestEntity::STATE_COMPLETED,
+                    'type' => TestEntity::TYPE_FULL_SITE,
                     'url_count' => 1,
                     'task_count' => 0,
                     'errored_task_count' => 0,
                     'cancelled_task_count' => 0,
-                ]),
+                    'parameters' => '',
+                    'amendments' => [],
+                    'crawl' => [],
+                ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
                     'http://example.com/',
@@ -95,20 +100,29 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 ]),
                 'remoteTest' => new RemoteTest([
                     'id' => 1,
-                    'website' => 'http://example.com/',
-                    'user' => 'user@example.com',
-                    'state' => TestEntity::STATE_COMPLETED,
-                    'type' => TestEntity::TYPE_FULL_SITE,
                     'task_types' => [
                         [
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
+                ]),
+                'testData' => [
+                    'website' => 'http://example.com/',
+                    'user' => 'user@example.com',
+                    'state' => TestEntity::STATE_COMPLETED,
+                    'type' => TestEntity::TYPE_FULL_SITE,
                     'url_count' => 1,
                     'task_count' => 2,
-                    'errored_task_count' => 0,
-                    'cancelled_task_count' => 0,
-                ]),
+                    'errored_task_count' => 1,
+                    'cancelled_task_count' => 2,
+                    'parameters' => json_encode(['foo' => 'bar']),
+                    'amendments' => [
+                        1,
+                    ],
+                    'crawl' => [
+                        2,
+                    ],
+                ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
                         $this->createTask(
@@ -126,10 +140,12 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     2,
                     3,
                     2,
-                    0,
-                    0,
-                    '',
-                    [],
+                    1,
+                    2,
+                    json_encode(['foo' => 'bar']),
+                    [
+                        1
+                    ],
                     0,
                     [
                         'in_progress' => 0,
@@ -139,7 +155,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'failed' => 0,
                         'skipped' => 0,
                     ],
-                    [],
+                    [
+                        2
+                    ],
                     null
                 ),
             ],
@@ -149,11 +167,15 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider createWithMissingRemoteTestPropertiesDataProvider
      */
-    public function testCreateWithMissingRemoteTestProperties(array $remoteTestData, TestModel $expectedTest)
-    {
+    public function testCreateWithMissingRemoteTestProperties(
+        array $remoteTestData,
+        array $testData,
+        TestModel $expectedTest
+    ) {
         $test = $this->testFactory->create(
             TestEntity::create(1),
-            new RemoteTest($remoteTestData)
+            new RemoteTest($remoteTestData),
+            $testData
         );
 
         $this->assertEquals($expectedTest, $test);
@@ -166,6 +188,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 'remoteTestData' => [
                     'id' => 1,
                 ],
+                'testData' => [],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
                     '',
@@ -206,7 +229,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
             TestEntity::create(1),
             new RemoteTest([
                 'task_count_by_state' => $remoteTestTaskCountByState,
-            ])
+            ]),
+            []
         );
 
         $this->assertEquals($expectedTaskCountByState, $test->getTaskCountByState());

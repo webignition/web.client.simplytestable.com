@@ -35,7 +35,7 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
         $remoteTest = new RemoteTest([]);
 
         $testFactory = new TestFactory(new RemoteTestCompletionPercentCalculator());
-        $test = $testFactory->create($entity, $remoteTest);
+        $test = $testFactory->create($entity, $remoteTest, []);
 
         $decoratedTest = new DecoratedTest($test);
 
