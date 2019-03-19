@@ -4,10 +4,10 @@
 namespace App\Tests\Functional\Controller\Action\Test;
 
 use App\Entity\Test;
+use App\Model\TestIdentifier;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Mock;
 use App\Controller\Action\Test\StartController;
-use App\Model\RemoteTest\RemoteTest;
 use App\Services\Configuration\LinkIntegrityTestConfiguration;
 use App\Services\Configuration\TestOptionsConfiguration;
 use App\Services\RemoteTestService;
@@ -566,10 +566,10 @@ class StartControllerTest extends AbstractControllerTest
 
                 return true;
             })
-            ->andReturn(new RemoteTest([
-                'id' => 1,
-                'website' => $expectedUrlToTest,
-            ]));
+            ->andReturn(new TestIdentifier(
+                1,
+                $expectedUrlToTest
+            ));
 
         $testStartController = new StartController(
             $router,

@@ -8,6 +8,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\TestIdentifier;
 use App\Model\TestOptions;
 
 class RemoteTestService
@@ -31,7 +32,7 @@ class RemoteTestService
      * @param TestOptions $testOptions
      * @param string $testType
      *
-     * @return RemoteTest
+     * @return TestIdentifier
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -42,7 +43,7 @@ class RemoteTestService
         string $canonicalUrl,
         TestOptions $testOptions,
         string $testType = Test::TYPE_FULL_SITE
-    ): RemoteTest {
+    ): TestIdentifier {
         if ($testOptions->hasFeatureOptions('cookies')) {
             $cookieDomain = $this->registerableDomainService->getRegisterableDomain($canonicalUrl);
 
@@ -67,7 +68,10 @@ class RemoteTestService
 
         $responseData = $this->jsonResponseHandler->handle($response);
 
-        return new RemoteTest($responseData);
+        return new TestIdentifier(
+            $responseData['id'],
+            $responseData['website']
+        );
     }
 
     private function setCustomCookieDomain(TestOptions $testOptions, string $domain)
@@ -150,14 +154,14 @@ class RemoteTestService
     /**
      * @param int $testId
      *
-     * @return RemoteTest
+     * @return TestIdentifier
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retest(int $testId): RemoteTest
+    public function retest(int $testId): TestIdentifier
     {
         $response = $this->coreApplicationHttpClient->post(
             'test_retest',
@@ -168,7 +172,10 @@ class RemoteTestService
 
         $responseData = $this->jsonResponseHandler->handle($response);
 
-        return new RemoteTest($responseData);
+        return new TestIdentifier(
+            $responseData['id'],
+            $responseData['website']
+        );
     }
 
     public function lock(int $testId)
@@ -234,9 +241,9 @@ class RemoteTestService
         return $finishedCount;
     }
 
-    public function retrieveLatest(string $canonicalUrl): ?RemoteTest
+    public function retrieveLatest(string $canonicalUrl): ?TestIdentifier
     {
-        $remoteTest = null;
+        $testIdentifier = null;
 
         try {
             $response = $this->coreApplicationHttpClient->get(
@@ -246,9 +253,12 @@ class RemoteTestService
                 ]
             );
 
-            $remoteTestData = $this->jsonResponseHandler->handle($response);
+            $responseData = $this->jsonResponseHandler->handle($response);
 
-            $remoteTest = new RemoteTest($remoteTestData);
+            $testIdentifier = new TestIdentifier(
+                $responseData['id'],
+                $responseData['website']
+            );
         } catch (CoreApplicationRequestException $coreApplicationRequestException) {
             // Don't care
         } catch (InvalidContentTypeException $invalidContentTypeException) {
@@ -257,6 +267,6 @@ class RemoteTestService
             // Don't care
         }
 
-        return $remoteTest;
+        return $testIdentifier;
     }
 }

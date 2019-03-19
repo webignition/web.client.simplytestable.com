@@ -8,7 +8,7 @@ use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
+use App\Model\TestIdentifier;
 use App\Model\TestOptions;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\ModelFactory;
@@ -103,15 +103,16 @@ class RemoteTestServiceStartTest extends AbstractRemoteTestServiceTest
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => 1,
+                'website' => 'http://example.com/',
             ]),
         ]);
 
-        $remoteTest = $this->remoteTestService->start(
+        $testIdentifier = $this->remoteTestService->start(
             $url,
             $testOptions
         );
 
-        $this->assertInstanceOf(RemoteTest::class, $remoteTest);
+        $this->assertInstanceOf(TestIdentifier::class, $testIdentifier);
 
         $lastRequest = $this->httpHistory->getLastRequest();
 

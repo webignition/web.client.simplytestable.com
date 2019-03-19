@@ -5,7 +5,6 @@ namespace App\Controller;
 use Psr\Log\LoggerInterface;
 use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
-use App\Model\RemoteTest\RemoteTest;
 use App\Services\RemoteTestService;
 use App\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -67,15 +66,12 @@ class RedirectController extends AbstractController
         $hasTestId = !is_null($normalisedTestId);
 
         if ($hasWebsite && !$hasTestId) {
-            $latestRemoteTest = $remoteTestService->retrieveLatest($normalisedWebsite);
+            $testIdentifier = $remoteTestService->retrieveLatest($normalisedWebsite);
 
-            if ($latestRemoteTest instanceof RemoteTest) {
+            if ($testIdentifier) {
                 return new RedirectResponse($this->generateUrl(
                     'redirect_website_test',
-                    [
-                        'website' => $latestRemoteTest->getWebsite(),
-                        'test_id' => $latestRemoteTest->getId()
-                    ]
+                    $testIdentifier->toArray()
                 ));
             }
         }
