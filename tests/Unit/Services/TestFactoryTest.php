@@ -43,11 +43,6 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 'entity' => TestEntity::create(1),
                 'remoteTest' => new RemoteTest([
                     'id' => 1,
-                    'task_types' => [
-                        [
-                            'name' => Task::TYPE_HTML_VALIDATION,
-                        ],
-                    ],
                 ]),
                 'testData' => [
                     'website' => 'http://example.com/',
@@ -61,6 +56,11 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'parameters' => '',
                     'amendments' => [],
                     'crawl' => [],
+                    'task_types' => [
+                        [
+                            'name' => Task::TYPE_HTML_VALIDATION,
+                        ],
+                    ],
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -100,11 +100,6 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 ]),
                 'remoteTest' => new RemoteTest([
                     'id' => 1,
-                    'task_types' => [
-                        [
-                            'name' => Task::TYPE_HTML_VALIDATION,
-                        ],
-                    ],
                 ]),
                 'testData' => [
                     'website' => 'http://example.com/',
@@ -121,6 +116,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     'crawl' => [
                         2,
+                    ],
+                    'task_types' => [
+                        Task::TYPE_HTML_VALIDATION,
                     ],
                 ],
                 'expectedTest' => new TestModel(

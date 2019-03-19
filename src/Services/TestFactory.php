@@ -28,7 +28,7 @@ class TestFactory
             $testData['user'] ?? '',
             $state,
             $testData['type'] ?? '',
-            $remoteTest->getTaskTypes(),
+            $this->normaliseTaskTypes($testData['task_types'] ?? []),
             $testData['url_count'] ?? 0,
             $entity->getErrorCount(),
             $entity->getWarningCount(),
@@ -78,5 +78,17 @@ class TestFactory
         }
 
         return $taskCountByState;
+    }
+
+    private function normaliseTaskTypes(array $taskTypes): array
+    {
+        $normalisedTaskTypes = [];
+
+        foreach ($taskTypes as $taskType) {
+            $taskTypeName = is_array($taskType) ? $taskType['name'] : $taskType;
+            $normalisedTaskTypes[] = $taskTypeName;
+        }
+
+        return $normalisedTaskTypes;
     }
 }
