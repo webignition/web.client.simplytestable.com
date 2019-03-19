@@ -94,7 +94,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'skipped' => 0,
                     ],
                     [],
-                    null
+                    []
                 ),
             ],
             'has tasks' => [
@@ -162,7 +162,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [
                         2
                     ],
-                    null
+                    []
                 ),
             ],
         ];
@@ -218,7 +218,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'skipped' => 0,
                     ],
                     [],
-                    null
+                    []
                 ),
             ],
         ];

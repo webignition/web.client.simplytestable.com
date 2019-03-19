@@ -3,7 +3,6 @@
 namespace App\Model\Test;
 
 use App\Entity\Test as TestEntity;
-use App\Model\RemoteTest\Rejection;
 use App\Model\Test;
 
 class DecoratedTest implements \JsonSerializable
@@ -132,7 +131,7 @@ class DecoratedTest implements \JsonSerializable
         return $this->test->getTaskCountByState();
     }
 
-    public function getRejection(): ?Rejection
+    public function getRejection(): array
     {
         return $this->test->getRejection();
     }
