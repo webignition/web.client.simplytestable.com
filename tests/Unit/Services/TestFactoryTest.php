@@ -10,6 +10,7 @@ use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test as TestModel;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
+use App\Services\TestTaskCountByStateNormaliser;
 
 class TestFactoryTest extends \PHPUnit\Framework\TestCase
 {
@@ -22,7 +23,10 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     {
         parent::setUp();
 
-        $this->testFactory = new TestFactory(new TestCompletionPercentCalculator());
+        $this->testFactory = new TestFactory(
+            new TestCompletionPercentCalculator(),
+            new TestTaskCountByStateNormaliser()
+        );
     }
 
     /**

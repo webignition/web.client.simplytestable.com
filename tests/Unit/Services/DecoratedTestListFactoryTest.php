@@ -12,6 +12,7 @@ use App\Services\DecoratedTestListFactory;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
 use App\Services\TestService;
+use App\Services\TestTaskCountByStateNormaliser;
 use App\Tests\Services\ObjectReflector;
 use Mockery\MockInterface;
 
@@ -22,7 +23,10 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreate(TestService $testService, RemoteTestList $remoteTestList, array $expectedDecoratedTests)
     {
-        $testFactory = new TestFactory(new TestCompletionPercentCalculator());
+        $testFactory = new TestFactory(
+            new TestCompletionPercentCalculator(),
+            new TestTaskCountByStateNormaliser()
+        );
         $decoratedTestListFactory = new DecoratedTestListFactory($testService, $testFactory);
 
         $decoratedTestList = $decoratedTestListFactory->create($remoteTestList);
@@ -57,7 +61,10 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
             'website' => 'http://example.com/1/',
         ]);
 
-        $testFactory = new TestFactory(new TestCompletionPercentCalculator());
+        $testFactory = new TestFactory(
+            new TestCompletionPercentCalculator(),
+            new TestTaskCountByStateNormaliser()
+        );
         $test1 = $testFactory->create($entity1, $remoteTest1, [
             'website' => 'http://example.com/1/',
         ]);
