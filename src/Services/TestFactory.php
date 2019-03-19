@@ -29,7 +29,7 @@ class TestFactory
             $entity->getWarningCount(),
             $testData['task_count'] ?? 0,
             $testData['errored_task_count'] ?? 0,
-            $remoteTest->getCancelledTaskCount(),
+            $testData['cancelled_task_count'] ?? 0,
             $remoteTest->getEncodedParameters(),
             $remoteTest->getAmmendments(),
             $this->remoteTestCompletionPercentCalculator->calculate($remoteTest),

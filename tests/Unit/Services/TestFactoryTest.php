@@ -65,6 +65,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'url_count' => 1,
                     'task_count' => 0,
                     'errored_task_count' => 0,
+                    'cancelled_task_count' => 0,
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -126,6 +127,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'url_count' => 1,
                     'task_count' => 2,
                     'errored_task_count' => 1,
+                    'cancelled_task_count' => 2,
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -145,7 +147,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     3,
                     2,
                     1,
-                    0,
+                    2,
                     '',
                     [],
                     0,
