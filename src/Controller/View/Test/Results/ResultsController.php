@@ -217,6 +217,7 @@ class ResultsController extends AbstractBaseViewController
         $testModel = $this->testFactory->create($test, $remoteTest, [
             'website' => $remoteTest->getWebsite(),
             'user' => $remoteTest->getUser(),
+            'state' => $remoteTest->getState(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 

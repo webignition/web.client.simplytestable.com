@@ -30,6 +30,7 @@ class DecoratedTestListFactory
             $testModel = $this->testFactory->create($test, $remoteTest, [
                 'website' => $remoteTest->getWebsite(),
                 'user' => $remoteTest->getUser(),
+                'state' => $remoteTest->getState(),
             ]);
 
             $decoratedTests[] = new DecoratedTest($testModel);

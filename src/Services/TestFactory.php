@@ -21,7 +21,7 @@ class TestFactory
             $entity,
             $testData['website'] ?? '',
             $testData['user'] ?? '',
-            $remoteTest->getState(),
+            $testData['state'] ?? '',
             $remoteTest->getType(),
             $remoteTest->getTaskTypes(),
             $remoteTest->getUrlCount(),
