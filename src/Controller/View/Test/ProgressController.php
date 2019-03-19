@@ -183,6 +183,7 @@ class ProgressController extends AbstractBaseViewController
             'user' => $remoteTest->getUser(),
             'state' => $remoteTest->getState(),
             'type' => $remoteTest->getType(),
+            'url_count' => $remoteTest->getUrlCount(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 

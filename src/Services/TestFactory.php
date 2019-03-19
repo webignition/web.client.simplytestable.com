@@ -24,7 +24,7 @@ class TestFactory
             $testData['state'] ?? '',
             $testData['type'] ?? '',
             $remoteTest->getTaskTypes(),
-            $remoteTest->getUrlCount(),
+            $testData['url_count'] ?? 0,
             $entity->getErrorCount(),
             $entity->getWarningCount(),
             $remoteTest->getTaskCount(),

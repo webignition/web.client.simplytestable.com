@@ -32,6 +32,7 @@ class DecoratedTestListFactory
                 'user' => $remoteTest->getUser(),
                 'state' => $remoteTest->getState(),
                 'type' => $remoteTest->getType(),
+                'url_count' => $remoteTest->getUrlCount(),
             ]);
 
             $decoratedTests[] = new DecoratedTest($testModel);
