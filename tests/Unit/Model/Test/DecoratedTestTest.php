@@ -5,7 +5,6 @@ namespace App\Tests\Unit\Model\Test;
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
 use App\Entity\Test as TestEntity;
-use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test as TestModel;
 use App\Model\Test\DecoratedTest;
 
@@ -37,7 +36,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'skipped' => 0,
     ];
     const CRAWL_DATA = [];
-    const REJECTION = null;
+    const REJECTION = [];
 
     private $testProperties = [
         'test_id' => self::TEST_ID,
@@ -63,13 +62,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     public function testGetScalarProperties()
     {
         $entity = $this->createTestEntity(1);
-
-        $testModel = $this->createTest([
+        $decoratedTest = new DecoratedTest($this->createTest([
             'entity' => $entity,
-        ]);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        ]));
 
         $this->assertEquals(self::TEST_ID, $decoratedTest->getTestId());
         $this->assertEquals(self::WEBSITE, $decoratedTest->getWebsite());
@@ -94,10 +89,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         bool $expectedIsFullSite,
         bool $expectedIsSingleUrl
     ) {
-        $testModel = $this->createTest($testProperties);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        $decoratedTest = new DecoratedTest($this->createTest($testProperties));
 
         $this->assertEquals($expectedIsFullSite, $decoratedTest->isFullSite());
         $this->assertEquals($expectedIsSingleUrl, $decoratedTest->isSingleUrl());
@@ -135,12 +127,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetErrorCountByTaskType(TestEntity $entity, array $expectedErrorCounts)
     {
-        $testModel = $this->createTest([
+        $decoratedTest = new DecoratedTest($this->createTest([
             'entity' => $entity,
-        ]);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        ]));
 
         foreach ($expectedErrorCounts as $taskType => $expectedErrorCount) {
             $this->assertEquals($expectedErrorCount, $decoratedTest->getErrorCountByTaskType($taskType));
@@ -222,14 +211,11 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         int $cancelledTaskCount,
         int $expectedErrorFreeTaskCount
     ) {
-        $testModel = $this->createTest([
+        $decoratedTest = new DecoratedTest($this->createTest([
             'remoteTaskCount' => $remoteTaskCount,
             'tasksWithErrorsCount' => $tasksWithErrorsCount,
             'cancelledTaskCount' => $cancelledTaskCount,
-        ]);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        ]));
 
         $this->assertEquals($expectedErrorFreeTaskCount, $decoratedTest->getErrorFreeTaskCount());
     }
@@ -275,12 +261,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetLocalTaskCount(TestEntity $entity, int $expectedLocalTaskCount)
     {
-        $testModel = $this->createTest([
+        $decoratedTest = new DecoratedTest($this->createTest([
             'entity' => $entity,
-        ]);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        ]));
 
         $this->assertEquals($expectedLocalTaskCount, $decoratedTest->getLocalTaskCount());
     }
@@ -314,12 +297,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetParameter($encodedParameters, string $key, $expectedValue)
     {
-        $testModel = $this->createTest([
+        $decoratedTest = new DecoratedTest($this->createTest([
             'encodedParameters' => $encodedParameters,
-        ]);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        ]));
 
         $this->assertEquals($expectedValue, $decoratedTest->getParameter($key));
     }
@@ -358,13 +338,10 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         int $remoteTaskCount,
         bool $expectedRequiresRemoteTasks
     ) {
-        $testModel = $this->createTest([
+        $decoratedTest = new DecoratedTest($this->createTest([
             'entity' => $entity,
             'remoteTaskCount' => $remoteTaskCount,
-        ]);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        ]));
 
         $this->assertEquals($expectedRequiresRemoteTasks, $decoratedTest->requiresRemoteTasks());
     }
@@ -401,12 +378,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetCrawlData(array $crawlData)
     {
-        $testModel = $this->createTest([
+        $decoratedTest = new DecoratedTest($this->createTest([
             'crawlData' => $crawlData,
-        ]);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        ]));
 
         $this->assertEquals($crawlData, $decoratedTest->getCrawlData());
     }
@@ -433,12 +407,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFormattedWebsite(string $website, string $expectedWebsite)
     {
-        $testModel = $this->createTest([
+        $decoratedTest = new DecoratedTest($this->createTest([
             'website' => $website,
-        ]);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        ]));
 
         $this->assertEquals($expectedWebsite, $decoratedTest->getFormattedWebsite());
     }
@@ -462,10 +433,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
      */
     public function testJsonSerialize(array $testData, array $expectedSerializedArray)
     {
-        $testModel = $this->createTest($testData);
-        $remoteTest = new RemoteTest([]);
-
-        $decoratedTest = new DecoratedTest($testModel, $remoteTest);
+        $decoratedTest = new DecoratedTest($this->createTest($testData));
 
         $this->assertEquals($expectedSerializedArray, $decoratedTest->jsonSerialize());
     }
@@ -525,17 +493,17 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
                 'entity' => $this->createTestEntity(1),
                 'state' => TestEntity::STATE_COMPLETED,
                 'remoteTaskCount' => 0,
-            ]), new RemoteTest([])),
+            ])),
             'state changes hash' => new DecoratedTest($this->createTest([
                 'entity' => $this->createTestEntity(1),
                 'state' => TestEntity::STATE_IN_PROGRESS,
                 'remoteTaskCount' => 0,
-            ]), new RemoteTest([])),
+            ])),
             'remoteTaskCount != localTaskCount changes hash' => new DecoratedTest($this->createTest([
                 'entity' => $this->createTestEntity(1),
                 'state' => TestEntity::STATE_COMPLETED,
                 'remoteTaskCount' => 1,
-            ]), new RemoteTest([])),
+            ])),
         ];
 
         $hashes = [];

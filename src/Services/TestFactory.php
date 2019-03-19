@@ -49,8 +49,27 @@ class TestFactory
             ),
             $taskCountByState,
             $crawlData,
-            $remoteTest->getRejection()
+            $this->createRejectionData($remoteTest)
         );
+    }
+
+    private function createRejectionData(RemoteTest $remoteTest): array
+    {
+        $rejectionData = [];
+        $remoteTestRejection = $remoteTest->getRejection();
+
+        if (empty($remoteTestRejection)) {
+            return $rejectionData;
+        }
+
+        $rejectionData['reason'] = $remoteTestRejection->getReason();
+
+        $constraint = $remoteTestRejection->getConstraint();
+        if ($constraint) {
+            $rejectionData['constraint'] = $constraint;
+        }
+
+        return $rejectionData;
     }
 
     private function normaliseTaskTypes(array $taskTypes): array
