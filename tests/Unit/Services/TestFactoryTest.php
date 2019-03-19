@@ -224,61 +224,6 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    /**
-     * @dataProvider calculateTaskCountByStateDataProvider
-     */
-    public function testCalculateTaskCountByState(array $remoteTestTaskCountByState, array $expectedTaskCountByState)
-    {
-        $test = $this->testFactory->create(
-            TestEntity::create(1),
-            new RemoteTest([]),
-            [
-                'task_count_by_state' => $remoteTestTaskCountByState,
-            ]
-        );
-
-        $this->assertEquals($expectedTaskCountByState, $test->getTaskCountByState());
-    }
-
-    public function calculateTaskCountByStateDataProvider(): array
-    {
-        return [
-            'no remote task count by state' => [
-                'remoteTestTaskCountByState' => [],
-                'expectedTaskCountByState' => [
-                    'in_progress' => 0,
-                    'queued' => 0,
-                    'completed' => 0,
-                    'cancelled' => 0,
-                    'failed' => 0,
-                    'skipped' => 0,
-                ],
-            ],
-            'mixed' => [
-                'remoteTestTaskCountByState' => [
-                    'cancelled' => 1,
-                    'in-progress' => 2,
-                    'queued' => 4,
-                    'completed' => 8,
-                    'skipped' => 16,
-                    'queued-for-assignment' => 32,
-                    'awaiting-cancellation' => 64,
-                    'failed-no-retry-available' => 128,
-                    'failed-retry-available' => 256,
-                    'failed-retry-limit-reached' => 512,
-                ],
-                'expectedTaskCountByState' => [
-                    'cancelled' => 65,
-                    'in_progress' => 2,
-                    'queued' => 36,
-                    'completed' => 8,
-                    'skipped' => 16,
-                    'failed' => 896,
-                ],
-            ],
-        ];
-    }
-
     private function createTestEntity(int $testId, array $tasks = []): TestEntity
     {
         $test = TestEntity::create($testId);
