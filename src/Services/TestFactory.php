@@ -27,7 +27,7 @@ class TestFactory
             $testData['url_count'] ?? 0,
             $entity->getErrorCount(),
             $entity->getWarningCount(),
-            $remoteTest->getTaskCount(),
+            $testData['task_count'] ?? 0,
             $remoteTest->getErroredTaskCount(),
             $remoteTest->getCancelledTaskCount(),
             $remoteTest->getEncodedParameters(),
