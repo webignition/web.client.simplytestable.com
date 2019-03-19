@@ -225,6 +225,7 @@ class ResultsController extends AbstractBaseViewController
             'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
             'parameters' => $remoteTest->getEncodedParameters(),
             'amendments' => $remoteTest->getAmmendments(),
+            'crawl' => $remoteTest->getCrawl(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 

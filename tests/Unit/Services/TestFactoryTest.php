@@ -60,6 +60,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'cancelled_task_count' => 0,
                     'parameters' => '',
                     'amendments' => [],
+                    'crawl' => [],
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -118,6 +119,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'amendments' => [
                         1,
                     ],
+                    'crawl' => [
+                        2,
+                    ],
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -151,7 +155,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'failed' => 0,
                         'skipped' => 0,
                     ],
-                    [],
+                    [
+                        2
+                    ],
                     null
                 ),
             ],

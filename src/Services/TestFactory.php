@@ -34,7 +34,7 @@ class TestFactory
             $testData['amendments'] ?? [],
             $this->remoteTestCompletionPercentCalculator->calculate($remoteTest),
             $this->calculateTaskCountByState($remoteTest),
-            $remoteTest->getCrawl(),
+            $testData['crawl'] ?? [],
             $remoteTest->getRejection()
         );
     }
