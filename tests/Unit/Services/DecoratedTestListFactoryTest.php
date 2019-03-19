@@ -4,12 +4,12 @@
 namespace App\Tests\Unit\Services;
 
 use App\Entity\Test as TestEntity;
-use App\Model\Test as TestModel;
 use App\Model\DecoratedTestList;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\RemoteTestList;
 use App\Model\Test\DecoratedTest;
 use App\Services\DecoratedTestListFactory;
+use App\Services\RemoteTestCompletionPercentCalculator;
 use App\Services\TestFactory;
 use App\Services\TestService;
 use App\Tests\Services\ObjectReflector;
@@ -22,7 +22,8 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreate(TestService $testService, RemoteTestList $remoteTestList, array $expectedDecoratedTests)
     {
-        $decoratedTestListFactory = new DecoratedTestListFactory($testService, new TestFactory());
+        $testFactory = new TestFactory(new RemoteTestCompletionPercentCalculator());
+        $decoratedTestListFactory = new DecoratedTestListFactory($testService, $testFactory);
 
         $decoratedTestList = $decoratedTestListFactory->create($remoteTestList);
 
@@ -56,7 +57,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
             'website' => 'http://example.com/1/',
         ]);
 
-        $testFactory = new TestFactory();
+        $testFactory = new TestFactory(new RemoteTestCompletionPercentCalculator());
         $test1 = $testFactory->create($entity1, $remoteTest1);
 
         return [
