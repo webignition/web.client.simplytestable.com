@@ -37,6 +37,7 @@ class DecoratedTestListFactory
                 'errored_task_count' => $remoteTest->getErroredTaskCount(),
                 'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
                 'parameters' => $remoteTest->getEncodedParameters(),
+                'amendments' => $remoteTest->getAmmendments(),
             ]);
 
             $decoratedTests[] = new DecoratedTest($testModel);

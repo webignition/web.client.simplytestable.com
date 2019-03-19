@@ -43,19 +43,11 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 'entity' => TestEntity::create(1),
                 'remoteTest' => new RemoteTest([
                     'id' => 1,
-                    'website' => 'http://example.com/',
-                    'user' => 'user@example.com',
-                    'state' => TestEntity::STATE_COMPLETED,
-                    'type' => TestEntity::TYPE_FULL_SITE,
                     'task_types' => [
                         [
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
-                    'url_count' => 1,
-                    'task_count' => 0,
-                    'errored_task_count' => 0,
-                    'cancelled_task_count' => 0,
                 ]),
                 'testData' => [
                     'website' => 'http://example.com/',
@@ -67,6 +59,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'errored_task_count' => 0,
                     'cancelled_task_count' => 0,
                     'parameters' => '',
+                    'amendments' => [],
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -106,19 +99,11 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 ]),
                 'remoteTest' => new RemoteTest([
                     'id' => 1,
-                    'website' => 'http://example.com/',
-                    'user' => 'user@example.com',
-                    'state' => TestEntity::STATE_COMPLETED,
-                    'type' => TestEntity::TYPE_FULL_SITE,
                     'task_types' => [
                         [
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
-                    'url_count' => 1,
-                    'task_count' => 2,
-                    'errored_task_count' => 1,
-                    'cancelled_task_count' => 0,
                 ]),
                 'testData' => [
                     'website' => 'http://example.com/',
@@ -130,6 +115,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'errored_task_count' => 1,
                     'cancelled_task_count' => 2,
                     'parameters' => json_encode(['foo' => 'bar']),
+                    'amendments' => [
+                        1,
+                    ],
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -151,7 +139,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     1,
                     2,
                     json_encode(['foo' => 'bar']),
-                    [],
+                    [
+                        1
+                    ],
                     0,
                     [
                         'in_progress' => 0,
