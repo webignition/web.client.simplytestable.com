@@ -28,7 +28,7 @@ class TestFactory
             $entity->getErrorCount(),
             $entity->getWarningCount(),
             $testData['task_count'] ?? 0,
-            $remoteTest->getErroredTaskCount(),
+            $testData['errored_task_count'] ?? 0,
             $remoteTest->getCancelledTaskCount(),
             $remoteTest->getEncodedParameters(),
             $remoteTest->getAmmendments(),

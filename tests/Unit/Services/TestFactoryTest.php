@@ -64,6 +64,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'type' => TestEntity::TYPE_FULL_SITE,
                     'url_count' => 1,
                     'task_count' => 0,
+                    'errored_task_count' => 0,
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -114,7 +115,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     'url_count' => 1,
                     'task_count' => 2,
-                    'errored_task_count' => 0,
+                    'errored_task_count' => 1,
                     'cancelled_task_count' => 0,
                 ]),
                 'testData' => [
@@ -124,6 +125,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'type' => TestEntity::TYPE_FULL_SITE,
                     'url_count' => 1,
                     'task_count' => 2,
+                    'errored_task_count' => 1,
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -142,7 +144,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     2,
                     3,
                     2,
-                    0,
+                    1,
                     0,
                     '',
                     [],
