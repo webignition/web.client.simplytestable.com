@@ -4,7 +4,6 @@
 namespace App\Tests\Unit\Services;
 
 use App\Entity\Test as TestEntity;
-use App\Model\RemoteTest\RemoteTest;
 use App\Services\TestCompletionPercentCalculator;
 
 class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
@@ -26,14 +25,9 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
      */
     public function testCalculateForCrawl(array $crawlData, int $expectedCompletionPercent)
     {
-        $remoteTest = new RemoteTest([
-            'state' => TestEntity::STATE_CRAWLING,
-            'crawl' => $crawlData,
-        ]);
-
         $completionPercent = $this->calculator->calculate(
             TestEntity::STATE_CRAWLING,
-            $remoteTest->getTaskCount(),
+            0,
             [],
             $crawlData
         );
@@ -88,18 +82,16 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider calculateWithAllTasksFinishedDataProvider
      */
-    public function testCalculateWithAllTasksFinished(array $taskCountByState, int $expectedCompletionPercent)
-    {
-        $remoteTest = new RemoteTest([
-            'task_count' => 10,
-            'task_count_by_state' => $taskCountByState,
-        ]);
-
+    public function testCalculateWithAllTasksFinished(
+        int $taskCount,
+        array $taskCountByState,
+        int $expectedCompletionPercent
+    ) {
         $completionPercent = $this->calculator->calculate(
             TestEntity::STATE_COMPLETED,
-            $remoteTest->getTaskCount(),
-            $remoteTest->getTaskCountByState(),
-            $remoteTest->getCrawl()
+            $taskCount,
+            $taskCountByState,
+            []
         );
 
         $this->assertEquals($expectedCompletionPercent, $completionPercent);
@@ -109,76 +101,61 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'all cancelled' => [
+                'taskCount' => 10,
                 'taskCountByState' => [
                     'cancelled' => 10,
                     'queued' => 0,
                     'in-progress' => 0,
                     'completed' => 0,
-                    'awaiting-cancellation' => 0,
-                    'queued-for-assignment' => 0,
-                    'failed-no-retry-available' => 0,
-                    'failed-retry-available' => 0,
-                    'failed-retry-limit-reached' => 0,
+                    'failed' => 0,
                     'skipped' => 0,
                 ],
                 'expectedCompletionPercent' => 100,
             ],
             'all completed' => [
+                'taskCount' => 10,
                 'taskCountByState' => [
                     'cancelled' => 0,
                     'queued' => 0,
                     'in-progress' => 0,
                     'completed' => 10,
-                    'awaiting-cancellation' => 0,
-                    'queued-for-assignment' => 0,
-                    'failed-no-retry-available' => 0,
-                    'failed-retry-available' => 0,
-                    'failed-retry-limit-reached' => 0,
+                    'failed' => 0,
                     'skipped' => 0,
                 ],
                 'expectedCompletionPercent' => 100,
             ],
             'all failed' => [
+                'taskCount' => 10,
                 'taskCountByState' => [
                     'cancelled' => 0,
                     'queued' => 0,
                     'in-progress' => 0,
                     'completed' => 0,
-                    'awaiting-cancellation' => 0,
-                    'queued-for-assignment' => 0,
-                    'failed-no-retry-available' => 3,
-                    'failed-retry-available' => 3,
-                    'failed-retry-limit-reached' => 4,
+                    'failed' => 10,
                     'skipped' => 0,
                 ],
                 'expectedCompletionPercent' => 100,
             ],
             'all skipped' => [
+                'taskCount' => 10,
                 'taskCountByState' => [
                     'cancelled' => 0,
                     'queued' => 0,
                     'in-progress' => 0,
                     'completed' => 0,
-                    'awaiting-cancellation' => 0,
-                    'queued-for-assignment' => 0,
-                    'failed-no-retry-available' => 0,
-                    'failed-retry-available' => 0,
-                    'failed-retry-limit-reached' => 0,
+                    'failed' => 0,
                     'skipped' => 10,
                 ],
                 'expectedCompletionPercent' => 100,
             ],
             'mixture of finished states' => [
+                'taskCount' => 10,
                 'taskCountByState' => [
-                    'cancelled' => 2,
+                    'cancelled' => 4,
                     'queued' => 0,
                     'in-progress' => 0,
                     'completed' => 2,
-                    'awaiting-cancellation' => 2,
-                    'queued-for-assignment' => 0,
-                    'failed-no-retry-available' => 1,
-                    'failed-retry-available' => 1,
-                    'failed-retry-limit-reached' => 1,
+                    'failed' => 3,
                     'skipped' => 1,
                 ],
                 'expectedCompletionPercent' => 100,
@@ -189,13 +166,18 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider calculateCompletionPercentDataProvider
      */
-    public function testCalculateCompletionPercent(RemoteTest $remoteTest, int $expectedCompletionPercent)
-    {
+    public function testCalculateCompletionPercent(
+        string $state,
+        int $taskCount,
+        array $taskCountByState,
+        array $crawlData,
+        int $expectedCompletionPercent
+    ) {
         $completionPercent = $this->calculator->calculate(
-            $remoteTest->getState(),
-            $remoteTest->getTaskCount(),
-            $remoteTest->getTaskCountByState(),
-            $remoteTest->getCrawl()
+            $state,
+            $taskCount,
+            $taskCountByState,
+            $crawlData
         );
 
         $this->assertEquals($expectedCompletionPercent, $completionPercent);
@@ -205,56 +187,45 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'crawling, no crawl data, no tasks' => [
-                'remoteTest' => new RemoteTest([
-                    'state' => TestEntity::STATE_CRAWLING,
-                    'crawl' => [],
-                    'task_count' => 0,
-                ]),
+                'state' => TestEntity::STATE_CRAWLING,
+                'taskCount' => 0,
+                'taskCountByState' => [],
+                'crawlData' => [],
                 'expectedCompletionPercent' => 0,
             ],
             'not crawling, no tasks' => [
-                'remoteTest' => new RemoteTest([
-                    'state' => TestEntity::STATE_QUEUED,
-                    'task_count' => 0,
-                ]),
+                'state' => TestEntity::STATE_QUEUED,
+                'taskCount' => 0,
+                'taskCountByState' => [],
+                'crawlData' => [],
                 'expectedCompletionPercent' => 0,
             ],
             'partially complete, 10%' => [
-                'remoteTest' => new RemoteTest([
-                    'state' => TestEntity::STATE_IN_PROGRESS,
-                    'task_count' => 100,
-                    'task_count_by_state' => [
-                        'cancelled' => 10,
-                        'queued' => 0,
-                        'in-progress' => 0,
-                        'completed' => 0,
-                        'awaiting-cancellation' => 0,
-                        'queued-for-assignment' => 0,
-                        'failed-no-retry-available' => 0,
-                        'failed-retry-available' => 0,
-                        'failed-retry-limit-reached' => 0,
-                        'skipped' => 0,
-                    ],
-                ]),
+                'state' => TestEntity::STATE_IN_PROGRESS,
+                'taskCount' => 100,
+                'taskCountByState' => [
+                    'cancelled' => 10,
+                    'queued' => 0,
+                    'in-progress' => 0,
+                    'completed' => 0,
+                    'failed' => 0,
+                    'skipped' => 0,
+                ],
+                'crawlData' => [],
                 'expectedCompletionPercent' => 10,
             ],
             'partially complete, 80%' => [
-                'remoteTest' => new RemoteTest([
-                    'state' => TestEntity::STATE_IN_PROGRESS,
-                    'task_count' => 100,
-                    'task_count_by_state' => [
-                        'cancelled' => 10,
-                        'queued' => 0,
-                        'in-progress' => 0,
-                        'completed' => 60,
-                        'awaiting-cancellation' => 0,
-                        'queued-for-assignment' => 0,
-                        'failed-no-retry-available' => 0,
-                        'failed-retry-available' => 0,
-                        'failed-retry-limit-reached' => 0,
-                        'skipped' => 10,
-                    ],
-                ]),
+                'state' => TestEntity::STATE_IN_PROGRESS,
+                'taskCount' => 100,
+                'taskCountByState' => [
+                    'cancelled' => 10,
+                    'queued' => 0,
+                    'in-progress' => 0,
+                    'completed' => 60,
+                    'failed' => 0,
+                    'skipped' => 10,
+                ],
+                'crawlData' => [],
                 'expectedCompletionPercent' => 80,
             ],
         ];
