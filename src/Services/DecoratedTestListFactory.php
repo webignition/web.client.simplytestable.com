@@ -40,6 +40,7 @@ class DecoratedTestListFactory
                 'amendments' => $remoteTest->getAmmendments(),
                 'crawl' => $remoteTest->getCrawl(),
                 'task_types' => $remoteTest->getTaskTypes(),
+                'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
             ]);
 
             $decoratedTests[] = new DecoratedTest($testModel);

@@ -65,6 +65,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                             'name' => Task::TYPE_HTML_VALIDATION,
                         ],
                     ],
+                    'task_count_by_state' => [],
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -124,6 +125,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'task_types' => [
                         Task::TYPE_HTML_VALIDATION,
                     ],
+                    'task_count_by_state' => [],
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -229,10 +231,10 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $test = $this->testFactory->create(
             TestEntity::create(1),
-            new RemoteTest([
+            new RemoteTest([]),
+            [
                 'task_count_by_state' => $remoteTestTaskCountByState,
-            ]),
-            []
+            ]
         );
 
         $this->assertEquals($expectedTaskCountByState, $test->getTaskCountByState());

@@ -23,7 +23,7 @@ class TestFactory
     {
         $state = $testData['state'] ?? '';
         $taskCount = $testData['task_count'] ?? 0;
-        $taskCountByState = $this->testTaskCountByStateNormaliser->normalise($remoteTest->getRawTaskCountByState());
+        $taskCountByState = $this->testTaskCountByStateNormaliser->normalise($testData['task_count_by_state'] ?? []);
         $crawlData = $testData['crawl'] ?? [];
 
         return new TestModel(
