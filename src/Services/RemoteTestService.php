@@ -154,14 +154,14 @@ class RemoteTestService
     /**
      * @param int $testId
      *
-     * @return RemoteTest
+     * @return TestIdentifier
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retest(int $testId): RemoteTest
+    public function retest(int $testId): TestIdentifier
     {
         $response = $this->coreApplicationHttpClient->post(
             'test_retest',
@@ -172,7 +172,10 @@ class RemoteTestService
 
         $responseData = $this->jsonResponseHandler->handle($response);
 
-        return new RemoteTest($responseData);
+        return new TestIdentifier(
+            $responseData['id'],
+            $responseData['website']
+        );
     }
 
     public function lock(int $testId)

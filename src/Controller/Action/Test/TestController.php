@@ -141,14 +141,8 @@ class TestController extends AbstractController
      */
     public function retestAction(int $test_id): RedirectResponse
     {
-        $remoteTest = $this->remoteTestService->retest((int) $test_id);
+        $testIdentifier = $this->remoteTestService->retest((int) $test_id);
 
-        return new RedirectResponse($this->generateUrl(
-            'view_test_progress',
-            [
-                'website' => $remoteTest->getWebsite(),
-                'test_id' => $remoteTest->getId(),
-            ]
-        ));
+        return new RedirectResponse($this->generateUrl('view_test_progress', $testIdentifier->toArray()));
     }
 }

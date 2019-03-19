@@ -3,13 +3,14 @@
 namespace App\Tests\Functional\Services\RemoteTestService;
 
 use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
+use App\Model\TestIdentifier;
 use App\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
 {
     const TEST_ID = 1;
     const NEW_TEST_ID = 2;
+    const WEBSITE = 'http://example.com/';
 
     /**
      * @var Test
@@ -28,16 +29,24 @@ class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
                 'id' => self::NEW_TEST_ID,
+                'website' => self::WEBSITE,
             ]),
         ]);
     }
 
     public function testRetest()
     {
-        $remoteTest = $this->remoteTestService->retest($this->test->getTestId());
+        $testIdentifier = $this->remoteTestService->retest($this->test->getTestId());
 
-        $this->assertInstanceOf(RemoteTest::class, $remoteTest);
-        $this->assertEquals(self::NEW_TEST_ID, $remoteTest->getId());
+        $this->assertInstanceOf(TestIdentifier::class, $testIdentifier);
+
+        $this->assertEquals(
+            [
+                'test_id' => self::NEW_TEST_ID,
+                'website' => self::WEBSITE,
+            ],
+            $testIdentifier->toArray()
+        );
 
         $this->assertEquals(
             'http://null/job/1/re-test/',
