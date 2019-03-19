@@ -224,6 +224,47 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider normaliseStateDataProvider
+     */
+    public function testNormaliseState(string $state, array $crawlData, string $expectedState)
+    {
+        $test = $this->testFactory->create(
+            TestEntity::create(1),
+            new RemoteTest([]),
+            [
+                'state' => $state,
+                'crawl' => $crawlData,
+            ]
+        );
+
+        $this->assertEquals($expectedState, $test->getState());
+    }
+
+    public function normaliseStateDataProvider(): array
+    {
+        return [
+            'empty crawl data' => [
+                'state' => TestEntity::STATE_COMPLETED,
+                'crawlData' => [],
+                'expectedState' => TestEntity::STATE_COMPLETED,
+            ],
+            'failed no sitemap, empty crawl data' => [
+                'state' => TestEntity::STATE_FAILED_NO_SITEMAP,
+                'crawlData' => [],
+                'expectedState' => TestEntity::STATE_FAILED_NO_SITEMAP,
+            ],
+            'failed no sitemap, has crawl data' => [
+                'state' => TestEntity::STATE_FAILED_NO_SITEMAP,
+                'crawlData' => [
+                    'discovered_url_count' => 1,
+                    'limit' => 2,
+                ],
+                'expectedState' => TestEntity::STATE_CRAWLING,
+            ],
+        ];
+    }
+
     private function createTestEntity(int $testId, array $tasks = []): TestEntity
     {
         $test = TestEntity::create($testId);

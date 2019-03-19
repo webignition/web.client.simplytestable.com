@@ -21,10 +21,10 @@ class TestFactory
 
     public function create(TestEntity $entity, RemoteTest $remoteTest, array $testData): TestModel
     {
-        $state = $testData['state'] ?? '';
         $taskCount = $testData['task_count'] ?? 0;
         $taskCountByState = $this->testTaskCountByStateNormaliser->normalise($testData['task_count_by_state'] ?? []);
         $crawlData = $testData['crawl'] ?? [];
+        $state = $this->normaliseState($testData['state'] ?? '', $crawlData);
 
         return new TestModel(
             $entity,
@@ -63,5 +63,14 @@ class TestFactory
         }
 
         return $normalisedTaskTypes;
+    }
+
+    private function normaliseState(string $state, array $crawlData): string
+    {
+        if (TestEntity::STATE_FAILED_NO_SITEMAP === $state && !empty($crawlData)) {
+            return TestEntity::STATE_CRAWLING;
+        }
+
+        return $state;
     }
 }
