@@ -133,7 +133,9 @@ class RejectedController extends AbstractBaseViewController
             ));
         }
 
-        $testModel = $this->testFactory->create($test, $remoteTest, []);
+        $testModel = $this->testFactory->create($test, $remoteTest, [
+            'website' => $remoteTest->getWebsite(),
+        ]);
         $decoratedTest = new DecoratedTest($testModel);
 
         $viewData = [

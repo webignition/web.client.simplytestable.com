@@ -58,7 +58,9 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $testFactory = new TestFactory(new RemoteTestCompletionPercentCalculator());
-        $test1 = $testFactory->create($entity1, $remoteTest1, []);
+        $test1 = $testFactory->create($entity1, $remoteTest1, [
+            'website' => 'http://example.com/1/',
+        ]);
 
         return [
             'empty remote test list' => [

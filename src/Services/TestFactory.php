@@ -19,7 +19,7 @@ class TestFactory
     {
         return new TestModel(
             $entity,
-            $remoteTest->getWebsite(),
+            $testData['website'] ?? '',
             $remoteTest->getUser(),
             $remoteTest->getState(),
             $remoteTest->getType(),

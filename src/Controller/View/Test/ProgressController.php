@@ -178,7 +178,9 @@ class ProgressController extends AbstractBaseViewController
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
 
-        $testModel = $this->testFactory->create($test, $remoteTest, []);
+        $testModel = $this->testFactory->create($test, $remoteTest, [
+            'website' => $remoteTest->getWebsite(),
+        ]);
         $decoratedTest = new DecoratedTest($testModel);
 
         $commonViewData = [

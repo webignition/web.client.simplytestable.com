@@ -27,7 +27,9 @@ class DecoratedTestListFactory
             $remoteTest = $testData['remote_test'];
             $test = $this->testService->get($remoteTest->getId());
 
-            $testModel = $this->testFactory->create($test, $remoteTest, []);
+            $testModel = $this->testFactory->create($test, $remoteTest, [
+                'website' => $remoteTest->getWebsite(),
+            ]);
 
             $decoratedTests[] = new DecoratedTest($testModel);
         }

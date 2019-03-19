@@ -28,9 +28,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider createDataProvider
      */
-    public function testCreate(TestEntity $entity, RemoteTest $remoteTest, TestModel $expectedTest)
+    public function testCreate(TestEntity $entity, RemoteTest $remoteTest, array $testData, TestModel $expectedTest)
     {
-        $test = $this->testFactory->create($entity, $remoteTest, []);
+        $test = $this->testFactory->create($entity, $remoteTest, $testData);
 
         $this->assertInstanceOf(TestModel::class, $test);
         $this->assertEquals($expectedTest, $test);
@@ -57,6 +57,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'errored_task_count' => 0,
                     'cancelled_task_count' => 0,
                 ]),
+                'testData' => [
+                    'website' => 'http://example.com/',
+                ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
                     'http://example.com/',
@@ -109,6 +112,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'errored_task_count' => 0,
                     'cancelled_task_count' => 0,
                 ]),
+                'testData' => [
+                    'website' => 'http://example.com/',
+                ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
                         $this->createTask(
@@ -149,12 +155,15 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider createWithMissingRemoteTestPropertiesDataProvider
      */
-    public function testCreateWithMissingRemoteTestProperties(array $remoteTestData, TestModel $expectedTest)
-    {
+    public function testCreateWithMissingRemoteTestProperties(
+        array $remoteTestData,
+        array $testData,
+        TestModel $expectedTest
+    ) {
         $test = $this->testFactory->create(
             TestEntity::create(1),
             new RemoteTest($remoteTestData),
-            []
+            $testData
         );
 
         $this->assertEquals($expectedTest, $test);
@@ -167,6 +176,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 'remoteTestData' => [
                     'id' => 1,
                 ],
+                'testData' => [],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
                     '',
