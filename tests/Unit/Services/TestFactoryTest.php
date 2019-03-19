@@ -30,7 +30,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreate(TestEntity $entity, RemoteTest $remoteTest, TestModel $expectedTest)
     {
-        $test = $this->testFactory->create($entity, $remoteTest);
+        $test = $this->testFactory->create($entity, $remoteTest, []);
 
         $this->assertInstanceOf(TestModel::class, $test);
         $this->assertEquals($expectedTest, $test);
@@ -153,7 +153,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $test = $this->testFactory->create(
             TestEntity::create(1),
-            new RemoteTest($remoteTestData)
+            new RemoteTest($remoteTestData),
+            []
         );
 
         $this->assertEquals($expectedTest, $test);
@@ -206,7 +207,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
             TestEntity::create(1),
             new RemoteTest([
                 'task_count_by_state' => $remoteTestTaskCountByState,
-            ])
+            ]),
+            []
         );
 
         $this->assertEquals($expectedTaskCountByState, $test->getTaskCountByState());

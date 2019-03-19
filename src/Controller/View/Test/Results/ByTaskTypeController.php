@@ -200,7 +200,7 @@ class ByTaskTypeController extends AbstractBaseViewController
         $errorTaskMaps->sortMapsByOccurrenceCount();
         $errorTaskMaps->sortByOccurrenceCount();
 
-        $testModel = $this->testFactory->create($test, $remoteTest);
+        $testModel = $this->testFactory->create($test, $remoteTest, []);
         $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(

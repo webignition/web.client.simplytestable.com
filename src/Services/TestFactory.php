@@ -15,7 +15,7 @@ class TestFactory
         $this->remoteTestCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
     }
 
-    public function create(TestEntity $entity, RemoteTest $remoteTest): TestModel
+    public function create(TestEntity $entity, RemoteTest $remoteTest, array $testData): TestModel
     {
         return new TestModel(
             $entity,

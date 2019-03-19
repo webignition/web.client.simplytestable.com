@@ -214,7 +214,7 @@ class ResultsController extends AbstractBaseViewController
 
         $isOwner = $remoteTest->getOwners()->contains($user->getUsername());
 
-        $testModel = $this->testFactory->create($test, $remoteTest);
+        $testModel = $this->testFactory->create($test, $remoteTest, []);
         $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
