@@ -3,9 +3,8 @@
 namespace App\Services;
 
 use App\Entity\Test as TestEntity;
-use App\Model\RemoteTest\RemoteTest;
 
-class RemoteTestCompletionPercentCalculator
+class TestCompletionPercentCalculator
 {
     /**
      * @var string[]
@@ -17,22 +16,18 @@ class RemoteTestCompletionPercentCalculator
         'skipped'
     ];
 
-    public function calculate(RemoteTest $remoteTest): int
+    public function calculate(string $state, int $taskCount, array $taskCountByState, array $crawlData): int
     {
-        $crawlData = $remoteTest->getCrawl();
-        $state = $remoteTest->getState();
-
         if (TestEntity::STATE_CRAWLING === $state && !empty($crawlData)) {
             return $this->calculateForCrawl($crawlData);
         }
 
-        $taskCount = $remoteTest->getTaskCount();
         if (0 === $taskCount) {
             return 0;
         }
 
-        $finishedCount = $this->getFinishedTaskCount($remoteTest->getTaskCountByState());
-        if ($finishedCount === $remoteTest->getTaskCount()) {
+        $finishedCount = $this->getFinishedTaskCount($taskCountByState);
+        if ($finishedCount === $taskCount) {
             return 100;
         }
 

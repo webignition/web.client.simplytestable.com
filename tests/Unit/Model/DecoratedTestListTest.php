@@ -8,7 +8,7 @@ use App\Model\Test as TestModel;
 use App\Model\DecoratedTestList;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
-use App\Services\RemoteTestCompletionPercentCalculator;
+use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
 use App\Tests\Services\ObjectReflector;
 
@@ -34,7 +34,7 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
         $entity = TestEntity::create($testId);
         $remoteTest = new RemoteTest([]);
 
-        $testFactory = new TestFactory(new RemoteTestCompletionPercentCalculator());
+        $testFactory = new TestFactory(new TestCompletionPercentCalculator());
         $test = $testFactory->create($entity, $remoteTest, []);
 
         $decoratedTest = new DecoratedTest($test);

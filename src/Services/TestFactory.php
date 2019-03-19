@@ -8,33 +8,43 @@ use App\Model\Test as TestModel;
 
 class TestFactory
 {
-    private $remoteTestCompletionPercentCalculator;
+    private $testCompletionPercentCalculator;
 
-    public function __construct(RemoteTestCompletionPercentCalculator $remoteTestCompletionPercentCalculator)
+    public function __construct(TestCompletionPercentCalculator $remoteTestCompletionPercentCalculator)
     {
-        $this->remoteTestCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
+        $this->testCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
     }
 
     public function create(TestEntity $entity, RemoteTest $remoteTest, array $testData): TestModel
     {
+        $state = $testData['state'] ?? '';
+        $taskCount = $testData['task_count'] ?? 0;
+        $taskCountByState = $this->calculateTaskCountByState($remoteTest);
+        $crawlData = $testData['crawl'] ?? [];
+
         return new TestModel(
             $entity,
             $testData['website'] ?? '',
             $testData['user'] ?? '',
-            $testData['state'] ?? '',
+            $state,
             $testData['type'] ?? '',
             $remoteTest->getTaskTypes(),
             $testData['url_count'] ?? 0,
             $entity->getErrorCount(),
             $entity->getWarningCount(),
-            $testData['task_count'] ?? 0,
+            $taskCount,
             $testData['errored_task_count'] ?? 0,
             $testData['cancelled_task_count'] ?? 0,
             $testData['parameters'] ?? '',
             $testData['amendments'] ?? [],
-            $this->remoteTestCompletionPercentCalculator->calculate($remoteTest),
-            $this->calculateTaskCountByState($remoteTest),
-            $testData['crawl'] ?? [],
+            $this->testCompletionPercentCalculator->calculate(
+                $state,
+                $taskCount,
+                $taskCountByState,
+                $crawlData
+            ),
+            $taskCountByState,
+            $crawlData,
             $remoteTest->getRejection()
         );
     }
