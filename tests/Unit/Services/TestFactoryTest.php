@@ -61,6 +61,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'website' => 'http://example.com/',
                     'user' => 'user@example.com',
                     'state' => TestEntity::STATE_COMPLETED,
+                    'type' => TestEntity::TYPE_FULL_SITE,
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -118,6 +119,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'website' => 'http://example.com/',
                     'user' => 'user@example.com',
                     'state' => TestEntity::STATE_COMPLETED,
+                    'type' => TestEntity::TYPE_FULL_SITE,
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [

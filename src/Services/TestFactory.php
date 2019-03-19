@@ -22,7 +22,7 @@ class TestFactory
             $testData['website'] ?? '',
             $testData['user'] ?? '',
             $testData['state'] ?? '',
-            $remoteTest->getType(),
+            $testData['type'] ?? '',
             $remoteTest->getTaskTypes(),
             $remoteTest->getUrlCount(),
             $entity->getErrorCount(),

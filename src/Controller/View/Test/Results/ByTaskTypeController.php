@@ -204,6 +204,7 @@ class ByTaskTypeController extends AbstractBaseViewController
             'website' => $remoteTest->getWebsite(),
             'user' => $remoteTest->getUser(),
             'state' => $remoteTest->getState(),
+            'type' => $remoteTest->getType(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 
