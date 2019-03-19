@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Services;
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
 use App\Entity\Test as TestEntity;
-use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test as TestModel;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
@@ -32,9 +31,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider createDataProvider
      */
-    public function testCreate(TestEntity $entity, RemoteTest $remoteTest, array $testData, TestModel $expectedTest)
+    public function testCreate(TestEntity $entity, array $testData, TestModel $expectedTest)
     {
-        $test = $this->testFactory->create($entity, $remoteTest, $testData);
+        $test = $this->testFactory->create($entity, $testData);
 
         $this->assertInstanceOf(TestModel::class, $test);
         $this->assertEquals($expectedTest, $test);
@@ -45,9 +44,6 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
         return [
             'no tasks' => [
                 'entity' => TestEntity::create(1),
-                'remoteTest' => new RemoteTest([
-                    'id' => 1,
-                ]),
                 'testData' => [
                     'website' => 'http://example.com/',
                     'user' => 'user@example.com',
@@ -102,9 +98,6 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     $this->createTask(
                         $this->createTaskOutput(2, 3)
                     )
-                ]),
-                'remoteTest' => new RemoteTest([
-                    'id' => 1,
                 ]),
                 'testData' => [
                     'website' => 'http://example.com/',
@@ -172,13 +165,11 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
      * @dataProvider createWithMissingRemoteTestPropertiesDataProvider
      */
     public function testCreateWithMissingRemoteTestProperties(
-        array $remoteTestData,
         array $testData,
         TestModel $expectedTest
     ) {
         $test = $this->testFactory->create(
             TestEntity::create(1),
-            new RemoteTest($remoteTestData),
             $testData
         );
 
@@ -189,9 +180,6 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'id only' => [
-                'remoteTestData' => [
-                    'id' => 1,
-                ],
                 'testData' => [],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -231,7 +219,6 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $test = $this->testFactory->create(
             TestEntity::create(1),
-            new RemoteTest([]),
             [
                 'state' => $state,
                 'crawl' => $crawlData,

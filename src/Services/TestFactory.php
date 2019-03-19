@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Entity\Test as TestEntity;
-use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test as TestModel;
 
 class TestFactory
@@ -19,7 +18,7 @@ class TestFactory
         $this->testTaskCountByStateNormaliser = $testTaskCountByStateNormaliser;
     }
 
-    public function create(TestEntity $entity, RemoteTest $remoteTest, array $testData): TestModel
+    public function create(TestEntity $entity, array $testData): TestModel
     {
         $taskCount = $testData['task_count'] ?? 0;
         $taskCountByState = $this->testTaskCountByStateNormaliser->normalise($testData['task_count_by_state'] ?? []);

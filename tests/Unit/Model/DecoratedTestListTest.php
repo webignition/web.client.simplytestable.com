@@ -39,7 +39,7 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
             new TestCompletionPercentCalculator(),
             new TestTaskCountByStateNormaliser()
         );
-        $test = $testFactory->create($entity, $remoteTest, []);
+        $test = $testFactory->create($entity, []);
 
         $decoratedTest = new DecoratedTest($test);
 
