@@ -125,14 +125,11 @@ class StartController extends AbstractController
         $urlToTest = $this->getUrlToTest($isFullSiteTest, $website);
 
         try {
-            $remoteTest = $this->remoteTestService->start($urlToTest, $testOptions, $testType);
+            $testIdentifier = $this->remoteTestService->start($urlToTest, $testOptions, $testType);
 
             return new RedirectResponse($this->generateUrl(
                 'view_test_progress',
-                [
-                    'website' => $remoteTest->getWebsite(),
-                    'test_id' => $remoteTest->getId(),
-                ]
+                $testIdentifier->toArray()
             ));
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $this->flashBag->set('test_start_error', 'web_resource_exception');

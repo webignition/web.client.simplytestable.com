@@ -8,6 +8,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\RemoteTest\RemoteTest;
+use App\Model\TestIdentifier;
 use App\Model\TestOptions;
 
 class RemoteTestService
@@ -31,7 +32,7 @@ class RemoteTestService
      * @param TestOptions $testOptions
      * @param string $testType
      *
-     * @return RemoteTest
+     * @return TestIdentifier
      *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
@@ -42,7 +43,7 @@ class RemoteTestService
         string $canonicalUrl,
         TestOptions $testOptions,
         string $testType = Test::TYPE_FULL_SITE
-    ): RemoteTest {
+    ): TestIdentifier {
         if ($testOptions->hasFeatureOptions('cookies')) {
             $cookieDomain = $this->registerableDomainService->getRegisterableDomain($canonicalUrl);
 
@@ -67,7 +68,10 @@ class RemoteTestService
 
         $responseData = $this->jsonResponseHandler->handle($response);
 
-        return new RemoteTest($responseData);
+        return new TestIdentifier(
+            $responseData['id'],
+            $responseData['website']
+        );
     }
 
     private function setCustomCookieDomain(TestOptions $testOptions, string $domain)
