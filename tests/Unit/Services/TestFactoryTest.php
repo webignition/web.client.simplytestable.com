@@ -66,6 +66,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'task_count_by_state' => [],
                     'is_public' => true,
                     'task_type_options' => [],
+                    'owners' => [
+                        'public@simplytestable.com',
+                    ],
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -98,6 +101,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     true,
                     [
                         'html-validation' => 1,
+                    ],
+                    [
+                        'public@simplytestable.com',
                     ]
                 ),
             ],
@@ -132,6 +138,10 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'CSS validation' => [
                             'ignore-warnings' => '1',
                         ],
+                    ],
+                    'owners' => [
+                        'user@example.com',
+                        'member@example.com',
                     ],
                 ],
                 'expectedTest' => new TestModel(
@@ -174,6 +184,10 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [
                         'html-validation' => 1,
                         'css-validation-ignore-warnings' => '1',
+                    ],
+                    [
+                        'user@example.com',
+                        'member@example.com',
                     ]
                 ),
             ],
@@ -227,6 +241,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [],
                     [],
                     false,
+                    [],
                     []
                 ),
             ],

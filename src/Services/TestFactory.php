@@ -56,7 +56,8 @@ class TestFactory
             $crawlData,
             $testData['rejection'] ?? [],
             $testData['is_public'] ?? false,
-            $taskOptions
+            $taskOptions,
+            $testData['owners'] ?? []
         );
     }
 

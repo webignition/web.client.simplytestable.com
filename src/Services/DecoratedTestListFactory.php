@@ -44,6 +44,7 @@ class DecoratedTestListFactory
                 'rejection' => [],
                 'is_public' => $remoteTest->getIsPublic(),
                 'task_type_options' => $remoteTest->getTaskTypeOptions(),
+                'owners' => $remoteTest->getOwners(),
             ]);
 
             $decoratedTests[] = new DecoratedTest($testModel);
