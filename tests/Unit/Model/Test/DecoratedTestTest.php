@@ -19,8 +19,6 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         Task::TYPE_HTML_VALIDATION,
     ];
     const URL_COUNT = 12;
-    const ERROR_COUNT = 13;
-    const WARNING_COUNT = 14;
     const REMOTE_TASK_COUNT = 0;
     const TASKS_WITH_ERRORS_COUNT = 0;
     const CANCELLED_TASK_COUNT = 0;
@@ -51,8 +49,6 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'type' => self::TYPE,
         'taskTypes' => self::TASK_TYPES,
         'urlCount' => self::URL_COUNT,
-        'errorCount' => self::ERROR_COUNT,
-        'warningCount' => self::WARNING_COUNT,
         'remoteTaskCount' => self::REMOTE_TASK_COUNT,
         'tasksWithErrorsCount' => self::TASKS_WITH_ERRORS_COUNT,
         'cancelledTaskCount' => self::CANCELLED_TASK_COUNT,
@@ -70,17 +66,19 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     public function testGetScalarProperties()
     {
         $entity = $this->createTestEntity(1);
-        $decoratedTest = new DecoratedTest($this->createTest([
+        $testModel = $this->createTest([
             'entity' => $entity,
-        ]));
+        ]);
+
+        $decoratedTest = new DecoratedTest($testModel);
 
         $this->assertEquals(self::TEST_ID, $decoratedTest->getTestId());
         $this->assertEquals(self::WEBSITE, $decoratedTest->getWebsite());
         $this->assertEquals(self::STATE, $decoratedTest->getState());
         $this->assertEquals(self::TASK_TYPES, $decoratedTest->getTaskTypes());
         $this->assertEquals(self::URL_COUNT, $decoratedTest->getUrlCount());
-        $this->assertEquals(self::ERROR_COUNT, $decoratedTest->getErrorCount());
-        $this->assertEquals(self::WARNING_COUNT, $decoratedTest->getWarningCount());
+        $this->assertEquals(0, $decoratedTest->getErrorCount());
+        $this->assertEquals(0, $decoratedTest->getWarningCount());
         $this->assertEquals(self::REMOTE_TASK_COUNT, $decoratedTest->getRemoteTaskCount());
         $this->assertEquals(self::AMENDMENTS, $decoratedTest->getAmendments());
         $this->assertEquals(self::COMPLETION_PERCENT, $decoratedTest->getCompletionPercent());
@@ -542,8 +540,6 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['type'],
             $properties['taskTypes'],
             $properties['urlCount'],
-            $properties['errorCount'],
-            $properties['warningCount'],
             $properties['remoteTaskCount'],
             $properties['tasksWithErrorsCount'],
             $properties['cancelledTaskCount'],
