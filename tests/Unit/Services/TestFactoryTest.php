@@ -10,6 +10,7 @@ use App\Model\Test as TestModel;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
 use App\Services\TestTaskCountByStateNormaliser;
+use App\Services\TestTaskOptionsNormaliser;
 
 class TestFactoryTest extends \PHPUnit\Framework\TestCase
 {
@@ -24,7 +25,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
 
         $this->testFactory = new TestFactory(
             new TestCompletionPercentCalculator(),
-            new TestTaskCountByStateNormaliser()
+            new TestTaskCountByStateNormaliser(),
+            new TestTaskOptionsNormaliser()
         );
     }
 
@@ -94,7 +96,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [],
                     [],
                     true,
-                    []
+                    [
+                        'html-validation' => 1,
+                    ]
                 ),
             ],
             'has tasks' => [
@@ -125,7 +129,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     'task_count_by_state' => [],
                     'is_public' => false,
                     'task_type_options' => [
-                        3,
+                        'CSS validation' => [
+                            'ignore-warnings' => '1',
+                        ],
                     ],
                 ],
                 'expectedTest' => new TestModel(
@@ -166,7 +172,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [],
                     false,
                     [
-                        3,
+                        'html-validation' => 1,
+                        'css-validation-ignore-warnings' => '1',
                     ]
                 ),
             ],
