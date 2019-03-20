@@ -65,7 +65,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
             new TestCompletionPercentCalculator(),
             new TestTaskCountByStateNormaliser()
         );
-        $test1 = $testFactory->create($entity1, $remoteTest1, [
+        $test1 = $testFactory->create($entity1, [
             'website' => 'http://example.com/1/',
         ]);
 
