@@ -28,6 +28,7 @@ class Test
     private $rejection;
     private $crawlData;
     private $isPublic;
+    private $taskTypeOptions;
 
     public function __construct(
         TestEntity $entity,
@@ -48,7 +49,8 @@ class Test
         array $taskCountByState,
         array $crawlData,
         array $rejection,
-        bool $isPublic
+        bool $isPublic,
+        array $taskTypeOptions
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -72,6 +74,7 @@ class Test
         $this->crawlData = $crawlData;
         $this->rejection = $rejection;
         $this->isPublic = $isPublic;
+        $this->taskTypeOptions = $taskTypeOptions;
     }
 
     public function getEntity(): TestEntity
@@ -201,5 +204,10 @@ class Test
     public function isPublic(): bool
     {
         return $this->isPublic;
+    }
+
+    public function getTaskTypeOptions(): array
+    {
+        return $this->taskTypeOptions;
     }
 }

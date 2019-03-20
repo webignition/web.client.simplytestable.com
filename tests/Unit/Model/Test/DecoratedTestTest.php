@@ -38,6 +38,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     const CRAWL_DATA = [];
     const REJECTION = [];
     const IS_PUBLIC = false;
+    const TASK_TYPE_OPTIONS = [];
 
     private $testProperties = [
         'test_id' => self::TEST_ID,
@@ -59,6 +60,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'rejection' => self::REJECTION,
         'crawlData' => self::CRAWL_DATA,
         'isPublic' => self::IS_PUBLIC,
+        'taskTypeOptions' => self::TASK_TYPE_OPTIONS,
     ];
 
     public function testGetScalarProperties()
@@ -547,7 +549,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['taskCountByState'],
             $properties['crawlData'],
             $properties['rejection'],
-            $properties['isPublic']
+            $properties['isPublic'],
+            $properties['taskTypeOptions']
         );
     }
 

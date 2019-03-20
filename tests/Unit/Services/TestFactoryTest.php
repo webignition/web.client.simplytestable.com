@@ -63,6 +63,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     'task_count_by_state' => [],
                     'is_public' => true,
+                    'task_type_options' => [],
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -92,7 +93,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     [],
                     [],
-                    true
+                    true,
+                    []
                 ),
             ],
             'has tasks' => [
@@ -122,6 +124,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     'task_count_by_state' => [],
                     'is_public' => false,
+                    'task_type_options' => [
+                        3,
+                    ],
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -144,7 +149,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     2,
                     json_encode(['foo' => 'bar']),
                     [
-                        1
+                        1,
                     ],
                     0,
                     [
@@ -156,10 +161,13 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'skipped' => 0,
                     ],
                     [
-                        2
+                        2,
                     ],
                     [],
-                    false
+                    false,
+                    [
+                        3,
+                    ]
                 ),
             ],
         ];
@@ -211,7 +219,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     [],
                     [],
-                    false
+                    false,
+                    []
                 ),
             ],
         ];
