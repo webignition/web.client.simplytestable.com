@@ -9,15 +9,15 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\TaskOutput\CssTextFileMessage;
 use App\Model\TaskOutput\LinkIntegrityMessage;
+use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\Configuration\DocumentationSiteUrls;
 use App\Services\DocumentationUrlCheckerService;
 use App\Services\Configuration\LinkIntegrityErrorCodeMap;
-use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -31,45 +31,13 @@ use webignition\HtmlValidationErrorNormaliser\Result as HtmlValidationErrorNorma
 
 class ResultsController extends AbstractBaseViewController
 {
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
-
-    /**
-     * @var TaskService
-     */
     private $taskService;
-
-    /**
-     * @var DocumentationUrlCheckerService
-     */
     private $documentationUrlLinkChecker;
-
-    /**
-     * @var LinkIntegrityErrorCodeMap
-     */
     private $linkIntegrityErrorCodeMap;
-
-    /**
-     * @var DocumentationSiteUrls
-     */
     private $documentationSiteUrls;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
-
-    /**
-     * @var UserManager
-     */
     private $userManager;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
@@ -78,23 +46,21 @@ class ResultsController extends AbstractBaseViewController
         CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
-        TestService $testService,
-        RemoteTestService $remoteTestService,
         TaskService $taskService,
         DocumentationUrlCheckerService $documentationUrlChecker,
         LinkIntegrityErrorCodeMap $linkIntegrityErrorCodeMap,
-        DocumentationSiteUrls $documentationSiteUrls
+        DocumentationSiteUrls $documentationSiteUrls,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
         $this->documentationUrlLinkChecker = $documentationUrlChecker;
         $this->linkIntegrityErrorCodeMap = $linkIntegrityErrorCodeMap;
         $this->documentationSiteUrls = $documentationSiteUrls;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -112,9 +78,9 @@ class ResultsController extends AbstractBaseViewController
     public function indexAction(Request $request, string $website, int $test_id, int $task_id): Response
     {
         $user = $this->userManager->getUser();
-        $test = $this->testService->get($test_id);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
-        $task = $this->taskService->get($test, $task_id);
+        $task = $this->taskService->get($testModel->getEntity(), $task_id);
         if (empty($task)) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_progress',
@@ -138,10 +104,8 @@ class ResultsController extends AbstractBaseViewController
             ));
         }
 
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
-
-        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
-        $isOwner = in_array($user->getUsername(), $remoteTest->getOwners());
+        $isPublicUserTest = $testModel->getUser() === SystemUserService::getPublicUser()->getUsername();
+        $isOwner = in_array($user->getUsername(), $testModel->getOwners());
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
@@ -154,9 +118,11 @@ class ResultsController extends AbstractBaseViewController
             return $response;
         }
 
+        $decoratedTest = new DecoratedTest($testModel);
+
         $viewData = array(
             'website_url' => $this->urlViewValues->create($website),
-            'test' => $test,
+            'test' => $decoratedTest,
             'task' => $task,
             'task_url' => $this->urlViewValues->create($task->getUrl()),
             'is_owner' => $isOwner,
