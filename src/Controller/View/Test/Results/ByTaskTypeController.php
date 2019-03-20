@@ -11,13 +11,11 @@ use App\Model\Test\DecoratedTest;
 use App\Model\Test\Task\ErrorTaskMapCollection;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
-use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskCollectionFilterService;
 use App\Services\TaskService;
 use App\Services\TestFactory;
 use App\Services\TestRetriever;
-use App\Services\TestService;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -32,36 +30,10 @@ class ByTaskTypeController extends AbstractBaseViewController
     const FILTER_BY_ERROR = 'by-error';
     const DEFAULT_FILTER = self::FILTER_BY_ERROR;
 
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
-
-    /**
-     * @var TaskService
-     */
     private $taskService;
-
-    /**
-     * @var TaskCollectionFilterService
-     */
     private $taskCollectionFilterService;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
-
-    /**
-     * @var UserManager
-     */
     private $userManager;
-
     private $testFactory;
     private $testRetriever;
 
@@ -80,8 +52,6 @@ class ByTaskTypeController extends AbstractBaseViewController
         CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
-        TestService $testService,
-        RemoteTestService $remoteTestService,
         TaskService $taskService,
         TaskCollectionFilterService $taskCollectionFilterService,
         TestFactory $testFactory,
@@ -89,8 +59,6 @@ class ByTaskTypeController extends AbstractBaseViewController
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
         $this->urlViewValues = $urlViewValues;
