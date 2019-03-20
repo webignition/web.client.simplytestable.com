@@ -3,12 +3,15 @@
 
 namespace App\Tests\Functional\Controller;
 
+use App\Services\TestRetriever;
 use App\Services\TestService;
+use App\Tests\Factory\TestModelFactory;
 use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\TaskController;
 use App\Entity\Task\Task;
-use App\Entity\Test;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Tests\Factory\HttpResponseFactory;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -139,7 +142,7 @@ class TaskControllerTest extends AbstractControllerTest
                 'routeParameters' => [
                     'website' => self::WEBSITE,
                     'test_id' => self::TEST_ID,
-                    'limit' => TaskController::DEFAULT_UNRETRIEVED_TASKID_LIMIT,
+                    'limit' => TaskController::DEFAULT_UNRETRIEVED_TASK_ID_LIMIT,
                 ],
             ],
             'retrieveAction' => [
@@ -157,11 +160,15 @@ class TaskControllerTest extends AbstractControllerTest
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $test = Test::create(self::TEST_ID);
-        $test->setTaskIdCollection(implode(',', $taskIds));
+        $testEntity = TestEntity::create(self::TEST_ID);
+        $testEntity->setTaskIdCollection(implode(',', $taskIds));
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $this->setTestServiceOnController($this->taskController, $testService);
+        $testModel = TestModelFactory::create([
+            'entity' => $testEntity,
+        ]);
+
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($this->taskController, $testRetriever);
 
         /* @var JsonResponse $response */
         $response = $this->taskController->idCollectionAction(self::TEST_ID);
@@ -180,15 +187,19 @@ class TaskControllerTest extends AbstractControllerTest
     {
         $taskIds = [1, 2, 3, 4,];
 
-        $test = Test::create(self::TEST_ID);
-        $test->setTaskIdCollection(implode(',', $taskIds));
+        $testEntity = TestEntity::create(self::TEST_ID);
+        $testEntity->setTaskIdCollection(implode(',', $taskIds));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        $entityManager->persist($test);
+        $entityManager->persist($testEntity);
         $entityManager->flush();
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $this->setTestServiceOnController($this->taskController, $testService);
+        $testModel = TestModelFactory::create([
+            'entity' => $testEntity,
+        ]);
+
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($this->taskController, $testRetriever);
 
         /* @var JsonResponse $response */
         $response = $this->taskController->unretrievedIdCollectionAction(self::TEST_ID, $limit);
@@ -207,7 +218,7 @@ class TaskControllerTest extends AbstractControllerTest
                 'limit' => null,
             ],
             'limit exceeds maximum' => [
-                'limit' => TaskController::MAX_UNRETRIEVED_TASKID_LIMIT + 1,
+                'limit' => TaskController::MAX_UNRETRIEVED_TASK_ID_LIMIT + 1,
             ],
         ];
     }
@@ -217,15 +228,19 @@ class TaskControllerTest extends AbstractControllerTest
      */
     public function testRetrieveActionRender(array $existingTestTaskIds, array $httpFixtures, Request $request)
     {
-        $test = Test::create(self::TEST_ID);
-        $test->setTaskIdCollection(implode(',', $existingTestTaskIds));
+        $testEntity = TestEntity::create(self::TEST_ID);
+        $testEntity->setTaskIdCollection(implode(',', $existingTestTaskIds));
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        $entityManager->persist($test);
+        $entityManager->persist($testEntity);
         $entityManager->flush();
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $this->setTestServiceOnController($this->taskController, $testService);
+        $testModel = TestModelFactory::create([
+            'entity' => $testEntity,
+        ]);
+
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($this->taskController, $testRetriever);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -235,14 +250,14 @@ class TaskControllerTest extends AbstractControllerTest
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $testRepository = $entityManager->getRepository(Test::class);
+        $testRepository = $entityManager->getRepository(TestEntity::class);
 
-        /* @var Test $test */
+        /* @var TestEntity $test */
         $test = $testRepository->findOneBy([
             'testId' => self::TEST_ID,
         ]);
 
-        $this->assertInstanceOf(Test::class, $test);
+        $this->assertInstanceOf(TestEntity::class, $test);
 
         $tasks = $test->getTasks();
         $this->assertCount(4, $tasks);
@@ -284,17 +299,17 @@ class TaskControllerTest extends AbstractControllerTest
     }
 
     /**
-     * @return TestService|MockInterface
+     * @return TestRetriever|MockInterface
      */
-    private function createTestService(int $testId, ?Test $test)
+    private function createTestRetriever(int $testId, ?TestModel $testModel)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
-            ->andReturn($test);
+            ->andReturn($testModel);
 
-        return $testService;
+        return $testRetriever;
     }
 
     protected function setTestServiceOnController($controller, TestService $testService)
@@ -304,6 +319,18 @@ class TaskControllerTest extends AbstractControllerTest
             get_class($controller),
             'testService',
             $testService
+        );
+    }
+
+    protected function setTestRetrieverOnController(
+        $controller,
+        TestRetriever $testRetriever
+    ) {
+        ObjectReflector::setProperty(
+            $controller,
+            get_class($controller),
+            'testRetriever',
+            $testRetriever
         );
     }
 }
