@@ -17,7 +17,7 @@ use App\Services\TaskService;
 use App\Services\TaskTypeService;
 use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -36,52 +36,16 @@ class ResultsController extends AbstractBaseViewController
     const FILTER_SKIPPED = 'skipped';
     const FILTER_CANCELLED = 'cancelled';
 
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
     private $remoteTestService;
-
-    /**
-     * @var TaskService
-     */
     private $taskService;
-
-    /**
-     * @var TaskTypeService
-     */
     private $taskTypeService;
-
-    /**
-     * @var TaskCollectionFilterService
-     */
     private $taskCollectionFilterService;
-
-    /**
-     * @var TestOptionsRequestAdapterFactory
-     */
     private $testOptionsRequestAdapterFactory;
-
-    /**
-     * @var CssValidationTestConfiguration
-     */
     private $cssValidationTestConfiguration;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
-
-    /**
-     * @var UserManager
-     */
     private $userManager;
-
     private $testFactory;
+    private $testRetriever;
 
     /**
      * @var string[]
@@ -102,18 +66,17 @@ class ResultsController extends AbstractBaseViewController
         CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
-        TestService $testService,
         RemoteTestService $remoteTestService,
         TaskService $taskService,
         TaskTypeService $taskTypeService,
         TaskCollectionFilterService $taskCollectionFilterService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
-        TestFactory $testFactory
+        TestFactory $testFactory,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
         $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
         $this->taskTypeService = $taskTypeService;
@@ -123,6 +86,7 @@ class ResultsController extends AbstractBaseViewController
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
         $this->testFactory = $testFactory;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -139,28 +103,7 @@ class ResultsController extends AbstractBaseViewController
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $user = $this->userManager->getUser();
-        $test = $this->testService->get($test_id);
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
-
-        $testModel = $this->testFactory->create($test, [
-            'website' => $remoteTest->getWebsite(),
-            'user' => $remoteTest->getUser(),
-            'state' => $remoteTest->getState(),
-            'type' => $remoteTest->getType(),
-            'url_count' => $remoteTest->getUrlCount(),
-            'task_count' => $remoteTest->getTaskCount(),
-            'errored_task_count' => $remoteTest->getErroredTaskCount(),
-            'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
-            'parameters' => $remoteTest->getEncodedParameters(),
-            'amendments' => $remoteTest->getAmmendments(),
-            'crawl' => $remoteTest->getCrawl(),
-            'task_types' => $remoteTest->getTaskTypes(),
-            'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
-            'rejection' => [],
-            'is_public' => $remoteTest->getIsPublic(),
-            'task_type_options' => $remoteTest->getTaskTypeOptions(),
-            'owners' => $remoteTest->getOwners(),
-        ]);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
         if ($website !== $testModel->getWebsite()) {
             return new RedirectResponse($this->generateUrl(
@@ -189,7 +132,7 @@ class ResultsController extends AbstractBaseViewController
             $testModel->getWarningCount()
         );
 
-        $this->taskCollectionFilterService->setTest($test);
+        $this->taskCollectionFilterService->setTest($testModel->getEntity());
         $this->taskCollectionFilterService->setTypeFilter($taskType);
 
         $filteredTaskCounts = $this->createFilteredTaskCounts();
@@ -229,7 +172,7 @@ class ResultsController extends AbstractBaseViewController
             $remoteTaskIds = $testModel->getTaskIds();
         }
 
-        $tasks = $this->taskService->getCollection($test, $remoteTaskIds);
+        $tasks = $this->taskService->getCollection($testModel->getEntity(), $remoteTaskIds);
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
