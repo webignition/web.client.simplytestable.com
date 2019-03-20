@@ -10,6 +10,7 @@ use App\Model\Test as TestModel;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
 use App\Services\TestTaskCountByStateNormaliser;
+use App\Services\TestTaskOptionsNormaliser;
 
 class TestFactoryTest extends \PHPUnit\Framework\TestCase
 {
@@ -24,7 +25,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
 
         $this->testFactory = new TestFactory(
             new TestCompletionPercentCalculator(),
-            new TestTaskCountByStateNormaliser()
+            new TestTaskCountByStateNormaliser(),
+            new TestTaskOptionsNormaliser()
         );
     }
 
@@ -63,6 +65,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     'task_count_by_state' => [],
                     'is_public' => true,
+                    'task_type_options' => [],
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
@@ -92,7 +95,10 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     [],
                     [],
-                    true
+                    true,
+                    [
+                        'html-validation' => 1,
+                    ]
                 ),
             ],
             'has tasks' => [
@@ -122,6 +128,11 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     'task_count_by_state' => [],
                     'is_public' => false,
+                    'task_type_options' => [
+                        'CSS validation' => [
+                            'ignore-warnings' => '1',
+                        ],
+                    ],
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -144,7 +155,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     2,
                     json_encode(['foo' => 'bar']),
                     [
-                        1
+                        1,
                     ],
                     0,
                     [
@@ -156,10 +167,14 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'skipped' => 0,
                     ],
                     [
-                        2
+                        2,
                     ],
                     [],
-                    false
+                    false,
+                    [
+                        'html-validation' => 1,
+                        'css-validation-ignore-warnings' => '1',
+                    ]
                 ),
             ],
         ];
@@ -211,7 +226,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     [],
                     [],
-                    false
+                    false,
+                    []
                 ),
             ],
         ];

@@ -9,13 +9,16 @@ class TestFactory
 {
     private $testCompletionPercentCalculator;
     private $testTaskCountByStateNormaliser;
+    private $testTaskOptionsNormaliser;
 
     public function __construct(
         TestCompletionPercentCalculator $remoteTestCompletionPercentCalculator,
-        TestTaskCountByStateNormaliser $testTaskCountByStateNormaliser
+        TestTaskCountByStateNormaliser $testTaskCountByStateNormaliser,
+        TestTaskOptionsNormaliser $testTaskOptionsNormaliser
     ) {
         $this->testCompletionPercentCalculator = $remoteTestCompletionPercentCalculator;
         $this->testTaskCountByStateNormaliser = $testTaskCountByStateNormaliser;
+        $this->testTaskOptionsNormaliser = $testTaskOptionsNormaliser;
     }
 
     public function create(TestEntity $entity, array $testData): TestModel
@@ -24,6 +27,9 @@ class TestFactory
         $taskCountByState = $this->testTaskCountByStateNormaliser->normalise($testData['task_count_by_state'] ?? []);
         $crawlData = $testData['crawl'] ?? [];
         $state = $this->normaliseState($testData['state'] ?? '', $crawlData);
+        $taskTypes = $this->normaliseTaskTypes($testData['task_types'] ?? []);
+        $taskTypeOptions = $testData['task_type_options'] ?? [];
+        $taskOptions = $this->testTaskOptionsNormaliser->normalise($taskTypes, $taskTypeOptions);
 
         return new TestModel(
             $entity,
@@ -31,7 +37,7 @@ class TestFactory
             $testData['user'] ?? '',
             $state,
             $testData['type'] ?? '',
-            $this->normaliseTaskTypes($testData['task_types'] ?? []),
+            $taskTypes,
             $testData['url_count'] ?? 0,
             $entity->getErrorCount(),
             $entity->getWarningCount(),
@@ -49,7 +55,8 @@ class TestFactory
             $taskCountByState,
             $crawlData,
             $testData['rejection'] ?? [],
-            $testData['is_public'] ?? false
+            $testData['is_public'] ?? false,
+            $taskOptions
         );
     }
 
