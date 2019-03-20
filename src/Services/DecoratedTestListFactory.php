@@ -42,6 +42,7 @@ class DecoratedTestListFactory
                 'task_types' => $remoteTest->getTaskTypes(),
                 'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
                 'rejection' => [],
+                'is_public' => $remoteTest->getIsPublic(),
             ]);
 
             $decoratedTests[] = new DecoratedTest($testModel);

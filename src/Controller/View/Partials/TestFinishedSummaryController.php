@@ -85,6 +85,7 @@ class TestFinishedSummaryController extends AbstractBaseViewController
             'task_types' => $remoteTest->getTaskTypes(),
             'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
             'rejection' => [],
+            'is_public' => $remoteTest->getIsPublic(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 
