@@ -3,11 +3,9 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
-use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
@@ -22,6 +20,7 @@ use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterF
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -143,77 +142,6 @@ class ResultsController extends AbstractBaseViewController
         $test = $this->testService->get($test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
 
-        if ($website !== $remoteTest->getWebsite()) {
-            return new RedirectResponse($this->generateUrl(
-                'view_test_results',
-                [
-                    'website' => $remoteTest->getWebsite(),
-                    'test_id' => $test_id
-                ]
-            ));
-        }
-
-        if ($remoteTest->getTaskCount() > $test->getTaskCount()) {
-            return new RedirectResponse($this->generateUrl(
-                'view_test_results_preparing',
-                [
-                    'website' => $website,
-                    'test_id' => $test_id,
-                ]
-            ));
-        }
-
-        $filter = trim($request->query->get('filter'));
-        $taskType = trim($request->query->get('type'));
-        $defaultFilter = $this->getDefaultRequestFilter($test);
-
-        $this->taskCollectionFilterService->setTest($test);
-        $this->taskCollectionFilterService->setTypeFilter($taskType);
-
-        $filteredTaskCounts = $this->createFilteredTaskCounts();
-
-        if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
-            return new RedirectResponse($this->generateUrl(
-                'view_test_results',
-                [
-                    'website' => $website,
-                    'test_id' => $test_id,
-                    'filter' => $defaultFilter
-                ]
-            ));
-        }
-
-        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
-
-        $response = $this->cacheableResponseFactory->createResponse($request, [
-            'website' => $website,
-            'test_id' => $test_id,
-            'is_public' => $remoteTest->getIsPublic(),
-            'is_public_user_test' => $isPublicUserTest,
-            'type' => $taskType,
-            'filter' => $filter,
-        ]);
-
-        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
-            return $response;
-        }
-
-        $remoteTaskIds = $this->getRemoteTaskIds(
-            $filter,
-            $taskType
-        );
-
-        if (empty($remoteTaskIds)) {
-            $remoteTaskIds = $test->getTaskIds();
-        }
-
-        $tasks = $this->taskService->getCollection($test, $remoteTaskIds);
-
-        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
-        $testOptionsAdapter->setRequestData($remoteTest->getOptions());
-
-        $isOwner = in_array($user->getUsername(), $remoteTest->getOwners());
-
         $testModel = $this->testFactory->create($test, [
             'website' => $remoteTest->getWebsite(),
             'user' => $remoteTest->getUser(),
@@ -233,6 +161,81 @@ class ResultsController extends AbstractBaseViewController
             'task_type_options' => $remoteTest->getTaskTypeOptions(),
             'owners' => $remoteTest->getOwners(),
         ]);
+
+        if ($website !== $testModel->getWebsite()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results',
+                [
+                    'website' => $testModel->getWebsite(),
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
+        if ($testModel->getRemoteTaskCount() > $testModel->getLocalTaskCount()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results_preparing',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id,
+                ]
+            ));
+        }
+
+        $filter = trim($request->query->get('filter'));
+        $taskType = trim($request->query->get('type'));
+        $defaultFilter = $this->getDefaultRequestFilter(
+            $testModel->getErrorCount(),
+            $testModel->getWarningCount()
+        );
+
+        $this->taskCollectionFilterService->setTest($test);
+        $this->taskCollectionFilterService->setTypeFilter($taskType);
+
+        $filteredTaskCounts = $this->createFilteredTaskCounts();
+
+        if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id,
+                    'filter' => $defaultFilter
+                ]
+            ));
+        }
+
+        $isPublicUserTest = $testModel->getUser() === SystemUserService::getPublicUser()->getUsername();
+
+        $response = $this->cacheableResponseFactory->createResponse($request, [
+            'website' => $website,
+            'test_id' => $test_id,
+            'is_public' => $testModel->isPublic(),
+            'is_public_user_test' => $isPublicUserTest,
+            'type' => $taskType,
+            'filter' => $filter,
+        ]);
+
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
+            return $response;
+        }
+
+        $remoteTaskIds = $this->getRemoteTaskIds(
+            $filter,
+            $taskType
+        );
+
+        if (empty($remoteTaskIds)) {
+            $remoteTaskIds = $testModel->getTaskIds();
+        }
+
+        $tasks = $this->taskService->getCollection($test, $remoteTaskIds);
+
+        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
+        $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
+
+        $isOwner = in_array($user->getUsername(), $testModel->getOwners());
+
         $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
@@ -240,14 +243,18 @@ class ResultsController extends AbstractBaseViewController
             [
                 'website' => $this->urlViewValues->create($website),
                 'test' => $decoratedTest,
-                'is_public' => $remoteTest->getIsPublic(),
+                'is_public' => $testModel->isPublic(),
                 'is_public_user_test' => $isPublicUserTest,
                 'is_owner' => $isOwner,
                 'type' => $taskType,
                 'type_label' => $this->getTaskTypeLabel($taskType),
                 'filter' => $filter,
                 'filter_label' => ucwords(str_replace('-', ' ', $filter)),
-                'available_task_types' => $this->getAvailableTaskTypes($remoteTest, $isOwner),
+                'available_task_types' => $this->getAvailableTaskTypes(
+                    $testModel->getTaskTypes(),
+                    $testModel->isPublic(),
+                    $isOwner
+                ),
                 'task_types' => $this->taskTypeService->get(),
                 'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
                 'css_validation_ignore_common_cdns' =>
@@ -282,13 +289,13 @@ class ResultsController extends AbstractBaseViewController
         return $filteredTaskCounts[$modifiedFilter] > 0;
     }
 
-    private function getDefaultRequestFilter(Test $test): string
+    private function getDefaultRequestFilter(int $errorCount, int $warningCount): string
     {
-        if ($test->getErrorCount() > 0) {
+        if ($errorCount > 0) {
             return 'with-errors';
         }
 
-        if ($test->getWarningCount() > 0) {
+        if ($warningCount > 0) {
             return 'with-warnings';
         }
 
@@ -361,20 +368,13 @@ class ResultsController extends AbstractBaseViewController
         return $this->taskCollectionFilterService->getRemoteIds();
     }
 
-    /**
-     * @param RemoteTest $remoteTest
-     * @param bool $isOwner
-     *
-     * @return array
-     */
-    private function getAvailableTaskTypes(RemoteTest $remoteTest, $isOwner)
+    private function getAvailableTaskTypes(array $taskTypes, bool $isPublic, bool $isOwner): array
     {
-        if ($remoteTest->getIsPublic() && !$isOwner) {
+        if ($isPublic && !$isOwner) {
             $availableTaskTypes = $this->taskTypeService->get();
-            $remoteTestTaskTypes = $remoteTest->getTaskTypes();
 
             foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
-                if (!in_array($taskTypeDetails['name'], $remoteTestTaskTypes)) {
+                if (!in_array($taskTypeDetails['name'], $taskTypes)) {
                     unset($availableTaskTypes[$taskTypeKey]);
                 }
             }

@@ -90,6 +90,14 @@ class Test
         return $this->entity->getTestId();
     }
 
+    /**
+     * @return int[]
+     */
+    public function getTaskIds(): array
+    {
+        return $this->entity->getTaskIds();
+    }
+
     public function getWebsite(): string
     {
         return $this->website;
