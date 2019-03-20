@@ -1,5 +1,7 @@
 - /website/.+/test_id/[0-9]+/results/$
 - /.+/[0-9]+/results/$
+- /.+/[0-9]+/results/(html|css)(\+|%20)validation/$
+- /.+/[0-9]+/results/link(\+|%20)integrity/$
 - /.+/[0-9]+/results/.+/by-error/$
 - /.+/[0-9]+/results/.+/by-page/$
 - /.+/[0-9]+/results/failed/no-urls-detected/$
