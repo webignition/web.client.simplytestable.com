@@ -8,9 +8,7 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
-use App\Services\RemoteTestService;
-use App\Services\TaskService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,42 +18,21 @@ use Twig_Environment;
 
 class PreparingController extends AbstractBaseViewController
 {
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
-
-    /**
-     * @var TaskService
-     */
-    private $taskService;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
-        TestService $testService,
-        RemoteTestService $remoteTestService,
-        TaskService $taskService,
-        UrlViewValuesService $urlViewValues
+        UrlViewValuesService $urlViewValues,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
-        $this->taskService = $taskService;
         $this->urlViewValues = $urlViewValues;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -71,26 +48,25 @@ class PreparingController extends AbstractBaseViewController
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $test = $this->testService->get($test_id);
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
+        $testModel = $this->testRetriever->retrieve($test_id);
 
-        $remoteTaskCount = $remoteTest->getTaskCount();
+        $remoteTaskCount = $testModel->getRemoteTaskCount();
 
         if (0 === $remoteTaskCount) {
-            $routeName = $this->testService->isFinished($test)
+            $routeName = $testModel->isFinished()
                 ? 'view_test_results'
                 : 'view_test_progress';
 
             return new RedirectResponse($this->generateUrl(
                 $routeName,
                 [
-                    'website' => $test->getWebsite(),
-                    'test_id' => $test->getTestId(),
+                    'website' => $website,
+                    'test_id' => $test_id,
                 ]
             ));
         }
 
-        $localTaskCount = $test->getTaskCount();
+        $localTaskCount = $testModel->getLocalTaskCount();
         $completionPercent = (int)round(($localTaskCount / $remoteTaskCount) * 100);
         $tasksToRetrieveCount = $remoteTaskCount - $localTaskCount;
 
@@ -105,7 +81,7 @@ class PreparingController extends AbstractBaseViewController
             return $response;
         }
 
-        if (!$this->testService->isFinished($test)) {
+        if (!$testModel->isFinished()) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_progress',
                 [
@@ -115,12 +91,12 @@ class PreparingController extends AbstractBaseViewController
             ));
         }
 
-        if ($test->getWebsite() != $website) {
+        if ($website !== $testModel->getWebsite()) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_results_preparing',
                 [
-                    'website' => $test->getWebsite(),
                     'test_id' => $test_id,
+                    'website' => $testModel->getWebsite(),
                 ]
             ));
         }
@@ -130,9 +106,9 @@ class PreparingController extends AbstractBaseViewController
             [
                 'completion_percent' => $completionPercent,
                 'website' => $this->urlViewValues->create($website),
-                'test' => $test,
-                'local_task_count' => $test->getTaskCount(),
-                'remote_task_count' => $remoteTest->getTaskCount(),
+                'test' => $testModel,
+                'local_task_count' => $testModel->getLocalTaskCount(),
+                'remote_task_count' => $testModel->getRemoteTaskCount(),
                 'remaining_tasks_to_retrieve_count' => $tasksToRetrieveCount,
             ],
             $response
