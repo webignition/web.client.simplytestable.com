@@ -6,11 +6,11 @@ namespace App\Tests\Unit\Model;
 use App\Entity\Test as TestEntity;
 use App\Model\Test as TestModel;
 use App\Model\DecoratedTestList;
-use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
 use App\Services\TestTaskCountByStateNormaliser;
+use App\Services\TestTaskOptionsNormaliser;
 use App\Tests\Services\ObjectReflector;
 
 class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
@@ -33,11 +33,11 @@ class DecoratedTestListTest extends \PHPUnit\Framework\TestCase
         $testId = 7;
 
         $entity = TestEntity::create($testId);
-        $remoteTest = new RemoteTest([]);
 
         $testFactory = new TestFactory(
             new TestCompletionPercentCalculator(),
-            new TestTaskCountByStateNormaliser()
+            new TestTaskCountByStateNormaliser(),
+            new TestTaskOptionsNormaliser()
         );
         $test = $testFactory->create($entity, []);
 

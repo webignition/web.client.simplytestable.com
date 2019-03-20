@@ -64,6 +64,11 @@ class RemoteTest extends AbstractArrayBasedModel
         return $taskTypes;
     }
 
+    public function getTaskTypeOptions(): array
+    {
+        return $this->getProperty('task_type_options') ?? [];
+    }
+
     /**
      * @return ParameterBag
      */

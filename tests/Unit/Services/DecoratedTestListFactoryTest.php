@@ -13,6 +13,7 @@ use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
 use App\Services\TestService;
 use App\Services\TestTaskCountByStateNormaliser;
+use App\Services\TestTaskOptionsNormaliser;
 use App\Tests\Services\ObjectReflector;
 use Mockery\MockInterface;
 
@@ -23,10 +24,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testCreate(TestService $testService, RemoteTestList $remoteTestList, array $expectedDecoratedTests)
     {
-        $testFactory = new TestFactory(
-            new TestCompletionPercentCalculator(),
-            new TestTaskCountByStateNormaliser()
-        );
+        $testFactory = $this->createTestFactory();
         $decoratedTestListFactory = new DecoratedTestListFactory($testService, $testFactory);
 
         $decoratedTestList = $decoratedTestListFactory->create($remoteTestList);
@@ -61,10 +59,7 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
             'website' => 'http://example.com/1/',
         ]);
 
-        $testFactory = new TestFactory(
-            new TestCompletionPercentCalculator(),
-            new TestTaskCountByStateNormaliser()
-        );
+        $testFactory = $this->createTestFactory();
         $test1 = $testFactory->create($entity1, [
             'website' => 'http://example.com/1/',
         ]);
@@ -112,6 +107,15 @@ class DecoratedTestListFactoryTest extends \PHPUnit\Framework\TestCase
         }
 
         return $testService;
+    }
+
+    private function createTestFactory(): TestFactory
+    {
+        return new TestFactory(
+            new TestCompletionPercentCalculator(),
+            new TestTaskCountByStateNormaliser(),
+            new TestTaskOptionsNormaliser()
+        );
     }
 
     /**
