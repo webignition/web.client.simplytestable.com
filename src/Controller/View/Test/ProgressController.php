@@ -6,7 +6,7 @@ use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidCredentialsException;
 use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test as TestModel;
 use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
@@ -21,6 +21,7 @@ use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\AcceptHeader;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -125,7 +126,27 @@ class ProgressController extends AbstractBaseViewController
         $test = $this->testService->get($test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
 
-        $testWebsite = $test->getWebsite();
+        $testModel = $this->testFactory->create($test, [
+            'website' => $remoteTest->getWebsite(),
+            'user' => $remoteTest->getUser(),
+            'state' => $remoteTest->getState(),
+            'type' => $remoteTest->getType(),
+            'url_count' => $remoteTest->getUrlCount(),
+            'task_count' => $remoteTest->getTaskCount(),
+            'errored_task_count' => $remoteTest->getErroredTaskCount(),
+            'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
+            'parameters' => $remoteTest->getEncodedParameters(),
+            'amendments' => $remoteTest->getAmmendments(),
+            'crawl' => $remoteTest->getCrawl(),
+            'task_types' => $remoteTest->getTaskTypes(),
+            'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
+            'rejection' => [],
+            'is_public' => $remoteTest->getIsPublic(),
+            'task_type_options' => $remoteTest->getTaskTypeOptions(),
+            'owners' => $remoteTest->getOwners(),
+        ]);
+
+        $testWebsite = $testModel->getWebsite();
 
         if ($testWebsite !== $website) {
             return $this->createRedirectResponse(
@@ -138,8 +159,8 @@ class ProgressController extends AbstractBaseViewController
             );
         }
 
-        if ($this->testService->isFinished($test)) {
-            if (Test::STATE_FAILED_NO_SITEMAP  !== $test->getState() || SystemUserService::isPublicUser($user)) {
+        if ($this->testService->isFinished($testModel->getEntity())) {
+            if (Test::STATE_FAILED_NO_SITEMAP  !== $testModel->getState() || SystemUserService::isPublicUser($user)) {
                 return $this->createRedirectResponse(
                     $request,
                     'view_test_results',
@@ -160,15 +181,15 @@ class ProgressController extends AbstractBaseViewController
         }
 
         $requestTimeStamp = $request->query->get('timestamp');
-        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
+        $isPublicUserTest = $testModel->getUser() === SystemUserService::getPublicUser()->getUsername();
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
-            'is_public' => $remoteTest->getIsPublic(),
+            'is_public' => $testModel->isPublic(),
             'is_public_user_test' => $isPublicUserTest,
             'timestamp' => empty($requestTimeStamp) ? '' : $requestTimeStamp,
-            'state' => $test->getState()
+            'state' => $testModel->getState()
         ]);
 
         if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
@@ -176,32 +197,13 @@ class ProgressController extends AbstractBaseViewController
         }
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
-        $testOptionsAdapter->setRequestData($remoteTest->getOptions());
+        $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
 
-        $testModel = $this->testFactory->create($test, [
-            'website' => $remoteTest->getWebsite(),
-            'user' => $remoteTest->getUser(),
-            'state' => $remoteTest->getState(),
-            'type' => $remoteTest->getType(),
-            'url_count' => $remoteTest->getUrlCount(),
-            'task_count' => $remoteTest->getTaskCount(),
-            'errored_task_count' => $remoteTest->getErroredTaskCount(),
-            'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
-            'parameters' => $remoteTest->getEncodedParameters(),
-            'amendments' => $remoteTest->getAmmendments(),
-            'crawl' => $remoteTest->getCrawl(),
-            'task_types' => $remoteTest->getTaskTypes(),
-            'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
-            'rejection' => [],
-            'is_public' => $remoteTest->getIsPublic(),
-            'task_type_options' => $remoteTest->getTaskTypeOptions(),
-            'owners' => $remoteTest->getOwners(),
-        ]);
         $decoratedTest = new DecoratedTest($testModel);
 
         $commonViewData = [
             'test' => $decoratedTest,
-            'state_label' => $this->getStateLabel($test, $remoteTest),
+            'state_label' => $this->createStateLabel($testModel),
         ];
 
         if ($this->requestIsForApplicationJson($request)) {
@@ -240,36 +242,27 @@ class ProgressController extends AbstractBaseViewController
         return $response;
     }
 
-    /**
-     * @param Test $test
-     * @param RemoteTest $remoteTest
-     *
-     * @return string
-     */
-    private function getStateLabel(Test $test, RemoteTest $remoteTest)
+    private function createStateLabel(TestModel $testModel): string
     {
-        $testState = $test->getState();
+        $state = $testModel->getState();
+        $label = $this->testStateLabelMap[$state] ?? '';
 
-        $label = (isset($this->testStateLabelMap[$testState]))
-            ? $this->testStateLabelMap[$testState]
-            : '';
-
-        if ($testState == Test::STATE_IN_PROGRESS) {
-            $label = $remoteTest->getCompletionPercent() . '% done';
+        if ($state == Test::STATE_IN_PROGRESS) {
+            $label = $testModel->getCompletionPercent() . '% done';
         }
 
-        if (in_array($testState, [Test::STATE_QUEUED, Test::STATE_IN_PROGRESS])) {
-            $label = $remoteTest->getUrlCount() . ' urls, ' . $remoteTest->getTaskCount() . ' tests; ' . $label;
+        if (in_array($state, [Test::STATE_QUEUED, Test::STATE_IN_PROGRESS])) {
+            $label = $testModel->getUrlCount() . ' urls, ' . $testModel->getRemoteTaskCount() . ' tests; ' . $label;
         }
 
-        if ($testState == Test::STATE_CRAWLING) {
-            $remoteTestCrawl = $remoteTest->getCrawl();
+        if ($state == Test::STATE_CRAWLING) {
+            $crawlData = $testModel->getCrawlData();
 
             $label .= sprintf(
                 ': %s pages examined, %s of %s found',
-                $remoteTestCrawl['processed_url_count'],
-                $remoteTestCrawl['discovered_url_count'],
-                $remoteTestCrawl['limit']
+                $crawlData['processed_url_count'],
+                $crawlData['discovered_url_count'],
+                $crawlData['limit']
             );
         }
 
