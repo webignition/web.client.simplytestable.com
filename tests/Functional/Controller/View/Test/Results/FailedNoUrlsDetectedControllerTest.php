@@ -4,19 +4,20 @@
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\FailedNoUrlsDetectedController;
-use App\Entity\Test;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Services\SystemUserService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Factory\TestModelFactory;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
-use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
@@ -37,8 +38,16 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'task_types' => [],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_FAILED_NO_SITEMAP,
+        'state' => TestModel::STATE_FAILED_NO_SITEMAP,
         'task_type_options' => [],
+    ];
+
+    private $testModelProperties = [
+        'website' => self::WEBSITE,
+        'user' => self::USER_EMAIL,
+        'state' => TestModel::STATE_FAILED_NO_SITEMAP,
+        'type' => TestEntity::TYPE_FULL_SITE,
+        'taskTypes' => [],
     ];
 
     public function testIsIEFiltered()
@@ -93,12 +102,12 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionBadRequestDataProvider
      */
     public function testIndexActionBadRequest(
+        array $testModelProperties,
         User $user,
         string $website,
         string $expectedRedirectUrl
     ) {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
 
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
@@ -106,8 +115,8 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
         $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $this->setTestServiceOnController($failedNoUrlsDetectedController, $testService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($failedNoUrlsDetectedController, $testRetriever);
 
         $response = $failedNoUrlsDetectedController->indexAction(new Request(), $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -119,17 +128,22 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
     {
         return [
             'website mismatch' => [
+                'testModelProperties' => [],
                 'user' => SystemUserService::getPublicUser(),
                 'website' => 'http://foo.example.com/',
                 'expectedRedirectUrl' => '/http://example.com//1/results/failed/no-urls-detected/',
             ],
             'incorrect state' => [
+                'testModelProperties' => [
+                    'state' => TestModel::STATE_COMPLETED,
+                ],
                 'user' => SystemUserService::getPublicUser(),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'not public user' => [
+                'testModelProperties' => [],
                 'user' => new User(self::USER_EMAIL),
                 'website' => self::WEBSITE,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
@@ -142,12 +156,14 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionRender(Twig_Environment $twig)
     {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse($this->remoteTestData),
-        ]);
+        $testModel = TestModelFactory::create($this->testModelProperties);
 
         /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
         $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
+
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+
+        $this->setTestRetrieverOnController($failedNoUrlsDetectedController, $testRetriever);
         $this->setTwigOnController($twig, $failedNoUrlsDetectedController);
 
         $response = $failedNoUrlsDetectedController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -178,6 +194,8 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
+        $testModel = TestModelFactory::create($this->testModelProperties);
+
         $request = new Request();
 
         self::$container->get('request_stack')->push($request);
@@ -185,12 +203,8 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         /* @var FailedNoUrlsDetectedController $failedNoUrlsDetectedController */
         $failedNoUrlsDetectedController = self::$container->get(FailedNoUrlsDetectedController::class);
 
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-        $test->setState(TestService::STATE_FAILED_NO_SITEMAP);
-
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $this->setTestServiceOnController($failedNoUrlsDetectedController, $testService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($failedNoUrlsDetectedController, $testRetriever);
 
         $response = $failedNoUrlsDetectedController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
@@ -222,17 +236,17 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @return TestService|MockInterface
+     * @return TestRetriever|MockInterface
      */
-    private function createTestService(int $testId, Test $test)
+    private function createTestRetriever(int $testId, ?TestModel $testModel)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
-            ->andReturn($test);
+            ->andReturn($testModel);
 
-        return $testService;
+        return $testRetriever;
     }
 
     /**
