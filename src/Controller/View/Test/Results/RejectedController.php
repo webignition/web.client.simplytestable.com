@@ -89,50 +89,6 @@ class RejectedController extends AbstractBaseViewController
     {
         $test = $this->testService->get($test_id);
         $remoteTest = $this->remoteTestService->get($test->getTestId());
-
-        $cacheValidatorParameters = [
-            'website' => $website,
-            'test_id' => $test_id,
-        ];
-
-        if ($this->isRejectedDueToCreditLimit($remoteTest)) {
-            $userSummary = $this->userService->getSummary();
-            $planConstraints = $userSummary->getPlanConstraints();
-            $planCredits = $planConstraints['credits'];
-
-            $rejection = $remoteTest->getRejection();
-            $constraint = $rejection->getConstraint();
-
-            $cacheValidatorParameters['limits'] = $constraint['limit'] . ':' . $planCredits['limit'];
-            $cacheValidatorParameters['credits_remaining'] = $planCredits['limit'] - $planCredits['used'];
-        }
-
-        $response = $this->cacheableResponseFactory->createResponse($request, $cacheValidatorParameters);
-
-        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
-            return $response;
-        }
-
-        if ($test->getWebsite() != $website) {
-            return new RedirectResponse($this->generateUrl(
-                'view_test_results_rejected',
-                [
-                    'website' => $test->getWebsite(),
-                    'test_id' => $test_id
-                ]
-            ));
-        }
-
-        if (Test::STATE_REJECTED !== $test->getState()) {
-            return new RedirectResponse($this->generateUrl(
-                'view_test_progress',
-                [
-                    'website' => $website,
-                    'test_id' => $test_id
-                ]
-            ));
-        }
-
         $testModel = $this->testFactory->create($test, [
             'website' => $remoteTest->getWebsite(),
             'user' => $remoteTest->getUser(),
@@ -152,6 +108,50 @@ class RejectedController extends AbstractBaseViewController
             'task_type_options' => $remoteTest->getTaskTypeOptions(),
             'owners' => $remoteTest->getOwners(),
         ]);
+
+        $cacheValidatorParameters = [
+            'website' => $website,
+            'test_id' => $test_id,
+        ];
+
+        if ($this->isRejectedDueToCreditLimit($testModel->getRejection())) {
+            $userSummary = $this->userService->getSummary();
+            $planConstraints = $userSummary->getPlanConstraints();
+            $planCredits = $planConstraints['credits'];
+
+            $rejectionData = $testModel->getRejection();
+            $constraint = $rejectionData['constraint'];
+
+            $cacheValidatorParameters['limits'] = $constraint['limit'] . ':' . $planCredits['limit'];
+            $cacheValidatorParameters['credits_remaining'] = $planCredits['limit'] - $planCredits['used'];
+        }
+
+        $response = $this->cacheableResponseFactory->createResponse($request, $cacheValidatorParameters);
+
+        if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
+            return $response;
+        }
+
+        if ($website !== $testModel->getWebsite()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results_rejected',
+                [
+                    'website' => $testModel->getWebsite(),
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
+        if (Test::STATE_REJECTED !== $testModel->getState()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_progress',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
         $decoratedTest = new DecoratedTest($testModel);
 
         $viewData = [
@@ -160,29 +160,24 @@ class RejectedController extends AbstractBaseViewController
             'plans' => $this->plansService->getList(),
         ];
 
-        if ($this->isRejectedDueToCreditLimit($remoteTest)) {
+        if ($this->isRejectedDueToCreditLimit($testModel->getRejection())) {
             $viewData['userSummary'] = $this->userService->getSummary();
         }
 
         return $this->renderWithDefaultViewParameters('test-results-rejected.html.twig', $viewData, $response);
     }
 
-    /**
-     * @param RemoteTest $remoteTest
-     *
-     * @return bool
-     */
-    private function isRejectedDueToCreditLimit(RemoteTest $remoteTest)
+    private function isRejectedDueToCreditLimit(array $rejectionData): bool
     {
-        $rejection = $remoteTest->getRejection();
-
-        if ('plan-constraint-limit-reached' !== $rejection->getReason()) {
+        if (empty($rejectionData)) {
             return false;
         }
 
-        $constraint = $rejection->getConstraint();
+        if ('plan-constraint-limit-reached' !== $rejectionData['reason']) {
+            return false;
+        }
 
-        return 'credits_per_month' === $constraint['name'];
+        return 'credits_per_month' === $rejectionData['constraint']['name'];
     }
 
     private function createRejectionData(RemoteTest $remoteTest): array

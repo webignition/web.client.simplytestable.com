@@ -323,8 +323,8 @@ class RejectedControllerTest extends AbstractViewControllerTest
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
                     'website' => 'http://foo.example.com/',
                 ])),
-                'website' => 'http://foo.example.com/',
-                'expectedRedirectUrl' => '/http://example.com//1/results/rejected/',
+                'website' => self::WEBSITE,
+                'expectedRedirectUrl' => '/http://foo.example.com//1/results/rejected/',
             ],
             'incorrect state' => [
                 'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
