@@ -23,6 +23,10 @@ class TestFactory
 
     public function create(TestEntity $entity, array $testData): TestModel
     {
+        if (array_key_exists('ammendments', $testData)) {
+            $testData['amendments'] = $testData['ammendments'];
+        }
+
         $taskCount = $testData['task_count'] ?? 0;
         $taskCountByState = $this->testTaskCountByStateNormaliser->normalise($testData['task_count_by_state'] ?? []);
         $crawlData = $testData['crawl'] ?? [];

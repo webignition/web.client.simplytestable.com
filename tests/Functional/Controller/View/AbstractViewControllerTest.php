@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Controller\View;
 
 use App\Services\RemoteTestService;
+use App\Services\TestRetriever;
 use App\Services\TestService;
 use App\Tests\Services\ObjectReflector;
 use App\Controller\AbstractBaseViewController;
@@ -63,6 +64,18 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
 
         $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertEquals(getenv('MARKETING_SITE'), $response->getTargetUrl());
+    }
+
+    protected function setTestRetrieverOnController(
+        AbstractBaseViewController $controller,
+        TestRetriever $testRetriever
+    ) {
+        ObjectReflector::setProperty(
+            $controller,
+            get_class($controller),
+            'testRetriever',
+            $testRetriever
+        );
     }
 
     protected function setTestServiceOnController(
