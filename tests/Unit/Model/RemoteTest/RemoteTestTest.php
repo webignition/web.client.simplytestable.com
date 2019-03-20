@@ -701,9 +701,7 @@ class RemoteTestTest extends \PHPUnit\Framework\TestCase
     {
         $remoteTest = new RemoteTest($remoteTestData);
 
-        $owners = $remoteTest->getOwners();
-
-        $this->assertEquals($expectedOwners, $owners->toArray());
+        $this->assertEquals($expectedOwners, $remoteTest->getOwners());
     }
 
     public function getOwnersDataProvider(): array

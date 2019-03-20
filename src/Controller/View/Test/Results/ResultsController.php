@@ -212,7 +212,7 @@ class ResultsController extends AbstractBaseViewController
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData($remoteTest->getOptions());
 
-        $isOwner = $remoteTest->getOwners()->contains($user->getUsername());
+        $isOwner = in_array($user->getUsername(), $remoteTest->getOwners());
 
         $testModel = $this->testFactory->create($test, [
             'website' => $remoteTest->getWebsite(),

@@ -141,7 +141,7 @@ class ResultsController extends AbstractBaseViewController
         $remoteTest = $this->remoteTestService->get($test->getTestId());
 
         $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
-        $isOwner = $remoteTest->getOwners()->contains($user->getUsername());
+        $isOwner = in_array($user->getUsername(), $remoteTest->getOwners());
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,

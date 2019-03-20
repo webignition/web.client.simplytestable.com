@@ -220,10 +220,12 @@ class ByTaskTypeController extends AbstractBaseViewController
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 
+        $isOwner = in_array($user->getUsername(), $remoteTest->getOwners());
+
         return $this->renderWithDefaultViewParameters(
             'test-results-by-task-type.html.twig',
             [
-                'is_owner' => $remoteTest->getOwners()->contains($user->getUsername()),
+                'is_owner' => $isOwner,
                 'is_public_user_test' => $test->getUser() === SystemUserService::getPublicUser()->getUsername(),
                 'website' => $this->urlViewValues->create($website),
                 'test' => $decoratedTest,

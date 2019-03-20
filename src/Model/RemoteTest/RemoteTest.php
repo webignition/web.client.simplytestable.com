@@ -322,20 +322,8 @@ class RemoteTest extends AbstractArrayBasedModel
         return Test::TYPE_SINGLE_URL === $this->getType();
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getOwners()
+    public function getOwners(): array
     {
-        if (is_null($this->owners)) {
-            $ownersData = $this->getProperty('owners');
-            $ownersList = empty($ownersData)
-                ? []
-                : $ownersData;
-
-            $this->owners = new ArrayCollection($ownersList);
-        }
-
-        return $this->owners;
+        return $this->getProperty('owners') ?? [];
     }
 }
