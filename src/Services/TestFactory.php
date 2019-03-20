@@ -39,8 +39,6 @@ class TestFactory
             $testData['type'] ?? '',
             $taskTypes,
             $testData['url_count'] ?? 0,
-            $entity->getErrorCount(),
-            $entity->getWarningCount(),
             $taskCount,
             $testData['errored_task_count'] ?? 0,
             $testData['cancelled_task_count'] ?? 0,
