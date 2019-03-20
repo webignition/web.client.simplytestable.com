@@ -98,7 +98,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     true,
                     [
                         'html-validation' => 1,
-                    ]
+                    ],
+                    []
                 ),
             ],
             'has tasks' => [
@@ -174,7 +175,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [
                         'html-validation' => 1,
                         'css-validation-ignore-warnings' => '1',
-                    ]
+                    ],
+                    []
                 ),
             ],
         ];
@@ -227,6 +229,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [],
                     [],
                     false,
+                    [],
                     []
                 ),
             ],

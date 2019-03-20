@@ -39,6 +39,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     const REJECTION = [];
     const IS_PUBLIC = false;
     const TASK_OPTIONS = [];
+    const OWNERS = [
+        self::USER,
+    ];
 
     private $testProperties = [
         'test_id' => self::TEST_ID,
@@ -61,6 +64,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'crawlData' => self::CRAWL_DATA,
         'isPublic' => self::IS_PUBLIC,
         'taskOptions' => self::TASK_OPTIONS,
+        'owners' => self::OWNERS,
     ];
 
     public function testGetScalarProperties()
@@ -550,7 +554,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['crawlData'],
             $properties['rejection'],
             $properties['isPublic'],
-            $properties['taskOptions']
+            $properties['taskOptions'],
+            $properties['owners']
         );
     }
 
