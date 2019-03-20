@@ -7,7 +7,6 @@ use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
 use App\Model\Test as TestModel;
-use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
@@ -787,19 +786,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $testModel = TestModelFactory::create();
         $testEntity = $testModel->getEntity();
 
-//        $test = Test::create(self::TEST_ID);
-//        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-
         $entityManager = self::$container->get(EntityManagerInterface::class);
         $entityManager->persist($testEntity);
         $entityManager->flush();
 
         $taskFactory = new TaskFactory(self::$container);
         $taskFactory->createCollection($testEntity, $this->taskValuesCollection);
-
-        $remoteTest = new RemoteTest(array_merge($this->remoteTestData, [
-            'task_count' => 0,
-        ]));
 
         $request = new Request([
             'filter' => ResultsController::FILTER_WITH_ERRORS,
