@@ -3,7 +3,6 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
-use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -185,7 +184,10 @@ class ResultsController extends AbstractBaseViewController
 
         $filter = trim($request->query->get('filter'));
         $taskType = trim($request->query->get('type'));
-        $defaultFilter = $this->getDefaultRequestFilter($test);
+        $defaultFilter = $this->getDefaultRequestFilter(
+            $testModel->getErrorCount(),
+            $testModel->getWarningCount()
+        );
 
         $this->taskCollectionFilterService->setTest($test);
         $this->taskCollectionFilterService->setTypeFilter($taskType);
@@ -203,7 +205,7 @@ class ResultsController extends AbstractBaseViewController
             ));
         }
 
-        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
+        $isPublicUserTest = $testModel->getUser() === SystemUserService::getPublicUser()->getUsername();
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
@@ -224,7 +226,7 @@ class ResultsController extends AbstractBaseViewController
         );
 
         if (empty($remoteTaskIds)) {
-            $remoteTaskIds = $test->getTaskIds();
+            $remoteTaskIds = $testModel->getTaskIds();
         }
 
         $tasks = $this->taskService->getCollection($test, $remoteTaskIds);
@@ -287,13 +289,13 @@ class ResultsController extends AbstractBaseViewController
         return $filteredTaskCounts[$modifiedFilter] > 0;
     }
 
-    private function getDefaultRequestFilter(Test $test): string
+    private function getDefaultRequestFilter(int $errorCount, int $warningCount): string
     {
-        if ($test->getErrorCount() > 0) {
+        if ($errorCount > 0) {
             return 'with-errors';
         }
 
-        if ($test->getWarningCount() > 0) {
+        if ($warningCount > 0) {
             return 'with-warnings';
         }
 
