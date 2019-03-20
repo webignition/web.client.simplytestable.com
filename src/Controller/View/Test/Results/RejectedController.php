@@ -150,6 +150,7 @@ class RejectedController extends AbstractBaseViewController
             'rejection' => $this->createRejectionData($remoteTest),
             'is_public' => $remoteTest->getIsPublic(),
             'task_type_options' => $remoteTest->getTaskTypeOptions(),
+            'owners' => $remoteTest->getOwners(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 

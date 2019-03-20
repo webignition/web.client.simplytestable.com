@@ -57,7 +57,7 @@ class TestFactory
             $testData['rejection'] ?? [],
             $testData['is_public'] ?? false,
             $taskOptions,
-            []
+            $testData['owners'] ?? []
         );
     }
 
