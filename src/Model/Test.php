@@ -16,8 +16,6 @@ class Test
     private $type;
     private $taskTypes;
     private $urlCount;
-    private $errorCount;
-    private $warningCount;
     private $remoteTaskCount;
     private $tasksWithErrorsCount;
     private $cancelledTaskCount;
@@ -39,8 +37,6 @@ class Test
         string $type,
         array $taskTypes,
         int $urlCount,
-        int $errorCount,
-        int $warningCount,
         int $remoteTaskCount,
         int $tasksWithErrorsCount,
         int $cancelledTaskCount,
@@ -61,8 +57,6 @@ class Test
         $this->type = $type;
         $this->taskTypes = $taskTypes;
         $this->urlCount = $urlCount;
-        $this->errorCount = $errorCount;
-        $this->warningCount = $warningCount;
         $this->remoteTaskCount = $remoteTaskCount;
         $this->tasksWithErrorsCount = $tasksWithErrorsCount;
         $this->cancelledTaskCount = $cancelledTaskCount;
@@ -130,12 +124,12 @@ class Test
 
     public function getErrorCount(): int
     {
-        return $this->errorCount;
+        return $this->entity->getErrorCount();
     }
 
     public function getWarningCount(): int
     {
-        return $this->warningCount;
+        return $this->entity->getWarningCount();
     }
 
     /**
