@@ -46,7 +46,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 'entity' => TestEntity::create(1),
                 'testData' => [
                     'website' => 'http://example.com/',
-                    'user' => 'user@example.com',
+                    'user' => 'public@simplytestable.com',
                     'state' => TestEntity::STATE_COMPLETED,
                     'type' => TestEntity::TYPE_FULL_SITE,
                     'url_count' => 1,
@@ -62,11 +62,12 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                     'task_count_by_state' => [],
+                    'is_public' => true,
                 ],
                 'expectedTest' => new TestModel(
                     TestEntity::create(1),
                     'http://example.com/',
-                    'user@example.com',
+                    'public@simplytestable.com',
                     TestEntity::STATE_COMPLETED,
                     TestEntity::TYPE_FULL_SITE,
                     [
@@ -90,7 +91,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'skipped' => 0,
                     ],
                     [],
-                    []
+                    [],
+                    true
                 ),
             ],
             'has tasks' => [
@@ -119,6 +121,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         Task::TYPE_HTML_VALIDATION,
                     ],
                     'task_count_by_state' => [],
+                    'is_public' => false,
                 ],
                 'expectedTest' => new TestModel(
                     $this->createTestEntity(1, [
@@ -155,7 +158,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [
                         2
                     ],
-                    []
+                    [],
+                    false
                 ),
             ],
         ];
@@ -206,7 +210,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                         'skipped' => 0,
                     ],
                     [],
-                    []
+                    [],
+                    false
                 ),
             ],
         ];
@@ -222,6 +227,7 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
             [
                 'state' => $state,
                 'crawl' => $crawlData,
+                'is_public' => false,
             ]
         );
 

@@ -48,7 +48,8 @@ class TestFactory
             ),
             $taskCountByState,
             $crawlData,
-            $testData['rejection'] ?? []
+            $testData['rejection'] ?? [],
+            $testData['is_public'] ?? false
         );
     }
 

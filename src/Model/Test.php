@@ -27,6 +27,7 @@ class Test
     private $taskCountByState;
     private $rejection;
     private $crawlData;
+    private $isPublic;
 
     public function __construct(
         TestEntity $entity,
@@ -46,7 +47,8 @@ class Test
         int $completionPercent,
         array $taskCountByState,
         array $crawlData,
-        array $rejection
+        array $rejection,
+        bool $isPublic
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -69,6 +71,7 @@ class Test
         $this->taskCountByState = $taskCountByState;
         $this->crawlData = $crawlData;
         $this->rejection = $rejection;
+        $this->isPublic = $isPublic;
     }
 
     public function getEntity(): TestEntity
@@ -193,5 +196,10 @@ class Test
     public function getCrawlData(): array
     {
         return $this->crawlData;
+    }
+
+    public function isPublic(): bool
+    {
+        return $this->isPublic;
     }
 }
