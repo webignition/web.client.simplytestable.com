@@ -194,6 +194,7 @@ class ProgressController extends AbstractBaseViewController
             'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
             'rejection' => [],
             'is_public' => $remoteTest->getIsPublic(),
+            'task_type_options' => $remoteTest->getTaskTypeOptions(),
         ]);
         $decoratedTest = new DecoratedTest($testModel);
 
