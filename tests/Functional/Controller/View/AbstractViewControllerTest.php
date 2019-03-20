@@ -67,7 +67,7 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
     }
 
     protected function setTestRetrieverOnController(
-        AbstractBaseViewController $controller,
+        $controller,
         TestRetriever $testRetriever
     ) {
         ObjectReflector::setProperty(
