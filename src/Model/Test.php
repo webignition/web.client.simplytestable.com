@@ -9,6 +9,27 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 class Test
 {
+    const STATE_STARTING = 'new';
+    const STATE_CANCELLED = 'cancelled';
+    const STATE_COMPLETED = 'completed';
+    const STATE_IN_PROGRESS = 'in-progress';
+    const STATE_PREPARING = 'preparing';
+    const STATE_QUEUED = 'queued';
+    const STATE_FAILED_NO_SITEMAP = 'failed-no-sitemap';
+    const STATE_REJECTED = 'rejected';
+    const STATE_RESOLVING = 'resolving';
+    const STATE_RESOLVED = 'resolved';
+
+    /**
+     * @var string[]
+     */
+    private $finishedStates = array(
+        self::STATE_REJECTED,
+        self::STATE_CANCELLED,
+        self::STATE_COMPLETED,
+        self::STATE_FAILED_NO_SITEMAP,
+    );
+
     private $entity;
     private $website;
     private $user;
@@ -219,5 +240,10 @@ class Test
     public function getOwners(): array
     {
         return $this->owners;
+    }
+
+    public function isFinished(): bool
+    {
+        return in_array($this->state, $this->finishedStates);
     }
 }

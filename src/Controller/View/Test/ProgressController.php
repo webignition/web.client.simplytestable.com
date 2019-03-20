@@ -4,6 +4,7 @@ namespace App\Controller\View\Test;
 
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Entity\Test;
 use App\Model\Test as TestModel;
@@ -11,11 +12,10 @@ use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
-use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskTypeService;
-use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
+use App\Services\TestRetriever;
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
@@ -34,42 +34,13 @@ class ProgressController extends AbstractBaseViewController
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
-    /**
-     * @var TestService
-     */
     private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
-
-    /**
-     * @var TaskTypeService
-     */
     private $taskTypeService;
-
-    /**
-     * @var TestOptionsRequestAdapterFactory
-     */
     private $testOptionsRequestAdapterFactory;
-
-    /**
-     * @var CssValidationTestConfiguration
-     */
     private $cssValidationTestConfiguration;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
-
-    /**
-     * @var UserManager
-     */
     private $userManager;
-
-    private $testFactory;
+    private $testRetriever;
 
     /**
      * @var string[]
@@ -92,22 +63,20 @@ class ProgressController extends AbstractBaseViewController
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
         TestService $testService,
-        RemoteTestService $remoteTestService,
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
-        TestFactory $testFactory
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
         $this->taskTypeService = $taskTypeService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
-        $this->testFactory = $testFactory;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -119,32 +88,12 @@ class ProgressController extends AbstractBaseViewController
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $user = $this->userManager->getUser();
-        $test = $this->testService->get($test_id);
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
-
-        $testModel = $this->testFactory->create($test, [
-            'website' => $remoteTest->getWebsite(),
-            'user' => $remoteTest->getUser(),
-            'state' => $remoteTest->getState(),
-            'type' => $remoteTest->getType(),
-            'url_count' => $remoteTest->getUrlCount(),
-            'task_count' => $remoteTest->getTaskCount(),
-            'errored_task_count' => $remoteTest->getErroredTaskCount(),
-            'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
-            'parameters' => $remoteTest->getEncodedParameters(),
-            'amendments' => $remoteTest->getAmmendments(),
-            'crawl' => $remoteTest->getCrawl(),
-            'task_types' => $remoteTest->getTaskTypes(),
-            'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
-            'rejection' => [],
-            'is_public' => $remoteTest->getIsPublic(),
-            'task_type_options' => $remoteTest->getTaskTypeOptions(),
-            'owners' => $remoteTest->getOwners(),
-        ]);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
         $testWebsite = $testModel->getWebsite();
 
@@ -159,7 +108,7 @@ class ProgressController extends AbstractBaseViewController
             );
         }
 
-        if ($this->testService->isFinished($testModel->getEntity())) {
+        if ($testModel->isFinished()) {
             if (Test::STATE_FAILED_NO_SITEMAP  !== $testModel->getState() || SystemUserService::isPublicUser($user)) {
                 return $this->createRedirectResponse(
                     $request,

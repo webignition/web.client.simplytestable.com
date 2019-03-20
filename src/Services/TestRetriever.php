@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Entity\Test as TestEntity;
+use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
 use App\Model\Test as TestModel;
 use App\Exception\InvalidCredentialsException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,6 +49,13 @@ class TestRetriever
         $this->testFactory = $testFactory;
     }
 
+    /**
+     * @param int $testId
+     * @return TestModel|null
+     * @throws InvalidCredentialsException
+     * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     */
     public function retrieve(int $testId): ?TestModel
     {
         $testRepository = $this->entityManager->getRepository(TestEntity::class);
