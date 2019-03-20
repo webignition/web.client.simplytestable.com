@@ -128,6 +128,33 @@ class RemoteTestService
     /**
      * @param int $testId
      *
+     * @return array|null
+     *
+     * @throws CoreApplicationRequestException
+     * @throws InvalidCredentialsException
+     */
+    public function getSummaryData(int $testId): ?array
+    {
+        $remoteTestData = null;
+
+        try {
+            $response = $this->coreApplicationHttpClient->get(
+                'test_status',
+                [
+                    'test_id' => $testId,
+                ]
+            );
+
+            $remoteTestData = $this->jsonResponseHandler->handle($response);
+        } catch (InvalidContentTypeException $invalidContentTypeException) {
+        }
+
+        return $remoteTestData;
+    }
+
+    /**
+     * @param int $testId
+     *
      * @throws CoreApplicationReadOnlyException
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
