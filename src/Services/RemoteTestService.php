@@ -107,22 +107,11 @@ class RemoteTestService
      */
     public function get(int $testId): ?RemoteTest
     {
-        $remoteTest = null;
+        $remoteTestData = $this->getSummaryData($testId);
 
-        try {
-            $response = $this->coreApplicationHttpClient->get(
-                'test_status',
-                [
-                    'test_id' => $testId,
-                ]
-            );
-
-            $remoteTestData = $this->jsonResponseHandler->handle($response);
-            $remoteTest = new RemoteTest($remoteTestData);
-        } catch (InvalidContentTypeException $invalidContentTypeException) {
-        }
-
-        return $remoteTest;
+        return $remoteTestData
+            ? new RemoteTest($remoteTestData)
+            : null;
     }
 
     /**
