@@ -4,15 +4,16 @@
 namespace App\Tests\Functional\Controller\View\Test\Progress;
 
 use App\Controller\View\Test\ProgressController;
+use App\Entity\Task\Task;
 use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
+use App\Model\Test as TestModel;
 use App\Model\Test\DecoratedTest;
-use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Factory\TestModelFactory;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,7 +21,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
-use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class ProgressControllerTest extends AbstractViewControllerTest
@@ -43,6 +43,16 @@ class ProgressControllerTest extends AbstractViewControllerTest
         'user' => self::USER_EMAIL,
         'state' => Test::STATE_IN_PROGRESS,
         'task_type_options' => [],
+    ];
+
+    private $testModelProperties = [
+        'website' => self::WEBSITE,
+        'user' => self::USER_EMAIL,
+        'state' => Test::STATE_IN_PROGRESS,
+        'type' => Test::TYPE_FULL_SITE,
+        'taskTypes' => [
+            Task::TYPE_HTML_VALIDATION,
+        ],
     ];
 
     public function testIsIEFiltered()
@@ -148,27 +158,22 @@ class ProgressControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRedirectDataProvider
      */
     public function testIndexActionHttpRedirect(
-        callable $testCreator,
-        RemoteTest $remoteTest,
-        bool $testServiceIsFinished,
+        array $testModelProperties,
         User $user,
         string $website,
         int $testId,
         string $expectedRedirectUrl
     ) {
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
+
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
-
-        $test = $testCreator();
 
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($progressController, $testService);
-        $this->setRemoteTestServiceOnController($progressController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($progressController, $testRetriever);
 
         $response = $progressController->indexAction(new Request(), $website, $testId);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -180,27 +185,22 @@ class ProgressControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRedirectDataProvider
      */
     public function testIndexActionJsRedirect(
-        callable $testCreator,
-        RemoteTest $remoteTest,
-        bool $testServiceIsFinished,
+        array $testModelProperties,
         User $user,
         string $website,
         int $testId,
         string $expectedRedirectUrl
     ) {
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
+
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
-
-        $test = $testCreator();
 
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($progressController, $testService);
-        $this->setRemoteTestServiceOnController($progressController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($progressController, $testRetriever);
 
         $request = new Request();
         $request->headers->set('X-Requested-With', 'XMLHttpRequest');
@@ -220,30 +220,16 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
         return [
             'remote test website not match request website' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest($this->remoteTestData),
-                'testServiceIsFinished' => false,
+                'testModelProperties' => [],
                 'user' => $publicUser,
                 'website' => 'foo',
                 'testId' => self::TEST_ID,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'finished test; state=completed' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
                     'state' => Test::STATE_COMPLETED,
-                ])),
-                'testServiceIsFinished' => true,
+                ],
                 'user' => $publicUser,
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
@@ -251,17 +237,10 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'finished test; state=failed_no_sitemap; public user' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
                     'state' => Test::STATE_FAILED_NO_SITEMAP,
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
-                ])),
-                'testServiceIsFinished' => true,
+                ],
                 'user' => $publicUser,
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
@@ -269,18 +248,10 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'finished test; state=failed_no_sitemap; private user' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setState(TestService::STATE_FAILED_NO_SITEMAP);
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
                     'state' => Test::STATE_FAILED_NO_SITEMAP,
-                    'user' => SystemUserService::PUBLIC_USER_USERNAME,
-                ])),
-                'testServiceIsFinished' => true,
+                    'user' => $privateUser->getUsername(),
+                ],
                 'user' => $privateUser,
                 'website' => self::WEBSITE,
                 'testId' => self::TEST_ID,
@@ -294,24 +265,20 @@ class ProgressControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRenderTextHtmlDataProvider
      */
     public function testIndexActionRenderTextHtml(
-        callable $testCreator,
-        RemoteTest $remoteTest,
+        array $testModelProperties,
         User $user,
         Twig_Environment $twig
     ) {
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
+
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
-
-        $test = $testCreator();
 
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test, false);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($progressController, $testService);
-        $this->setRemoteTestServiceOnController($progressController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($progressController, $testRetriever);
         $this->setTwigOnController($twig, $progressController);
 
         $response = $progressController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -322,23 +289,15 @@ class ProgressControllerTest extends AbstractViewControllerTest
     {
         return [
             'public user, in-progress, 79% done' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setState(Test::STATE_IN_PROGRESS);
-                    $test->setUser(SystemUserService::getPublicUser()->getUsername());
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
-                    'state' => Test::STATE_IN_PROGRESS,
-                    'task_count' => 100,
-                    'url_count' => 50,
-                    'task_count_by_state' => [
+                'testModelProperties' => [
+                    'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                    'remoteTaskCount' => 100,
+                    'urlCount' => 50,
+                    'taskCountByState' => [
                         'completed' => 79,
                     ],
-                    'user' => SystemUserService::PUBLIC_USER_USERNAME,
-                ])),
+                    'completionPercent' => 79,
+                ],
                 'user' => SystemUserService::getPublicUser(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -362,20 +321,14 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, queued, 0% done' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setState(Test::STATE_QUEUED);
-                    $test->setUser(SystemUserService::getPublicUser()->getUsername());
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
-                    'state' => Test::STATE_QUEUED,
-                    'task_count' => 44,
-                    'url_count' => 11,
+                'testModelProperties' => [
+                    'state' => TestModel::STATE_QUEUED,
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
-                ])),
+                    'remoteTaskCount' => 44,
+                    'urlCount' => 11,
+                    'taskCountByState' => [],
+                    'completionPercent' => 0,
+                ],
                 'user' => SystemUserService::getPublicUser(),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -402,25 +355,19 @@ class ProgressControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'private user, crawling' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setState(Test::STATE_CRAWLING);
-                    $test->setUser(self::USER_EMAIL);
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
                     'state' => Test::STATE_CRAWLING,
-                    'task_count' => 44,
-                    'url_count' => 11,
-                    'user' => 'user@example.com',
-                    'crawl' => [
+                    'user' => self::USER_EMAIL,
+                    'remoteTaskCount' => 44,
+                    'urlCount' => 11,
+                    'taskCountByState' => [],
+                    'completionPercent' => 0,
+                    'crawlData' => [
                         'processed_url_count' => 10,
                         'discovered_url_count' => 30,
                         'limit' => 250,
                     ],
-                ])),
+                ],
                 'user' => new User(self::USER_EMAIL),
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -454,24 +401,20 @@ class ProgressControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRenderApplicationJsonDataProvider
      */
     public function testIndexActionRenderApplicationJson(
-        callable $testCreator,
-        RemoteTest $remoteTest,
+        array $testModelProperties,
         User $user,
         $expectedStateLabel
     ) {
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
+
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
-
-        $test = $testCreator();
 
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test, false);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($progressController, $testService);
-        $this->setRemoteTestServiceOnController($progressController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($progressController, $testRetriever);
 
         $request = new Request();
         $request->headers->set('accept', 'application/json');
@@ -499,64 +442,44 @@ class ProgressControllerTest extends AbstractViewControllerTest
     {
         return [
             'public user, in-progress, 79% done' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setState(Test::STATE_IN_PROGRESS);
-                    $test->setUser(SystemUserService::getPublicUser()->getUsername());
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
-                    'state' => Test::STATE_IN_PROGRESS,
-                    'task_count' => 100,
-                    'url_count' => 50,
-                    'task_count_by_state' => [
+                'testModelProperties' => [
+                    'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                    'remoteTaskCount' => 100,
+                    'urlCount' => 50,
+                    'taskCountByState' => [
                         'completed' => 79,
                     ],
-                    'user' => SystemUserService::PUBLIC_USER_USERNAME,
-                ])),
+                    'completionPercent' => 79,
+                ],
                 'user' => SystemUserService::getPublicUser(),
                 'expectedStateLabel' => '50 urls, 100 tests; 79% done',
             ],
             'public user, queued, 0% done' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setState(Test::STATE_QUEUED);
-                    $test->setUser(SystemUserService::getPublicUser()->getUsername());
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
-                    'state' => Test::STATE_QUEUED,
-                    'task_count' => 44,
-                    'url_count' => 11,
+                'testModelProperties' => [
+                    'state' => TestModel::STATE_QUEUED,
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
-                ])),
+                    'remoteTaskCount' => 44,
+                    'urlCount' => 11,
+                    'taskCountByState' => [],
+                    'completionPercent' => 0,
+                ],
                 'user' => SystemUserService::getPublicUser(),
                 'expectedStateLabel' => '11 urls, 44 tests; waiting for first test to begin',
             ],
             'private user, crawling' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setState(Test::STATE_CRAWLING);
-                    $test->setUser(self::USER_EMAIL);
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
                     'state' => Test::STATE_CRAWLING,
-                    'task_count' => 44,
-                    'url_count' => 11,
-                    'user' => 'user@example.com',
-                    'crawl' => [
+                    'user' => self::USER_EMAIL,
+                    'remoteTaskCount' => 44,
+                    'urlCount' => 11,
+                    'taskCountByState' => [],
+                    'completionPercent' => 0,
+                    'crawlData' => [
                         'processed_url_count' => 10,
                         'discovered_url_count' => 30,
                         'limit' => 250,
                     ],
-                ])),
+                ],
                 'user' => new User('user@example.com'),
                 'expectedStateLabel' => 'Finding URLs to test: 10 pages examined, 30 of 250 found',
             ],
@@ -565,9 +488,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-        $remoteTest = new RemoteTest($this->remoteTestData);
+        $testModel = TestModelFactory::create($this->testModelProperties);
 
         $request = new Request();
 
@@ -576,11 +497,8 @@ class ProgressControllerTest extends AbstractViewControllerTest
         /* @var ProgressController $progressController */
         $progressController = self::$container->get(ProgressController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test, false);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($progressController, $testService);
-        $this->setRemoteTestServiceOnController($progressController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($progressController, $testRetriever);
 
         $response = $progressController->indexAction(
             $request,
@@ -649,36 +567,17 @@ class ProgressControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @return TestService|MockInterface
+     * @return TestRetriever|MockInterface
      */
-    private function createTestService(int $testId, Test $test, bool $isFinished)
+    private function createTestRetriever(int $testId, ?TestModel $testModel)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
-            ->andReturn($test);
+            ->andReturn($testModel);
 
-        $testService
-            ->shouldReceive('isFinished')
-            ->with($test)
-            ->andReturn($isFinished);
-
-        return $testService;
-    }
-
-    /**
-     * @return RemoteTestService|MockInterface
-     */
-    private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
-    {
-        $remoteTestService = \Mockery::mock(RemoteTestService::class);
-        $remoteTestService
-            ->shouldReceive('get')
-            ->with($testId)
-            ->andReturn($remoteTest);
-
-        return $remoteTestService;
+        return $testRetriever;
     }
 
     /**
