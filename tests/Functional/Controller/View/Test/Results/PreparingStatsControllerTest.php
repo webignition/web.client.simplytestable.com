@@ -5,11 +5,11 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\PreparingStatsController;
 use App\Entity\Task\Task;
-use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
-use App\Services\RemoteTestService;
-use App\Services\TestService;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
+use App\Services\TestRetriever;
 use App\Tests\Factory\HttpResponseFactory;
+use App\Tests\Factory\TestModelFactory;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,9 +32,17 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'task_types' => [],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
+        'state' => TestModel::STATE_COMPLETED,
         'task_type_options' => [],
         'task_count' => 12,
+    ];
+
+    private $testModelProperties = [
+        'website' => self::WEBSITE,
+        'user' => self::USER_EMAIL,
+        'state' => TestModel::STATE_COMPLETED,
+        'type' => TestEntity::TYPE_FULL_SITE,
+        'taskTypes' => [],
     ];
 
     public function testIsIEFiltered()
@@ -101,18 +109,16 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
     /**
      * @dataProvider indexActionRenderDataProvider
      */
-    public function testIndexActionRender(callable $testCreator, RemoteTest $remoteTest, array $expectedResponseData)
+    public function testIndexActionRender(array $testModelProperties, array $expectedResponseData)
     {
-        $test = $testCreator();
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
 
         /* @var PreparingStatsController $preparingStatsController */
         $preparingStatsController = self::$container->get(PreparingStatsController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
 
-        $this->setTestServiceOnController($preparingStatsController, $testService);
-        $this->setRemoteTestServiceOnController($preparingStatsController, $remoteTestService);
+        $this->setTestRetrieverOnController($preparingStatsController, $testRetriever);
 
         $response = $preparingStatsController->indexAction(self::TEST_ID);
         $this->assertInstanceOf(JsonResponse::class, $response);
@@ -125,14 +131,11 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
     {
         return [
             'no remote tasks' => [
-                'testCreator' => function () {
-                    return Test::create(self::TEST_ID);
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
-                    'task_count' => 0,
-                ])),
+                'testModelProperties' => [
+                    'remoteTaskCount' => 0,
+                ],
                 'expectedResponseData' => [
-                    'id' => 1,
+                    'id' => self::TEST_ID,
                     'completion_percent' => 100,
                     'remaining_tasks_to_retrieve_count' => 0,
                     'local_task_count' => 0,
@@ -140,10 +143,9 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
                 ],
             ],
             'no remote tasks retrieved' => [
-                'testCreator' => function () {
-                    return Test::create(self::TEST_ID);
-                },
-                'remoteTest' => new RemoteTest($this->remoteTestData),
+                'testModelProperties' => [
+                    'remoteTaskCount' => 12,
+                ],
                 'expectedResponseData' => [
                     'id' => 1,
                     'completion_percent' => 0,
@@ -153,16 +155,10 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
                 ],
             ],
             'some remote tasks retrieved' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-
-                    $test->addTask(new Task());
-                    $test->addTask(new Task());
-                    $test->addTask(new Task());
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest($this->remoteTestData),
+                'testModelProperties' => [
+                    'entity' => $this->createTestEntity(self::TEST_ID, 3),
+                    'remoteTaskCount' => 12,
+                ],
                 'expectedResponseData' => [
                     'id' => 1,
                     'completion_percent' => 25,
@@ -171,48 +167,34 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
                     'remote_task_count' => 12,
                 ],
             ],
-            'invalid remote test' => [
-                'testCreator' => function () {
-                    return null;
-                },
-                'remoteTest' => new RemoteTest([]),
-                'expectedResponseData' => [
-                    'id' => 1,
-                    'completion_percent' => 0,
-                    'remaining_tasks_to_retrieve_count' => 0,
-                    'local_task_count' => 0,
-                    'remote_task_count' => 0,
-                ],
-            ],
         ];
     }
 
     /**
-     * @return TestService|MockInterface
+     * @return TestRetriever|MockInterface
      */
-    private function createTestService(int $testId, ?Test $test)
+    private function createTestRetriever(int $testId, ?TestModel $testModel)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
-            ->andReturn($test);
+            ->andReturn($testModel);
 
-        return $testService;
+        return $testRetriever;
     }
 
-    /**
-     * @return RemoteTestService|MockInterface
-     */
-    private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
+    private function createTestEntity(int $testId, ?int $taskCount = null): TestEntity
     {
-        $remoteTestService = \Mockery::mock(RemoteTestService::class);
-        $remoteTestService
-            ->shouldReceive('get')
-            ->with($testId)
-            ->andReturn($remoteTest);
+        $testEntity = TestEntity::create($testId);
 
-        return $remoteTestService;
+        if ($taskCount) {
+            for ($taskIndex = 0; $taskIndex < $taskCount; $taskIndex++) {
+                $testEntity->addTask(new Task());
+            }
+        }
+
+        return $testEntity;
     }
 
     /**
