@@ -16,6 +16,7 @@ use App\Services\SystemUserService;
 use App\Services\TaskCollectionFilterService;
 use App\Services\TaskService;
 use App\Services\TestFactory;
+use App\Services\TestRetriever;
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
@@ -62,6 +63,7 @@ class ByTaskTypeController extends AbstractBaseViewController
     private $userManager;
 
     private $testFactory;
+    private $testRetriever;
 
     /**
      * @var string[]
@@ -82,7 +84,8 @@ class ByTaskTypeController extends AbstractBaseViewController
         RemoteTestService $remoteTestService,
         TaskService $taskService,
         TaskCollectionFilterService $taskCollectionFilterService,
-        TestFactory $testFactory
+        TestFactory $testFactory,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -93,6 +96,7 @@ class ByTaskTypeController extends AbstractBaseViewController
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
         $this->testFactory = $testFactory;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -116,28 +120,7 @@ class ByTaskTypeController extends AbstractBaseViewController
         ?string $filter = null
     ): Response {
         $user = $this->userManager->getUser();
-        $test = $this->testService->get($test_id);
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
-
-        $testModel = $this->testFactory->create($test, [
-            'website' => $remoteTest->getWebsite(),
-            'user' => $remoteTest->getUser(),
-            'state' => $remoteTest->getState(),
-            'type' => $remoteTest->getType(),
-            'url_count' => $remoteTest->getUrlCount(),
-            'task_count' => $remoteTest->getTaskCount(),
-            'errored_task_count' => $remoteTest->getErroredTaskCount(),
-            'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
-            'parameters' => $remoteTest->getEncodedParameters(),
-            'amendments' => $remoteTest->getAmmendments(),
-            'crawl' => $remoteTest->getCrawl(),
-            'task_types' => $remoteTest->getTaskTypes(),
-            'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
-            'rejection' => [],
-            'is_public' => $remoteTest->getIsPublic(),
-            'task_type_options' => $remoteTest->getTaskTypeOptions(),
-            'owners' => $remoteTest->getOwners(),
-        ]);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
         $requestTaskType = str_replace('+', ' ', $task_type);
         $selectedTaskType = $this->getSelectedTaskType($testModel->getTaskTypes(), $requestTaskType);

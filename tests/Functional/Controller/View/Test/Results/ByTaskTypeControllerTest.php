@@ -6,17 +6,18 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 use App\Controller\View\Test\Results\ByTaskTypeController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Model\Test\DecoratedTest;
 use App\Model\Test\Task\ErrorTaskMapCollection;
-use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
 use App\Tests\Factory\OutputFactory;
 use App\Tests\Factory\TaskFactory;
+use App\Tests\Factory\TestModelFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -24,7 +25,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
-use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class ByTaskTypeControllerTest extends AbstractViewControllerTest
@@ -62,6 +62,16 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         'state' => Test::STATE_COMPLETED,
         'task_type_options' => [],
         'task_count' => 12,
+    ];
+
+    private $testModelProperties = [
+        'website' => self::WEBSITE,
+        'user' => self::USER_EMAIL,
+        'state' => Test::STATE_COMPLETED,
+        'type' => Test::TYPE_FULL_SITE,
+        'taskTypes' => [
+            Task::TYPE_HTML_VALIDATION,
+        ],
     ];
 
     public function testIsIEFilteredDefaultRoute()
@@ -204,31 +214,22 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRedirectDataProvider
      */
     public function testIndexActionRedirect(
-        RemoteTest $remoteTest,
-        User $user,
-        Request $request,
+        array $testModelProperties,
         string $taskType,
         string $filter,
         string $expectedRedirectUrl
     ) {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-
-        $userManager = self::$container->get(UserManager::class);
-        $userManager->setUser($user);
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
 
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($byTaskTypeController, $testService);
-        $this->setRemoteTestServiceOnController($byTaskTypeController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($byTaskTypeController, $testRetriever);
 
         /* @var RedirectResponse $response */
         $response = $byTaskTypeController->indexAction(
-            $request,
+            new Request(),
             self::WEBSITE,
             self::TEST_ID,
             $taskType,
@@ -243,43 +244,33 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     {
         return [
             'empty task type' => [
-                'remoteTest' => new RemoteTest($this->remoteTestData),
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
+                'testModelProperties' => [],
                 'taskType' => '',
                 'filter' => '',
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
             'invalid task type' => [
-                'remoteTest' => new RemoteTest($this->remoteTestData),
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
+                'testModelProperties' => [],
                 'taskType' => 'foo',
                 'filter' => '',
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
             'empty filter' => [
-                'remoteTest' => new RemoteTest($this->remoteTestData),
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
+                'testModelProperties' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => '',
                 'expectedRedirectUrl' => '/http://example.com//1/results/html+validation/by-error/',
             ],
             'invalid filter' => [
-                'remoteTest' => new RemoteTest($this->remoteTestData),
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
+                'testModelProperties' => [],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => 'foo',
                 'expectedRedirectUrl' => '/http://example.com//1/results/html+validation/by-error/',
             ],
             'requires preparation' => [
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
-                    'task_count' => 1000,
-                ])),
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
+                'testModelProperties' => [
+                    'remoteTaskCount' => 1000,
+                ],
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
                 'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
@@ -291,22 +282,22 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRenderDataProvider
      */
     public function testIndexActionRender(
-        callable $testCreator,
-        RemoteTest $remoteTest,
+        array $testModelProperties,
         array $taskValuesCollection,
         User $user,
         string $taskType,
         string $filter,
         Twig_Environment $twig
     ) {
-        $test = $testCreator();
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
+        $testEntity = $testModel->getEntity();
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        $entityManager->persist($test);
+        $entityManager->persist($testEntity);
         $entityManager->flush();
 
         $taskFactory = new TaskFactory(self::$container);
-        $taskFactory->createCollection($test, $taskValuesCollection);
+        $taskFactory->createCollection($testEntity, $taskValuesCollection);
 
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
@@ -314,11 +305,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($byTaskTypeController, $testService);
-        $this->setRemoteTestServiceOnController($byTaskTypeController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($byTaskTypeController, $testRetriever);
 
         $this->setTwigOnController($twig, $byTaskTypeController);
 
@@ -375,18 +363,12 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
         return [
             'public user, private test, no tasks' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
                     'user' => self::USER_EMAIL,
                     'owners' => [
                         self::USER_EMAIL,
                     ],
-                ])),
+                ],
                 'taskValuesCollection' => [],
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -413,19 +395,12 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, public test, no tasks' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setUser(SystemUserService::getPublicUser()->getUsername());
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
-                    'user' => SystemUserService::PUBLIC_USER_USERNAME,
+                'testModelProperties' => [
+                    'user' => SystemUserService::getPublicUser()->getUsername(),
                     'owners' => [
-                        SystemUserService::PUBLIC_USER_USERNAME,
+                        SystemUserService::getPublicUser()->getUsername(),
                     ],
-                ])),
+                ],
                 'taskValuesCollection' => [],
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -452,19 +427,13 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'private user, private test, no tasks' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setUser(self::USER_EMAIL);
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
                     'user' => self::USER_EMAIL,
                     'owners' => [
                         self::USER_EMAIL,
                     ],
-                ])),
+                    'isPublic' => false,
+                ],
                 'taskValuesCollection' => [],
                 'user' => new User(self::USER_EMAIL),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -491,24 +460,14 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, public test, has tasks, no errors' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setUser(SystemUserService::getPublicUser()->getUsername());
-                    $test->setTaskIdCollection('1,2,3');
-
-                    $entityManager = self::$container->get(EntityManagerInterface::class);
-                    $entityManager->persist($test);
-                    $entityManager->flush();
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
+                    'entity' => $this->createTestEntity(self::TEST_ID, '1,2,3'),
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     'owners' => [
                         SystemUserService::PUBLIC_USER_USERNAME,
                     ],
-                ])),
+                    'isPublic' => true,
+                ],
                 'taskValuesCollection' => [
                     [
                         TaskFactory::KEY_TASK_ID => 1,
@@ -545,24 +504,14 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, public test, has tasks, has errors, html validation' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setUser(SystemUserService::getPublicUser()->getUsername());
-                    $test->setTaskIdCollection('1,2,3,4');
-
-                    $entityManager = self::$container->get(EntityManagerInterface::class);
-                    $entityManager->persist($test);
-                    $entityManager->flush();
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
+                    'entity' => $this->createTestEntity(self::TEST_ID, '1,2,3,4'),
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     'owners' => [
                         SystemUserService::PUBLIC_USER_USERNAME,
                     ],
-                ])),
+                    'isPublic' => true,
+                ],
                 'taskValuesCollection' => $taskValuesCollection,
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -589,24 +538,14 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'public user, public test, has tasks, has errors, css validation' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setUser(SystemUserService::getPublicUser()->getUsername());
-                    $test->setTaskIdCollection('1,2,3,4');
-
-                    $entityManager = self::$container->get(EntityManagerInterface::class);
-                    $entityManager->persist($test);
-                    $entityManager->flush();
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
+                    'entity' => $this->createTestEntity(self::TEST_ID, '1,2,3,4'),
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     'owners' => [
                         SystemUserService::PUBLIC_USER_USERNAME,
                     ],
-                ])),
+                    'isPublic' => true,
+                ],
                 'taskValuesCollection' => $taskValuesCollection,
                 'user' => SystemUserService::getPublicUser(),
                 'taskType' => Task::TYPE_CSS_VALIDATION,
@@ -637,18 +576,11 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $this->httpMockHandler->appendFixtures([
-            HttpResponseFactory::createJsonResponse([]),
-        ]);
-
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-        $remoteTest = new RemoteTest(array_merge($this->remoteTestData, [
-            'task_count' => 0,
-        ]));
+        $testModel = TestModelFactory::create($this->testModelProperties);
+        $testEntity = $testModel->getEntity();
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        $entityManager->persist($test);
+        $entityManager->persist($testEntity);
         $entityManager->flush();
 
         $request = new Request();
@@ -658,11 +590,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
         /* @var ByTaskTypeController $byTaskTypeController */
         $byTaskTypeController = self::$container->get(ByTaskTypeController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($byTaskTypeController, $testService);
-        $this->setRemoteTestServiceOnController($byTaskTypeController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($byTaskTypeController, $testRetriever);
 
         $response = $byTaskTypeController->indexAction(
             $request,
@@ -748,31 +677,25 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @return TestService|MockInterface
+     * @return TestRetriever|MockInterface
      */
-    private function createTestService(int $testId, Test $test)
+    private function createTestRetriever(int $testId, ?TestModel $testModel)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
-            ->andReturn($test);
+            ->andReturn($testModel);
 
-        return $testService;
+        return $testRetriever;
     }
 
-    /**
-     * @return RemoteTestService|MockInterface
-     */
-    private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
+    private function createTestEntity(int $testId, string $taskIdCollection = ''): TestEntity
     {
-        $remoteTestService = \Mockery::mock(RemoteTestService::class);
-        $remoteTestService
-            ->shouldReceive('get')
-            ->with($testId)
-            ->andReturn($remoteTest);
+        $testEntity = TestEntity::create($testId);
+        $testEntity->setTaskIdCollection($taskIdCollection);
 
-        return $remoteTestService;
+        return $testEntity;
     }
 
     /**
