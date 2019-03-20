@@ -4,20 +4,19 @@
 namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\TestFinishedSummaryController;
-use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Model\Test\DecoratedTest;
-use App\Services\RemoteTestService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Factory\TestModelFactory;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 {
@@ -37,8 +36,16 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'task_types' => [],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_FAILED_NO_SITEMAP,
+        'state' => TestModel::STATE_FAILED_NO_SITEMAP,
         'task_type_options' => [],
+    ];
+
+    private $testModelProperties = [
+        'website' => self::WEBSITE,
+        'user' => self::USER_EMAIL,
+        'state' => TestModel::STATE_COMPLETED,
+        'type' => TestEntity::TYPE_FULL_SITE,
+        'taskTypes' => [],
     ];
 
     public function testIsIEFiltered()
@@ -105,19 +112,14 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionRender(Twig_Environment $twig)
     {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-        $remoteTest = new RemoteTest($this->remoteTestData);
+        $testModel = TestModelFactory::create($this->testModelProperties);
 
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
         $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
 
-        $this->setTestServiceOnController($testFinishedSummaryController, $testService);
-        $this->setRemoteTestServiceOnController($testFinishedSummaryController, $remoteTestService);
-
+        $this->setTestRetrieverOnController($testFinishedSummaryController, $testRetriever);
         $this->setTwigOnController($twig, $testFinishedSummaryController);
 
         $response = $testFinishedSummaryController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -151,20 +153,16 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+        $testModel = TestModelFactory::create($this->testModelProperties);
 
-        $remoteTest = new RemoteTest($this->remoteTestData);
         $request = new Request();
 
         /* @var TestFinishedSummaryController $testFinishedSummaryController */
         $testFinishedSummaryController = self::$container->get(TestFinishedSummaryController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
 
-        $this->setTestServiceOnController($testFinishedSummaryController, $testService);
-        $this->setRemoteTestServiceOnController($testFinishedSummaryController, $remoteTestService);
+        $this->setTestRetrieverOnController($testFinishedSummaryController, $testRetriever);
 
         $response = $testFinishedSummaryController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
@@ -195,31 +193,17 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @return TestService|MockInterface
+     * @return TestRetriever|MockInterface
      */
-    private function createTestService(int $testId, ?Test $test)
+    private function createTestRetriever(int $testId, ?TestModel $testModel)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
-            ->andReturn($test);
+            ->andReturn($testModel);
 
-        return $testService;
-    }
-
-    /**
-     * @return RemoteTestService|MockInterface
-     */
-    private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
-    {
-        $remoteTestService = \Mockery::mock(RemoteTestService::class);
-        $remoteTestService
-            ->shouldReceive('get')
-            ->with($testId)
-            ->andReturn($remoteTest);
-
-        return $remoteTestService;
+        return $testRetriever;
     }
 
     /**
