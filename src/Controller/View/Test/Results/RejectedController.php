@@ -7,14 +7,12 @@ use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
 use App\Model\Test\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\PlansService;
-use App\Services\RemoteTestService;
 use App\Services\TestFactory;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -25,32 +23,11 @@ use Twig_Environment;
 
 class RejectedController extends AbstractBaseViewController
 {
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
-
-    /**
-     * @var UserService
-     */
     private $userService;
-
-    /**
-     * @var PlansService
-     */
     private $plansService;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
-
     private $testFactory;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
@@ -58,20 +35,18 @@ class RejectedController extends AbstractBaseViewController
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
         UrlViewValuesService $urlViewValues,
-        TestService $testService,
-        RemoteTestService $remoteTestService,
         UserService $userService,
         PlansService $plansService,
-        TestFactory $testFactory
+        TestFactory $testFactory,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
         $this->userService = $userService;
         $this->plansService = $plansService;
         $this->urlViewValues = $urlViewValues;
         $this->testFactory = $testFactory;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -87,27 +62,7 @@ class RejectedController extends AbstractBaseViewController
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $test = $this->testService->get($test_id);
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
-        $testModel = $this->testFactory->create($test, [
-            'website' => $remoteTest->getWebsite(),
-            'user' => $remoteTest->getUser(),
-            'state' => $remoteTest->getState(),
-            'type' => $remoteTest->getType(),
-            'url_count' => $remoteTest->getUrlCount(),
-            'task_count' => $remoteTest->getTaskCount(),
-            'errored_task_count' => $remoteTest->getErroredTaskCount(),
-            'cancelled_task_count' => $remoteTest->getCancelledTaskCount(),
-            'parameters' => $remoteTest->getEncodedParameters(),
-            'amendments' => $remoteTest->getAmmendments(),
-            'crawl' => $remoteTest->getCrawl(),
-            'task_types' => $remoteTest->getTaskTypes(),
-            'task_count_by_state' => $remoteTest->getRawTaskCountByState(),
-            'rejection' => $this->createRejectionData($remoteTest),
-            'is_public' => $remoteTest->getIsPublic(),
-            'task_type_options' => $remoteTest->getTaskTypeOptions(),
-            'owners' => $remoteTest->getOwners(),
-        ]);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
         $cacheValidatorParameters = [
             'website' => $website,
@@ -178,24 +133,5 @@ class RejectedController extends AbstractBaseViewController
         }
 
         return 'credits_per_month' === $rejectionData['constraint']['name'];
-    }
-
-    private function createRejectionData(RemoteTest $remoteTest): array
-    {
-        $rejectionData = [];
-        $remoteTestRejection = $remoteTest->getRejection();
-
-        if (empty($remoteTestRejection)) {
-            return $rejectionData;
-        }
-
-        $rejectionData['reason'] = $remoteTestRejection->getReason();
-
-        $constraint = $remoteTestRejection->getConstraint();
-        if ($constraint) {
-            $rejectionData['constraint'] = $constraint;
-        }
-
-        return $rejectionData;
     }
 }
