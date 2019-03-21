@@ -7,7 +7,7 @@ class TestList implements \Countable, \Iterator
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;
 
     /**
-     * @var Test[]
+     * @var TestInterface[]
      */
     private $tests = [];
     private $maxResults = 0;
@@ -26,7 +26,7 @@ class TestList implements \Countable, \Iterator
         $this->limit = $limit;
 
         foreach ($tests as $test) {
-            if (is_object($test) && $test instanceof Test) {
+            if (is_object($test) && $test instanceof TestInterface) {
                 $this->tests[] = $test;
             }
         }
@@ -41,7 +41,7 @@ class TestList implements \Countable, \Iterator
         return count($this->tests);
     }
 
-    public function current(): Test
+    public function current(): TestInterface
     {
         return $this->tests[$this->iteratorPosition];
     }
