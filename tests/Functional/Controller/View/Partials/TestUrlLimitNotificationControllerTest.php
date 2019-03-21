@@ -83,6 +83,7 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($remoteTestData),
             HttpResponseFactory::createJsonResponse([]),
         ]);
