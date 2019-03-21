@@ -246,4 +246,13 @@ class Test
     {
         return in_array($this->state, $this->finishedStates);
     }
+
+    public function getHash(): string
+    {
+        return md5(json_encode([
+            'test_id' => $this->getTestId(),
+            'state' => $this->getState(),
+            'requires_remote_tasks' => $this->requiresRemoteTasks(),
+        ]));
+    }
 }

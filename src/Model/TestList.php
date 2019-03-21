@@ -6,10 +6,13 @@ class TestList implements \Countable, \Iterator
 {
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;
 
+    /**
+     * @var Test[]
+     */
+    private $tests = [];
     private $maxResults = 0;
     private $offset = 0;
     private $limit = 1;
-    private $tests = [];
     private $pageIndex = 0;
     private $pageCount = 0;
     private $pageCollectionIndex = 0;
@@ -101,5 +104,26 @@ class TestList implements \Countable, \Iterator
         }
 
         return $pageNumbers;
+    }
+
+    public function getHash(): string
+    {
+        return md5($this->createHashContent());
+    }
+
+    private function createHashContent(): string
+    {
+        $hashData = [
+            'max_results' => $this->maxResults,
+            'offset' => $this->offset,
+            'limit' => $this->limit,
+            'test_data' => [],
+        ];
+
+        foreach ($this->tests as $test) {
+            $hashData['test_data'][$test->getTestId()] = $test->getHash();
+        }
+
+        return json_encode($hashData);
     }
 }
