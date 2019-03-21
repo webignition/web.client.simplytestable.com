@@ -109,11 +109,6 @@ class Test implements \JsonSerializable
         return $test;
     }
 
-    public function getState(): ?string
-    {
-        return $this->state;
-    }
-
     public function setTaskTypes(array $taskTypes)
     {
         $this->taskTypes = $taskTypes;
