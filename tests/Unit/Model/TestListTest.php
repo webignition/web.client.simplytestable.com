@@ -70,6 +70,43 @@ class TestListTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    /**
+     * @dataProvider countableDataProvider
+     */
+    public function testCountable(array $tests, int $expectedCount)
+    {
+        $testList = new TestList($tests, 0, 0, 0);
+
+        $this->assertEquals($expectedCount, count($testList));
+    }
+
+    public function countableDataProvider(): array
+    {
+        return [
+            'one' => [
+                'tests' => [
+                    \Mockery::mock(Test::class),
+                ],
+                'expectedCount' => 1,
+            ],
+            'two' => [
+                'tests' => [
+                    \Mockery::mock(Test::class),
+                    \Mockery::mock(Test::class),
+                ],
+                'expectedCount' => 2,
+            ],
+            'three' => [
+                'tests' => [
+                    \Mockery::mock(Test::class),
+                    \Mockery::mock(Test::class),
+                    \Mockery::mock(Test::class),
+                ],
+                'expectedCount' => 3,
+            ],
+        ];
+    }
+
     public function testIterator()
     {
         $tests = [

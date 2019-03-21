@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class TestList implements \Iterator
+class TestList implements \Countable, \Iterator
 {
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;
 
@@ -24,6 +24,11 @@ class TestList implements \Iterator
                 $this->tests[] = $test;
             }
         }
+    }
+
+    public function count(): int
+    {
+        return count($this->tests);
     }
 
     public function current(): Test
