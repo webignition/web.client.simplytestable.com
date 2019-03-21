@@ -10,7 +10,6 @@ use webignition\NormalisedUrl\NormalisedUrl;
 class TestFactory
 {
     const KEY_TEST_ID = 'test-id';
-    const KEY_USER = 'user';
     const KEY_WEBSITE = 'website';
     const KEY_STATE = 'state';
     const KEY_TASKS = 'tasks';
@@ -27,7 +26,6 @@ class TestFactory
     private $taskFactory;
 
     private $defaultTestValues = [
-        self::KEY_USER => self::DEFAULT_USER,
         self::KEY_WEBSITE => self::DEFAULT_WEBSITE_URL,
         self::KEY_STATE => self::DEFAULT_STATE,
         self::KEY_TYPE => self::DEFAULT_TYPE,
@@ -55,7 +53,6 @@ class TestFactory
         $test = Test::create($testValues[self::KEY_TEST_ID]);
 
         $test->setWebsite($testValues[self::KEY_WEBSITE]);
-        $test->setUser($testValues[self::KEY_USER]);
         $test->setState($testValues[self::KEY_STATE]);
         $test->setType($testValues[self::KEY_TYPE]);
 

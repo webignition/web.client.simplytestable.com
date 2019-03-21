@@ -94,11 +94,6 @@ class Test implements \JsonSerializable
      */
     private $type;
 
-    /**
-     * @var int
-     */
-    private $urlCount = null;
-
     private function __construct()
     {
         $this->tasks = new ArrayCollection();
@@ -112,11 +107,6 @@ class Test implements \JsonSerializable
         $test->testId = $testId;
 
         return $test;
-    }
-
-    public function setUser(string $user)
-    {
-        $this->user = $user;
     }
 
     public function getUser(): ?string
