@@ -5,12 +5,10 @@ namespace App\Tests\Factory;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Test;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class TestFactory
 {
     const KEY_TEST_ID = 'test-id';
-    const KEY_WEBSITE = 'website';
     const KEY_STATE = 'state';
     const KEY_TASKS = 'tasks';
     const KEY_TASK_IDS = 'task-ids';
@@ -26,7 +24,6 @@ class TestFactory
     private $taskFactory;
 
     private $defaultTestValues = [
-        self::KEY_WEBSITE => self::DEFAULT_WEBSITE_URL,
         self::KEY_STATE => self::DEFAULT_STATE,
         self::KEY_TYPE => self::DEFAULT_TYPE,
     ];
@@ -48,11 +45,8 @@ class TestFactory
             }
         }
 
-        $testValues[self::KEY_WEBSITE] = new NormalisedUrl($testValues[self::KEY_WEBSITE]);
-
         $test = Test::create($testValues[self::KEY_TEST_ID]);
 
-        $test->setWebsite($testValues[self::KEY_WEBSITE]);
         $test->setState($testValues[self::KEY_STATE]);
         $test->setType($testValues[self::KEY_TYPE]);
 

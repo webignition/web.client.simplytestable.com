@@ -109,11 +109,6 @@ class Test implements \JsonSerializable
         return $test;
     }
 
-    public function setWebsite(NormalisedUrl $website)
-    {
-        $this->website = $website;
-    }
-
     public function getWebsite(): ?string
     {
         return (string) $this->website;

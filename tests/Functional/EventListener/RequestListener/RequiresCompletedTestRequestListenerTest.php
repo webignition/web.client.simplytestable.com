@@ -68,7 +68,6 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
         ];
 
         $testValues = [
-            TestFactory::KEY_WEBSITE => self::WEBSITE,
             TestFactory::KEY_TEST_ID => self::TEST_ID,
             TestFactory::KEY_STATE => $testState,
         ];
