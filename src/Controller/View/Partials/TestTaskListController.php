@@ -10,7 +10,7 @@ use App\Model\Task\Collection as TaskCollection;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\TaskService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,28 +19,21 @@ use Twig_Environment;
 
 class TestTaskListController extends AbstractBaseViewController
 {
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var TaskService
-     */
     private $taskService;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
-        TestService $testService,
-        TaskService $taskService
+        TaskService $taskService,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
         $this->taskService = $taskService;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -63,8 +56,8 @@ class TestTaskListController extends AbstractBaseViewController
             return new Response('');
         }
 
-        $test = $this->testService->get($test_id);
-        $tasks = $this->taskService->getCollection($test, $taskIds);
+        $test = $this->testRetriever->retrieve($test_id);
+        $tasks = $this->taskService->getCollection($test->getEntity(), $taskIds);
         $taskCollection = new TaskCollection($tasks);
 
         if ($taskCollection->isEmpty()) {
