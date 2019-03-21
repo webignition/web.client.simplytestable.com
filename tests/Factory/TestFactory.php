@@ -12,7 +12,6 @@ class TestFactory
     const KEY_TASKS = 'tasks';
     const KEY_TASK_IDS = 'task-ids';
     const KEY_TYPE = 'type';
-    const KEY_TASK_TYPES = 'task-types';
 
     const DEFAULT_USER = 'user@example.com';
     const DEFAULT_WEBSITE_URL = 'http://example.com/';
@@ -55,10 +54,6 @@ class TestFactory
 
         if (isset($testValues[self::KEY_TASK_IDS])) {
             $test->setTaskIdCollection($testValues[self::KEY_TASK_IDS]);
-        }
-
-        if (isset($testValues[self::KEY_TASK_TYPES])) {
-            $test->setTaskTypes($testValues[self::KEY_TASK_TYPES]);
         }
 
         return $test;

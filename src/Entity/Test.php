@@ -109,11 +109,6 @@ class Test implements \JsonSerializable
         return $test;
     }
 
-    public function setTaskTypes(array $taskTypes)
-    {
-        $this->taskTypes = $taskTypes;
-    }
-
     public function addTask(Task $task)
     {
         $this->tasks[] = $task;
