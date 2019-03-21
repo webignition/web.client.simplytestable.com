@@ -32,6 +32,8 @@ class TestFactory
         $entityManager = $this->container->get(EntityManagerInterface::class);
 
         $test = Test::create($testValues[self::KEY_TEST_ID]);
+        $entityManager->persist($test);
+        $entityManager->flush();
 
         if (isset($testValues[self::KEY_TASKS])) {
             $this->taskFactory->createCollection($test, $testValues[self::KEY_TASKS]);
@@ -40,9 +42,6 @@ class TestFactory
         if (isset($testValues[self::KEY_TASK_IDS])) {
             $test->setTaskIdCollection($testValues[self::KEY_TASK_IDS]);
         }
-
-        $entityManager->persist($test);
-        $entityManager->flush();
 
         return $test;
     }
