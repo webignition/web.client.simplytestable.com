@@ -57,7 +57,7 @@ class TestTaskListController extends AbstractBaseViewController
         }
 
         $test = $this->testRetriever->retrieve($test_id);
-        $tasks = $this->taskService->getCollection($test->getEntity(), $taskIds);
+        $tasks = $this->taskService->getCollection($test->getEntity(), $test->getState(), $taskIds);
         $taskCollection = new TaskCollection($tasks);
 
         if ($taskCollection->isEmpty()) {

@@ -156,7 +156,12 @@ class ByTaskTypeController extends AbstractBaseViewController
 
         $filteredRemoteTaskIds = $this->taskCollectionFilterService->getRemoteIds();
 
-        $filteredTasks = $this->taskService->getCollection($testModel->getEntity(), $filteredRemoteTaskIds);
+        $filteredTasks = $this->taskService->getCollection(
+            $testModel->getEntity(),
+            $testModel->getState(),
+            $filteredRemoteTaskIds
+        );
+
         $this->taskService->setParsedOutputOnCollection($filteredTasks);
 
         $tasks = $this->sortTasks($filteredTasks);

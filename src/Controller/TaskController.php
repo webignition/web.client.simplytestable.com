@@ -86,7 +86,7 @@ class TaskController
         $remoteTaskIds = $this->getRequestRemoteTaskIds($request);
         $remoteTaskIds = $remoteTaskIds ?? $testModel->getTaskIds();
 
-        $this->taskService->getCollection($testModel->getEntity(), $remoteTaskIds);
+        $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
 
         return new Response();
     }

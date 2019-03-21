@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Services\TaskService;
 use App\Entity\Task\Output;
 use App\Entity\Task\Task;
 use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestFactory;
@@ -18,6 +19,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
     public function testGetCollection(
         array $httpFixtures,
         array $testValues,
+        string $testState,
         ?array $remoteTaskIds,
         array $expectedTaskDataCollection,
         array $expectedRequestUrls
@@ -29,7 +31,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
         $test = $testFactory->create($testValues);
 
         /* @var Task[] $taskCollection */
-        $taskCollection = $this->taskService->getCollection($test, $remoteTaskIds);
+        $taskCollection = $this->taskService->getCollection($test, $testState, $remoteTaskIds);
 
         $testTaskIds = [];
         foreach ($test->getTasks() as $task) {
@@ -83,6 +85,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                 'testValues' => [
                     TestFactory::KEY_TEST_ID => 1,
                 ],
+                'testState' => TestModel::STATE_COMPLETED,
                 'remoteTaskIds' => [2, 3],
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -117,6 +120,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ],
                 ],
+                'testState' => TestModel::STATE_COMPLETED,
                 'remoteTaskIds' => [2, 3],
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -158,7 +162,6 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                 ],
                 'testValues' => [
                     TestFactory::KEY_TEST_ID => 1,
-                    TestFactory::KEY_STATE => Test::STATE_COMPLETED,
                     TestFactory::KEY_TASKS => [
                         [
                             TaskFactory::KEY_TASK_ID => 2,
@@ -180,6 +183,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ],
                 ],
+                'testState' => TestModel::STATE_COMPLETED,
                 'remoteTaskIds' => [2, 3, 4],
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -228,6 +232,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ],
                 ],
+                'testState' => TestModel::STATE_COMPLETED,
                 'remoteTaskIds' => [2],
                 'expectedTaskDataCollection' => [
                     2 => [
@@ -292,6 +297,7 @@ class TaskServiceGetCollectionTest extends AbstractTaskServiceTest
                         ],
                     ],
                 ],
+                'testState' => TestModel::STATE_COMPLETED,
                 'remoteTaskIds' => [2],
                 'expectedTaskDataCollection' => [
                     2 => [

@@ -228,7 +228,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
      */
     public function testIndexActionRedirect(array $httpFixtures, string $expectedRedirectUrl)
     {
-        $testModel = $this->createTest();
+        $testModel = $this->createTest([
+            'state' => TestModel::STATE_IN_PROGRESS,
+        ]);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var ResultsController $resultsController */

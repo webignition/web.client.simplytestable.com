@@ -126,6 +126,7 @@ class TaskService
 
     /**
      * @param Test $test
+     * @param string $testState
      * @param array $remoteTaskIds
      *
      * @return Task[]
@@ -134,7 +135,7 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getCollection(Test $test, array $remoteTaskIds)
+    public function getCollection(Test $test, string $testState, array $remoteTaskIds)
     {
         $existenceResult = $this->taskRepository->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);
 
@@ -211,7 +212,7 @@ class TaskService
             $this->entityManager->flush();
         }
 
-        if ($test->getState() == Test::STATE_COMPLETED || $test->getState() == Test::STATE_CANCELLED) {
+        if ($testState === Test::STATE_COMPLETED || $testState === Test::STATE_CANCELLED) {
             foreach ($tasks as $task) {
                 $this->normaliseEndingState($task);
             }
@@ -348,6 +349,7 @@ class TaskService
 
     /**
      * @param Test $test
+     * @param string $testState
      * @param int $task_id
      *
      * @return Task|null
@@ -356,7 +358,7 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function get(Test $test, $task_id)
+    public function get(Test $test, string $testState, int $task_id)
     {
         $task = $this->taskRepository->findOneBy([
             'taskId' => $task_id,
@@ -364,9 +366,10 @@ class TaskService
         ]);
 
         if (empty($task)) {
-            $this->getCollection($test, [$task_id]);
+            $this->getCollection($test, $testState, [$task_id]);
         }
 
+        /* @var Task $task */
         $task = $this->taskRepository->findOneBy([
             'taskId' => $task_id,
             'test' => $test
@@ -376,7 +379,7 @@ class TaskService
             return null;
         }
 
-        if ($test->getState() == Test::STATE_COMPLETED || $test->getState() == Test::STATE_CANCELLED) {
+        if ($testState === Test::STATE_COMPLETED || $testState === Test::STATE_CANCELLED) {
             $this->normaliseEndingState($task);
         }
 
