@@ -5,14 +5,15 @@ namespace App\Tests\Functional\Controller;
 
 use App\Exception\CoreApplicationRequestException;
 use App\Model\TestIdentifier;
+use App\Services\TestRetriever;
+use App\Tests\Factory\TestModelFactory;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
-use Psr\Log\LoggerInterface;
 use App\Controller\RedirectController;
-use App\Entity\Test;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Services\RemoteTestService;
-use App\Services\TestService;
 use App\Tests\Factory\HttpResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -70,7 +71,7 @@ class RedirectControllerTest extends AbstractControllerTest
                 'website' => 'http://example.com/',
                 'task_types' => [],
                 'user' => self::USERNAME,
-                'state' => Test::STATE_COMPLETED,
+                'state' => TestModel::STATE_COMPLETED,
             ]),
             HttpResponseFactory::createJsonResponse([]),
         ]);
@@ -98,7 +99,7 @@ class RedirectControllerTest extends AbstractControllerTest
                 'website' => 'http://example.com/',
                 'task_types' => [],
                 'user' => self::USERNAME,
-                'state' => Test::STATE_COMPLETED,
+                'state' => TestModel::STATE_COMPLETED,
             ]),
             HttpResponseFactory::createJsonResponse([]),
         ]);
@@ -125,20 +126,10 @@ class RedirectControllerTest extends AbstractControllerTest
         string $website,
         string $expectedRedirectUrl
     ) {
-        /* @var TestService $testService */
-        $testService = self::$container->get(TestService::class);
-
-        /* @var RemoteTestService $remoteTestService */
-        $remoteTestService = self::$container->get(RemoteTestService::class);
-
-        /* @var LoggerInterface $logger */
-        $logger = self::$container->get(LoggerInterface::class);
-
         /* @var RedirectResponse $response */
         $response = $this->redirectController->testAction(
-            $testService,
-            $remoteTestService,
-            $logger,
+            \Mockery::mock(TestRetriever::class),
+            \Mockery::mock(RemoteTestService::class),
             new Request(),
             $website,
             1
@@ -166,23 +157,16 @@ class RedirectControllerTest extends AbstractControllerTest
     {
         $testIdentifier = new TestIdentifier(99, self::WEBSITE);
 
-        /* @var TestService $testService */
-        $testService = self::$container->get(TestService::class);
-
         $remoteTestService = \Mockery::mock(RemoteTestService::class);
         $remoteTestService
             ->shouldReceive('retrieveLatest')
             ->with(self::WEBSITE)
             ->andReturn($testIdentifier);
 
-        /* @var LoggerInterface $logger */
-        $logger = self::$container->get(LoggerInterface::class);
-
         /* @var RedirectResponse $response */
         $response = $this->redirectController->testAction(
-            $testService,
+            \Mockery::mock(TestRetriever::class),
             $remoteTestService,
-            $logger,
             new Request([], [
                 'website' => self::WEBSITE,
             ]),
@@ -199,23 +183,16 @@ class RedirectControllerTest extends AbstractControllerTest
      */
     public function testTestActionWebsiteOnlyNoMatchingTest(Request $request)
     {
-        /* @var TestService $testService */
-        $testService = self::$container->get(TestService::class);
-
         $remoteTestService = \Mockery::mock(RemoteTestService::class);
         $remoteTestService
             ->shouldReceive('retrieveLatest')
             ->with(self::WEBSITE)
             ->andReturnNull();
 
-        /* @var LoggerInterface $logger */
-        $logger = self::$container->get(LoggerInterface::class);
-
         /* @var RedirectResponse $response */
         $response = $this->redirectController->testAction(
-            $testService,
+            \Mockery::mock(TestRetriever::class),
             $remoteTestService,
-            $logger,
             $request,
             self::WEBSITE,
             null
@@ -267,22 +244,15 @@ class RedirectControllerTest extends AbstractControllerTest
             )
         );
 
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->andThrow($coreApplicationRequestException);
-
-        /* @var RemoteTestService $remoteTestService */
-        $remoteTestService = \Mockery::mock(RemoteTestService::class);
-
-        /* @var LoggerInterface $logger */
-        $logger = self::$container->get(LoggerInterface::class);
 
         /* @var RedirectResponse $response */
         $response = $this->redirectController->testAction(
-            $testService,
-            $remoteTestService,
-            $logger,
+            $testRetriever,
+            \Mockery::mock(RemoteTestService::class),
             $request,
             self::WEBSITE,
             $testId
@@ -311,32 +281,28 @@ class RedirectControllerTest extends AbstractControllerTest
     /**
      * @dataProvider dataProviderForTestActionWebsiteAndTestHasTest
      */
-    public function testTestActionWebsiteAndTestHasTest(
-        string $testState,
-        string $expectedRedirectUrl
-    ) {
+    public function testTestActionWebsiteAndTestHasTest(string $testState, string $expectedRedirectUrl)
+    {
         $testId = 1;
 
-        $test = Test::create($testId);
-        $test->setState($testState);
+        $test = TestModelFactory::create([
+            'entity' => TestEntity::create($testId),
+            'state' => $testState,
+        ]);
 
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
             ->andReturn($test);
 
         /* @var RemoteTestService $remoteTestService */
         $remoteTestService = self::$container->get(RemoteTestService::class);
 
-        /* @var LoggerInterface $logger */
-        $logger = self::$container->get(LoggerInterface::class);
-
         /* @var RedirectResponse $response */
         $response = $this->redirectController->testAction(
-            $testService,
+            $testRetriever,
             $remoteTestService,
-            $logger,
             new Request(),
             self::WEBSITE,
             $testId
@@ -350,11 +316,11 @@ class RedirectControllerTest extends AbstractControllerTest
     {
         return [
             'website and test_id, has latest test, success retrieving remote test, test finished' => [
-                'testState' => Test::STATE_COMPLETED,
+                'testState' => TestModel::STATE_COMPLETED,
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
             'website and test_id, has latest test, success retrieving remote test, test in progress' => [
-                'testState' => Test::STATE_IN_PROGRESS,
+                'testState' => TestModel::STATE_IN_PROGRESS,
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
         ];
