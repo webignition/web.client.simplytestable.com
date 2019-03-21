@@ -7,7 +7,6 @@ use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
 use App\Model\TestIdentifier;
 use App\Model\TestOptions;
 
@@ -95,23 +94,6 @@ class RemoteTestService
 
         $cookieOptions['cookies'] = $cookies;
         $testOptions->setFeatureOptions('cookies', $cookieOptions);
-    }
-
-    /**
-     * @param int $testId
-     *
-     * @return RemoteTest|null
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidCredentialsException
-     */
-    public function get(int $testId): ?RemoteTest
-    {
-        $remoteTestData = $this->getSummaryData($testId);
-
-        return $remoteTestData
-            ? new RemoteTest($remoteTestData)
-            : null;
     }
 
     /**
