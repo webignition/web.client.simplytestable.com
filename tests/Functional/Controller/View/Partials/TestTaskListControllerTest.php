@@ -5,9 +5,11 @@ namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\TestTaskListController;
 use App\Entity\Task\Task;
-use App\Entity\Test;
-use App\Services\TestService;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
+use App\Services\TestRetriever;
 use App\Tests\Factory\HttpResponseFactory;
+use App\Tests\Factory\TestModelFactory;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
@@ -15,7 +17,6 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use webignition\NormalisedUrl\NormalisedUrl;
 
 class TestTaskListControllerTest extends AbstractViewControllerTest
 {
@@ -34,7 +35,7 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'task_types' => [],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_IN_PROGRESS,
+        'state' => TestModel::STATE_IN_PROGRESS,
         'task_type_options' => [],
         'task_count' => 12,
     ];
@@ -179,8 +180,8 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $this->setTestServiceOnController($testTaskListController, $testService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $test);
+        $this->setTestRetrieverOnController($testTaskListController, $testRetriever);
 
         $response = $testTaskListController->indexAction(
             $request,
@@ -208,8 +209,8 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $this->setTestServiceOnController($testTaskListController, $testService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $test);
+        $this->setTestRetrieverOnController($testTaskListController, $testRetriever);
 
         $response = $testTaskListController->indexAction(
             $request,
@@ -431,8 +432,8 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
         /* @var TestTaskListController $testTaskListController */
         $testTaskListController = self::$container->get(TestTaskListController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $this->setTestServiceOnController($testTaskListController, $testService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $test);
+        $this->setTestRetrieverOnController($testTaskListController, $testRetriever);
 
         $response = $testTaskListController->indexAction(
             $request,
@@ -459,27 +460,30 @@ class TestTaskListControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @return TestService|MockInterface
+     * @return TestRetriever|MockInterface
      */
-    private function createTestService(int $testId, Test $test)
+    private function createTestRetriever(int $testId, TestModel $test)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
             ->andReturn($test);
 
-        return $testService;
+        return $testRetriever;
     }
 
-    private function createTest(): Test
+    private function createTest(): TestModel
     {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+        $entity = TestEntity::create(self::TEST_ID);
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        $entityManager->persist($test);
+        $entityManager->persist($entity);
         $entityManager->flush();
+
+        $test = TestModelFactory::create([
+            'entity' => $entity,
+        ]);
 
         return $test;
     }
