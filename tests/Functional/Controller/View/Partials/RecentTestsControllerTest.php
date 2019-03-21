@@ -4,14 +4,12 @@
 namespace App\Tests\Functional\Controller\View\Partials;
 
 use App\Controller\View\Partials\RecentTestsController;
-use App\Entity\Task\Task;
 use App\Entity\Test;
 use App\Model\TestInterface;
 use App\Model\TestList;
 use App\Services\TestListRetriever;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
-use App\Tests\Factory\TestModelFactory;
 use App\Tests\Services\ObjectReflector;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -148,56 +146,6 @@ class RecentTestsControllerTest extends AbstractViewControllerTest
                             $this->assertInstanceOf(TestList::class, $testList);
 
                             $this->assertTestList($testList, [
-                                'maxResults' => 999,
-                                'length' => 1,
-                            ]);
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'has recent tests; require results' => [
-                'testList' => new TestList(
-                    [
-                        TestModelFactory::create([
-                            'entity' => $this->createTestEntity(1),
-                            'type' => Test::TYPE_SINGLE_URL,
-                            'remoteTaskCount' => 999,
-                        ]),
-                    ],
-                    999,
-                    0,
-                    RecentTestsController::LIMIT
-                ),
-                'httpFixtures' => [
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'id' => 2,
-                            'url' => 'http://example.com',
-                            'state' => Task::STATE_COMPLETED,
-                            'worker' => '',
-                            'type' => Task::TYPE_HTML_VALIDATION,
-                        ],
-                    ]),
-                ],
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertEquals(self::VIEW_NAME, $viewName);
-
-                            $this->assertEquals(
-                                [
-                                    'test_list',
-                                ],
-                                array_keys($parameters)
-                            );
-
-                            $decoratedTestList = $parameters['test_list'];
-                            $this->assertInstanceOf(TestList::class, $decoratedTestList);
-
-                            $this->assertTestList($decoratedTestList, [
                                 'maxResults' => 999,
                                 'length' => 1,
                             ]);
