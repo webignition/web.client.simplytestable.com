@@ -7,7 +7,7 @@ use App\Entity\Test as TestEntity;
 use App\Model\DecoratedTestList;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\RemoteTestList;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Services\DecoratedTestListFactory;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;

@@ -7,7 +7,7 @@ use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
 use App\Model\Test as TestModel;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TestRetriever;

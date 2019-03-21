@@ -7,7 +7,7 @@ use App\Controller\View\Test\Results\RejectedController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
 use App\Model\Test as TestModel;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Model\User\Summary as UserSummary;
 use App\Services\TestRetriever;
 use App\Services\UserManager;

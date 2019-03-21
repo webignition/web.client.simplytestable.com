@@ -8,7 +8,7 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Entity\Test;
 use App\Model\Test as TestModel;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;

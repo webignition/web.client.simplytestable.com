@@ -7,7 +7,7 @@ use App\Entity\Task\Task;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Model\Test\Task\ErrorTaskMapCollection;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
