@@ -154,11 +154,6 @@ class Test implements \JsonSerializable
         $this->taskIds = null;
     }
 
-    public function setType(string $type)
-    {
-        $this->type = $type;
-    }
-
     public function getErrorCount(): int
     {
         $errorCount = 0;

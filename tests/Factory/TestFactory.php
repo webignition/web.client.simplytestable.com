@@ -11,7 +11,6 @@ class TestFactory
     const KEY_TEST_ID = 'test-id';
     const KEY_TASKS = 'tasks';
     const KEY_TASK_IDS = 'task-ids';
-    const KEY_TYPE = 'type';
 
     const DEFAULT_USER = 'user@example.com';
     const DEFAULT_WEBSITE_URL = 'http://example.com/';
@@ -20,10 +19,6 @@ class TestFactory
 
     private $container;
     private $taskFactory;
-
-    private $defaultTestValues = [
-        self::KEY_TYPE => self::DEFAULT_TYPE,
-    ];
 
     public function __construct(ContainerInterface $container)
     {
@@ -36,17 +31,7 @@ class TestFactory
         /* @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get(EntityManagerInterface::class);
 
-        foreach ($this->defaultTestValues as $key => $value) {
-            if (!isset($testValues[$key])) {
-                $testValues[$key] = $value;
-            }
-        }
-
         $test = Test::create($testValues[self::KEY_TEST_ID]);
-        $test->setType($testValues[self::KEY_TYPE]);
-
-        $entityManager->persist($test);
-        $entityManager->flush();
 
         if (isset($testValues[self::KEY_TASKS])) {
             $this->taskFactory->createCollection($test, $testValues[self::KEY_TASKS]);
@@ -55,6 +40,9 @@ class TestFactory
         if (isset($testValues[self::KEY_TASK_IDS])) {
             $test->setTaskIdCollection($testValues[self::KEY_TASK_IDS]);
         }
+
+        $entityManager->persist($test);
+        $entityManager->flush();
 
         return $test;
     }
