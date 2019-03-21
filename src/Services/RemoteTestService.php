@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -41,7 +41,7 @@ class RemoteTestService
     public function start(
         string $canonicalUrl,
         TestOptions $testOptions,
-        string $testType = Test::TYPE_FULL_SITE
+        string $testType = TestModel::TYPE_FULL_SITE
     ): TestIdentifier {
         if ($testOptions->hasFeatureOptions('cookies')) {
             $cookieDomain = $this->registerableDomainService->getRegisterableDomain($canonicalUrl);

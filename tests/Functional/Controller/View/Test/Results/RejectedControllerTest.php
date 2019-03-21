@@ -5,7 +5,6 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\RejectedController;
 use App\Entity\Task\Task;
-use App\Entity\Test;
 use App\Model\Test as TestModel;
 use App\Model\DecoratedTest;
 use App\Model\User\Summary as UserSummary;
@@ -53,7 +52,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
         'state' => TestModel::STATE_REJECTED,
-        'type' => Test::TYPE_FULL_SITE,
+        'type' => TestModel::TYPE_FULL_SITE,
         'taskTypes' => [
             Task::TYPE_HTML_VALIDATION,
         ],

@@ -18,9 +18,6 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
  */
 class Test
 {
-    const TYPE_FULL_SITE = 'Full site';
-    const TYPE_SINGLE_URL = 'Single URL';
-
     /**
      * @var int
      *

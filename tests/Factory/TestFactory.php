@@ -16,7 +16,7 @@ class TestFactory
     const DEFAULT_USER = 'user@example.com';
     const DEFAULT_WEBSITE_URL = 'http://example.com/';
     const DEFAULT_STATE = TestModel::STATE_COMPLETED;
-    const DEFAULT_TYPE = Test::TYPE_FULL_SITE;
+    const DEFAULT_TYPE = TestModel::TYPE_FULL_SITE;
 
     private $container;
     private $taskFactory;

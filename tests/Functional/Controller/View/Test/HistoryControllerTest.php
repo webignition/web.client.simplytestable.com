@@ -4,7 +4,6 @@
 namespace App\Tests\Functional\Controller\View\Test\History;
 
 use App\Controller\View\Test\HistoryController;
-use App\Entity\Test;
 use App\Model\Test as TestModel;
 use App\Model\TestList;
 use App\Services\SystemUserService;
@@ -138,7 +137,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                                 'task_types' => [],
                                 'user' => 'user@example.com',
                                 'state' => TestModel::STATE_IN_PROGRESS,
-                                'type' => Test::TYPE_SINGLE_URL,
+                                'type' => TestModel::TYPE_SINGLE_URL,
                                 'task_count' => 10,
                                 'website' => 'http://example.com/',
                             ],

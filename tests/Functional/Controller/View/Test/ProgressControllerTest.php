@@ -49,7 +49,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
         'state' => TestModel::STATE_IN_PROGRESS,
-        'type' => Test::TYPE_FULL_SITE,
+        'type' => TestModel::TYPE_FULL_SITE,
         'taskTypes' => [
             Task::TYPE_HTML_VALIDATION,
         ],

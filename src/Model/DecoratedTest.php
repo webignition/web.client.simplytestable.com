@@ -3,7 +3,6 @@
 namespace App\Model;
 
 use App\Entity\Task\Task;
-use App\Entity\Test as TestEntity;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 class DecoratedTest implements \JsonSerializable, TestInterface
@@ -169,12 +168,12 @@ class DecoratedTest implements \JsonSerializable, TestInterface
 
     public function isFullSite(): bool
     {
-        return TestEntity::TYPE_FULL_SITE === $this->test->getType();
+        return self::TYPE_FULL_SITE === $this->test->getType();
     }
 
     public function isSingleUrl(): bool
     {
-        return TestEntity::TYPE_SINGLE_URL === $this->test->getType();
+        return self::TYPE_SINGLE_URL === $this->test->getType();
     }
 
     public function getErrorCountByTaskType(string $type): int
