@@ -15,11 +15,6 @@ class DecoratedTest implements \JsonSerializable, TestInterface
         $this->test = $test;
     }
 
-    public function getEntity(): TestEntity
-    {
-        return $this->test->getEntity();
-    }
-
     public function getTestId(): int
     {
         return $this->test->getTestId();

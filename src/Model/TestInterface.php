@@ -3,7 +3,6 @@
 namespace App\Model;
 
 use App\Entity\Task\Task;
-use App\Entity\Test as TestEntity;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 interface TestInterface
@@ -19,7 +18,6 @@ interface TestInterface
     const STATE_RESOLVING = 'resolving';
     const STATE_RESOLVED = 'resolved';
 
-    public function getEntity(): TestEntity;
     public function getTestId(): int;
 
     /**
