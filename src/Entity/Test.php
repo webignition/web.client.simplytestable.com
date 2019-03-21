@@ -177,11 +177,6 @@ class Test implements \JsonSerializable
         return $warningCount;
     }
 
-    public function getFormattedWebsite(): string
-    {
-        return rawurldecode((string) $this->website);
-    }
-
     public function jsonSerialize(): array
     {
         return [
