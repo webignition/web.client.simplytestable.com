@@ -80,7 +80,7 @@ class ResultsController extends AbstractBaseViewController
         $user = $this->userManager->getUser();
         $testModel = $this->testRetriever->retrieve($test_id);
 
-        $task = $this->taskService->get($testModel->getEntity(), $task_id);
+        $task = $this->taskService->get($testModel->getEntity(), $testModel->getState(), $task_id);
         if (empty($task)) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_progress',

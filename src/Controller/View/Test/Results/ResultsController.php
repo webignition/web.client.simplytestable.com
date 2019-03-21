@@ -172,7 +172,7 @@ class ResultsController extends AbstractBaseViewController
             $remoteTaskIds = $testModel->getTaskIds();
         }
 
-        $tasks = $this->taskService->getCollection($testModel->getEntity(), $remoteTaskIds);
+        $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
