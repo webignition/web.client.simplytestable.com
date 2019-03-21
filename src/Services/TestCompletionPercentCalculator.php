@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 
 class TestCompletionPercentCalculator
 {
@@ -18,7 +18,7 @@ class TestCompletionPercentCalculator
 
     public function calculate(string $state, int $taskCount, array $taskCountByState, array $crawlData): int
     {
-        if (TestEntity::STATE_CRAWLING === $state && !empty($crawlData)) {
+        if (TestModel::STATE_CRAWLING === $state && !empty($crawlData)) {
             return $this->calculateForCrawl($crawlData);
         }
 

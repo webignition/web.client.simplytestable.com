@@ -41,7 +41,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'task_types' => [],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_REJECTED,
+        'state' => TestModel::STATE_REJECTED,
         'task_type_options' => [],
         'task_count' => 12,
         'rejection' => [
@@ -52,7 +52,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
     private $testModelProperties = [
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_REJECTED,
+        'state' => TestModel::STATE_REJECTED,
         'type' => Test::TYPE_FULL_SITE,
         'taskTypes' => [
             Task::TYPE_HTML_VALIDATION,
@@ -335,7 +335,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
             ],
             'incorrect state' => [
                 'testModelProperties' => [
-                    'state' => Test::STATE_IN_PROGRESS,
+                    'state' => TestModel::STATE_IN_PROGRESS,
                 ],
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],

@@ -3,7 +3,7 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -97,7 +97,7 @@ class RejectedController extends AbstractBaseViewController
             ));
         }
 
-        if (Test::STATE_REJECTED !== $testModel->getState()) {
+        if (TestModel::STATE_REJECTED !== $testModel->getState()) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_progress',
                 [

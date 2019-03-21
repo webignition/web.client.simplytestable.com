@@ -40,7 +40,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'task_types' => [],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
+        'state' => TestModel::STATE_COMPLETED,
         'task_type_options' => [],
         'task_count' => 4,
     ];
@@ -48,7 +48,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
     private $testModelProperties = [
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
+        'state' => TestModel::STATE_COMPLETED,
         'type' => Test::TYPE_FULL_SITE,
         'taskTypes' => [],
     ];

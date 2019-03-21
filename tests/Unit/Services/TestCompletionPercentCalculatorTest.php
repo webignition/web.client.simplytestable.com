@@ -3,7 +3,7 @@
 
 namespace App\Tests\Unit\Services;
 
-use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Services\TestCompletionPercentCalculator;
 
 class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
@@ -26,7 +26,7 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
     public function testCalculateForCrawl(array $crawlData, int $expectedCompletionPercent)
     {
         $completionPercent = $this->calculator->calculate(
-            TestEntity::STATE_CRAWLING,
+            TestModel::STATE_CRAWLING,
             0,
             [],
             $crawlData
@@ -88,7 +88,7 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
         int $expectedCompletionPercent
     ) {
         $completionPercent = $this->calculator->calculate(
-            TestEntity::STATE_COMPLETED,
+            TestModel::STATE_COMPLETED,
             $taskCount,
             $taskCountByState,
             []
@@ -187,21 +187,21 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'crawling, no crawl data, no tasks' => [
-                'state' => TestEntity::STATE_CRAWLING,
+                'state' => TestModel::STATE_CRAWLING,
                 'taskCount' => 0,
                 'taskCountByState' => [],
                 'crawlData' => [],
                 'expectedCompletionPercent' => 0,
             ],
             'not crawling, no tasks' => [
-                'state' => TestEntity::STATE_QUEUED,
+                'state' => TestModel::STATE_QUEUED,
                 'taskCount' => 0,
                 'taskCountByState' => [],
                 'crawlData' => [],
                 'expectedCompletionPercent' => 0,
             ],
             'partially complete, 10%' => [
-                'state' => TestEntity::STATE_IN_PROGRESS,
+                'state' => TestModel::STATE_IN_PROGRESS,
                 'taskCount' => 100,
                 'taskCountByState' => [
                     'cancelled' => 10,
@@ -215,7 +215,7 @@ class TestCompletionPercentCalculatorTest extends \PHPUnit\Framework\TestCase
                 'expectedCompletionPercent' => 10,
             ],
             'partially complete, 80%' => [
-                'state' => TestEntity::STATE_IN_PROGRESS,
+                'state' => TestModel::STATE_IN_PROGRESS,
                 'taskCount' => 100,
                 'taskCountByState' => [
                     'cancelled' => 10,

@@ -17,6 +17,7 @@ interface TestInterface
     const STATE_REJECTED = 'rejected';
     const STATE_RESOLVING = 'resolving';
     const STATE_RESOLVED = 'resolved';
+    const STATE_CRAWLING = 'crawling';
 
     public function getTestId(): int;
 

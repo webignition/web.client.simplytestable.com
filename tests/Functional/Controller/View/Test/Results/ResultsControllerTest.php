@@ -49,7 +49,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ],
         ],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
+        'state' => TestModel::STATE_COMPLETED,
         'task_type_options' => [],
         'task_count' => 12,
     ];
@@ -57,7 +57,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
     private $testModelProperties = [
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
+        'state' => TestModel::STATE_COMPLETED,
         'type' => Test::TYPE_FULL_SITE,
         'taskTypes' => [
             Task::TYPE_HTML_VALIDATION,
@@ -158,7 +158,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'state' => Test::STATE_IN_PROGRESS,
+                        'state' => TestModel::STATE_IN_PROGRESS,
                     ])),
                     HttpResponseFactory::createJsonResponse([]),
                 ],
@@ -183,7 +183,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'state' => Test::STATE_FAILED_NO_SITEMAP,
+                        'state' => TestModel::STATE_FAILED_NO_SITEMAP,
                     ])),
                     HttpResponseFactory::createJsonResponse([]),
                 ],
@@ -194,7 +194,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'state' => Test::STATE_REJECTED,
+                        'state' => TestModel::STATE_REJECTED,
                     ])),
                     HttpResponseFactory::createJsonResponse([]),
                 ],

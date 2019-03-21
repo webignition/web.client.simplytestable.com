@@ -41,14 +41,14 @@ class ProgressControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'task_types' => [],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_IN_PROGRESS,
+        'state' => TestModel::STATE_IN_PROGRESS,
         'task_type_options' => [],
     ];
 
     private $testModelProperties = [
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_IN_PROGRESS,
+        'state' => TestModel::STATE_IN_PROGRESS,
         'type' => Test::TYPE_FULL_SITE,
         'taskTypes' => [
             Task::TYPE_HTML_VALIDATION,
@@ -230,7 +230,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'finished test; state=completed' => [
                 'testModelProperties' => [
-                    'state' => Test::STATE_COMPLETED,
+                    'state' => TestModel::STATE_COMPLETED,
                 ],
                 'user' => $publicUser,
                 'website' => self::WEBSITE,
@@ -240,7 +240,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'finished test; state=failed_no_sitemap; public user' => [
                 'testModelProperties' => [
-                    'state' => Test::STATE_FAILED_NO_SITEMAP,
+                    'state' => TestModel::STATE_FAILED_NO_SITEMAP,
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
                 ],
                 'user' => $publicUser,
@@ -251,7 +251,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'finished test; state=failed_no_sitemap; private user' => [
                 'testModelProperties' => [
-                    'state' => Test::STATE_FAILED_NO_SITEMAP,
+                    'state' => TestModel::STATE_FAILED_NO_SITEMAP,
                     'user' => $privateUser->getUsername(),
                 ],
                 'user' => $privateUser,
@@ -358,7 +358,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'private user, crawling' => [
                 'testModelProperties' => [
-                    'state' => Test::STATE_CRAWLING,
+                    'state' => TestModel::STATE_CRAWLING,
                     'user' => self::USER_EMAIL,
                     'remoteTaskCount' => 44,
                     'urlCount' => 11,
@@ -470,7 +470,7 @@ class ProgressControllerTest extends AbstractViewControllerTest
             ],
             'private user, crawling' => [
                 'testModelProperties' => [
-                    'state' => Test::STATE_CRAWLING,
+                    'state' => TestModel::STATE_CRAWLING,
                     'user' => self::USER_EMAIL,
                     'remoteTaskCount' => 44,
                     'urlCount' => 11,

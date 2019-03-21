@@ -5,7 +5,6 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\ByTaskTypeController;
 use App\Entity\Task\Task;
-use App\Entity\Test;
 use App\Entity\Test as TestEntity;
 use App\Model\Test as TestModel;
 use App\Model\DecoratedTest;
@@ -59,7 +58,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
             ],
         ],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
+        'state' => TestModel::STATE_COMPLETED,
         'task_type_options' => [],
         'task_count' => 12,
     ];
@@ -67,8 +66,8 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
     private $testModelProperties = [
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
-        'type' => Test::TYPE_FULL_SITE,
+        'state' => TestModel::STATE_COMPLETED,
+        'type' => TestEntity::TYPE_FULL_SITE,
         'taskTypes' => [
             Task::TYPE_HTML_VALIDATION,
         ],
@@ -129,7 +128,7 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                     HttpResponseFactory::createSuccessResponse(),
                     HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
-                        'state' => Test::STATE_IN_PROGRESS,
+                        'state' => TestModel::STATE_IN_PROGRESS,
                     ])),
                     HttpResponseFactory::createJsonResponse([1, 2, 3]),
                 ],

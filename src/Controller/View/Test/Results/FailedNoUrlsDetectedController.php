@@ -3,7 +3,7 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -86,7 +86,7 @@ class FailedNoUrlsDetectedController extends AbstractBaseViewController
         }
 
         $user = $this->userManager->getUser();
-        $testStateIsCorrect = Test::STATE_FAILED_NO_SITEMAP === $testModel->getState();
+        $testStateIsCorrect = TestModel::STATE_FAILED_NO_SITEMAP === $testModel->getState();
 
         if (!$testStateIsCorrect || !SystemUserService::isPublicUser($user)) {
             return new RedirectResponse($this->generateUrl(
