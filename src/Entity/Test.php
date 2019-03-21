@@ -114,11 +114,6 @@ class Test implements \JsonSerializable
         return $test;
     }
 
-    public function getTaskCount(): int
-    {
-        return count($this->tasks);
-    }
-
     public function setUrlCount(? int $urlCount)
     {
         $this->urlCount = $urlCount;
