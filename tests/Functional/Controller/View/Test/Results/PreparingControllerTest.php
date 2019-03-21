@@ -243,6 +243,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
             'no remote tasks retrieved' => [
                 'testModelProperties' => [
                     'entity' => $this->createTestEntity(self::TEST_ID, '1,2,3'),
+                    'remoteTaskCount' => 4,
                 ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
@@ -253,9 +254,10 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(0, $parameters['completion_percent']);
                             $this->assertIsArray($parameters['website']);
 
-                            /* @var Test $test */
+                            /* @var TestModel $test */
                             $test = $parameters['test'];
-                            $this->assertInstanceOf(Test::class, $test);
+
+                            $this->assertInstanceOf(TestModel::class, $test);
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
                             $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
@@ -282,9 +284,9 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(25, $parameters['completion_percent']);
                             $this->assertIsArray($parameters['website']);
 
-                            /* @var Test $test */
+                            /* @var TestModel $test */
                             $test = $parameters['test'];
-                            $this->assertInstanceOf(Test::class, $test);
+                            $this->assertInstanceOf(TestModel::class, $test);
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
                             $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
