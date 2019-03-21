@@ -53,16 +53,6 @@ class TestService
     /**
      * @var string[]
      */
-    private $finishedStates = array(
-        self::STATE_REJECTED,
-        self::STATE_CANCELLED,
-        self::STATE_COMPLETED,
-        self::STATE_FAILED_NO_SITEMAP,
-    );
-
-    /**
-     * @var string[]
-     */
     private $preparedStates = [
         self::STATE_QUEUED,
         self::STATE_IN_PROGRESS,
@@ -141,15 +131,5 @@ class TestService
         $test->setTestId($remoteTest->getId());
         $test->setType((string) $remoteTest->getType());
         $test->setTaskTypes($remoteTest->getTaskTypes());
-    }
-
-    /**
-     * @param Test $test
-     *
-     * @return bool
-     */
-    public function isFinished(Test $test)
-    {
-        return in_array($test->getState(), $this->finishedStates);
     }
 }
