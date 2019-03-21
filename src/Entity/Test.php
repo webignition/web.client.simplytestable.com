@@ -148,11 +148,6 @@ class Test implements \JsonSerializable
         return $this->taskIds;
     }
 
-    public function hasTaskIds(): bool
-    {
-        return !empty($this->taskIdCollection);
-    }
-
     public function setTaskIdCollection(string $taskIdCollection)
     {
         $this->taskIdCollection = $taskIdCollection;
