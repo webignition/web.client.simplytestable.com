@@ -127,9 +127,9 @@ class TestListTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPageNumber(int $offset, int $limit, int $expectedPageNumber)
     {
-        $decoratedTestList = new TestList([], 0, $offset, $limit);
+        $testList = new TestList([], 0, $offset, $limit);
 
-        $this->assertEquals($expectedPageNumber, $decoratedTestList->getPageNumber());
+        $this->assertEquals($expectedPageNumber, $testList->getPageNumber());
     }
 
     public function getPageNumberDataProvider(): array
@@ -168,9 +168,9 @@ class TestListTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPageCount(int $maxResults, int $limit, int $expectedPageCount)
     {
-        $decoratedTestList = new TestList([], $maxResults, 0, $limit);
+        $testList = new TestList([], $maxResults, 0, $limit);
 
-        $this->assertEquals($expectedPageCount, $decoratedTestList->getPageCount());
+        $this->assertEquals($expectedPageCount, $testList->getPageCount());
     }
 
     public function getPageCountDataProvider(): array
@@ -200,6 +200,55 @@ class TestListTest extends \PHPUnit\Framework\TestCase
                 'maxResults' => 101,
                 'limit' => 10,
                 'expectedPageCount' => 11,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getPageCollectionIndexDataProvider
+     */
+    public function testGetPageCollectionIndex(int $offset, int $limit, int $expectedPageCollectionIndex)
+    {
+        $testList = new TestList([], 0, $offset, $limit);
+
+        $this->assertEquals(
+            $expectedPageCollectionIndex,
+            ObjectReflector::getProperty($testList, 'pageCollectionIndex')
+        );
+    }
+
+    public function getPageCollectionIndexDataProvider(): array
+    {
+        return [
+            'offset=0, limit=0' => [
+                'offset' => 0,
+                'limit' => 0,
+                'expectedPageCollectionIndex' => 0,
+            ],
+            'offset=0, limit=1' => [
+                'offset' => 0,
+                'limit' => 1,
+                'expectedPageCollectionIndex' => 0,
+            ],
+            'offset=1, limit=1' => [
+                'offset' => 1,
+                'limit' => 1,
+                'expectedPageCollectionIndex' => 0,
+            ],
+            'offset=2, limit=1' => [
+                'offset' => 2,
+                'limit' => 1,
+                'expectedPageCollectionIndex' => 0,
+            ],
+            'offset=100, limit=10' => [
+                'offset' => 100,
+                'limit' => 10,
+                'expectedPageCollectionIndex' => 1,
+            ],
+            'offset=1000, limit=10' => [
+                'offset' => 1000,
+                'limit' => 10,
+                'expectedPageCollectionIndex' => 10,
             ],
         ];
     }
