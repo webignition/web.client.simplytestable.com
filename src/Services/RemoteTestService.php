@@ -285,4 +285,28 @@ class RemoteTestService
 
         return $testIdentifier;
     }
+
+    public function isAuthorised(int $testId): bool
+    {
+        $isAuthorised = false;
+
+        try {
+            $response = $this->coreApplicationHttpClient->get(
+                'test_is_authorised',
+                [
+                    'test_id' => $testId,
+                ]
+            );
+
+            $isAuthorised = $this->jsonResponseHandler->handle($response);
+        } catch (CoreApplicationRequestException $coreApplicationRequestException) {
+            // Don't care
+        } catch (InvalidContentTypeException $invalidContentTypeException) {
+            // Don't care
+        } catch (InvalidCredentialsException $invalidCredentialsException) {
+            // Don't care
+        }
+
+        return $isAuthorised;
+    }
 }

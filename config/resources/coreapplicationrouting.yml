@@ -1,3 +1,6 @@
+test_is_authorised:
+  path: /job/{test_id}/is-authorised/
+
 test_start:
   path: /job/start/
 
