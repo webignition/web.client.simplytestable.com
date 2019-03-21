@@ -84,7 +84,6 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(self::COMPLETION_PERCENT, $decoratedTest->getCompletionPercent());
         $this->assertEquals(self::TASK_COUNT_BY_STATE, $decoratedTest->getTaskCountByState());
         $this->assertEquals(self::REJECTION, $decoratedTest->getRejection());
-        $this->assertSame($entity, $decoratedTest->getEntity());
     }
 
     /**

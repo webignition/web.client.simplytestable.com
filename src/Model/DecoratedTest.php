@@ -10,14 +10,9 @@ class DecoratedTest implements \JsonSerializable, TestInterface
 {
     private $test;
 
-    public function __construct(Test $test)
+    public function __construct(TestInterface $test)
     {
         $this->test = $test;
-    }
-
-    public function getEntity(): TestEntity
-    {
-        return $this->test->getEntity();
     }
 
     public function getTestId(): int

@@ -111,6 +111,21 @@ class TestList implements \Countable, \Iterator
         return md5($this->createHashContent());
     }
 
+    /**
+     * @param TestInterface[] $tests
+     *
+     * @return TestList
+     */
+    public function withTests(array $tests): TestList
+    {
+        return new TestList(
+            $tests,
+            $this->maxResults,
+            $this->offset,
+            $this->limit
+        );
+    }
+
     private function createHashContent(): string
     {
         $hashData = [
