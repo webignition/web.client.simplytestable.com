@@ -19,7 +19,7 @@ class TestListTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals($expectedTests, ObjectReflector::getProperty($testList, 'tests'));
         $this->assertEquals($maxResults, $testList->getMaxResults());
-        $this->assertEquals($offset, $testList->getOffset());
+        $this->assertEquals($offset, ObjectReflector::getProperty($testList, 'offset'));
         $this->assertEquals($limit, $testList->getLimit());
     }
 
