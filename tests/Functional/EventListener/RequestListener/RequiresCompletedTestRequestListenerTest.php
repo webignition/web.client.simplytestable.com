@@ -3,9 +3,9 @@
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
-use App\Entity\Test;
+use App\Model\Test;
 use App\EventListener\RequiresCompletedTestRequestListener;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Tests\Factory\TestFactory;
 use App\Tests\Services\ObjectReflector;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -42,22 +42,21 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
             ->shouldReceive('getState')
             ->andReturn($testState);
 
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $test
+            ->shouldReceive('isFinished')
+            ->andReturn($isFinished);
+
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with(self::TEST_ID)
             ->andReturn($test);
-
-        $testService
-            ->shouldReceive('isFinished')
-            ->with($test)
-            ->andReturn($isFinished);
 
         ObjectReflector::setProperty(
             $this->requestListener,
             RequiresCompletedTestRequestListener::class,
-            'testService',
-            $testService
+            'testRetriever',
+            $testRetriever
         );
 
         $router = self::$container->get(RouterInterface::class);
