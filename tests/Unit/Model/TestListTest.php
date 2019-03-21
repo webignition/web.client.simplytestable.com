@@ -121,4 +121,45 @@ class TestListTest extends \PHPUnit\Framework\TestCase
             $this->assertSame($tests[$testIndex], $decoratedTest);
         }
     }
+
+    /**
+     * @dataProvider getPageNumberDataProvider
+     */
+    public function testGetPageNumber(int $offset, int $limit, int $expectedPageNumber)
+    {
+        $decoratedTestList = new TestList([], 0, $offset, $limit);
+
+        $this->assertEquals($expectedPageNumber, $decoratedTestList->getPageNumber());
+    }
+
+    public function getPageNumberDataProvider(): array
+    {
+        return [
+            'offset=0, limit=0' => [
+                'offset' => 0,
+                'limit' => 0,
+                'expectedPageNumber' => 1,
+            ],
+            'offset=0, limit=1' => [
+                'offset' => 0,
+                'limit' => 1,
+                'expectedPageNumber' => 1,
+            ],
+            'offset=1, limit=1' => [
+                'offset' => 1,
+                'limit' => 1,
+                'expectedPageNumber' => 2,
+            ],
+            'offset=2, limit=1' => [
+                'offset' => 2,
+                'limit' => 1,
+                'expectedPageNumber' => 3,
+            ],
+            'offset=100, limit=10' => [
+                'offset' => 100,
+                'limit' => 10,
+                'expectedPageNumber' => 11,
+            ],
+        ];
+    }
 }
