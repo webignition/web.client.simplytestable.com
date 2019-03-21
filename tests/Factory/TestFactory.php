@@ -9,7 +9,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class TestFactory
 {
     const KEY_TEST_ID = 'test-id';
-    const KEY_STATE = 'state';
     const KEY_TASKS = 'tasks';
     const KEY_TASK_IDS = 'task-ids';
     const KEY_TYPE = 'type';
@@ -24,7 +23,6 @@ class TestFactory
     private $taskFactory;
 
     private $defaultTestValues = [
-        self::KEY_STATE => self::DEFAULT_STATE,
         self::KEY_TYPE => self::DEFAULT_TYPE,
     ];
 
@@ -46,8 +44,6 @@ class TestFactory
         }
 
         $test = Test::create($testValues[self::KEY_TEST_ID]);
-
-        $test->setState($testValues[self::KEY_STATE]);
         $test->setType($testValues[self::KEY_TYPE]);
 
         $entityManager->persist($test);

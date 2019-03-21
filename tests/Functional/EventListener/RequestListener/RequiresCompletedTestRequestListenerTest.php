@@ -69,7 +69,6 @@ class RequiresCompletedTestRequestListenerTest extends AbstractKernelRequestList
 
         $testValues = [
             TestFactory::KEY_TEST_ID => self::TEST_ID,
-            TestFactory::KEY_STATE => $testState,
         ];
 
         $testFactory->create($testValues);
