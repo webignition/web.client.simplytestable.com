@@ -3,6 +3,7 @@
 
 namespace App\Tests\Unit\Model;
 
+use App\Model\Test;
 use App\Model\TestList;
 use App\Tests\Factory\TestModelFactory;
 use App\Tests\Services\ObjectReflector;
@@ -67,5 +68,20 @@ class TestListTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+    }
+
+    public function testIterator()
+    {
+        $tests = [
+            \Mockery::mock(Test::class),
+            \Mockery::mock(Test::class),
+            \Mockery::mock(Test::class),
+        ];
+
+        $testList = new TestList($tests, 3, 0, 3);
+
+        foreach ($testList as $testIndex => $decoratedTest) {
+            $this->assertSame($tests[$testIndex], $decoratedTest);
+        }
     }
 }

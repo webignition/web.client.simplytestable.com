@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class TestList
+class TestList implements \Iterator
 {
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;
 
@@ -10,6 +10,8 @@ class TestList
     private $offset = 0;
     private $limit = 1;
     private $tests = [];
+
+    private $iteratorPosition = 0;
 
     public function __construct(array $tests, int $maxResults, int $offset, int $limit)
     {
@@ -22,6 +24,31 @@ class TestList
                 $this->tests[] = $test;
             }
         }
+    }
+
+    public function current(): Test
+    {
+        return $this->tests[$this->iteratorPosition];
+    }
+
+    public function next()
+    {
+        ++$this->iteratorPosition;
+    }
+
+    public function key(): int
+    {
+        return $this->iteratorPosition;
+    }
+
+    public function valid(): bool
+    {
+        return isset($this->tests[$this->iteratorPosition]);
+    }
+
+    public function rewind()
+    {
+        $this->iteratorPosition = 0;
     }
 
     public function getMaxResults(): int
