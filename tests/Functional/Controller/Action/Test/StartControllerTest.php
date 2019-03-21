@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\Controller\Action\Test;
 
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Model\TestIdentifier;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Mock;
