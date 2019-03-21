@@ -2,7 +2,6 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use App\Entity\Test;
 use App\Model\TestIdentifier;
 use App\Tests\Factory\HttpResponseFactory;
 
@@ -13,18 +12,11 @@ class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
     const WEBSITE = 'http://example.com/';
 
     /**
-     * @var Test
-     */
-    private $test;
-
-    /**
      * {@inheritdoc}
      */
     protected function setUp()
     {
         parent::setUp();
-
-        $this->test = Test::create(1);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
@@ -36,7 +28,7 @@ class RemoteTestServiceRetestTest extends AbstractRemoteTestServiceTest
 
     public function testRetest()
     {
-        $testIdentifier = $this->remoteTestService->retest($this->test->getTestId());
+        $testIdentifier = $this->remoteTestService->retest(self::TEST_ID);
 
         $this->assertInstanceOf(TestIdentifier::class, $testIdentifier);
 
