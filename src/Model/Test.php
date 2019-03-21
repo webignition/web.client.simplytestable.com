@@ -9,17 +9,6 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 class Test implements TestInterface
 {
-    const STATE_STARTING = 'new';
-    const STATE_CANCELLED = 'cancelled';
-    const STATE_COMPLETED = 'completed';
-    const STATE_IN_PROGRESS = 'in-progress';
-    const STATE_PREPARING = 'preparing';
-    const STATE_QUEUED = 'queued';
-    const STATE_FAILED_NO_SITEMAP = 'failed-no-sitemap';
-    const STATE_REJECTED = 'rejected';
-    const STATE_RESOLVING = 'resolving';
-    const STATE_RESOLVED = 'resolved';
-
     /**
      * @var string[]
      */

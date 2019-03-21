@@ -4,7 +4,6 @@ namespace App\Model;
 
 use App\Entity\Task\Task;
 use App\Entity\Test as TestEntity;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 interface TestInterface
