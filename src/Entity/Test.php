@@ -17,7 +17,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
  *     }
  * )
  */
-class Test implements \JsonSerializable
+class Test
 {
     const STATE_STARTING = 'new';
     const STATE_CANCELLED = 'cancelled';
@@ -135,7 +135,7 @@ class Test implements \JsonSerializable
                 $rawTaskIds = explode(',', $this->taskIdCollection);
 
                 foreach ($rawTaskIds as $rawTaskId) {
-                    $this->taskIds[] = (int) $rawTaskId;
+                    $this->taskIds[] = (int)$rawTaskId;
                 }
             }
         }
@@ -175,17 +175,5 @@ class Test implements \JsonSerializable
         }
 
         return $warningCount;
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'test_id' => $this->testId,
-            'user' => $this->user,
-            'website' => (string)$this->website,
-            'state' => $this->state,
-            'taskTypes' => $this->taskTypes,
-        ];
     }
 }
