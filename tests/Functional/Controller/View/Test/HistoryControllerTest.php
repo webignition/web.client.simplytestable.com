@@ -4,9 +4,8 @@
 namespace App\Tests\Functional\Controller\View\Test\History;
 
 use App\Controller\View\Test\HistoryController;
-use App\Entity\Task\Task;
-use App\Entity\Test;
-use App\Model\DecoratedTestList;
+use App\Model\Test as TestModel;
+use App\Model\TestList;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -137,30 +136,11 @@ class HistoryControllerTest extends AbstractViewControllerTest
                                 'id' => 1,
                                 'task_types' => [],
                                 'user' => 'user@example.com',
-                                'state' => Test::STATE_IN_PROGRESS,
-                                'type' => Test::TYPE_SINGLE_URL,
+                                'state' => TestModel::STATE_IN_PROGRESS,
+                                'type' => TestModel::TYPE_SINGLE_URL,
                                 'task_count' => 10,
                                 'website' => 'http://example.com/',
                             ],
-                        ],
-                    ]),
-                    HttpResponseFactory::createJsonResponse([
-                        'id' => 1,
-                        'website' => 'http://example.com/',
-                        'task_types' => [],
-                        'user' => 'user@example.com',
-                        'state' => Test::STATE_COMPLETED,
-                        'task_type_options' => [],
-                        'task_count' => 4,
-                    ]),
-                    HttpResponseFactory::createJsonResponse([1]),
-                    HttpResponseFactory::createJsonResponse([
-                        [
-                            'id' => 1,
-                            'url' => 'http://example.com',
-                            'state' => Task::STATE_COMPLETED,
-                            'worker' => '',
-                            'type' => Task::TYPE_HTML_VALIDATION,
                         ],
                     ]),
                 ],
@@ -170,9 +150,6 @@ class HistoryControllerTest extends AbstractViewControllerTest
                 'expectedRedirectUrl' => '/history/9/',
                 'expectedRequestUrls' => [
                     'http://null/jobs/list/10/90/?exclude-states%5B0%5D=rejected&exclude-current=1',
-                    'http://null/job/1/',
-                    'http://null/job/1/tasks/ids/',
-                    'http://null/job/1/tasks/',
                 ],
             ],
             'greater than the number of pages: page number 10; has filter' => [
@@ -254,7 +231,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInstanceOf(DecoratedTestList::class, $parameters['test_list']);
+                            $this->assertInstanceOf(TestList::class, $parameters['test_list']);
                             $this->assertEquals(
                                 [
                                     1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -295,7 +272,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                               $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInstanceOf(DecoratedTestList::class, $parameters['test_list']);
+                            $this->assertInstanceOf(TestList::class, $parameters['test_list']);
                             $this->assertEquals(
                                 [
                                     1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -334,7 +311,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInstanceOf(DecoratedTestList::class, $parameters['test_list']);
+                            $this->assertInstanceOf(TestList::class, $parameters['test_list']);
                             $this->assertEquals(
                                 [
                                     1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -366,20 +343,10 @@ class HistoryControllerTest extends AbstractViewControllerTest
                                 'website' => 'http://example.com/',
                                 'task_types' => [],
                                 'user' => 'user@example.com',
-                                'state' => Test::STATE_COMPLETED,
+                                'state' => TestModel::STATE_COMPLETED,
                             ],
                         ],
                     ]),
-                    HttpResponseFactory::createJsonResponse([
-                        'id' => 1,
-                        'website' => 'http://example.com/',
-                        'task_types' => [],
-                        'user' => 'user@example.com',
-                        'state' => Test::STATE_COMPLETED,
-                        'task_type_options' => [],
-                        'task_count' => 4,
-                    ]),
-                    HttpResponseFactory::createJsonResponse([]),
                 ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request([], [], [
@@ -391,7 +358,7 @@ class HistoryControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(self::VIEW_NAME, $viewName);
                             $this->assertViewParameterKeys($parameters);
 
-                            $this->assertInstanceOf(DecoratedTestList::class, $parameters['test_list']);
+                            $this->assertInstanceOf(TestList::class, $parameters['test_list']);
                             $this->assertEquals(
                                 [
                                     11, 12, 13, 14, 15, 16, 17, 18, 19, 20

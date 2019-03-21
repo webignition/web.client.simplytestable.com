@@ -1,20 +1,20 @@
 <?php
 /** @noinspection PhpDocSignatureInspection */
 
-namespace App\Tests\Functional\Services\RemoteTestService;
+namespace App\Tests\Functional\Services;
 
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Exception\CoreApplicationRequestException;
-use App\Model\RemoteTest\RemoteTest;
+use App\Services\TestRetriever;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
 
-class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
+class TestRetrieverTest extends AbstractCoreApplicationServiceTest
 {
     /**
-     * @var Test
+     * @var TestRetriever
      */
-    private $test;
+    private $testRetriever;
 
     /**
      * {@inheritdoc}
@@ -23,13 +23,13 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = Test::create(1);
+        $this->testRetriever = self::$container->get(TestRetriever::class);
     }
 
     /**
-     * @dataProvider getRemoteFailureDataProvider
+     * @dataProvider retrieveRemoteFailureDataProvider
      */
-    public function testGetRemoteFailure(
+    public function testRetrieveRemoteFailure(
         array $httpFixtures,
         string $expectedException,
         string $expectedExceptionMessage,
@@ -41,14 +41,11 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         $this->expectExceptionMessage($expectedExceptionMessage);
         $this->expectExceptionCode($expectedExceptionCode);
 
-        $this->remoteTestService->get(1);
+        $this->testRetriever->retrieve(1);
     }
 
-    public function getRemoteFailureDataProvider(): array
+    public function retrieveRemoteFailureDataProvider(): array
     {
-        $internalServerErrorResponse = HttpResponseFactory::createInternalServerErrorResponse();
-        $curlTimeoutConnectException = ConnectExceptionFactory::create(28, 'Operation timed out');
-
         return [
             'HTTP 404' => [
                 'httpFixtures' => [
@@ -59,27 +56,13 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
                 'expectedExceptionCode' => 404,
             ],
             'HTTP 500' => [
-                'httpFixtures' => [
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                    $internalServerErrorResponse,
-                ],
+                'httpFixtures' => array_fill(0, 6, HttpResponseFactory::createInternalServerErrorResponse()),
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Internal Server Error',
                 'expectedExceptionCode' => 500,
             ],
             'CURL 28' => [
-                'httpFixtures' => [
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                    $curlTimeoutConnectException,
-                ],
+                'httpFixtures' => array_fill(0, 6, ConnectExceptionFactory::create(28, 'Operation timed out')),
                 'expectedException' => CoreApplicationRequestException::class,
                 'expectedExceptionMessage' => 'Operation timed out',
                 'expectedExceptionCode' => 28,
@@ -87,7 +70,7 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
         ];
     }
 
-    public function testGetRemoteTestNotJsonDocument()
+    public function testRetrieveRemoteTestNotJsonDocument()
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse([
@@ -95,22 +78,24 @@ class RemoteTestServiceGetTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $remoteTest = $this->remoteTestService->get($this->test->getTestId());
+        $remoteTest = $this->testRetriever->retrieve(1);
 
         $this->assertNull($remoteTest);
     }
 
-    public function testGetSuccess()
+    public function testRetrieveSuccess()
     {
+        $testId = 1;
+
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
-                'id' => 1,
+                'id' => $testId,
             ]),
         ]);
 
-        $remoteTest = $this->remoteTestService->get($this->test->getTestId());
+        $remoteTest = $this->testRetriever->retrieve($testId);
 
-        $this->assertInstanceOf(RemoteTest::class, $remoteTest);
+        $this->assertInstanceOf(TestModel::class, $remoteTest);
         $this->assertEquals('http://null/job/1/', $this->httpHistory->getLastRequestUrl());
     }
 }

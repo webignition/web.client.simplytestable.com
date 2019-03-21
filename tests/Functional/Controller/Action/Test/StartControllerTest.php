@@ -3,11 +3,11 @@
 
 namespace App\Tests\Functional\Controller\Action\Test;
 
-use App\Entity\Test;
+use App\Model\Test as TestModel;
+use App\Model\TestIdentifier;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Mock;
 use App\Controller\Action\Test\StartController;
-use App\Model\RemoteTest\RemoteTest;
 use App\Services\Configuration\LinkIntegrityTestConfiguration;
 use App\Services\Configuration\TestOptionsConfiguration;
 use App\Services\RemoteTestService;
@@ -221,7 +221,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -254,7 +254,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -290,7 +290,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -317,7 +317,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -341,7 +341,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_SINGLE_URL,
+                    'type' => TestModel::TYPE_SINGLE_URL,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -364,7 +364,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -387,7 +387,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'Link integrity',
                     ],
@@ -417,7 +417,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -440,7 +440,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -465,7 +465,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -494,7 +494,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -524,7 +524,7 @@ class StartControllerTest extends AbstractControllerTest
                 'expectedFlashBagValues' => [],
                 'expectedRequestUrl' => 'http://null/job/start/',
                 'expectedPostData' => [
-                    'type' => Test::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'test-types' => [
                         'HTML validation',
                     ],
@@ -566,10 +566,10 @@ class StartControllerTest extends AbstractControllerTest
 
                 return true;
             })
-            ->andReturn(new RemoteTest([
-                'id' => 1,
-                'website' => $expectedUrlToTest,
-            ]));
+            ->andReturn(new TestIdentifier(
+                1,
+                $expectedUrlToTest
+            ));
 
         $testStartController = new StartController(
             $router,

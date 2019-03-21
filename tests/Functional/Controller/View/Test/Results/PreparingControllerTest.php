@@ -6,21 +6,20 @@ namespace App\Tests\Functional\Controller\View\Test\Results\Preparing;
 use App\Controller\View\Test\Results\PreparingController;
 use App\Entity\Task\Task;
 use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
-use App\Services\RemoteTestService;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Services\SystemUserService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Tests\Factory\TestModelFactory;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
-use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class PreparingControllerTest extends AbstractViewControllerTest
@@ -41,9 +40,17 @@ class PreparingControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'task_types' => [],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
+        'state' => TestModel::STATE_COMPLETED,
         'task_type_options' => [],
         'task_count' => 4,
+    ];
+
+    private $testModelProperties = [
+        'website' => self::WEBSITE,
+        'user' => self::USER_EMAIL,
+        'state' => TestModel::STATE_COMPLETED,
+        'type' => TestModel::TYPE_FULL_SITE,
+        'taskTypes' => [],
     ];
 
     public function testIsIEFiltered()
@@ -92,6 +99,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3,]),
         ]);
@@ -108,6 +116,7 @@ class PreparingControllerTest extends AbstractViewControllerTest
         $this->assertEquals(
             [
                 'http://null/user/public/authenticate/',
+                'http://null/job/1/is-authorised/',
                 'http://null/job/1/',
                 'http://null/job/1/tasks/ids/',
             ],
@@ -118,22 +127,15 @@ class PreparingControllerTest extends AbstractViewControllerTest
     /**
      * @dataProvider indexActionNoRemoteTasksDataProvider
      */
-    public function testIndexActionNoRemoteTasks(
-        RemoteTest $remoteTest,
-        bool $testServiceIsFinished,
-        string $expectedRedirectUrl
-    ) {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+    public function testIndexActionNoRemoteTasks(array $testModelProperties, string $expectedRedirectUrl)
+    {
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
 
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($preparingController, $testService);
-        $this->setRemoteTestServiceOnController($preparingController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($preparingController, $testRetriever);
 
         $response = $preparingController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -144,25 +146,17 @@ class PreparingControllerTest extends AbstractViewControllerTest
     {
         return [
             'not finished' => [
-                'remoteTest' => new RemoteTest(array_merge(
-                    $this->remoteTestData,
-                    [
-                        'task_count' => 0,
-                        'state' => Test::STATE_IN_PROGRESS,
-                    ]
-                )),
-                'testServiceIsFinished' => false,
+                'testModelProperties' => [
+                    'remoteTaskCount' => 0,
+                    'state' => TestModel::STATE_IN_PROGRESS,
+                ],
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'finished' => [
-                'remoteTest' => new RemoteTest(array_merge(
-                    $this->remoteTestData,
-                    [
-                        'task_count' => 0,
-                        'state' => Test::STATE_COMPLETED,
-                    ]
-                )),
-                'testServiceIsFinished' => true,
+                'testModelProperties' => [
+                    'remoteTaskCount' => 0,
+                    'state' => TestModel::STATE_COMPLETED,
+                ],
                 'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
         ];
@@ -172,15 +166,13 @@ class PreparingControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionBadRequestDataProvider
      */
     public function testIndexActionBadRequest(
-        RemoteTest $remoteTest,
-        bool $testServiceIsFinished,
+        array $testModelProperties,
         User $user,
         Request $request,
         string $website,
         string $expectedRedirectUrl
     ) {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
 
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
@@ -188,11 +180,8 @@ class PreparingControllerTest extends AbstractViewControllerTest
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test, $testServiceIsFinished);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($preparingController, $testService);
-        $this->setRemoteTestServiceOnController($preparingController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($preparingController, $testRetriever);
 
         $response = $preparingController->indexAction($request, $website, self::TEST_ID);
         $this->assertInstanceOf(RedirectResponse::class, $response);
@@ -204,21 +193,21 @@ class PreparingControllerTest extends AbstractViewControllerTest
     {
         return [
             'website mismatch' => [
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
+                'testModelProperties' => [
                     'website' => 'http://foo.example.com/',
-                ])),
-                'testServiceIsFinished' => true,
+                    'remoteTaskCount' => 100,
+                ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
-                'website' => 'http://foo.example.com/',
-                'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
+                'website' => self::WEBSITE,
+                'expectedRedirectUrl' => '/http://foo.example.com//1/results/preparing/',
                 'expectedRequestUrl' => 'http://null/job/1/',
             ],
             'incorrect state' => [
-                'remoteTest' => new RemoteTest(array_merge($this->remoteTestData, [
-                    'state' => Test::STATE_IN_PROGRESS,
-                ])),
-                'testServiceIsFinished' => false,
+                'testModelProperties' => [
+                    'remoteTaskCount' => 100,
+                    'state' => TestModel::STATE_IN_PROGRESS,
+                ],
                 'user' => SystemUserService::getPublicUser(),
                 'request' => new Request(),
                 'website' => self::WEBSITE,
@@ -232,19 +221,16 @@ class PreparingControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRenderDataProvider
      */
     public function testIndexActionRender(
-        callable $testCreator,
-        RemoteTest $remoteTest,
+        array $testModelProperties,
         Twig_Environment $twig
     ) {
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, $testModelProperties));
+
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $test = $testCreator();
-        $testService = $this->createTestService(self::TEST_ID, $test, true);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($preparingController, $testService);
-        $this->setRemoteTestServiceOnController($preparingController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($preparingController, $testRetriever);
         $this->setTwigOnController($twig, $preparingController);
 
         $response = $preparingController->indexAction(new Request(), self::WEBSITE, self::TEST_ID);
@@ -255,14 +241,10 @@ class PreparingControllerTest extends AbstractViewControllerTest
     {
         return [
             'no remote tasks retrieved' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setTaskIdCollection('1,2,3');
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest($this->remoteTestData),
+                'testModelProperties' => [
+                    'entity' => $this->createTestEntity(self::TEST_ID, '1,2,3'),
+                    'remoteTaskCount' => 4,
+                ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -272,9 +254,10 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(0, $parameters['completion_percent']);
                             $this->assertIsArray($parameters['website']);
 
-                            /* @var Test $test */
+                            /* @var TestModel $test */
                             $test = $parameters['test'];
-                            $this->assertInstanceOf(Test::class, $test);
+
+                            $this->assertInstanceOf(TestModel::class, $test);
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
                             $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
@@ -289,28 +272,9 @@ class PreparingControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'some remote tasks retrieved' => [
-                'testCreator' => function () {
-                    $test = Test::create(self::TEST_ID);
-                    $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-                    $test->setTaskIdCollection('1,2,3,4');
-                    $test->setState(TestService::STATE_COMPLETED);
-
-                    $task1 = new Task();
-                    $task1->setState(Task::STATE_COMPLETED);
-                    $task1->setTaskId(1);
-                    $task1->setUrl('http://example.com/');
-                    $task1->setType(Task::TYPE_HTML_VALIDATION);
-                    $task1->setTest($test);
-
-                    $test->addTask($task1);
-
-                    $entityManager = self::$container->get(EntityManagerInterface::class);
-                    $entityManager->persist($test);
-                    $entityManager->flush();
-
-                    return $test;
-                },
-                'remoteTest' => new RemoteTest($this->remoteTestData),
+                'testModelProperties' => [
+                    'entity' => $this->createTestEntity(self::TEST_ID, '1,2,3,4', 1),
+                ],
                 'twig' => MockFactory::createTwig([
                     'render' => [
                         'withArgs' => function ($viewName, $parameters) {
@@ -320,9 +284,9 @@ class PreparingControllerTest extends AbstractViewControllerTest
                             $this->assertEquals(25, $parameters['completion_percent']);
                             $this->assertIsArray($parameters['website']);
 
-                            /* @var Test $test */
+                            /* @var TestModel $test */
                             $test = $parameters['test'];
-                            $this->assertInstanceOf(Test::class, $test);
+                            $this->assertInstanceOf(TestModel::class, $test);
                             $this->assertEquals(self::TEST_ID, $test->getTestId());
                             $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
@@ -341,10 +305,9 @@ class PreparingControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-        $test->setTaskIdCollection('1,2,3');
-        $remoteTest = new RemoteTest($this->remoteTestData);
+        $testModel = TestModelFactory::create(array_merge($this->testModelProperties, [
+            'remoteTaskCount' => 100,
+        ]));
 
         $request = new Request();
 
@@ -353,11 +316,8 @@ class PreparingControllerTest extends AbstractViewControllerTest
         /* @var PreparingController $preparingController */
         $preparingController = self::$container->get(PreparingController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test, true);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($preparingController, $testService);
-        $this->setRemoteTestServiceOnController($preparingController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($preparingController, $testRetriever);
 
         $response = $preparingController->indexAction($request, self::WEBSITE, self::TEST_ID);
         $this->assertInstanceOf(Response::class, $response);
@@ -393,36 +353,31 @@ class PreparingControllerTest extends AbstractViewControllerTest
     }
 
     /**
-     * @return TestService|MockInterface
+     * @return TestRetriever|MockInterface
      */
-    private function createTestService(int $testId, Test $test, bool $isFinished)
+    private function createTestRetriever(int $testId, ?TestModel $testModel)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
             ->with($testId)
-            ->andReturn($test);
+            ->andReturn($testModel);
 
-        $testService
-            ->shouldReceive('isFinished')
-            ->with($test)
-            ->andReturn($isFinished);
-
-        return $testService;
+        return $testRetriever;
     }
 
-    /**
-     * @return RemoteTestService|MockInterface
-     */
-    private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
+    private function createTestEntity(int $testId, string $taskIdCollection = '', ?int $taskCount = null): TestEntity
     {
-        $remoteTestService = \Mockery::mock(RemoteTestService::class);
-        $remoteTestService
-            ->shouldReceive('get')
-            ->with($testId)
-            ->andReturn($remoteTest);
+        $testEntity = TestEntity::create($testId);
+        $testEntity->setTaskIdCollection($taskIdCollection);
 
-        return $remoteTestService;
+        if ($taskCount) {
+            for ($taskIndex = 0; $taskIndex < $taskCount; $taskIndex++) {
+                $testEntity->addTask(new Task());
+            }
+        }
+
+        return $testEntity;
     }
 
     /**

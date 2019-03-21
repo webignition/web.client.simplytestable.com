@@ -1,6 +1,6 @@
 {% extends 'Partials/Test/Summary/summary.html.twig' %}
 
-{% set was_not_started = test.state == 'cancelled' and test.taskcount == test.taskcountbystate.cancelled %}
+{% set was_not_started = test.state == 'cancelled' and test.remoteTaskCount == test.taskcountbystate.cancelled %}
 {% set no_urls = test.state == 'failed-no-sitemap' and test.crawlData is not empty %}
 {% set icon = 'fa-bar-chart-o' %}
 {% set results_url = path('view_test_results', {'website': test.website, 'test_id': test.testid}) %}
@@ -93,7 +93,7 @@
 
                 {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
                 with {
-                    count: test.taskCount,
+                    count: test.remoteTaskCount,
                     name:'test',
                     include_icon: false,
                     split: true,

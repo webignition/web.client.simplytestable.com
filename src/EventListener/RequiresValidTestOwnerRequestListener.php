@@ -2,8 +2,8 @@
 
 namespace App\EventListener;
 
+use App\Services\RemoteTestService;
 use App\Services\RequiresValidTestOwnerResponseProvider;
-use App\Services\TestService;
 use App\Services\UrlMatcherInterface;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
@@ -15,20 +15,20 @@ class RequiresValidTestOwnerRequestListener
     private $requiresValidTestOwnerResponseProvider;
     private $userManager;
     private $flashBag;
-    private $testService;
+    private $remoteTestService;
 
     public function __construct(
         UrlMatcherInterface $urlMatcher,
         RequiresValidTestOwnerResponseProvider $requiresValidTestOwnerResponseProvider,
         UserManager $userManager,
         FlashBagInterface $flashBag,
-        TestService $testService
+        RemoteTestService $remoteTestService
     ) {
         $this->urlMatcher = $urlMatcher;
         $this->requiresValidTestOwnerResponseProvider = $requiresValidTestOwnerResponseProvider;
         $this->userManager = $userManager;
         $this->flashBag = $flashBag;
-        $this->testService = $testService;
+        $this->remoteTestService = $remoteTestService;
     }
 
     /**
@@ -47,7 +47,7 @@ class RequiresValidTestOwnerRequestListener
         $requestAttributes = $request->attributes;
         $testId = (int) $requestAttributes->get('test_id');
 
-        if ($requiresValidTestOwner && !$this->testService->get($testId)) {
+        if ($requiresValidTestOwner && !$this->remoteTestService->isAuthorised($testId)) {
             $response = $this->requiresValidTestOwnerResponseProvider->getResponse($request);
 
             if (!empty($response)) {

@@ -1,9 +1,10 @@
-<?php /** @noinspection PhpDocSignatureInspection */
+<?php
+/** @noinspection PhpDocSignatureInspection */
 
 namespace App\Tests\Functional\Controller\View\Partials;
 
+use App\Model\Test as TestModel;
 use App\Controller\View\Partials\TestUrlLimitNotificationController;
-use App\Entity\Test;
 use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
@@ -82,6 +83,7 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($remoteTestData),
             HttpResponseFactory::createJsonResponse([]),
         ]);
@@ -118,7 +120,7 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
             'website' => self::WEBSITE,
             'task_types' => [],
             'user' => self::USER_EMAIL,
-            'state' => Test::STATE_COMPLETED,
+            'state' => TestModel::STATE_COMPLETED,
         ];
 
         return [
@@ -200,7 +202,7 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
             'website' => self::WEBSITE,
             'task_types' => [],
             'user' => self::USER_EMAIL,
-            'state' => Test::STATE_COMPLETED,
+            'state' => TestModel::STATE_COMPLETED,
             'ammendments' => [
                 [
                     'constraint' => [

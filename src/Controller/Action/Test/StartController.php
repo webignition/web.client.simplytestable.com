@@ -4,7 +4,7 @@ namespace App\Controller\Action\Test;
 
 use App\Controller\AbstractController;
 use App\Entity\Task\Task;
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Exception\CoreApplicationReadOnlyException;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -121,18 +121,15 @@ class StartController extends AbstractController
         }
 
         $isFullSiteTest = $this->isFullSiteTest($requestData);
-        $testType = $isFullSiteTest ? Test::TYPE_FULL_SITE : Test::TYPE_SINGLE_URL;
+        $testType = $isFullSiteTest ? TestModel::TYPE_FULL_SITE : TestModel::TYPE_SINGLE_URL;
         $urlToTest = $this->getUrlToTest($isFullSiteTest, $website);
 
         try {
-            $remoteTest = $this->remoteTestService->start($urlToTest, $testOptions, $testType);
+            $testIdentifier = $this->remoteTestService->start($urlToTest, $testOptions, $testType);
 
             return new RedirectResponse($this->generateUrl(
                 'view_test_progress',
-                [
-                    'website' => $remoteTest->getWebsite(),
-                    'test_id' => $remoteTest->getId(),
-                ]
+                $testIdentifier->toArray()
             ));
         } catch (CoreApplicationReadOnlyException $coreApplicationReadOnlyException) {
             $this->flashBag->set('test_start_error', 'web_resource_exception');

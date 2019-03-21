@@ -4,12 +4,12 @@ namespace App\Controller\View\Partials;
 
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
-use App\Services\RemoteTestService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -17,28 +17,18 @@ use Twig_Environment;
 
 class TestFinishedSummaryController extends AbstractBaseViewController
 {
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
-        TestService $testService,
-        RemoteTestService $remoteTestService
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -50,6 +40,7 @@ class TestFinishedSummaryController extends AbstractBaseViewController
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
@@ -62,9 +53,8 @@ class TestFinishedSummaryController extends AbstractBaseViewController
             return $response;
         }
 
-        $test = $this->testService->get($test_id);
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
-        $decoratedTest = new DecoratedTest($test, $remoteTest);
+        $testModel = $this->testRetriever->retrieve($test_id);
+        $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
             'Partials/Test/Summary/finished.html.twig',

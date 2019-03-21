@@ -5,14 +5,15 @@ namespace App\Tests\Functional\Controller\View\Task;
 
 use App\Controller\View\Task\ResultsController;
 use App\Entity\Task\Task;
-use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
-use App\Services\RemoteTestService;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
+use App\Model\DecoratedTest;
 use App\Services\SystemUserService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Factory\TestModelFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -21,7 +22,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
 use Twig_Environment;
-use webignition\NormalisedUrl\NormalisedUrl;
 use webignition\SimplyTestableUserModel\User;
 
 class ResultsControllerTest extends AbstractViewControllerTest
@@ -55,9 +55,21 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ],
         ],
         'user' => self::USER_EMAIL,
-        'state' => Test::STATE_COMPLETED,
+        'state' => TestModel::STATE_COMPLETED,
         'task_type_options' => [],
         'task_count' => 12,
+    ];
+
+    private $testModelProperties = [
+        'website' => self::WEBSITE,
+        'user' => self::USER_EMAIL,
+        'state' => TestModel::STATE_COMPLETED,
+        'type' => TestModel::TYPE_FULL_SITE,
+        'taskTypes' => [
+            Task::TYPE_HTML_VALIDATION,
+            Task::TYPE_CSS_VALIDATION,
+            Task::TYPE_LINK_INTEGRITY,
+        ],
     ];
 
     private $remoteTaskData = [
@@ -148,6 +160,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([]),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
@@ -170,6 +183,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([]),
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
@@ -188,6 +202,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertEquals(
             [
                 'http://null/user/public/authenticate/',
+                'http://null/job/1/is-authorised/',
                 'http://null/job/1/',
                 'http://null/job/1/tasks/ids/',
                 'http://null/job/1/tasks/',
@@ -211,32 +226,22 @@ class ResultsControllerTest extends AbstractViewControllerTest
     /**
      * @dataProvider indexActionRedirectDataProvider
      */
-    public function testIndexActionRedirect(
-        array $httpFixtures,
-        User $user,
-        Request $request,
-        string $expectedRedirectUrl
-    ) {
-        $userManager = self::$container->get(UserManager::class);
-
-        $test = $this->createTest($user);
-        $remoteTest = new RemoteTest($this->remoteTestData);
-
-        $userManager->setUser($user);
+    public function testIndexActionRedirect(array $httpFixtures, string $expectedRedirectUrl)
+    {
+        $testModel = $this->createTest([
+            'state' => TestModel::STATE_IN_PROGRESS,
+        ]);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
-
-        $this->setTestServiceOnController($resultsController, $testService);
-        $this->setRemoteTestServiceOnController($resultsController, $remoteTestService);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
+        $this->setTestRetrieverOnController($resultsController, $testRetriever);
 
         /* @var RedirectResponse $response */
         $response = $resultsController->indexAction(
-            $request,
+            new Request(),
             self::WEBSITE,
             self::TEST_ID,
             self::TASK_ID
@@ -253,12 +258,10 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
-                            'id' => 3,
+                            'id' => self::TASK_ID + 1,
                         ]),
                     ]),
                 ],
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'task has no errors and no warnings' => [
@@ -274,8 +277,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         ]),
                     ]),
                 ],
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'incomplete task' => [
@@ -286,8 +287,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         ]),
                     ]),
                 ],
-                'user' => SystemUserService::getPublicUser(),
-                'request' => new Request(),
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
         ];
@@ -297,14 +296,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
      * @dataProvider indexActionRenderDataProvider
      */
     public function testIndexActionRender(
-        User $owner,
-        array $remoteTestModifications,
+        array $testModelProperties,
         array $httpFixtures,
         User $user,
         Twig_Environment $twig
     ) {
-        $test = $this->createTest($owner);
-        $remoteTest = new RemoteTest(array_merge($this->remoteTestData, $remoteTestModifications));
+        $testModel = $this->createTest($testModelProperties);
 
         $userManager = self::$container->get(UserManager::class);
         $userManager->setUser($user);
@@ -314,11 +311,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
 
-        $this->setTestServiceOnController($resultsController, $testService);
-        $this->setRemoteTestServiceOnController($resultsController, $remoteTestService);
+        $this->setTestRetrieverOnController($resultsController, $testRetriever);
         $this->setTwigOnController($twig, $resultsController);
 
         $response = $resultsController->indexAction(
@@ -333,13 +328,11 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     public function indexActionRenderDataProvider(): array
     {
-        $publicUser = SystemUserService::getPublicUser();
         $privateUser = new User(self::USER_EMAIL);
 
         return [
             'public user, public test' => [
-                'owner' => $publicUser,
-                'remoteTestModifications' => [
+                'testModelProperties' => [
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     'owners' => [
                         SystemUserService::PUBLIC_USER_USERNAME,
@@ -369,8 +362,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'private user, public test' => [
-                'owner' => $publicUser,
-                'remoteTestModifications' => [
+                'testModelProperties' => [
                     'user' => SystemUserService::PUBLIC_USER_USERNAME,
                     'owners' => [
                         SystemUserService::PUBLIC_USER_USERNAME,
@@ -400,8 +392,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'private user, private test' => [
-                'owner' => $privateUser,
-                'remoteTestModifications' => [
+                'testModelProperties' => [
                     'user' => $privateUser->getUsername(),
                     'owners' => [
                         $privateUser->getUsername(),
@@ -431,8 +422,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'html validation; view keys' => [
-                'owner' => $privateUser,
-                'remoteTestModifications' => [],
+                'testModelProperties' => [
+                    'user' => $privateUser->getUsername(),
+                    'owners' => [
+                        $privateUser->getUsername(),
+                    ],
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
                 ],
@@ -453,8 +448,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'html validation; error documentation urls; warnings, no errors' => [
-                'owner' => $privateUser,
-                'remoteTestModifications' => [],
+                'testModelProperties' => [
+                    'user' => $privateUser->getUsername(),
+                    'owners' => [
+                        $privateUser->getUsername(),
+                    ],
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
@@ -484,8 +483,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'html validation; error documentation urls; has errors' => [
-                'owner' => $privateUser,
-                'remoteTestModifications' => [],
+                'testModelProperties' => [
+                    'user' => $privateUser->getUsername(),
+                    'owners' => [
+                        $privateUser->getUsername(),
+                    ],
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
@@ -601,8 +604,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'css validation; view keys' => [
-                'owner' => $privateUser,
-                'remoteTestModifications' => [],
+                'testModelProperties' => [
+                    'user' => $privateUser->getUsername(),
+                    'owners' => [
+                        $privateUser->getUsername(),
+                    ],
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
@@ -626,8 +633,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'css validation; has errors' => [
-                'owner' => $privateUser,
-                'remoteTestModifications' => [],
+                'testModelProperties' => [
+                    'user' => $privateUser->getUsername(),
+                    'owners' => [
+                        $privateUser->getUsername(),
+                    ],
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
@@ -694,8 +705,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'link integrity; view keys' => [
-                'owner' => $privateUser,
-                'remoteTestModifications' => [],
+                'testModelProperties' => [
+                    'user' => $privateUser->getUsername(),
+                    'owners' => [
+                        $privateUser->getUsername(),
+                    ],
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
@@ -720,8 +735,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
             ],
             'link integrity; has errors' => [
-                'owner' => $privateUser,
-                'remoteTestModifications' => [],
+                'testModelProperties' => [
+                    'user' => $privateUser->getUsername(),
+                    'owners' => [
+                        $privateUser->getUsername(),
+                    ],
+                ],
                 'httpFixtures' => [
                     HttpResponseFactory::createJsonResponse([
                         array_merge($this->remoteTaskData, [
@@ -799,8 +818,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
     public function testIndexActionCachedResponse()
     {
-        $test = $this->createTest(new User(self::USER_EMAIL));
-        $remoteTest = new RemoteTest($this->remoteTestData);
+        $testModel = $this->createTest();
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([$this->remoteTaskData]),
@@ -813,11 +831,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
         /* @var ResultsController $resultsController */
         $resultsController = self::$container->get(ResultsController::class);
 
-        $testService = $this->createTestService(self::TEST_ID, $test);
-        $remoteTestService = $this->createRemoteTestService(self::TEST_ID, $remoteTest);
+        $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
 
-        $this->setTestServiceOnController($resultsController, $testService);
-        $this->setRemoteTestServiceOnController($resultsController, $remoteTestService);
+        $this->setTestRetrieverOnController($resultsController, $testRetriever);
 
         $response = $resultsController->indexAction(
             $request,
@@ -855,6 +871,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([]),
             HttpResponseFactory::createJsonResponse([
@@ -1178,9 +1195,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
         $this->assertIsArray($parameters['website_url']);
 
-        /* @var Test $test */
+        /* @var DecoratedTest $test */
         $test = $parameters['test'];
-        $this->assertInstanceOf(Test::class, $test);
+        $this->assertInstanceOf(DecoratedTest::class, $test);
         $this->assertEquals(self::TEST_ID, $test->getTestId());
         $this->assertEquals(self::WEBSITE, $test->getWebsite());
 
@@ -1209,45 +1226,37 @@ class ResultsControllerTest extends AbstractViewControllerTest
         }
     }
 
-    /**
-     * @return TestService|MockInterface
-     */
-    private function createTestService(int $testId, ?Test $test)
+    private function createTest(array $testModelProperties = []): TestModel
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
-            ->with($testId)
-            ->andReturn($test);
-
-        return $testService;
-    }
-
-    /**
-     * @return RemoteTestService|MockInterface
-     */
-    private function createRemoteTestService(int $testId, RemoteTest $remoteTest)
-    {
-        $remoteTestService = \Mockery::mock(RemoteTestService::class);
-        $remoteTestService
-            ->shouldReceive('get')
-            ->with($testId)
-            ->andReturn($remoteTest);
-
-        return $remoteTestService;
-    }
-
-    private function createTest(User $owner): Test
-    {
-        $test = Test::create(self::TEST_ID);
-        $test->setWebsite(new NormalisedUrl(self::WEBSITE));
-        $test->setUser($owner->getUsername());
+        $testEntity = TestEntity::create(self::TEST_ID);
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
-        $entityManager->persist($test);
+        $entityManager->persist($testEntity);
         $entityManager->flush();
 
-        return $test;
+        $testModel = TestModelFactory::create(array_merge(
+            $this->testModelProperties,
+            [
+                'entity' => $testEntity,
+            ],
+            $testModelProperties
+        ));
+
+        return $testModel;
+    }
+
+    /**
+     * @return TestRetriever|MockInterface
+     */
+    private function createTestRetriever(int $testId, ?TestModel $testModel)
+    {
+        $testRetriever = \Mockery::mock(TestRetriever::class);
+        $testRetriever
+            ->shouldReceive('retrieve')
+            ->with($testId)
+            ->andReturn($testModel);
+
+        return $testRetriever;
     }
 
     /**

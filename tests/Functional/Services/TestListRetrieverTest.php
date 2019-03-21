@@ -3,24 +3,24 @@
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
-use App\Model\RemoteTestList;
-use App\Services\RemoteTestListService;
+use App\Model\Test as TestModel;
+use App\Model\TestList;
+use App\Services\TestListRetriever;
 use App\Tests\Factory\HttpResponseFactory;
+use App\Tests\Services\ObjectReflector;
 
-class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
+class TestListRetrieverTest extends AbstractCoreApplicationServiceTest
 {
     /**
-     * @var RemoteTestListService
+     * @var TestListRetriever
      */
-    private $remoteTestListService;
+    private $testListRetriever;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->remoteTestListService = self::$container->get(RemoteTestListService::class);
+        $this->testListRetriever = self::$container->get(TestListRetriever::class);
     }
 
     /**
@@ -39,14 +39,14 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $list = $this->remoteTestListService->getFinished($limit, $offset, $filter);
+        $list = $this->testListRetriever->getFinished($limit, $offset, $filter);
 
-        $this->assertInstanceOf(RemoteTestList::class, $list);
+        $this->assertInstanceOf(TestList::class, $list);
 
         $this->assertEquals($expectedMaxResults, $list->getMaxResults());
-        $this->assertEquals($expectedLimit, $list->getLimit());
-        $this->assertEquals($expectedOffset, $list->getOffset());
-        $this->assertEquals($expectedTestCount, $list->getLength());
+        $this->assertEquals($expectedLimit, ObjectReflector::getProperty($list, 'limit'));
+        $this->assertEquals($expectedOffset, ObjectReflector::getProperty($list, 'offset'));
+        $this->assertEquals($expectedTestCount, count($list));
         $this->assertEquals($expectedRequestUrl, $this->httpHistory->getLastRequestUrl());
     }
 
@@ -105,7 +105,7 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
                                 'url_count' => 12,
                                 'task_types' => [],
                                 'task_type_options' => [],
-                                'type' => Test::TYPE_FULL_SITE,
+                                'type' => TestModel::TYPE_FULL_SITE,
                                 'parameters' => '',
                             ],
                         ],
@@ -137,25 +137,15 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
     ) {
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
-        $list = $this->remoteTestListService->getRecent($limit);
+        $list = $this->testListRetriever->getRecent($limit);
 
-        $this->assertInstanceOf(RemoteTestList::class, $list);
+        $this->assertInstanceOf(TestList::class, $list);
 
         $this->assertEquals($expectedMaxResults, $list->getMaxResults());
-        $this->assertEquals($expectedLimit, $list->getLimit());
-        $this->assertEquals($expectedOffset, $list->getOffset());
-        $this->assertEquals($expectedTestCount, $list->getLength());
+        $this->assertEquals($expectedLimit, ObjectReflector::getProperty($list, 'limit'));
+        $this->assertEquals($expectedOffset, ObjectReflector::getProperty($list, 'offset'));
+        $this->assertEquals($expectedTestCount, count($list));
         $this->assertEquals($expectedRequestUrl, (string) $this->httpHistory->getLastRequestUrl());
-
-        if ($expectedTestCount > 0) {
-            foreach ($list->get() as $testData) {
-                $this->assertIsArray($testData);
-                $this->assertArrayHasKey('remote_test', $testData);
-
-                $remoteTest = $testData['remote_test'];
-                $this->assertInstanceOf(RemoteTest::class, $remoteTest);
-            }
-        }
     }
 
     public function getRecentDataProvider(): array
@@ -212,7 +202,7 @@ class RemoteTestListServiceTest extends AbstractCoreApplicationServiceTest
                                 'url_count' => 12,
                                 'task_types' => [],
                                 'task_type_options' => [],
-                                'type' => Test::TYPE_FULL_SITE,
+                                'type' => TestModel::TYPE_FULL_SITE,
                                 'parameters' => '',
                             ],
                         ],

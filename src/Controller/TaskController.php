@@ -6,34 +6,23 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Services\TaskService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class TaskController
 {
-    const DEFAULT_UNRETRIEVED_TASKID_LIMIT = 100;
-    const MAX_UNRETRIEVED_TASKID_LIMIT = 1000;
+    const DEFAULT_UNRETRIEVED_TASK_ID_LIMIT = 100;
+    const MAX_UNRETRIEVED_TASK_ID_LIMIT = 1000;
 
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var TaskService
-     */
     private $taskService;
+    private $testRetriever;
 
-    /**
-     * @param TestService $testService
-     * @param TaskService $taskService
-     */
-    public function __construct(TestService $testService, TaskService $taskService)
+    public function __construct(TaskService $taskService, TestRetriever $testRetriever)
     {
-        $this->testService = $testService;
         $this->taskService = $taskService;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -47,9 +36,9 @@ class TaskController
      */
     public function idCollectionAction(int $test_id): JsonResponse
     {
-        $test = $this->testService->get($test_id);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
-        return new JsonResponse($test->getTaskIds());
+        return new JsonResponse($testModel->getTaskIds());
     }
 
     /**
@@ -64,18 +53,18 @@ class TaskController
      */
     public function unretrievedIdCollectionAction(int $test_id, ?int $limit = null): JsonResponse
     {
-        $test = $this->testService->get($test_id);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
         $limit = filter_var($limit, FILTER_VALIDATE_INT);
         if (false === $limit) {
-            $limit = self::DEFAULT_UNRETRIEVED_TASKID_LIMIT;
+            $limit = self::DEFAULT_UNRETRIEVED_TASK_ID_LIMIT;
         }
 
-        if ($limit > self::MAX_UNRETRIEVED_TASKID_LIMIT) {
-            $limit = self::MAX_UNRETRIEVED_TASKID_LIMIT;
+        if ($limit > self::MAX_UNRETRIEVED_TASK_ID_LIMIT) {
+            $limit = self::MAX_UNRETRIEVED_TASK_ID_LIMIT;
         }
 
-        $taskIds = $this->taskService->getUnretrievedRemoteTaskIds($test, $limit);
+        $taskIds = $this->taskService->getUnretrievedRemoteTaskIds($testModel->getEntity(), $limit);
 
         return new JsonResponse($taskIds);
     }
@@ -92,12 +81,12 @@ class TaskController
      */
     public function retrieveAction(Request $request, int $test_id): Response
     {
-        $test = $this->testService->get($test_id);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
         $remoteTaskIds = $this->getRequestRemoteTaskIds($request);
-        $remoteTaskIds = $remoteTaskIds ?? $test->getTaskIds();
+        $remoteTaskIds = $remoteTaskIds ?? $testModel->getTaskIds();
 
-        $this->taskService->getCollection($test, $remoteTaskIds);
+        $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
 
         return new Response();
     }

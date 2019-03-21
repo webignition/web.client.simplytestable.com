@@ -54,6 +54,9 @@ class RequiresCompletedTestUrlMatcherTest extends AbstractBaseTestCase
             'view test results by task type, has by-page filter' => [
                 'path' => '/http://example.com//1234/results/html+validation/by-page/',
             ],
+            'view test results by task type, no filter' => [
+                'path' => '/http://example.com//1234/results/html+validation/',
+            ],
         ];
     }
 
@@ -76,9 +79,6 @@ class RequiresCompletedTestUrlMatcherTest extends AbstractBaseTestCase
             ],
             'task results retrieve' => [
                 'path' => '/http://example.com//1234/results/retrieve/',
-            ],
-            'view test results by task type, no filter' => [
-                'path' => '/http://example.com//1234/results/html+validation/',
             ],
             'view task results verbose' => [
                 'path' => '/website//http://example.com//test_id/1234/task_id/5678/results/',

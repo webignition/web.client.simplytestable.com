@@ -4,22 +4,24 @@ namespace App\Controller\View\Test;
 
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Entity\Test;
-use App\Model\RemoteTest\RemoteTest;
-use App\Model\Test\DecoratedTest;
+use App\Model\Test as TestModel;
+use App\Model\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
-use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
+use App\Services\TestRetriever;
 use App\Services\TestService;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\AcceptHeader;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,40 +34,13 @@ class ProgressController extends AbstractBaseViewController
 {
     const RESULTS_PREPARATION_THRESHOLD = 100;
 
-    /**
-     * @var TestService
-     */
     private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
-
-    /**
-     * @var TaskTypeService
-     */
     private $taskTypeService;
-
-    /**
-     * @var TestOptionsRequestAdapterFactory
-     */
     private $testOptionsRequestAdapterFactory;
-
-    /**
-     * @var CssValidationTestConfiguration
-     */
     private $cssValidationTestConfiguration;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
-
-    /**
-     * @var UserManager
-     */
     private $userManager;
+    private $testRetriever;
 
     /**
      * @var string[]
@@ -88,20 +63,20 @@ class ProgressController extends AbstractBaseViewController
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
         TestService $testService,
-        RemoteTestService $remoteTestService,
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
-        CssValidationTestConfiguration $cssValidationTestConfiguration
+        CssValidationTestConfiguration $cssValidationTestConfiguration,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
         $this->taskTypeService = $taskTypeService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -113,14 +88,14 @@ class ProgressController extends AbstractBaseViewController
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $user = $this->userManager->getUser();
-        $test = $this->testService->get($test_id);
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
+        $testModel = $this->testRetriever->retrieve($test_id);
 
-        $testWebsite = $test->getWebsite();
+        $testWebsite = $testModel->getWebsite();
 
         if ($testWebsite !== $website) {
             return $this->createRedirectResponse(
@@ -133,8 +108,11 @@ class ProgressController extends AbstractBaseViewController
             );
         }
 
-        if ($this->testService->isFinished($test)) {
-            if (Test::STATE_FAILED_NO_SITEMAP  !== $test->getState() || SystemUserService::isPublicUser($user)) {
+        if ($testModel->isFinished()) {
+            $shouldRedirectToTestResults =
+                TestModel::STATE_FAILED_NO_SITEMAP !== $testModel->getState() || SystemUserService::isPublicUser($user);
+
+            if ($shouldRedirectToTestResults) {
                 return $this->createRedirectResponse(
                     $request,
                     'view_test_results',
@@ -155,15 +133,15 @@ class ProgressController extends AbstractBaseViewController
         }
 
         $requestTimeStamp = $request->query->get('timestamp');
-        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
+        $isPublicUserTest = $testModel->getUser() === SystemUserService::getPublicUser()->getUsername();
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'website' => $website,
             'test_id' => $test_id,
-            'is_public' => $remoteTest->getIsPublic(),
+            'is_public' => $testModel->isPublic(),
             'is_public_user_test' => $isPublicUserTest,
             'timestamp' => empty($requestTimeStamp) ? '' : $requestTimeStamp,
-            'state' => $test->getState()
+            'state' => $testModel->getState()
         ]);
 
         if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
@@ -171,13 +149,13 @@ class ProgressController extends AbstractBaseViewController
         }
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
-        $testOptionsAdapter->setRequestData($remoteTest->getOptions());
+        $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
 
-        $decoratedTest = new DecoratedTest($test, $remoteTest);
+        $decoratedTest = new DecoratedTest($testModel);
 
         $commonViewData = [
             'test' => $decoratedTest,
-            'state_label' => $this->getStateLabel($test, $remoteTest),
+            'state_label' => $this->createStateLabel($testModel),
         ];
 
         if ($this->requestIsForApplicationJson($request)) {
@@ -216,36 +194,27 @@ class ProgressController extends AbstractBaseViewController
         return $response;
     }
 
-    /**
-     * @param Test $test
-     * @param RemoteTest $remoteTest
-     *
-     * @return string
-     */
-    private function getStateLabel(Test $test, RemoteTest $remoteTest)
+    private function createStateLabel(TestModel $testModel): string
     {
-        $testState = $test->getState();
+        $state = $testModel->getState();
+        $label = $this->testStateLabelMap[$state] ?? '';
 
-        $label = (isset($this->testStateLabelMap[$testState]))
-            ? $this->testStateLabelMap[$testState]
-            : '';
-
-        if ($testState == Test::STATE_IN_PROGRESS) {
-            $label = $remoteTest->getCompletionPercent() . '% done';
+        if ($state == TestModel::STATE_IN_PROGRESS) {
+            $label = $testModel->getCompletionPercent() . '% done';
         }
 
-        if (in_array($testState, [Test::STATE_QUEUED, Test::STATE_IN_PROGRESS])) {
-            $label = $remoteTest->getUrlCount() . ' urls, ' . $remoteTest->getTaskCount() . ' tests; ' . $label;
+        if (in_array($state, [TestModel::STATE_QUEUED, TestModel::STATE_IN_PROGRESS])) {
+            $label = $testModel->getUrlCount() . ' urls, ' . $testModel->getRemoteTaskCount() . ' tests; ' . $label;
         }
 
-        if ($testState == Test::STATE_CRAWLING) {
-            $remoteTestCrawl = $remoteTest->getCrawl();
+        if ($state == TestModel::STATE_CRAWLING) {
+            $crawlData = $testModel->getCrawlData();
 
             $label .= sprintf(
                 ': %s pages examined, %s of %s found',
-                $remoteTestCrawl['processed_url_count'],
-                $remoteTestCrawl['discovered_url_count'],
-                $remoteTestCrawl['limit']
+                $crawlData['processed_url_count'],
+                $crawlData['discovered_url_count'],
+                $crawlData['limit']
             );
         }
 

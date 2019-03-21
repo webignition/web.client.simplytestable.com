@@ -5,59 +5,36 @@ namespace App\Controller\View;
 use App\Controller\AbstractBaseViewController;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
-use App\Services\RemoteTestService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
-use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
 class UnauthorisedTestOwnerController extends AbstractBaseViewController
 {
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
-        UserManager $userManager,
-        TestService $testService,
-        RemoteTestService $remoteTestService,
-        UrlViewValuesService $urlViewValues
+        UrlViewValuesService $urlViewValues,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->userManager = $userManager;
-        $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
         $this->urlViewValues = $urlViewValues;
+        $this->testRetriever = $testRetriever;
     }
 
     public function renderAction(int $test_id, string $website)
     {
-        $test = $this->testService->get($test_id);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
-        if (!empty($test)) {
+        if (!empty($testModel)) {
             return new RedirectResponse($this->router->generate(
                 'view_test_results',
                 [

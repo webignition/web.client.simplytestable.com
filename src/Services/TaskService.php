@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Test;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Entity\Task\Task;
 use App\Entity\Task\Output;
 use App\Exception\CoreApplicationReadOnlyException;
@@ -125,7 +126,8 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param TestEntity $test
+     * @param string $testState
      * @param array $remoteTaskIds
      *
      * @return Task[]
@@ -134,7 +136,7 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getCollection(Test $test, array $remoteTaskIds)
+    public function getCollection(TestEntity $test, string $testState, array $remoteTaskIds)
     {
         $existenceResult = $this->taskRepository->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);
 
@@ -211,7 +213,7 @@ class TaskService
             $this->entityManager->flush();
         }
 
-        if ($test->getState() == Test::STATE_COMPLETED || $test->getState() == Test::STATE_CANCELLED) {
+        if ($testState === TestModel::STATE_COMPLETED || $testState === TestModel::STATE_CANCELLED) {
             foreach ($tasks as $task) {
                 $this->normaliseEndingState($task);
             }
@@ -269,7 +271,7 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param TestEntity $test
      * @param $remoteTaskIds
      *
      * @return array
@@ -278,7 +280,7 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    private function retrieveRemoteCollection(Test $test, $remoteTaskIds)
+    private function retrieveRemoteCollection(TestEntity $test, $remoteTaskIds)
     {
         $response = null;
 
@@ -300,12 +302,12 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param TestEntity $test
      * @param int $limit
      *
      * @return int[]
      */
-    public function getUnretrievedRemoteTaskIds(Test $test, $limit)
+    public function getUnretrievedRemoteTaskIds(TestEntity $test, $limit)
     {
         $retrievedRemoteTaskIds = $this->taskRepository->findRetrievedRemoteTaskIds($test);
 
@@ -326,7 +328,7 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param int $testId
      *
      * @return int[]
      *
@@ -334,12 +336,12 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function retrieveRemoteTaskIds(Test $test)
+    public function retrieveRemoteTaskIds(int $testId)
     {
         $response = $this->coreApplicationHttpClient->get(
             'test_task_ids',
             [
-                'test_id' => $test->getTestId(),
+                'test_id' => $testId,
             ]
         );
 
@@ -347,7 +349,8 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param TestEntity $test
+     * @param string $testState
      * @param int $task_id
      *
      * @return Task|null
@@ -356,7 +359,7 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function get(Test $test, $task_id)
+    public function get(TestEntity $test, string $testState, int $task_id)
     {
         $task = $this->taskRepository->findOneBy([
             'taskId' => $task_id,
@@ -364,9 +367,10 @@ class TaskService
         ]);
 
         if (empty($task)) {
-            $this->getCollection($test, [$task_id]);
+            $this->getCollection($test, $testState, [$task_id]);
         }
 
+        /* @var Task $task */
         $task = $this->taskRepository->findOneBy([
             'taskId' => $task_id,
             'test' => $test
@@ -376,7 +380,7 @@ class TaskService
             return null;
         }
 
-        if ($test->getState() == Test::STATE_COMPLETED || $test->getState() == Test::STATE_CANCELLED) {
+        if ($testState === TestModel::STATE_COMPLETED || $testState === TestModel::STATE_CANCELLED) {
             $this->normaliseEndingState($task);
         }
 

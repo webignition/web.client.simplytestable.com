@@ -3,12 +3,14 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\SystemUserService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -19,35 +21,24 @@ use Twig_Environment;
 
 class FailedNoUrlsDetectedController extends AbstractBaseViewController
 {
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var UrlViewValuesService
-     */
     private $urlViewValues;
-
-    /**
-     * @var UserManager
-     */
     private $userManager;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
-        TestService $testService,
         UrlViewValuesService $urlViewValues,
-        UserManager $userManager
+        UserManager $userManager,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -58,6 +49,8 @@ class FailedNoUrlsDetectedController extends AbstractBaseViewController
      * @return RedirectResponse|Response
      *
      * @throws CoreApplicationRequestException
+     * @throws InvalidContentTypeException
+     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
@@ -80,20 +73,20 @@ class FailedNoUrlsDetectedController extends AbstractBaseViewController
             return $response;
         }
 
-        $user = $this->userManager->getUser();
-        $test = $this->testService->get($test_id);
+        $testModel = $this->testRetriever->retrieve($test_id);
 
-        if ($test->getWebsite() != $website) {
+        if ($website !== $testModel->getWebsite()) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_results_failed_no_urls_detected',
                 [
-                    'website' => $test->getWebsite(),
+                    'website' => $testModel->getWebsite(),
                     'test_id' => $test_id
                 ]
             ));
         }
 
-        $testStateIsCorrect = Test::STATE_FAILED_NO_SITEMAP === $test->getState();
+        $user = $this->userManager->getUser();
+        $testStateIsCorrect = TestModel::STATE_FAILED_NO_SITEMAP === $testModel->getState();
 
         if (!$testStateIsCorrect || !SystemUserService::isPublicUser($user)) {
             return new RedirectResponse($this->generateUrl(

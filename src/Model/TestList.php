@@ -2,26 +2,22 @@
 
 namespace App\Model;
 
-use App\Model\Test\DecoratedTest;
-
-class DecoratedTestList implements \Iterator
+class TestList implements \Countable, \Iterator
 {
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;
 
+    /**
+     * @var TestInterface[]
+     */
+    private $tests = [];
     private $maxResults = 0;
     private $offset = 0;
     private $limit = 1;
-    private $length = 0;
     private $pageIndex = 0;
     private $pageCount = 0;
     private $pageCollectionIndex = 0;
 
     private $iteratorPosition = 0;
-
-    /**
-     * @var DecoratedTest[]
-     */
-    private $tests = [];
 
     public function __construct(array $tests, int $maxResults, int $offset, int $limit)
     {
@@ -30,18 +26,22 @@ class DecoratedTestList implements \Iterator
         $this->limit = $limit;
 
         foreach ($tests as $test) {
-            if (is_object($test) && $test instanceof DecoratedTest) {
+            if (is_object($test) && $test instanceof TestInterface) {
                 $this->tests[] = $test;
             }
         }
 
-        $this->length = count($this->tests);
         $this->pageIndex = 0 === $this->limit ? 0 : $this->offset / $this->limit;
         $this->pageCount = 0 === $this->limit ? 0 : (int) ceil($this->maxResults / $this->limit);
         $this->pageCollectionIndex = (int) floor($this->pageIndex / self::PAGINATION_PAGE_COLLECTION_SIZE);
     }
 
-    public function current(): DecoratedTest
+    public function count(): int
+    {
+        return count($this->tests);
+    }
+
+    public function current(): TestInterface
     {
         return $this->tests[$this->iteratorPosition];
     }
@@ -71,21 +71,6 @@ class DecoratedTestList implements \Iterator
         return $this->maxResults;
     }
 
-    public function getOffset(): int
-    {
-        return $this->offset;
-    }
-
-    public function getLimit(): int
-    {
-        return $this->limit;
-    }
-
-    public function getLength(): int
-    {
-        return $this->length;
-    }
-
     public function getPageNumber(): int
     {
         return $this->pageIndex + 1;
@@ -94,16 +79,6 @@ class DecoratedTestList implements \Iterator
     public function getPageCount(): int
     {
         return $this->pageCount;
-    }
-
-    public function getPageIndex(): int
-    {
-        return $this->pageIndex;
-    }
-
-    public function getPageCollectionIndex(): int
-    {
-        return $this->pageCollectionIndex;
     }
 
     /**
@@ -121,7 +96,9 @@ class DecoratedTestList implements \Iterator
         $end = $start + $this->limit - 1;
 
         for ($pageIndex = $start; $pageIndex <= $end; $pageIndex++) {
-            if ($this->isValidPageIndex($pageIndex)) {
+            $isValidPageIndex = $this->maxResults > ($pageIndex) * $this->limit;
+
+            if ($isValidPageIndex) {
                 $pageNumbers[] = $pageIndex + 1;
             }
         }
@@ -129,38 +106,39 @@ class DecoratedTestList implements \Iterator
         return $pageNumbers;
     }
 
-    private function isValidPageIndex(int $index): bool
-    {
-        return $this->maxResults > ($index) * $this->limit;
-    }
-
     public function getHash(): string
     {
-        return md5($this->getHashableContent());
+        return md5($this->createHashContent());
     }
 
-    private function getHashableContent(): string
+    /**
+     * @param TestInterface[] $tests
+     *
+     * @return TestList
+     */
+    public function withTests(array $tests): TestList
     {
-        $hashableData = [
+        return new TestList(
+            $tests,
+            $this->maxResults,
+            $this->offset,
+            $this->limit
+        );
+    }
+
+    private function createHashContent(): string
+    {
+        $hashData = [
             'max_results' => $this->maxResults,
             'offset' => $this->offset,
             'limit' => $this->limit,
             'test_data' => [],
         ];
 
-        foreach ($this->tests as $decoratedTest) {
-            $testHashableData = [];
-
-            $requiresRemoteTasks = $decoratedTest->requiresRemoteTasks();
-
-            $testHashableData['requires_remote_tasks'] = $requiresRemoteTasks;
-            if ($requiresRemoteTasks) {
-                $testHashableData['data'] = $decoratedTest->__toArray();
-            }
-
-            $hashableData['test_data'][$decoratedTest->getTestId()] = $testHashableData;
+        foreach ($this->tests as $test) {
+            $hashData['test_data'][$test->getTestId()] = $test->getHash();
         }
 
-        return json_encode($hashableData);
+        return json_encode($hashData);
     }
 }

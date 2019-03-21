@@ -4,12 +4,12 @@ namespace App\Controller\View\Partials;
 
 use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
+use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
-use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
-use App\Services\TestService;
+use App\Services\TestRetriever;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -17,28 +17,18 @@ use Twig_Environment;
 
 class TestUrlLimitNotificationController extends AbstractBaseViewController
 {
-    /**
-     * @var TestService
-     */
-    private $testService;
-
-    /**
-     * @var RemoteTestService
-     */
-    private $remoteTestService;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
-        TestService $testService,
-        RemoteTestService $remoteTestService
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
+        $this->testRetriever = $testRetriever;
     }
 
     /**
@@ -49,18 +39,18 @@ class TestUrlLimitNotificationController extends AbstractBaseViewController
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidCredentialsException
+     * @throws InvalidContentTypeException
      */
     public function indexAction(Request $request, int $test_id): Response
     {
-        $test = $this->testService->get($test_id);
-        $remoteTest = $this->remoteTestService->get($test->getTestId());
+        $testModel = $this->testRetriever->retrieve($test_id);
 
-        $ammendments = $remoteTest->getAmmendments();
-        if (empty($ammendments)) {
+        $amendments = $testModel->getAmendments();
+        if (empty($amendments)) {
             return new Response();
         }
 
-        $isPublicUserTest = $test->getUser() === SystemUserService::getPublicUser()->getUsername();
+        $isPublicUserTest = $testModel->getUser() === SystemUserService::getPublicUser()->getUsername();
 
         $response = $this->cacheableResponseFactory->createResponse($request, [
             'test_id' => $test_id,
@@ -71,11 +61,10 @@ class TestUrlLimitNotificationController extends AbstractBaseViewController
             return $response;
         }
 
-        $ammendments = $remoteTest->getAmmendments();
-        $firstAmmendment = $ammendments[0];
+        $firstAmendment = $amendments[0];
 
-        $total = (int)str_replace('plan-url-limit-reached:discovered-url-count-', '', $firstAmmendment['reason']);
-        $limit = $firstAmmendment['constraint']['limit'];
+        $total = (int)str_replace('plan-url-limit-reached:discovered-url-count-', '', $firstAmendment['reason']);
+        $limit = $firstAmendment['constraint']['limit'];
 
         return $this->renderWithDefaultViewParameters(
             'Partials/Alert/Content/url-limit.html.twig',

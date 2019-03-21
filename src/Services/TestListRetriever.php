@@ -5,32 +5,37 @@ namespace App\Services;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
-use App\Model\RemoteTest\RemoteTest;
-use App\Model\RemoteTestList;
+use App\Model\TestList;
 
-class RemoteTestListService
+class TestListRetriever
 {
     private $coreApplicationHttpClient;
     private $jsonResponseHandler;
+    private $testService;
+    private $testFactory;
 
     public function __construct(
         CoreApplicationHttpClient $coreApplicationHttpClient,
-        JsonResponseHandler $jsonResponseHandler
+        JsonResponseHandler $jsonResponseHandler,
+        TestService $testService,
+        TestFactory $testFactory
     ) {
         $this->coreApplicationHttpClient = $coreApplicationHttpClient;
         $this->jsonResponseHandler = $jsonResponseHandler;
+        $this->testService = $testService;
+        $this->testFactory = $testFactory;
     }
 
     /**
      * @param int $limit
      *
-     * @return RemoteTestList
+     * @return TestList
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getRecent(int $limit = 3): RemoteTestList
+    public function getRecent(int $limit = 3): TestList
     {
         return $this->createList([
             'limit' => $limit,
@@ -51,13 +56,13 @@ class RemoteTestListService
      * @param int $offset
      * @param string $filter
      *
-     * @return RemoteTestList
+     * @return TestList
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getFinished(int $limit, int $offset, ?string $filter = null): RemoteTestList
+    public function getFinished(int $limit, int $offset, ?string $filter = null): TestList
     {
         return $this->createList([
             'limit' => $limit,
@@ -71,22 +76,26 @@ class RemoteTestListService
     /**
      * @param array $routeParameters
      *
-     * @return RemoteTestList
+     * @return TestList
      *
      * @throws CoreApplicationRequestException
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    private function createList(array $routeParameters): RemoteTestList
+    private function createList(array $routeParameters): TestList
     {
         $response = $this->coreApplicationHttpClient->get('tests_list', $routeParameters);
         $data = $this->jsonResponseHandler->handle($response);
 
-        $remoteTests = [];
-        foreach ($data['jobs'] as $remoteTestData) {
-            $remoteTests[] = new RemoteTest($remoteTestData);
+        $tests = [];
+
+        foreach ($data['jobs'] as $testData) {
+            $testId = (int) $testData['id'];
+            $entity = $this->testService->getEntity($testId);
+
+            $tests[] = $this->testFactory->create($entity, $testData);
         }
 
-        return new RemoteTestList($remoteTests, $data['max_results'], $data['offset'], $data['limit']);
+        return new TestList($tests, $data['max_results'], $data['offset'], $data['limit']);
     }
 }

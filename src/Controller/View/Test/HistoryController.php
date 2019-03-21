@@ -7,12 +7,9 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Services\CacheableResponseFactory;
-use App\Services\DecoratedTestListFactory;
 use App\Services\DefaultViewParameters;
-use App\Services\RemoteTestListService;
-use App\Services\RemoteTestService;
-use App\Services\TaskService;
-use App\Services\TestService;
+use App\Services\TestListDecorator;
+use App\Services\TestListRetriever;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,30 +22,21 @@ class HistoryController extends AbstractBaseViewController
     const DEFAULT_PAGE_NUMBER = 1;
     const TEST_LIST_LIMIT = 10;
 
-    private $testService;
-    private $remoteTestService;
-    private $taskService;
-    private $remoteTestListService;
-    private $decoratedTestListFactory;
+    private $testListRetriever;
+    private $testListDecorator;
 
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
         DefaultViewParameters $defaultViewParameters,
         CacheableResponseFactory $cacheableResponseFactory,
-        TestService $testService,
-        RemoteTestService $remoteTestService,
-        TaskService $taskService,
-        RemoteTestListService $remoteTestListService,
-        DecoratedTestListFactory $decoratedTestListFactory
+        TestListRetriever $testListRetriever,
+        TestListDecorator $testListDecorator
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
-        $this->testService = $testService;
-        $this->remoteTestService = $remoteTestService;
-        $this->taskService = $taskService;
-        $this->remoteTestListService = $remoteTestListService;
-        $this->decoratedTestListFactory = $decoratedTestListFactory;
+        $this->testListRetriever = $testListRetriever;
+        $this->testListDecorator = $testListDecorator;
     }
 
     /**
@@ -75,18 +63,11 @@ class HistoryController extends AbstractBaseViewController
 
         $testListOffset = ($pageNumber - 1) * self::TEST_LIST_LIMIT;
 
-        $remoteTestList = $this->remoteTestListService->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
-        $decoratedTestList = $this->decoratedTestListFactory->create($remoteTestList);
+        $testList = $this->testListRetriever->getFinished(self::TEST_LIST_LIMIT, $testListOffset, $filter);
+        $decoratedTestList = $this->testListDecorator->decorate($testList);
 
-        foreach ($decoratedTestList as $decoratedTest) {
-            if ($decoratedTest->requiresRemoteTasks() && $decoratedTest->isSingleUrl()) {
-                $test = $decoratedTest->getTest();
-                $this->taskService->getCollection($test, $test->getTaskIds());
-            }
-        }
-
-        $isPageNumberAboveRange =
-            $pageNumber > $decoratedTestList->getPageCount() && $decoratedTestList->getPageCount() > 0;
+        $pageCount = $decoratedTestList->getPageCount();
+        $isPageNumberAboveRange = $pageNumber > $pageCount && $pageCount > 0;
 
         if ($isPageNumberAboveRange) {
             return new RedirectResponse($this->generateUrl(
