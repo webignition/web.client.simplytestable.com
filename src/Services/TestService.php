@@ -80,6 +80,22 @@ class TestService
         $this->testRepository = $this->entityManager->getRepository(Test::class);
     }
 
+    public function getEntity(int $testId): Test
+    {
+        $test = $this->testRepository->findOneBy([
+            'testId' => $testId
+        ]);
+
+        if (empty($test)) {
+            $test = Test::create((int) $testId);
+
+            $this->entityManager->persist($test);
+            $this->entityManager->flush();
+        }
+
+        return $test;
+    }
+
     /**
      * @param int $testId
      *
