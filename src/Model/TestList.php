@@ -77,4 +77,29 @@ class TestList implements \Countable, \Iterator
     {
         return $this->pageCount;
     }
+
+    /**
+     * @return int[]
+     */
+    public function getPageNumbers(): array
+    {
+        $pageNumbers = [];
+
+        if ($this->maxResults <= $this->limit) {
+            return $pageNumbers;
+        }
+
+        $start = $this->pageCollectionIndex * $this->limit;
+        $end = $start + $this->limit - 1;
+
+        for ($pageIndex = $start; $pageIndex <= $end; $pageIndex++) {
+            $isValidPageIndex = $this->maxResults > ($pageIndex) * $this->limit;
+
+            if ($isValidPageIndex) {
+                $pageNumbers[] = $pageIndex + 1;
+            }
+        }
+
+        return $pageNumbers;
+    }
 }

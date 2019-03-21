@@ -252,4 +252,62 @@ class TestListTest extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider getPageNumbersDataProviders
+     */
+    public function testGetPageNumbers(int $maxResults, int $offset, int $limit, array $expectedPageNumbers)
+    {
+        $testList = new TestList([], $maxResults, $offset, $limit);
+
+        $this->assertEquals($expectedPageNumbers, $testList->getPageNumbers());
+    }
+
+    public function getPageNumbersDataProviders(): array
+    {
+        return [
+            'maxResults less than limit' => [
+                'maxResults' => 3,
+                'offset' => 0,
+                'limit' => 4,
+                'expectedPageNumbers' => [],
+            ],
+            'maxResults equals limit' => [
+                'maxResults' => 10,
+                'offset' => 0,
+                'limit' => 10,
+                'expectedPageNumbers' => [],
+            ],
+            'maxResults=10, offset=0, limit=4' => [
+                'maxResults' => 10,
+                'offset' => 0,
+                'limit' => 4,
+                'expectedPageNumbers' => [1, 2, 3],
+            ],
+            'maxResults=100, offset=0, limit=10' => [
+                'maxResults' => 100,
+                'offset' => 0,
+                'limit' => 10,
+                'expectedPageNumbers' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            ],
+            'maxResults=100, offset=20, limit=10' => [
+                'maxResults' => 200,
+                'offset' => 20,
+                'limit' => 10,
+                'expectedPageNumbers' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            ],
+            'maxResults=100, offset=90, limit=10' => [
+                'maxResults' => 200,
+                'offset' => 90,
+                'limit' => 10,
+                'expectedPageNumbers' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            ],
+            'maxResults=100, offset=100, limit=10' => [
+                'maxResults' => 200,
+                'offset' => 100,
+                'limit' => 10,
+                'expectedPageNumbers' => [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+            ],
+        ];
+    }
 }
