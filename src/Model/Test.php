@@ -7,7 +7,7 @@ use App\Entity\Test as TestEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
-class Test
+class Test implements TestInterface
 {
     const STATE_STARTING = 'new';
     const STATE_CANCELLED = 'cancelled';
