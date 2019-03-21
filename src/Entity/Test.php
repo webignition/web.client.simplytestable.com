@@ -5,7 +5,6 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Task\Task;
-use webignition\NormalisedUrl\NormalisedUrl;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 /**
@@ -17,7 +16,7 @@ use Doctrine\Common\Collections\Collection as DoctrineCollection;
  *     }
  * )
  */
-class Test implements \JsonSerializable
+class Test
 {
     const STATE_STARTING = 'new';
     const STATE_CANCELLED = 'cancelled';
@@ -51,21 +50,6 @@ class Test implements \JsonSerializable
     private $testId;
 
     /**
-     * @var string
-     */
-    private $user;
-
-    /**
-     * @var NormalisedUrl
-     */
-    private $website;
-
-    /**
-     * @var string
-     */
-    private $state;
-
-    /**
      * @var DoctrineCollection
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Task\Task", mappedBy="test", cascade={"persist"})
@@ -84,21 +68,6 @@ class Test implements \JsonSerializable
      */
     private $taskIds = null;
 
-    /**
-     * @var array
-     */
-    private $taskTypes;
-
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var int
-     */
-    private $urlCount = null;
-
     private function __construct()
     {
         $this->tasks = new ArrayCollection();
@@ -114,56 +83,6 @@ class Test implements \JsonSerializable
         return $test;
     }
 
-    public function getTaskCount(): int
-    {
-        return count($this->tasks);
-    }
-
-    public function setUrlCount(? int $urlCount)
-    {
-        $this->urlCount = $urlCount;
-    }
-
-    public function getUrlCount(): ?int
-    {
-        return $this->urlCount;
-    }
-
-    public function setUser(string $user)
-    {
-        $this->user = $user;
-    }
-
-    public function getUser(): ?string
-    {
-        return $this->user;
-    }
-
-    public function setWebsite(NormalisedUrl $website)
-    {
-        $this->website = $website;
-    }
-
-    public function getWebsite(): ?string
-    {
-        return (string) $this->website;
-    }
-
-    public function setState(string $state)
-    {
-        $this->state = $state;
-    }
-
-    public function getState(): ?string
-    {
-        return $this->state;
-    }
-
-    public function setTaskTypes(array $taskTypes)
-    {
-        $this->taskTypes = $taskTypes;
-    }
-
     public function addTask(Task $task)
     {
         $this->tasks[] = $task;
@@ -175,11 +94,6 @@ class Test implements \JsonSerializable
     public function getTasks()
     {
         return $this->tasks;
-    }
-
-    public function setTestId(int $testId)
-    {
-        $this->testId = $testId;
     }
 
     public function getTestId(): int
@@ -200,7 +114,7 @@ class Test implements \JsonSerializable
                 $rawTaskIds = explode(',', $this->taskIdCollection);
 
                 foreach ($rawTaskIds as $rawTaskId) {
-                    $this->taskIds[] = (int) $rawTaskId;
+                    $this->taskIds[] = (int)$rawTaskId;
                 }
             }
         }
@@ -208,20 +122,10 @@ class Test implements \JsonSerializable
         return $this->taskIds;
     }
 
-    public function hasTaskIds(): bool
-    {
-        return !empty($this->taskIdCollection);
-    }
-
     public function setTaskIdCollection(string $taskIdCollection)
     {
         $this->taskIdCollection = $taskIdCollection;
         $this->taskIds = null;
-    }
-
-    public function setType(string $type)
-    {
-        $this->type = $type;
     }
 
     public function getErrorCount(): int
@@ -250,50 +154,5 @@ class Test implements \JsonSerializable
         }
 
         return $warningCount;
-    }
-
-    public function getErrorCountByTaskType(string $type): int
-    {
-        $count = 0;
-
-        foreach ($this->tasks as $task) {
-            /* @var $task Task */
-            if ($task->hasOutput() && $task->getType() == $type) {
-                $count += $task->getOutput()->getErrorCount();
-            }
-        }
-
-        return $count;
-    }
-
-    public function getWarningCountByTaskType(string $type): int
-    {
-        $count = 0;
-
-        foreach ($this->tasks as $task) {
-            /* @var $task Task */
-            if ($task->hasOutput() && $task->getType() == $type) {
-                $count += $task->getOutput()->getWarningCount();
-            }
-        }
-
-        return $count;
-    }
-
-    public function getFormattedWebsite(): string
-    {
-        return rawurldecode((string) $this->website);
-    }
-
-    public function jsonSerialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'test_id' => $this->testId,
-            'user' => $this->user,
-            'website' => (string)$this->website,
-            'state' => $this->state,
-            'taskTypes' => $this->taskTypes,
-        ];
     }
 }

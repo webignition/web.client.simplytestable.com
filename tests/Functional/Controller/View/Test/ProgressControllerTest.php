@@ -548,10 +548,11 @@ class ProgressControllerTest extends AbstractViewControllerTest
 
     private function assertTestAndRemoteTest(array $parameters)
     {
-        $this->assertInstanceOf(DecoratedTest::class, $parameters['test']);
-
-        /* @var Test $test */
+        /* @var DecoratedTest $test */
         $test = $parameters['test'];
+
+        $this->assertInstanceOf(DecoratedTest::class, $test);
+
         $this->assertEquals(self::TEST_ID, $test->getTestId());
         $this->assertEquals(self::WEBSITE, $test->getWebsite());
     }

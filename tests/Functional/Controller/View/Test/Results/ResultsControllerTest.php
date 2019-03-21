@@ -878,7 +878,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertViewParameterKeys($parameters);
         $this->assertIsArray($parameters['website']);
 
-        /* @var Test $test */
+        /* @var DecoratedTest $test */
         $test = $parameters['test'];
         $this->assertInstanceOf(DecoratedTest::class, $test);
         $this->assertEquals(self::TEST_ID, $test->getTestId());

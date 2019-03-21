@@ -3,27 +3,13 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceGetSummaryDataTest extends AbstractRemoteTestServiceTest
 {
-    /**
-     * @var Test
-     */
-    private $test;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->test = Test::create(1);
-    }
+    const TEST_ID = 1;
 
     /**
      * @dataProvider getRemoteFailureDataProvider
@@ -77,7 +63,7 @@ class RemoteTestServiceGetSummaryDataTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $remoteTest = $this->remoteTestService->getSummaryData($this->test->getTestId());
+        $remoteTest = $this->remoteTestService->getSummaryData(self::TEST_ID);
 
         $this->assertNull($remoteTest);
     }
@@ -90,7 +76,7 @@ class RemoteTestServiceGetSummaryDataTest extends AbstractRemoteTestServiceTest
             ]),
         ]);
 
-        $remoteTestSummaryData = $this->remoteTestService->getSummaryData($this->test->getTestId());
+        $remoteTestSummaryData = $this->remoteTestService->getSummaryData(self::TEST_ID);
 
         $this->assertIsArray($remoteTestSummaryData);
         $this->assertEquals('http://null/job/1/', $this->httpHistory->getLastRequestUrl());

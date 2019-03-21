@@ -2,15 +2,11 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use App\Entity\Test;
 use App\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 {
-    /**
-     * @var Test
-     */
-    private $test;
+    const TEST_ID = 1;
 
     /**
      * {@inheritdoc}
@@ -19,8 +15,6 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = Test::create(1);
-
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -28,7 +22,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 
     public function testLock()
     {
-        $this->remoteTestService->lock($this->test->getTestId());
+        $this->remoteTestService->lock(self::TEST_ID);
         $this->assertEquals(
             'http://null/job/1/set-private/',
             $this->httpHistory->getLastRequestUrl()
@@ -37,7 +31,7 @@ class RemoteTestServiceLockUnlockTest extends AbstractRemoteTestServiceTest
 
     public function testUnlock()
     {
-        $this->remoteTestService->unlock($this->test->getTestId());
+        $this->remoteTestService->unlock(self::TEST_ID);
         $this->assertEquals(
             'http://null/job/1/set-public/',
             $this->httpHistory->getLastRequestUrl()

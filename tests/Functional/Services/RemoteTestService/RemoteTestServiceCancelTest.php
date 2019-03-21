@@ -2,15 +2,11 @@
 
 namespace App\Tests\Functional\Services\RemoteTestService;
 
-use App\Entity\Test;
 use App\Tests\Factory\HttpResponseFactory;
 
 class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 {
-    /**
-     * @var Test
-     */
-    private $test;
+    const TEST_ID = 1;
 
     /**
      * {@inheritdoc}
@@ -19,8 +15,6 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
     {
         parent::setUp();
 
-        $this->test = Test::create(1);
-
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
         ]);
@@ -28,7 +22,7 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 
     public function testCancel()
     {
-        $this->remoteTestService->cancel($this->test->getTestId());
+        $this->remoteTestService->cancel(self::TEST_ID);
 
         $this->assertEquals(
             'http://null/job/1/cancel/',
@@ -38,10 +32,10 @@ class RemoteTestServiceCancelTest extends AbstractRemoteTestServiceTest
 
     public function testCancelByTestProperties()
     {
-        $this->remoteTestService->cancelByTestProperties(2);
+        $this->remoteTestService->cancelByTestProperties(self::TEST_ID);
 
         $this->assertEquals(
-            'http://null/job/2/cancel/',
+            'http://null/job/1/cancel/',
             $this->httpHistory->getLastRequestUrl()
         );
     }
