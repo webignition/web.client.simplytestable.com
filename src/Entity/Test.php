@@ -5,7 +5,6 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Task\Task;
-use webignition\NormalisedUrl\NormalisedUrl;
 use Doctrine\Common\Collections\Collection as DoctrineCollection;
 
 /**
@@ -51,21 +50,6 @@ class Test
     private $testId;
 
     /**
-     * @var string
-     */
-    private $user;
-
-    /**
-     * @var NormalisedUrl
-     */
-    private $website;
-
-    /**
-     * @var string
-     */
-    private $state;
-
-    /**
      * @var DoctrineCollection
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Task\Task", mappedBy="test", cascade={"persist"})
@@ -83,11 +67,6 @@ class Test
      * @var array
      */
     private $taskIds = null;
-
-    /**
-     * @var array
-     */
-    private $taskTypes;
 
     private function __construct()
     {
