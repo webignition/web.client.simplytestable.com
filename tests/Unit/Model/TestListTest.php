@@ -20,7 +20,7 @@ class TestListTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTests, ObjectReflector::getProperty($testList, 'tests'));
         $this->assertEquals($maxResults, $testList->getMaxResults());
         $this->assertEquals($offset, ObjectReflector::getProperty($testList, 'offset'));
-        $this->assertEquals($limit, $testList->getLimit());
+        $this->assertEquals($limit, ObjectReflector::getProperty($testList, 'limit'));
     }
 
     public function createDataProvider(): array

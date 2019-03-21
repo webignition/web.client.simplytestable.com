@@ -55,9 +55,4 @@ class TestList implements \Iterator
     {
         return $this->maxResults;
     }
-
-    public function getLimit(): int
-    {
-        return $this->limit;
-    }
 }
