@@ -89,11 +89,6 @@ class Test implements \JsonSerializable
      */
     private $taskTypes;
 
-    /**
-     * @var string
-     */
-    private $type;
-
     private function __construct()
     {
         $this->tasks = new ArrayCollection();
