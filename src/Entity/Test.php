@@ -177,20 +177,6 @@ class Test implements \JsonSerializable
         return $warningCount;
     }
 
-    public function getErrorCountByTaskType(string $type): int
-    {
-        $count = 0;
-
-        foreach ($this->tasks as $task) {
-            /* @var $task Task */
-            if ($task->hasOutput() && $task->getType() == $type) {
-                $count += $task->getOutput()->getErrorCount();
-            }
-        }
-
-        return $count;
-    }
-
     public function getWarningCountByTaskType(string $type): int
     {
         $count = 0;
