@@ -3,9 +3,8 @@
 
 namespace App\Tests\Functional\EventListener\RequestListener;
 
-use App\Entity\Test;
 use App\EventListener\RequiresValidTestOwnerRequestListener;
-use App\Services\TestService;
+use App\Services\RemoteTestService;
 use App\Tests\Services\ObjectReflector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
@@ -28,19 +27,19 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
     /**
      * @dataProvider dataProvider
      */
-    public function testOnKernelController(?Test $testServiceGetReturnValue, bool $expectedHasResponse)
+    public function testOnKernelController(bool $isAuthorised, bool $expectedHasResponse)
     {
-        $testService = \Mockery::mock(TestService::class);
-        $testService
-            ->shouldReceive('get')
+        $remoteTestService = \Mockery::mock(RemoteTestService::class);
+        $remoteTestService
+            ->shouldReceive('isAuthorised')
             ->with(self::TEST_ID)
-            ->andReturn($testServiceGetReturnValue);
+            ->andReturn($isAuthorised);
 
         ObjectReflector::setProperty(
             $this->requestListener,
             RequiresValidTestOwnerRequestListener::class,
-            'testService',
-            $testService
+            'remoteTestService',
+            $remoteTestService
         );
 
         $router = self::$container->get(RouterInterface::class);
@@ -76,15 +75,15 @@ class RequiresValidTestOwnerRequestListenerTest extends AbstractKernelRequestLis
     {
         return [
             'invalid test' => [
-                'testServiceGetReturnValue' => null,
+                'isAuthorised' => false,
                 'expectedHasResponse' => true,
             ],
             'invalid test owner' => [
-                'testServiceGetReturnValue' => null,
+                'isAuthorised' => false,
                 'expectedHasResponse' => true,
             ],
             'valid test owner' => [
-                'testServiceGetReturnValue' => Test::create(self::TEST_ID),
+                'isAuthorised' => true,
                 'expectedHasResponse' => false,
             ],
         ];

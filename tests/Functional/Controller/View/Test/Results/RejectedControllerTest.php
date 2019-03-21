@@ -170,6 +170,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
     ) {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($remoteTestData),
             HttpResponseFactory::createJsonResponse($userData),
         ]);
@@ -197,6 +198,7 @@ class RejectedControllerTest extends AbstractViewControllerTest
         $this->assertEquals(
             [
                 'http://null/user/public/authenticate/',
+                'http://null/job/1/is-authorised/',
                 'http://null/job/1/',
                 'http://null/user/public/',
             ],

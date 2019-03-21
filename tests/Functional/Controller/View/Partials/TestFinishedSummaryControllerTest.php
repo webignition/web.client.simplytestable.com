@@ -94,6 +94,7 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
@@ -104,6 +105,7 @@ class TestFinishedSummaryControllerTest extends AbstractViewControllerTest
 
         /* @var Response $response */
         $response = $this->client->getResponse();
+
         $this->assertTrue($response->isSuccessful());
     }
 

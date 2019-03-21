@@ -156,6 +156,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
             'incomplete test' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'state' => Test::STATE_IN_PROGRESS,
                     ])),
@@ -166,6 +167,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
             'website mismatch' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'website' => 'http://foo.example.com/',
                     ])),
@@ -179,6 +181,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
             'failed test' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'state' => Test::STATE_FAILED_NO_SITEMAP,
                     ])),
@@ -189,6 +192,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
             'rejected test' => [
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'state' => Test::STATE_REJECTED,
                     ])),
@@ -252,6 +256,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertEquals(
             [
                 'http://null/user/public/authenticate/',
+                'http://null/job/1/is-authorised/',
                 'http://null/job/1/',
                 'http://null/job/1/tasks/ids/',
             ],
@@ -268,6 +273,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'filter' => ResultsController::FILTER_WITH_ERRORS,
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse($this->remoteTestData),
                     HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
                 ],
@@ -279,6 +285,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'filter' => ResultsController::FILTER_WITH_ERRORS,
                 'httpFixtures' => [
                     HttpResponseFactory::createSuccessResponse(),
+                    HttpResponseFactory::createJsonResponse(true),
                     HttpResponseFactory::createJsonResponse(array_merge($this->remoteTestData, [
                         'website' => 'http://example.com/articles/foo/bar/6875374/foobar/',
                     ])),
@@ -294,6 +301,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
             HttpResponseFactory::createJsonResponse([1, 2, 3, 4, ]),
         ]);

@@ -77,6 +77,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse(true),
             HttpResponseFactory::createJsonResponse($this->remoteTestData),
         ]);
 
@@ -92,6 +93,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         $this->assertEquals(
             [
                 'http://null/user/public/authenticate/',
+                'http://null/job/1/is-authorised/',
                 'http://null/job/1/',
             ],
             $this->httpHistory->getRequestUrlsAsStrings()
