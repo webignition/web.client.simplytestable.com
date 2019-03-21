@@ -4,7 +4,6 @@
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\FailedNoUrlsDetectedController;
-use App\Entity\Test as TestEntity;
 use App\Model\Test as TestModel;
 use App\Services\SystemUserService;
 use App\Services\TestRetriever;
@@ -46,7 +45,7 @@ class FailedNoUrlsDetectedControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
         'state' => TestModel::STATE_FAILED_NO_SITEMAP,
-        'type' => TestEntity::TYPE_FULL_SITE,
+        'type' => TestModel::TYPE_FULL_SITE,
         'taskTypes' => [],
     ];
 

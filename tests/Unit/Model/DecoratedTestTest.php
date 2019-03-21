@@ -13,8 +13,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     const TEST_ID = 1;
     const WEBSITE = 'http://example.com/';
     const USER = 'user@example.com';
-    const STATE = TestEntity::STATE_COMPLETED;
-    const TYPE = TestEntity::TYPE_FULL_SITE;
+    const STATE = TestModel::STATE_COMPLETED;
+    const TYPE = TestModel::TYPE_FULL_SITE;
     const TASK_TYPES = [
         Task::TYPE_HTML_VALIDATION,
     ];
@@ -105,14 +105,14 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         return [
             'full site' => [
                 'testProperties' => [
-                    'type' => TestEntity::TYPE_FULL_SITE,
+                    'type' => TestModel::TYPE_FULL_SITE,
                 ],
                 'expectedIsFullSite' => true,
                 'expectedIsSingleUrl' => false,
             ],
             'single url' => [
                 'testProperties' => [
-                    'type' => TestEntity::TYPE_SINGLE_URL,
+                    'type' => TestModel::TYPE_SINGLE_URL,
                 ],
                 'expectedIsFullSite' => false,
                 'expectedIsSingleUrl' => true,
@@ -450,7 +450,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
                 'testData' => [
                     'user' => 'user@example.com',
                     'website' => 'http://example.com/',
-                    'state' => TestEntity::STATE_COMPLETED,
+                    'state' => TestModel::STATE_COMPLETED,
                     'taskTypes' => [
                         Task::TYPE_HTML_VALIDATION,
                     ],
@@ -469,7 +469,7 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
                 'expectedSerializedArray' => [
                     'user' => 'user@example.com',
                     'website' => 'http://example.com/',
-                    'state' => TestEntity::STATE_COMPLETED,
+                    'state' => TestModel::STATE_COMPLETED,
                     'taskTypes' => [
                         Task::TYPE_HTML_VALIDATION,
                     ],
@@ -496,17 +496,17 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         $decoratedTests = [
             'default' => new DecoratedTest($this->createTest([
                 'entity' => $this->createTestEntity(1),
-                'state' => TestEntity::STATE_COMPLETED,
+                'state' => TestModel::STATE_COMPLETED,
                 'remoteTaskCount' => 0,
             ])),
             'state changes hash' => new DecoratedTest($this->createTest([
                 'entity' => $this->createTestEntity(1),
-                'state' => TestEntity::STATE_IN_PROGRESS,
+                'state' => TestModel::STATE_IN_PROGRESS,
                 'remoteTaskCount' => 0,
             ])),
             'remoteTaskCount != localTaskCount changes hash' => new DecoratedTest($this->createTest([
                 'entity' => $this->createTestEntity(1),
-                'state' => TestEntity::STATE_COMPLETED,
+                'state' => TestModel::STATE_COMPLETED,
                 'remoteTaskCount' => 1,
             ])),
         ];

@@ -8,7 +8,7 @@ use App\Exception\InvalidCredentialsException;
 use App\Services\TestRetriever;
 use App\Services\UrlMatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -60,7 +60,7 @@ class RequiresCompletedTestRequestListener
         $isRejectedRequest = self::ROUTE_REJECTED === $route;
         $isProgressRequest = self::ROUTE_PROGRESS === $route;
 
-        if (Test::STATE_FAILED_NO_SITEMAP === $test->getState() && !$isFailedNoUrlsDetectedRequest) {
+        if (TestModel::STATE_FAILED_NO_SITEMAP === $test->getState() && !$isFailedNoUrlsDetectedRequest) {
             $event->setResponse(new RedirectResponse($this->router->generate(
                 'view_test_results_failed_no_urls_detected',
                 [
@@ -72,7 +72,7 @@ class RequiresCompletedTestRequestListener
             return;
         }
 
-        if (Test::STATE_REJECTED === $test->getState() && !$isRejectedRequest) {
+        if (TestModel::STATE_REJECTED === $test->getState() && !$isRejectedRequest) {
             $event->setResponse(new RedirectResponse($this->router->generate(
                 'view_test_results_rejected',
                 [

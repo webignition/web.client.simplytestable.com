@@ -17,6 +17,9 @@ interface TestInterface
     const STATE_REJECTED = 'rejected';
     const STATE_RESOLVING = 'resolving';
     const STATE_RESOLVED = 'resolved';
+    const STATE_CRAWLING = 'crawling';
+    const TYPE_FULL_SITE = 'Full site';
+    const TYPE_SINGLE_URL = 'Single URL';
 
     public function getTestId(): int;
 

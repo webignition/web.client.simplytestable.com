@@ -77,8 +77,8 @@ class TestFactory
 
     private function normaliseState(string $state, array $crawlData): string
     {
-        if (TestEntity::STATE_FAILED_NO_SITEMAP === $state && !empty($crawlData)) {
-            return TestEntity::STATE_CRAWLING;
+        if (TestModel::STATE_FAILED_NO_SITEMAP === $state && !empty($crawlData)) {
+            return TestModel::STATE_CRAWLING;
         }
 
         return $state;

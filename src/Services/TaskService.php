@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Test;
+use App\Entity\Test as TestEntity;
+use App\Model\Test as TestModel;
 use App\Entity\Task\Task;
 use App\Entity\Task\Output;
 use App\Exception\CoreApplicationReadOnlyException;
@@ -125,7 +126,7 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param TestEntity $test
      * @param string $testState
      * @param array $remoteTaskIds
      *
@@ -135,7 +136,7 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function getCollection(Test $test, string $testState, array $remoteTaskIds)
+    public function getCollection(TestEntity $test, string $testState, array $remoteTaskIds)
     {
         $existenceResult = $this->taskRepository->getCollectionExistsByTestAndRemoteId($test, $remoteTaskIds);
 
@@ -212,7 +213,7 @@ class TaskService
             $this->entityManager->flush();
         }
 
-        if ($testState === Test::STATE_COMPLETED || $testState === Test::STATE_CANCELLED) {
+        if ($testState === TestModel::STATE_COMPLETED || $testState === TestModel::STATE_CANCELLED) {
             foreach ($tasks as $task) {
                 $this->normaliseEndingState($task);
             }
@@ -270,7 +271,7 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param TestEntity $test
      * @param $remoteTaskIds
      *
      * @return array
@@ -279,7 +280,7 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    private function retrieveRemoteCollection(Test $test, $remoteTaskIds)
+    private function retrieveRemoteCollection(TestEntity $test, $remoteTaskIds)
     {
         $response = null;
 
@@ -301,12 +302,12 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param TestEntity $test
      * @param int $limit
      *
      * @return int[]
      */
-    public function getUnretrievedRemoteTaskIds(Test $test, $limit)
+    public function getUnretrievedRemoteTaskIds(TestEntity $test, $limit)
     {
         $retrievedRemoteTaskIds = $this->taskRepository->findRetrievedRemoteTaskIds($test);
 
@@ -348,7 +349,7 @@ class TaskService
     }
 
     /**
-     * @param Test $test
+     * @param TestEntity $test
      * @param string $testState
      * @param int $task_id
      *
@@ -358,7 +359,7 @@ class TaskService
      * @throws InvalidContentTypeException
      * @throws InvalidCredentialsException
      */
-    public function get(Test $test, string $testState, int $task_id)
+    public function get(TestEntity $test, string $testState, int $task_id)
     {
         $task = $this->taskRepository->findOneBy([
             'taskId' => $task_id,
@@ -379,7 +380,7 @@ class TaskService
             return null;
         }
 
-        if ($testState === Test::STATE_COMPLETED || $testState === Test::STATE_CANCELLED) {
+        if ($testState === TestModel::STATE_COMPLETED || $testState === TestModel::STATE_CANCELLED) {
             $this->normaliseEndingState($task);
         }
 

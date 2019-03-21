@@ -49,8 +49,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 'testData' => [
                     'website' => 'http://example.com/',
                     'user' => 'public@simplytestable.com',
-                    'state' => TestEntity::STATE_COMPLETED,
-                    'type' => TestEntity::TYPE_FULL_SITE,
+                    'state' => TestModel::STATE_COMPLETED,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'url_count' => 1,
                     'task_count' => 0,
                     'errored_task_count' => 0,
@@ -74,8 +74,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     TestEntity::create(1),
                     'http://example.com/',
                     'public@simplytestable.com',
-                    TestEntity::STATE_COMPLETED,
-                    TestEntity::TYPE_FULL_SITE,
+                    TestModel::STATE_COMPLETED,
+                    TestModel::TYPE_FULL_SITE,
                     [
                         Task::TYPE_HTML_VALIDATION,
                     ],
@@ -114,8 +114,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                 'testData' => [
                     'website' => 'http://example.com/',
                     'user' => 'user@example.com',
-                    'state' => TestEntity::STATE_COMPLETED,
-                    'type' => TestEntity::TYPE_FULL_SITE,
+                    'state' => TestModel::STATE_COMPLETED,
+                    'type' => TestModel::TYPE_FULL_SITE,
                     'url_count' => 1,
                     'task_count' => 2,
                     'errored_task_count' => 1,
@@ -150,8 +150,8 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ]),
                     'http://example.com/',
                     'user@example.com',
-                    TestEntity::STATE_COMPLETED,
-                    TestEntity::TYPE_FULL_SITE,
+                    TestModel::STATE_COMPLETED,
+                    TestModel::TYPE_FULL_SITE,
                     [
                         Task::TYPE_HTML_VALIDATION,
                     ],
@@ -263,22 +263,22 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'empty crawl data' => [
-                'state' => TestEntity::STATE_COMPLETED,
+                'state' => TestModel::STATE_COMPLETED,
                 'crawlData' => [],
-                'expectedState' => TestEntity::STATE_COMPLETED,
+                'expectedState' => TestModel::STATE_COMPLETED,
             ],
             'failed no sitemap, empty crawl data' => [
-                'state' => TestEntity::STATE_FAILED_NO_SITEMAP,
+                'state' => TestModel::STATE_FAILED_NO_SITEMAP,
                 'crawlData' => [],
-                'expectedState' => TestEntity::STATE_FAILED_NO_SITEMAP,
+                'expectedState' => TestModel::STATE_FAILED_NO_SITEMAP,
             ],
             'failed no sitemap, has crawl data' => [
-                'state' => TestEntity::STATE_FAILED_NO_SITEMAP,
+                'state' => TestModel::STATE_FAILED_NO_SITEMAP,
                 'crawlData' => [
                     'discovered_url_count' => 1,
                     'limit' => 2,
                 ],
-                'expectedState' => TestEntity::STATE_CRAWLING,
+                'expectedState' => TestModel::STATE_CRAWLING,
             ],
         ];
     }

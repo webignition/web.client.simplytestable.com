@@ -4,7 +4,7 @@
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Task\Task;
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Services\CoreApplicationRouter;
 use App\Tests\Functional\AbstractBaseTestCase;
 
@@ -46,23 +46,23 @@ class CoreApplicationRouterTest extends AbstractBaseTestCase
             'test_start, has test type, no test options' => [
                 'route' => 'test_start',
                 'parameters' => [
-                    'type' => strtolower(Test::TYPE_FULL_SITE),
+                    'type' => strtolower(TestModel::TYPE_FULL_SITE),
                 ],
                 'expectedUrl' => 'http://null/job/start/?' . $this->createHttpQuery([
-                    'type' => strtolower(Test::TYPE_FULL_SITE),
+                    'type' => strtolower(TestModel::TYPE_FULL_SITE),
                 ]),
             ],
             'test_start, has test type, has test options' => [
                 'route' => 'test_start',
                 'parameters' => [
-                    'type' => strtolower(Test::TYPE_FULL_SITE),
+                    'type' => strtolower(TestModel::TYPE_FULL_SITE),
                     'test_types' => [
                         Task::TYPE_HTML_VALIDATION,
                         Task::TYPE_CSS_VALIDATION,
                     ],
                 ],
                 'expectedUrl' => 'http://null/job/start/?' . $this->createHttpQuery([
-                    'type' => strtolower(Test::TYPE_FULL_SITE),
+                    'type' => strtolower(TestModel::TYPE_FULL_SITE),
                     'test_types' => [
                         Task::TYPE_HTML_VALIDATION,
                         Task::TYPE_CSS_VALIDATION,

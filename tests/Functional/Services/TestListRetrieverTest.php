@@ -3,7 +3,7 @@
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Test;
+use App\Model\Test as TestModel;
 use App\Model\TestList;
 use App\Services\TestListRetriever;
 use App\Tests\Factory\HttpResponseFactory;
@@ -105,7 +105,7 @@ class TestListRetrieverTest extends AbstractCoreApplicationServiceTest
                                 'url_count' => 12,
                                 'task_types' => [],
                                 'task_type_options' => [],
-                                'type' => Test::TYPE_FULL_SITE,
+                                'type' => TestModel::TYPE_FULL_SITE,
                                 'parameters' => '',
                             ],
                         ],
@@ -202,7 +202,7 @@ class TestListRetrieverTest extends AbstractCoreApplicationServiceTest
                                 'url_count' => 12,
                                 'task_types' => [],
                                 'task_type_options' => [],
-                                'type' => Test::TYPE_FULL_SITE,
+                                'type' => TestModel::TYPE_FULL_SITE,
                                 'parameters' => '',
                             ],
                         ],

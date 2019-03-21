@@ -4,6 +4,7 @@ namespace App\Tests\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Test;
+use App\Model\Test as TestModel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class TestFactory
@@ -14,8 +15,8 @@ class TestFactory
 
     const DEFAULT_USER = 'user@example.com';
     const DEFAULT_WEBSITE_URL = 'http://example.com/';
-    const DEFAULT_STATE = Test::STATE_COMPLETED;
-    const DEFAULT_TYPE = Test::TYPE_FULL_SITE;
+    const DEFAULT_STATE = TestModel::STATE_COMPLETED;
+    const DEFAULT_TYPE = TestModel::TYPE_FULL_SITE;
 
     private $container;
     private $taskFactory;

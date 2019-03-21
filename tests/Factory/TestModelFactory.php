@@ -11,8 +11,8 @@ class TestModelFactory extends \PHPUnit\Framework\TestCase
     const TEST_ID = 1;
     const WEBSITE = 'http://example.com/';
     const USER = 'user@example.com';
-    const STATE = TestEntity::STATE_COMPLETED;
-    const TYPE = TestEntity::TYPE_FULL_SITE;
+    const STATE = TestModel::STATE_COMPLETED;
+    const TYPE = TestModel::TYPE_FULL_SITE;
     const TASK_TYPES = [
         Task::TYPE_HTML_VALIDATION,
     ];

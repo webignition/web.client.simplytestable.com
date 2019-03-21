@@ -109,7 +109,10 @@ class ProgressController extends AbstractBaseViewController
         }
 
         if ($testModel->isFinished()) {
-            if (Test::STATE_FAILED_NO_SITEMAP  !== $testModel->getState() || SystemUserService::isPublicUser($user)) {
+            $shouldRedirectToTestResults =
+                TestModel::STATE_FAILED_NO_SITEMAP !== $testModel->getState() || SystemUserService::isPublicUser($user);
+
+            if ($shouldRedirectToTestResults) {
                 return $this->createRedirectResponse(
                     $request,
                     'view_test_results',
@@ -196,15 +199,15 @@ class ProgressController extends AbstractBaseViewController
         $state = $testModel->getState();
         $label = $this->testStateLabelMap[$state] ?? '';
 
-        if ($state == Test::STATE_IN_PROGRESS) {
+        if ($state == TestModel::STATE_IN_PROGRESS) {
             $label = $testModel->getCompletionPercent() . '% done';
         }
 
-        if (in_array($state, [Test::STATE_QUEUED, Test::STATE_IN_PROGRESS])) {
+        if (in_array($state, [TestModel::STATE_QUEUED, TestModel::STATE_IN_PROGRESS])) {
             $label = $testModel->getUrlCount() . ' urls, ' . $testModel->getRemoteTaskCount() . ' tests; ' . $label;
         }
 
-        if ($state == Test::STATE_CRAWLING) {
+        if ($state == TestModel::STATE_CRAWLING) {
             $crawlData = $testModel->getCrawlData();
 
             $label .= sprintf(

@@ -41,7 +41,7 @@ class PreparingStatsControllerTest extends AbstractViewControllerTest
         'website' => self::WEBSITE,
         'user' => self::USER_EMAIL,
         'state' => TestModel::STATE_COMPLETED,
-        'type' => TestEntity::TYPE_FULL_SITE,
+        'type' => TestModel::TYPE_FULL_SITE,
         'taskTypes' => [],
     ];
 
