@@ -26,4 +26,4 @@ services:
 
   App\Services\StripeNotificationFactory:
 
-  App\Services\TestRetriever:
+  App\Services\TestListRetriever:
