@@ -122,11 +122,6 @@ class Test implements \JsonSerializable
         return $this->tasks;
     }
 
-    public function setTestId(int $testId)
-    {
-        $this->testId = $testId;
-    }
-
     public function getTestId(): int
     {
         return $this->testId;
