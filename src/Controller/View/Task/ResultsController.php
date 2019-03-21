@@ -9,7 +9,7 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\TaskOutput\CssTextFileMessage;
 use App\Model\TaskOutput\LinkIntegrityMessage;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\Configuration\DocumentationSiteUrls;

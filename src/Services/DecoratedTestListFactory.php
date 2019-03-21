@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Model\DecoratedTestList;
 use App\Model\RemoteTest\RemoteTest;
 use App\Model\RemoteTestList;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 
 class DecoratedTestListFactory
 {

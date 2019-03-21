@@ -2,8 +2,6 @@
 
 namespace App\Model;
 
-use App\Model\Test\DecoratedTest;
-
 class DecoratedTestList implements \Iterator
 {
     const PAGINATION_PAGE_COLLECTION_SIZE = 10;

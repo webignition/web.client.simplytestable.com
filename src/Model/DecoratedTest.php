@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Model\Test;
+namespace App\Model;
 
 use App\Entity\Test as TestEntity;
-use App\Model\Test;
 
 class DecoratedTest implements \JsonSerializable
 {

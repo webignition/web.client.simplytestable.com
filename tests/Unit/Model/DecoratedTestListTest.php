@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Model;
 use App\Entity\Test as TestEntity;
 use App\Model\Test as TestModel;
 use App\Model\DecoratedTestList;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Services\TestCompletionPercentCalculator;
 use App\Services\TestFactory;
 use App\Services\TestTaskCountByStateNormaliser;

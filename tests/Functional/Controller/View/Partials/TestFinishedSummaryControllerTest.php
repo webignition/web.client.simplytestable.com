@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Controller\View\Partials;
 use App\Controller\View\Partials\TestFinishedSummaryController;
 use App\Entity\Test as TestEntity;
 use App\Model\Test as TestModel;
-use App\Model\Test\DecoratedTest;
+use App\Model\DecoratedTest;
 use App\Services\TestRetriever;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
