@@ -11,6 +11,7 @@ class TestList implements \Countable, \Iterator
     private $limit = 1;
     private $tests = [];
     private $pageIndex = 0;
+    private $pageCount = 0;
 
     private $iteratorPosition = 0;
 
@@ -27,6 +28,7 @@ class TestList implements \Countable, \Iterator
         }
 
         $this->pageIndex = 0 === $this->limit ? 0 : $this->offset / $this->limit;
+        $this->pageCount = 0 === $this->limit ? 0 : (int) ceil($this->maxResults / $this->limit);
     }
 
     public function count(): int
@@ -67,5 +69,10 @@ class TestList implements \Countable, \Iterator
     public function getPageNumber(): int
     {
         return $this->pageIndex + 1;
+    }
+
+    public function getPageCount(): int
+    {
+        return $this->pageCount;
     }
 }

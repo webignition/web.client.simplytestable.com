@@ -162,4 +162,45 @@ class TestListTest extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider getPageCountDataProvider
+     */
+    public function testGetPageCount(int $maxResults, int $limit, int $expectedPageCount)
+    {
+        $decoratedTestList = new TestList([], $maxResults, 0, $limit);
+
+        $this->assertEquals($expectedPageCount, $decoratedTestList->getPageCount());
+    }
+
+    public function getPageCountDataProvider(): array
+    {
+        return [
+            'maxResults=0, limit=0' => [
+                'maxResults' => 0,
+                'limit' => 0,
+                'expectedPageCount' => 0,
+            ],
+            'maxResults=10, limit=1' => [
+                'maxResults' => 10,
+                'limit' => 1,
+                'expectedPageCount' => 10,
+            ],
+            'maxResults=50, limit=10' => [
+                'maxResults' => 50,
+                'limit' => 10,
+                'expectedPageCount' => 5,
+            ],
+            'maxResults=100, limit=10' => [
+                'maxResults' => 100,
+                'limit' => 10,
+                'expectedPageCount' => 10,
+            ],
+            'maxResults=101, limit=10' => [
+                'maxResults' => 101,
+                'limit' => 10,
+                'expectedPageCount' => 11,
+            ],
+        ];
+    }
 }
