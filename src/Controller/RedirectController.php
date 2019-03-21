@@ -2,11 +2,11 @@
 
 namespace App\Controller;
 
-use Psr\Log\LoggerInterface;
-use App\Entity\Test;
+use App\Exception\InvalidContentTypeException;
+use App\Exception\InvalidCredentialsException;
+use App\Services\TestRetriever;
 use App\Exception\CoreApplicationRequestException;
 use App\Services\RemoteTestService;
-use App\Services\TestService;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use webignition\NormalisedUrl\NormalisedUrl;
@@ -18,33 +18,13 @@ class RedirectController extends AbstractController
 {
     const TASK_RESULTS_URL_PATTERN = '/\/[0-9]+\/[0-9]+\/results\/?$/';
 
-    /**
-     * @var string[]
-     */
-    private $testFinishedStates = [
-        Test::STATE_CANCELLED,
-        Test::STATE_COMPLETED,
-        Test::STATE_FAILED_NO_SITEMAP,
-    ];
-
-    /**
-     * @param TestService $testService
-     * @param RemoteTestService $remoteTestService
-     * @param LoggerInterface $logger
-     * @param Request $request
-     * @param string $website
-     * @param int $test_id
-     *
-     * @return RedirectResponse
-     */
     public function testAction(
-        TestService $testService,
+        TestRetriever $testRetriever,
         RemoteTestService $remoteTestService,
-        LoggerInterface $logger,
         Request $request,
         $website,
         $test_id = null
-    ) {
+    ): RedirectResponse {
         $isTaskResultsUrl = preg_match(self::TASK_RESULTS_URL_PATTERN, $website) > 0;
 
         if ($isTaskResultsUrl) {
@@ -80,19 +60,16 @@ class RedirectController extends AbstractController
             $test = null;
 
             try {
-                $test = $testService->get($normalisedTestId);
+                $test = $testRetriever->retrieve($normalisedTestId);
             } catch (CoreApplicationRequestException $coreApplicationRequestException) {
-                $logger->error(
-                    sprintf(
-                        'RedirectController::CoreApplicationRequestException %s',
-                        $coreApplicationRequestException->getCode()
-                    ),
-                    [
-                        'request' => $coreApplicationRequestException->getRequest(),
-                        'response' => $coreApplicationRequestException->getResponse(),
-                    ]
-                );
+                // Do nothing
+            } catch (InvalidContentTypeException $invalidContentTypeException) {
+                // Do nothing
+            } catch (InvalidCredentialsException $invalidCredentialsException) {
+                // Do nothing
+            }
 
+            if (null === $test) {
                 return new RedirectResponse($this->generateUrl(
                     'redirect_website',
                     [
@@ -101,7 +78,7 @@ class RedirectController extends AbstractController
                 ));
             }
 
-            $routeName = in_array($test->getState(), $this->testFinishedStates)
+            $routeName = $test->isFinished()
                 ? 'view_test_results'
                 : 'view_test_progress';
 
