@@ -3,7 +3,7 @@
 let formFieldFocuser = require('../form-field-focuser');
 require('awesomplete');
 
-class Modal {
+class UrlFilterForm {
     /**
      * @param {HTMLElement} element
      */
@@ -90,4 +90,4 @@ class Modal {
     };
 }
 
-module.exports = Modal;
+module.exports = UrlFilterForm;
