@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Entity\Test;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Task\Task;
-use App\Entity\Test;
 use App\Repository\TaskRepository;
 
 class TaskCollectionFilterService
@@ -21,11 +21,6 @@ class TaskCollectionFilterService
      * @var TaskRepository
      */
     private $taskRepository;
-
-    /**
-     * @var Test
-     */
-    private $test;
 
     /**
      * @var string
@@ -47,14 +42,6 @@ class TaskCollectionFilterService
         $this->taskRepository = $this->entityManager->getRepository(Task::class);
     }
 
-    /**
-     * @param Test $test
-     */
-    public function setTest(Test $test)
-    {
-        $this->test = $test;
-    }
-
     public function setOutcomeFilter(string $outcomeFilter = '')
     {
         $this->outcomeFilter = $outcomeFilter;
@@ -65,11 +52,11 @@ class TaskCollectionFilterService
         $this->typeFilter = $typeFilter;
     }
 
-    public function getRemoteIdCount(): int
+    public function getRemoteIdCount(Test $test): int
     {
         if (in_array($this->outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
             return $this->taskRepository->getRemoteIdCountByTestAndTaskTypeIncludingStates(
-                $this->test,
+                $test,
                 $this->typeFilter,
                 [$this->outcomeFilter]
             );
@@ -86,7 +73,7 @@ class TaskCollectionFilterService
         }
 
         return $this->taskRepository->getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
-            $this->test,
+            $test,
             $excludeStates,
             $this->typeFilter,
             $this->createIssueCountFromOutcomeFilter(),
@@ -95,20 +82,22 @@ class TaskCollectionFilterService
     }
 
     /**
+     * @param Test $test
+     *
      * @return int[]
      */
-    public function getRemoteIds(): array
+    public function getRemoteIds(Test $test): array
     {
         if (in_array($this->outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
             return $this->taskRepository->getRemoteIdByTestAndTaskTypeIncludingStates(
-                $this->test,
+                $test,
                 $this->typeFilter,
                 array($this->outcomeFilter)
             );
         }
 
         return $this->taskRepository->getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
-            $this->test,
+            $test,
             [
                 Task::STATE_SKIPPED,
                 Task::STATE_CANCELLED,
