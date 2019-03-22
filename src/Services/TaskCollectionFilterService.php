@@ -20,7 +20,7 @@ class TaskCollectionFilterService
     /**
      * @var TaskRepository
      */
-    protected $taskRepository;
+    private $taskRepository;
 
     /**
      * @var Test
