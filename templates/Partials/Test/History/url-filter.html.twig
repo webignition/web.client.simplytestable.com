@@ -2,13 +2,13 @@
     <i class="fa fa-filter icon-primary"></i>
     <span class="action-badge-label">{% if filter is empty %}Showing all results{% else %}Showing results for <strong>{{ filter }}</strong>{% endif %}</span>
     {% if filter %}<a class="btn" href="{{ path('view_test_history_page1') }}">clear filter <i class="fa fa-times"></i></a>{% endif %}
-    <span class="modal-control" data-toggle="modal" data-target="#filter-options-modal">
+    <span class="modal-control filter-modal-control" data-toggle="modal">
         {% if filter %}modify filter{% else %}filter by url{% endif %}
         <i class="fa fa-caret-right"></i>
     </span>
 </span>
 
-<div class="modal" id="filter-options-modal" data-source-url="{{ websites_source }}">
+<div class="modal" id="filter-options-modal" data-source-url="{{ websites_source }}" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

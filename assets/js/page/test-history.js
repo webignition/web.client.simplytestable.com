@@ -1,6 +1,7 @@
 let UrlFilterForm = require('../test-history/url-filter-form');
 let Suggestions = require('../test-history/suggestions');
 let ListedTestCollection = require('../model/listed-test-collection');
+let bsn = require('bootstrap.native');
 
 module.exports = function (document) {
     const modalId = 'filter-options-modal';
@@ -10,6 +11,8 @@ module.exports = function (document) {
 
     let urlFilterForm = new UrlFilterForm(modalElement);
     let suggestions = new Suggestions(document, modalElement.getAttribute('data-source-url'));
+    let modalControl = document.querySelector('.filter-modal-control');
+    let modal = new bsn.Modal(modalElement);
 
     /**
      * @param {CustomEvent} event
@@ -44,5 +47,9 @@ module.exports = function (document) {
     let listedTestCollection = ListedTestCollection.createFromNodeList(document.querySelectorAll('.listed-test'));
     listedTestCollection.forEach((listedTest) => {
         listedTest.enable();
+    });
+
+    modalControl.addEventListener('click', () => {
+        modal.show();
     });
 };
