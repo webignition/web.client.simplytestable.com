@@ -227,19 +227,6 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function testGetCount()
-    {
-        /* @var EntityManagerInterface|MockInterface $entityManager */
-        $entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $entityManager
-            ->shouldReceive('getRepository')
-            ->with(Task::class);
-
-        $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
-
-        $this->assertEquals(0, $taskCollectionFilterService->getCount());
-    }
-
     /**
      * @return TaskRepository|MockInterface
      */

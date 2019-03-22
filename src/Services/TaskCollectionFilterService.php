@@ -144,9 +144,4 @@ class TaskCollectionFilterService
             ? 'warning'
             : 'error';
     }
-
-    public function getCount(): int
-    {
-        return 0;
-    }
 }
