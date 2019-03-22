@@ -1,18 +1,18 @@
 let UrlFilterForm = require('../test-history/url-filter-form');
 let Suggestions = require('../test-history/suggestions');
 let ListedTestCollection = require('../model/listed-test-collection');
-let bsn = require('bootstrap.native');
+let Modal = require('../test-history/modal');
 
 module.exports = function (document) {
     const modalId = 'filter-options-modal';
     const filterOptionsSelector = '.action-badge-filter-options';
-    const modalElement = document.getElementById(modalId);
+    const urlFilterFormElement = document.getElementById(modalId);
     let filterOptionsElement = document.querySelector(filterOptionsSelector);
 
-    let urlFilterForm = new UrlFilterForm(modalElement);
-    let suggestions = new Suggestions(document, modalElement.getAttribute('data-source-url'));
+    let urlFilterForm = new UrlFilterForm(urlFilterFormElement);
+    let suggestions = new Suggestions(document, urlFilterFormElement.getAttribute('data-source-url'));
     let modalControl = document.querySelector('.filter-modal-control');
-    let modal = new bsn.Modal(modalElement);
+    let modal = new Modal(urlFilterFormElement);
 
     /**
      * @param {CustomEvent} event
@@ -40,7 +40,7 @@ module.exports = function (document) {
     };
 
     document.addEventListener(suggestions.loadedEventName, suggestionsLoadedEventListener);
-    modalElement.addEventListener(urlFilterForm.filterChangedEventName, filterChangedEventListener);
+    urlFilterFormElement.addEventListener(urlFilterForm.filterChangedEventName, filterChangedEventListener);
 
     suggestions.retrieve();
 
@@ -51,5 +51,17 @@ module.exports = function (document) {
 
     modalControl.addEventListener('click', () => {
         modal.show();
+    });
+
+    urlFilterFormElement.addEventListener(urlFilterForm.suggestionSelectedEventName, () => {
+        modal.allowClose = false;
+
+        window.setTimeout(() => {
+            modal.allowClose = true;
+        }, 100);
+    });
+
+    urlFilterFormElement.addEventListener(urlFilterForm.finishedEventName, () => {
+        modal.close();
     });
 };
