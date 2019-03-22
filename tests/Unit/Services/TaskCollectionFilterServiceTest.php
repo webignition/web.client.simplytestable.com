@@ -28,7 +28,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     public function testGetRemoteIdCount(
         EntityManagerInterface $entityManager,
         Test $test,
-        ?string $typeFilter,
+        string $typeFilter,
         string $outcomeFilter
     ) {
         $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
@@ -45,7 +45,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $test = Test::create(1);
 
         return [
-            'outcomeFilter: skipped, typeFilter: null' => [
+            'outcomeFilter: skipped, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdCountByTestAndTaskTypeIncludingStatesTaskRepository(
                         $test,
@@ -54,7 +54,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => TaskCollectionFilterService::OUTCOME_FILTER_SKIPPED,
             ],
             'outcomeFilter: skipped, typeFilter: HTML validation' => [
@@ -69,7 +69,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                 'typeFilter' => Task::TYPE_HTML_VALIDATION,
                 'outcomeFilter' => TaskCollectionFilterService::OUTCOME_FILTER_SKIPPED,
             ],
-            'outcomeFilter: cancelled, typeFilter: null' => [
+            'outcomeFilter: cancelled, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdCountByTestAndTaskTypeIncludingStatesTaskRepository(
                         $test,
@@ -78,10 +78,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => TaskCollectionFilterService::OUTCOME_FILTER_CANCELLED,
             ],
-            'outcomeFilter: without-errors, typeFilter: null' => [
+            'outcomeFilter: without-errors, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
@@ -92,10 +92,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => 'without-errors',
             ],
-            'outcomeFilter: with-errors, typeFilter: null' => [
+            'outcomeFilter: with-errors, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
@@ -106,10 +106,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => 'with-errors',
             ],
-            'outcomeFilter: with-warnings, typeFilter: null' => [
+            'outcomeFilter: with-warnings, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
@@ -120,7 +120,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => 'with-warnings',
             ],
         ];
@@ -132,7 +132,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     public function testGetRemoteIds(
         EntityManagerInterface $entityManager,
         Test $test,
-        ?string $typeFilter,
+        string $typeFilter,
         string $outcomeFilter
     ) {
         $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
@@ -149,7 +149,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
         $test = Test::create(1);
 
         return [
-            'outcomeFilter: skipped, typeFilter: null' => [
+            'outcomeFilter: skipped, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdByTestAndTaskTypeIncludingStatesTaskRepository(
                         $test,
@@ -158,7 +158,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => TaskCollectionFilterService::OUTCOME_FILTER_SKIPPED,
             ],
             'outcomeFilter: skipped, typeFilter: HTML validation' => [
@@ -173,7 +173,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                 'typeFilter' => Task::TYPE_HTML_VALIDATION,
                 'outcomeFilter' => TaskCollectionFilterService::OUTCOME_FILTER_SKIPPED,
             ],
-            'outcomeFilter: cancelled, typeFilter: null' => [
+            'outcomeFilter: cancelled, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdByTestAndTaskTypeIncludingStatesTaskRepository(
                         $test,
@@ -182,10 +182,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => TaskCollectionFilterService::OUTCOME_FILTER_CANCELLED,
             ],
-            'outcomeFilter: without-errors, typeFilter: null' => [
+            'outcomeFilter: without-errors, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
@@ -195,10 +195,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => 'without-errors',
             ],
-            'outcomeFilter: with-errors, typeFilter: null' => [
+            'outcomeFilter: with-errors, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
@@ -208,10 +208,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => 'with-errors',
             ],
-            'outcomeFilter: with-warnings, typeFilter: null' => [
+            'outcomeFilter: with-warnings, typeFilter: empty' => [
                 'entityManager' => $this->createEntityManager(
                     $this->createGetRemoteIdByTestAndIssueCountAndTaskTypeExcludingStatesTaskRepository(
                         $test,
@@ -221,23 +221,10 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
                     )
                 ),
                 'test' => $test,
-                'typeFilter' => null,
+                'typeFilter' => '',
                 'outcomeFilter' => 'with-warnings',
             ],
         ];
-    }
-
-    public function testGetCount()
-    {
-        /* @var EntityManagerInterface|MockInterface $entityManager */
-        $entityManager = \Mockery::mock(EntityManagerInterface::class);
-        $entityManager
-            ->shouldReceive('getRepository')
-            ->with(Task::class);
-
-        $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
-
-        $this->assertEquals(0, $taskCollectionFilterService->getCount());
     }
 
     /**

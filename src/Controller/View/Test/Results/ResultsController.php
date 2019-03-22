@@ -265,14 +265,11 @@ class ResultsController extends AbstractBaseViewController
         return $taskTypeLabel;
     }
 
-    /**
-     * @return array
-     */
-    private function createFilteredTaskCounts()
+    private function createFilteredTaskCounts(): array
     {
         $filteredTaskCounts = [];
 
-        $this->taskCollectionFilterService->setOutcomeFilter(null);
+        $this->taskCollectionFilterService->setOutcomeFilter();
         $filteredTaskCounts['all'] = $this->taskCollectionFilterService->getRemoteIdCount();
 
         $filters = [
