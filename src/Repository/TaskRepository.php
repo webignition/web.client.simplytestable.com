@@ -179,9 +179,9 @@ class TaskRepository extends EntityRepository
     /**
      * @param Test $test
      * @param array $excludeStates
-     * @param string|null $taskType
-     * @param string|null $issueCount
-     * @param string|null $issueType
+     * @param string $taskType
+     * @param string $issueCount
+     * @param string $issueType
      *
      * @return int[]
      */
