@@ -23,11 +23,6 @@ class TaskCollectionFilterService
     private $taskRepository;
 
     /**
-     * @var string
-     */
-    private $typeFilter = '';
-
-    /**
      * @param EntityManagerInterface $entityManager
      */
     public function __construct(EntityManagerInterface $entityManager)
@@ -37,17 +32,12 @@ class TaskCollectionFilterService
         $this->taskRepository = $this->entityManager->getRepository(Task::class);
     }
 
-    public function setTypeFilter(string $typeFilter = '')
-    {
-        $this->typeFilter = $typeFilter;
-    }
-
-    public function getRemoteIdCount(Test $test, string $outcomeFilter): int
+    public function getRemoteIdCount(Test $test, string $outcomeFilter, string $typeFilter): int
     {
         if (in_array($outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
             return $this->taskRepository->getRemoteIdCountByTestAndTaskTypeIncludingStates(
                 $test,
-                $this->typeFilter,
+                $typeFilter,
                 [$outcomeFilter]
             );
         }
@@ -65,7 +55,7 @@ class TaskCollectionFilterService
         return $this->taskRepository->getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
             $test,
             $excludeStates,
-            $this->typeFilter,
+            $typeFilter,
             $this->createIssueCountFromOutcomeFilter($outcomeFilter),
             $this->createIssueTypeFromOutcomeFilter($outcomeFilter)
         );
@@ -74,15 +64,16 @@ class TaskCollectionFilterService
     /**
      * @param Test $test
      * @param string $outcomeFilter
+     * @param string $typeFilter
      *
      * @return int[]
      */
-    public function getRemoteIds(Test $test, string $outcomeFilter): array
+    public function getRemoteIds(Test $test, string $outcomeFilter, string $typeFilter): array
     {
         if (in_array($outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
             return $this->taskRepository->getRemoteIdByTestAndTaskTypeIncludingStates(
                 $test,
-                $this->typeFilter,
+                $typeFilter,
                 array($outcomeFilter)
             );
         }
@@ -95,7 +86,7 @@ class TaskCollectionFilterService
                 Task::STATE_IN_PROGRESS,
                 Task::STATE_AWAITING_CANCELLATION,
             ],
-            $this->typeFilter,
+            $typeFilter,
             $this->createIssueCountFromOutcomeFilter($outcomeFilter),
             $this->createIssueTypeFromOutcomeFilter($outcomeFilter)
         );
