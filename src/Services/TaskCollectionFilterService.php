@@ -30,7 +30,7 @@ class TaskCollectionFilterService
     /**
      * @var string
      */
-    private $outcomeFilter = null;
+    private $outcomeFilter = '';
 
     /**
      * @var string
@@ -55,23 +55,17 @@ class TaskCollectionFilterService
         $this->test = $test;
     }
 
-    /**
-     * @param string $outcomeFilter
-     */
-    public function setOutcomeFilter($outcomeFilter)
+    public function setOutcomeFilter(string $outcomeFilter = '')
     {
         $this->outcomeFilter = $outcomeFilter;
     }
 
-    public function setTypeFilter(string $typeFilter)
+    public function setTypeFilter(string $typeFilter = '')
     {
         $this->typeFilter = $typeFilter;
     }
 
-    /**
-     * @return int
-     */
-    public function getRemoteIdCount()
+    public function getRemoteIdCount(): int
     {
         if (in_array($this->outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
             return $this->taskRepository->getRemoteIdCountByTestAndTaskTypeIncludingStates(
@@ -103,7 +97,7 @@ class TaskCollectionFilterService
     /**
      * @return int[]
      */
-    public function getRemoteIds()
+    public function getRemoteIds(): array
     {
         if (in_array($this->outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
             return $this->taskRepository->getRemoteIdByTestAndTaskTypeIncludingStates(
@@ -127,13 +121,10 @@ class TaskCollectionFilterService
         );
     }
 
-    /**
-     * @return string
-     */
-    private function createIssueCountFromOutcomeFilter()
+    private function createIssueCountFromOutcomeFilter(): string
     {
         if (empty($this->outcomeFilter)) {
-            return null;
+            return '';
         }
 
         $outcomeFilterContainsWithout = substr_count($this->outcomeFilter, 'without') > 0;
@@ -147,20 +138,14 @@ class TaskCollectionFilterService
         );
     }
 
-    /**
-     * @return string
-     */
-    private function createIssueTypeFromOutcomeFilter()
+    private function createIssueTypeFromOutcomeFilter(): string
     {
         return $this->outcomeFilter === 'with-warnings'
             ? 'warning'
             : 'error';
     }
 
-    /**
-     * @return int
-     */
-    public function getCount()
+    public function getCount(): int
     {
         return 0;
     }
