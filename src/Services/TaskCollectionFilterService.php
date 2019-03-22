@@ -35,7 +35,7 @@ class TaskCollectionFilterService
     /**
      * @var string
      */
-    private $typeFilter = null;
+    private $typeFilter = '';
 
     /**
      * @param EntityManagerInterface $entityManager
@@ -63,10 +63,7 @@ class TaskCollectionFilterService
         $this->outcomeFilter = $outcomeFilter;
     }
 
-    /**
-     * @param string $typeFilter
-     */
-    public function setTypeFilter($typeFilter)
+    public function setTypeFilter(string $typeFilter)
     {
         $this->typeFilter = $typeFilter;
     }
