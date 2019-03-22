@@ -150,11 +150,11 @@ class ByTaskTypeController extends AbstractBaseViewController
             ));
         }
 
-        $this->taskCollectionFilterService->setOutcomeFilter('with-errors');
         $this->taskCollectionFilterService->setTypeFilter($selectedTaskType);
 
         $filteredRemoteTaskIds = $this->taskCollectionFilterService->getRemoteIds(
-            $testModel->getEntity()
+            $testModel->getEntity(),
+            'with-errors'
         );
 
         $filteredTasks = $this->taskService->getCollection(

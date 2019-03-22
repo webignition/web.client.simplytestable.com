@@ -268,10 +268,9 @@ class ResultsController extends AbstractBaseViewController
 
     private function createFilteredTaskCounts(Test $test): array
     {
-        $filteredTaskCounts = [];
+        $taskCounts = [];
 
-        $this->taskCollectionFilterService->setOutcomeFilter();
-        $filteredTaskCounts['all'] = $this->taskCollectionFilterService->getRemoteIdCount($test);
+        $taskCounts['all'] = $this->taskCollectionFilterService->getRemoteIdCount($test, '');
 
         $filters = [
             self::FILTER_WITH_ERRORS,
@@ -282,13 +281,11 @@ class ResultsController extends AbstractBaseViewController
         ];
 
         foreach ($filters as $filter) {
-            $this->taskCollectionFilterService->setOutcomeFilter($filter);
-
-            $filteredTaskCountKey = str_replace('-', '_', $filter);
-            $filteredTaskCounts[$filteredTaskCountKey] = $this->taskCollectionFilterService->getRemoteIdCount($test);
+            $taskCountKey = str_replace('-', '_', $filter);
+            $taskCounts[$taskCountKey] = $this->taskCollectionFilterService->getRemoteIdCount($test, $filter);
         }
 
-        return $filteredTaskCounts;
+        return $taskCounts;
     }
 
     /**
@@ -304,10 +301,9 @@ class ResultsController extends AbstractBaseViewController
             return null;
         }
 
-        $this->taskCollectionFilterService->setOutcomeFilter($filter);
         $this->taskCollectionFilterService->setTypeFilter($taskType);
 
-        return $this->taskCollectionFilterService->getRemoteIds($test);
+        return $this->taskCollectionFilterService->getRemoteIds($test, $filter);
     }
 
     private function getAvailableTaskTypes(array $taskTypes, bool $isPublic, bool $isOwner): array
