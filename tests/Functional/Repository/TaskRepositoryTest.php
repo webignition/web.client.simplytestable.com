@@ -462,7 +462,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
      */
     public function testGetRemoteIdByTestAndTaskTypeIncludingStates(
         int $testIndex,
-        ?string $taskType,
+        string $taskType,
         array $states,
         array $expectedRemoteTaskIds
     ) {
@@ -522,7 +522,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         return [
             'testId 1; states: completed' => [
                 'testIndex' => 0,
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_COMPLETED,
                 ],
@@ -532,7 +532,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
             'testId 1; states: cancelled' => [
                 'testIndex' => 0,
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_CANCELLED,
                 ],
@@ -542,7 +542,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
             'testId 1; states: completed, queued' => [
                 'testIndex' => 0,
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_COMPLETED,
                     Task::STATE_CANCELLED,
@@ -553,7 +553,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
             'testId 2; states: in-progress' => [
                 'testIndex' => 1,
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_IN_PROGRESS,
                 ],
@@ -929,7 +929,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
      */
     public function testGetRemoteIdCountByTestAndTaskTypeIncludingStates(
         int $testIndex,
-        ?string $taskType,
+        string $taskType,
         array $states,
         int $expectedRemoteTaskCount
     ) {
@@ -989,7 +989,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         return [
             'testId 1; states: completed' => [
                 'testIndex' => 0,
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_COMPLETED,
                 ],
@@ -997,7 +997,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
             'testId 1; states: cancelled' => [
                 'testIndex' => 0,
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_CANCELLED,
                 ],
@@ -1005,7 +1005,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
             'testId 1; states: completed, queued' => [
                 'testIndex' => 0,
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_COMPLETED,
                     Task::STATE_CANCELLED,
@@ -1014,7 +1014,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
             ],
             'testId 2; states: in-progress' => [
                 'testIndex' => 1,
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_IN_PROGRESS,
                 ],

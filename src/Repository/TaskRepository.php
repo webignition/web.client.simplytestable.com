@@ -142,15 +142,11 @@ class TaskRepository extends EntityRepository
         return $this->getTaskIdsFromQueryResult($queryBuilder->getQuery()->getResult());
     }
 
-    /**
-     * @param Test $test
-     * @param string|null $taskType
-     * @param string[] $states
-     *
-     * @return int
-     */
-    public function getRemoteIdCountByTestAndTaskTypeIncludingStates(Test $test, $taskType = null, $states = [])
-    {
+    public function getRemoteIdCountByTestAndTaskTypeIncludingStates(
+        Test $test,
+        string $taskType,
+        array $states = []
+    ): int {
         $queryBuilder = $this->createTestAndTaskTypeIncludingStatesQueryBuilder($test, $taskType, $states);
         $queryBuilder->select('COUNT(Task.taskId)');
 
@@ -159,22 +155,18 @@ class TaskRepository extends EntityRepository
         return (int)$result[0][1];
     }
 
-    /**
-     * @param Test $test
-     * @param string|null $taskType
-     * @param string[] $states
-     *
-     * @return QueryBuilder
-     */
-    private function createTestAndTaskTypeIncludingStatesQueryBuilder(Test $test, $taskType = null, $states = [])
-    {
+    private function createTestAndTaskTypeIncludingStatesQueryBuilder(
+        Test $test,
+        string $taskType,
+        array $states = []
+    ): QueryBuilder {
         $queryBuilder = $this->createTaskQueryBuilder();
         $this->setQueryBuilderTaskTestPredicate($queryBuilder, $test);
 
         $queryBuilder->andWhere('Task.state IN (:States)');
         $queryBuilder->setParameter('States', $states);
 
-        if (!is_null($taskType)) {
+        if (!empty($taskType)) {
             $queryBuilder->andWhere('Task.type = :TaskType');
             $queryBuilder->setParameter('TaskType', $taskType);
         }
