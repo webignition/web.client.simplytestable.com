@@ -581,7 +581,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         int $testIndex,
         string $issueCount,
         string $issueType,
-        ?string $taskType,
+        string $taskType,
         array $states,
         array $expectedRemoteTaskIds
     ) {
@@ -684,7 +684,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
                 'testIndex' => 0,
                 'issueCount' => '= 0',
                 'issueType' => 'error',
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_QUEUED,
                 ],
@@ -708,7 +708,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
                 'testIndex' => 0,
                 'issueCount' => '> 0',
                 'issueType' => 'error',
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_QUEUED,
                 ],
@@ -720,7 +720,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
                 'testIndex' => 0,
                 'issueCount' => '> 0',
                 'issueType' => 'error',
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_CANCELLED,
                     Task::STATE_AWAITING_CANCELLATION,
@@ -731,7 +731,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
                 'testIndex' => 1,
                 'issueCount' => '> 0',
                 'issueType' => 'warning',
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_QUEUED,
                 ],
@@ -761,7 +761,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
         int $testIndex,
         string $issueCount,
         string $issueType,
-        ?string $taskType,
+        string $taskType,
         array $states,
         int $expectedRemoteIdCount
     ) {
@@ -864,7 +864,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
                 'testIndex' => 0,
                 'issueCount' => '= 0',
                 'issueType' => 'error',
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_QUEUED,
                 ],
@@ -884,7 +884,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
                 'testIndex' => 0,
                 'issueCount' => '> 0',
                 'issueType' => 'error',
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_QUEUED,
                 ],
@@ -894,7 +894,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
                 'testIndex' => 0,
                 'issueCount' => '> 0',
                 'issueType' => 'error',
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_CANCELLED,
                     Task::STATE_AWAITING_CANCELLATION,
@@ -905,7 +905,7 @@ class TaskRepositoryTest extends AbstractBaseTestCase
                 'testIndex' => 1,
                 'issueCount' => '> 0',
                 'issueType' => 'warning',
-                'taskType' => null,
+                'taskType' => '',
                 'states' => [
                     Task::STATE_QUEUED,
                 ],
