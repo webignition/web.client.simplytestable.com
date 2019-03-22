@@ -1,4 +1,4 @@
-let Modal = require('../test-history/modal');
+let UrlFilterForm = require('../test-history/url-filter-form');
 let Suggestions = require('../test-history/suggestions');
 let ListedTestCollection = require('../model/listed-test-collection');
 
@@ -8,14 +8,14 @@ module.exports = function (document) {
     const modalElement = document.getElementById(modalId);
     let filterOptionsElement = document.querySelector(filterOptionsSelector);
 
-    let modal = new Modal(modalElement);
+    let urlFilterForm = new UrlFilterForm(modalElement);
     let suggestions = new Suggestions(document, modalElement.getAttribute('data-source-url'));
 
     /**
      * @param {CustomEvent} event
      */
     let suggestionsLoadedEventListener = function (event) {
-        modal.setSuggestions(event.detail);
+        urlFilterForm.setSuggestions(event.detail);
         filterOptionsElement.classList.add('visible');
     };
 
@@ -37,7 +37,7 @@ module.exports = function (document) {
     };
 
     document.addEventListener(suggestions.loadedEventName, suggestionsLoadedEventListener);
-    modalElement.addEventListener(modal.filterChangedEventName, filterChangedEventListener);
+    modalElement.addEventListener(urlFilterForm.filterChangedEventName, filterChangedEventListener);
 
     suggestions.retrieve();
 
