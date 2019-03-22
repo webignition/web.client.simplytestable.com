@@ -13,23 +13,13 @@ class TaskCollectionFilterService
     const OUTCOME_FILTER_CANCELLED = 'cancelled';
 
     /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
      * @var TaskRepository
      */
     private $taskRepository;
 
-    /**
-     * @param EntityManagerInterface $entityManager
-     */
     public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
-
-        $this->taskRepository = $this->entityManager->getRepository(Task::class);
+        $this->taskRepository = $entityManager->getRepository(Task::class);
     }
 
     public function getRemoteIdCount(Test $test, string $outcomeFilter, string $typeFilter): int
