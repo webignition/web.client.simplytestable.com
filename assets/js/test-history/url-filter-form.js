@@ -95,6 +95,12 @@ class UrlFilterForm {
         this.element.addEventListener('awesomplete-selectcomplete', () => {
             this.element.dispatchEvent(new Event(this.suggestionSelectedEventName));
         });
+
+        this.input.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                this.applyButton.click();
+            }
+        });
     };
 }
 
