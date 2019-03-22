@@ -21,6 +21,7 @@ class UrlFilterForm {
         this.filterChangedEventName = 'url-filter-form.filter-changed';
         this.finishedEventName = 'url-filter-form.finished';
         this.suggestionSelectedEventName = 'url-filter-form.suggestion-selected';
+        this.ecapeKeyFinishes = true;
 
         this.init();
     }
@@ -96,9 +97,23 @@ class UrlFilterForm {
             this.element.dispatchEvent(new Event(this.suggestionSelectedEventName));
         });
 
+        this.element.addEventListener('awesomplete-open', () => {
+            this.ecapeKeyFinishes = false;
+        });
+
+        this.element.addEventListener('awesomplete-close', () => {
+            window.setTimeout(() => {
+                this.ecapeKeyFinishes = true;
+            }, 100);
+        });
+
         this.input.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
                 this.applyButton.click();
+            }
+
+            if (event.key === 'Escape' && this.ecapeKeyFinishes) {
+                this.element.dispatchEvent(new Event(this.finishedEventName));
             }
         });
     };
