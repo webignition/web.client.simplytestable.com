@@ -18,7 +18,9 @@ class UrlFilterForm {
         this.applyFilter = false;
         this.awesomeplete = new Awesomplete(this.input);
         this.suggestions = [];
-        this.filterChangedEventName = 'test-history.modal.filter.changed';
+        this.filterChangedEventName = 'url-filter-form.filter-changed';
+        this.finishedEventName = 'url-filter-form.finished';
+        this.suggestionSelectedEventName = 'url-filter-form.suggestion-selected';
 
         this.init();
     }
@@ -70,11 +72,13 @@ class UrlFilterForm {
 
         let applyButtonClickEventListener = function () {
             this.filter = this.input.value.trim();
+            this.element.dispatchEvent(new Event(this.finishedEventName));
         };
 
         let clearButtonClickEventListener = function () {
             this.input.value = '';
             this.filter = '';
+            this.element.dispatchEvent(new Event(this.finishedEventName));
         };
 
         let closeButtonClickEventListener = function () {
@@ -87,6 +91,10 @@ class UrlFilterForm {
         this.applyButton.addEventListener('click', applyButtonClickEventListener.bind(this));
         this.clearButton.addEventListener('click', clearButtonClickEventListener.bind(this));
         this.closeButton.addEventListener('click', closeButtonClickEventListener.bind(this));
+
+        this.element.addEventListener('awesomplete-selectcomplete', () => {
+            this.element.dispatchEvent(new Event(this.suggestionSelectedEventName));
+        });
     };
 }
 
