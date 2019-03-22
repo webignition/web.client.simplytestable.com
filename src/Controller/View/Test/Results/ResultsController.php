@@ -3,6 +3,7 @@
 namespace App\Controller\View\Test\Results;
 
 use App\Controller\AbstractBaseViewController;
+use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -132,10 +133,7 @@ class ResultsController extends AbstractBaseViewController
             $testModel->getWarningCount()
         );
 
-        $this->taskCollectionFilterService->setTest($testModel->getEntity());
-        $this->taskCollectionFilterService->setTypeFilter($taskType);
-
-        $filteredTaskCounts = $this->createFilteredTaskCounts();
+        $filteredTaskCounts = $this->createFilteredTaskCounts($testModel->getEntity(), $taskType);
 
         if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
             return new RedirectResponse($this->generateUrl(
@@ -164,6 +162,7 @@ class ResultsController extends AbstractBaseViewController
         }
 
         $remoteTaskIds = $this->getRemoteTaskIds(
+            $testModel->getEntity(),
             $filter,
             $taskType
         );
@@ -265,14 +264,13 @@ class ResultsController extends AbstractBaseViewController
         return $taskTypeLabel;
     }
 
-    private function createFilteredTaskCounts(): array
+    private function createFilteredTaskCounts(Test $test, string $typeFilter): array
     {
-        $filteredTaskCounts = [];
+        $taskCounts = [];
 
-        $this->taskCollectionFilterService->setOutcomeFilter();
-        $filteredTaskCounts['all'] = $this->taskCollectionFilterService->getRemoteIdCount();
+        $taskCounts['all'] = $this->taskCollectionFilterService->getRemoteIdCount($test, '', $typeFilter);
 
-        $filters = [
+        $outcomeFilters = [
             self::FILTER_WITH_ERRORS,
             self::FILTER_WITH_WARNINGS,
             self::FILTER_WITHOUT_ERRORS,
@@ -280,32 +278,32 @@ class ResultsController extends AbstractBaseViewController
             self::FILTER_CANCELLED,
         ];
 
-        foreach ($filters as $filter) {
-            $this->taskCollectionFilterService->setOutcomeFilter($filter);
-
-            $filteredTaskCountKey = str_replace('-', '_', $filter);
-            $filteredTaskCounts[$filteredTaskCountKey] = $this->taskCollectionFilterService->getRemoteIdCount();
+        foreach ($outcomeFilters as $outcomeFilter) {
+            $taskCountKey = str_replace('-', '_', $outcomeFilter);
+            $taskCounts[$taskCountKey] = $this->taskCollectionFilterService->getRemoteIdCount(
+                $test,
+                $outcomeFilter,
+                $typeFilter
+            );
         }
 
-        return $filteredTaskCounts;
+        return $taskCounts;
     }
 
     /**
+     * @param Test $test
      * @param string $filter
      * @param string $taskType
      *
      * @return int[]|null
      */
-    private function getRemoteTaskIds($filter, $taskType)
+    private function getRemoteTaskIds(Test $test, $filter, $taskType)
     {
         if ($filter == 'all' && empty($taskType)) {
             return null;
         }
 
-        $this->taskCollectionFilterService->setOutcomeFilter($filter);
-        $this->taskCollectionFilterService->setTypeFilter($taskType);
-
-        return $this->taskCollectionFilterService->getRemoteIds();
+        return $this->taskCollectionFilterService->getRemoteIds($test, $filter, $taskType);
     }
 
     private function getAvailableTaskTypes(array $taskTypes, bool $isPublic, bool $isOwner): array

@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use App\Entity\Test;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Task\Task;
-use App\Entity\Test;
 use App\Repository\TaskRepository;
 
 class TaskCollectionFilterService
@@ -13,70 +13,27 @@ class TaskCollectionFilterService
     const OUTCOME_FILTER_CANCELLED = 'cancelled';
 
     /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
      * @var TaskRepository
      */
-    protected $taskRepository;
+    private $taskRepository;
 
-    /**
-     * @var Test
-     */
-    private $test;
-
-    /**
-     * @var string
-     */
-    private $outcomeFilter = '';
-
-    /**
-     * @var string
-     */
-    private $typeFilter = '';
-
-    /**
-     * @param EntityManagerInterface $entityManager
-     */
     public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
-
-        $this->taskRepository = $this->entityManager->getRepository(Task::class);
+        $this->taskRepository = $entityManager->getRepository(Task::class);
     }
 
-    /**
-     * @param Test $test
-     */
-    public function setTest(Test $test)
+    public function getRemoteIdCount(Test $test, string $outcomeFilter, string $typeFilter): int
     {
-        $this->test = $test;
-    }
-
-    public function setOutcomeFilter(string $outcomeFilter = '')
-    {
-        $this->outcomeFilter = $outcomeFilter;
-    }
-
-    public function setTypeFilter(string $typeFilter = '')
-    {
-        $this->typeFilter = $typeFilter;
-    }
-
-    public function getRemoteIdCount(): int
-    {
-        if (in_array($this->outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
+        if (in_array($outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
             return $this->taskRepository->getRemoteIdCountByTestAndTaskTypeIncludingStates(
-                $this->test,
-                $this->typeFilter,
-                [$this->outcomeFilter]
+                $test,
+                $typeFilter,
+                [$outcomeFilter]
             );
         }
 
         $excludeStates = [];
-        if ($this->outcomeFilter === 'without-errors') {
+        if ($outcomeFilter === 'without-errors') {
             $excludeStates = [
                 Task::STATE_SKIPPED,
                 Task::STATE_CANCELLED,
@@ -86,48 +43,52 @@ class TaskCollectionFilterService
         }
 
         return $this->taskRepository->getRemoteIdCountByTestAndIssueCountAndTaskTypeExcludingStates(
-            $this->test,
+            $test,
             $excludeStates,
-            $this->typeFilter,
-            $this->createIssueCountFromOutcomeFilter(),
-            $this->createIssueTypeFromOutcomeFilter()
+            $typeFilter,
+            $this->createIssueCountFromOutcomeFilter($outcomeFilter),
+            $this->createIssueTypeFromOutcomeFilter($outcomeFilter)
         );
     }
 
     /**
+     * @param Test $test
+     * @param string $outcomeFilter
+     * @param string $typeFilter
+     *
      * @return int[]
      */
-    public function getRemoteIds(): array
+    public function getRemoteIds(Test $test, string $outcomeFilter, string $typeFilter): array
     {
-        if (in_array($this->outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
+        if (in_array($outcomeFilter, [self::OUTCOME_FILTER_SKIPPED, self::OUTCOME_FILTER_CANCELLED])) {
             return $this->taskRepository->getRemoteIdByTestAndTaskTypeIncludingStates(
-                $this->test,
-                $this->typeFilter,
-                array($this->outcomeFilter)
+                $test,
+                $typeFilter,
+                array($outcomeFilter)
             );
         }
 
         return $this->taskRepository->getRemoteIdByTestAndIssueCountAndTaskTypeExcludingStates(
-            $this->test,
+            $test,
             [
                 Task::STATE_SKIPPED,
                 Task::STATE_CANCELLED,
                 Task::STATE_IN_PROGRESS,
                 Task::STATE_AWAITING_CANCELLATION,
             ],
-            $this->typeFilter,
-            $this->createIssueCountFromOutcomeFilter(),
-            $this->createIssueTypeFromOutcomeFilter()
+            $typeFilter,
+            $this->createIssueCountFromOutcomeFilter($outcomeFilter),
+            $this->createIssueTypeFromOutcomeFilter($outcomeFilter)
         );
     }
 
-    private function createIssueCountFromOutcomeFilter(): string
+    private function createIssueCountFromOutcomeFilter(string $outcomeFilter): string
     {
-        if (empty($this->outcomeFilter)) {
+        if (empty($outcomeFilter)) {
             return '';
         }
 
-        $outcomeFilterContainsWithout = substr_count($this->outcomeFilter, 'without') > 0;
+        $outcomeFilterContainsWithout = substr_count($outcomeFilter, 'without') > 0;
         $comparison = $outcomeFilterContainsWithout
             ? '='
             : '>';
@@ -138,9 +99,9 @@ class TaskCollectionFilterService
         );
     }
 
-    private function createIssueTypeFromOutcomeFilter(): string
+    private function createIssueTypeFromOutcomeFilter(string $outcomeFilter): string
     {
-        return $this->outcomeFilter === 'with-warnings'
+        return $outcomeFilter === 'with-warnings'
             ? 'warning'
             : 'error';
     }

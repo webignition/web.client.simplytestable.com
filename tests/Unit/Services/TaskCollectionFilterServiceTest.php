@@ -33,11 +33,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     ) {
         $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
 
-        $taskCollectionFilterService->setTest($test);
-        $taskCollectionFilterService->setTypeFilter($typeFilter);
-        $taskCollectionFilterService->setOutcomeFilter($outcomeFilter);
-
-        $this->assertSame(0, $taskCollectionFilterService->getRemoteIdCount());
+        $this->assertSame(0, $taskCollectionFilterService->getRemoteIdCount($test, $outcomeFilter, $typeFilter));
     }
 
     public function getRemoteIdCountDataProvider(): array
@@ -137,11 +133,7 @@ class TaskCollectionFilterServiceTest extends \PHPUnit\Framework\TestCase
     ) {
         $taskCollectionFilterService = new TaskCollectionFilterService($entityManager);
 
-        $taskCollectionFilterService->setTest($test);
-        $taskCollectionFilterService->setTypeFilter($typeFilter);
-        $taskCollectionFilterService->setOutcomeFilter($outcomeFilter);
-
-        $this->assertSame([], $taskCollectionFilterService->getRemoteIds());
+        $this->assertSame([], $taskCollectionFilterService->getRemoteIds($test, $outcomeFilter, $typeFilter));
     }
 
     public function getRemoteIdsDataProvider(): array
