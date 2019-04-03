@@ -167,14 +167,6 @@ class Task
     }
 
     /**
-     * @return string
-     */
-    public function getWorker()
-    {
-        return $this->worker;
-    }
-
-    /**
      * @param string $type
      *
      * @return Task
