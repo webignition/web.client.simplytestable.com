@@ -40,7 +40,6 @@ class TaskControllerTest extends AbstractControllerTest
             'id' => 1,
             'url' => 'http://example.com/',
             'state' => Task::STATE_COMPLETED,
-            'worker' => '',
             'type' => Task::TYPE_HTML_VALIDATION,
             'output' => [
                 'output' => '',
@@ -53,7 +52,6 @@ class TaskControllerTest extends AbstractControllerTest
             'id' => 2,
             'url' => 'http://example.com/',
             'state' => Task::STATE_COMPLETED,
-            'worker' => '',
             'type' => Task::TYPE_CSS_VALIDATION,
             'output' => [
                 'output' => '',
@@ -66,7 +64,6 @@ class TaskControllerTest extends AbstractControllerTest
             'id' => 3,
             'url' => 'http://example.com/foo',
             'state' => Task::STATE_COMPLETED,
-            'worker' => '',
             'type' => Task::TYPE_HTML_VALIDATION,
             'output' => [
                 'output' => '',
@@ -79,7 +76,6 @@ class TaskControllerTest extends AbstractControllerTest
             'id' => 4,
             'url' => 'http://example.com/',
             'state' => Task::STATE_COMPLETED,
-            'worker' => '',
             'type' => Task::TYPE_CSS_VALIDATION,
             'output' => [
                 'output' => '',
