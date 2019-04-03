@@ -42,7 +42,6 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTaskData['taskId'], $task->getTaskId());
         $this->assertEquals($expectedTaskData['url'], $task->getUrl());
         $this->assertEquals($expectedTaskData['state'], $task->getState());
-        $this->assertEquals($expectedTaskData['worker'], $task->getWorker());
         $this->assertEquals($expectedTaskData['type'], $task->getType());
         $this->assertEquals($expectedTaskData['hasOutput'], $task->hasOutput());
     }
