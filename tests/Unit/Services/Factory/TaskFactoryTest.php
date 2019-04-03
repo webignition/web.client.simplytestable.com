@@ -42,7 +42,6 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($expectedTaskData['taskId'], $task->getTaskId());
         $this->assertEquals($expectedTaskData['url'], $task->getUrl());
         $this->assertEquals($expectedTaskData['state'], $task->getState());
-        $this->assertEquals($expectedTaskData['worker'], $task->getWorker());
         $this->assertEquals($expectedTaskData['type'], $task->getType());
         $this->assertEquals($expectedTaskData['hasOutput'], $task->hasOutput());
     }
@@ -57,14 +56,12 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
                     'id' => 1,
                     'url' => 'http://example.com/',
                     'state' => Task::STATE_IN_PROGRESS,
-                    'worker' => 'foo.worker.simplytestable.com',
                     'type' => Task::TYPE_HTML_VALIDATION,
                 ],
                 'expectedTaskData' => [
                     'taskId' => 1,
                     'url' => 'http://example.com/',
                     'state' => Task::STATE_IN_PROGRESS,
-                    'worker' => 'foo.worker.simplytestable.com',
                     'type' => Task::TYPE_HTML_VALIDATION,
                     'hasOutput' => false,
                 ],
@@ -88,7 +85,6 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
                     'id' => 1,
                     'url' => 'http://example.com/',
                     'state' => Task::STATE_IN_PROGRESS,
-                    'worker' => 'foo.worker.simplytestable.com',
                     'type' => Task::TYPE_HTML_VALIDATION,
                     'output' => [
                         'output' => '{"messages":[]}',
@@ -100,7 +96,6 @@ class TaskFactoryTest extends \PHPUnit\Framework\TestCase
                     'taskId' => 1,
                     'url' => 'http://example.com/',
                     'state' => Task::STATE_IN_PROGRESS,
-                    'worker' => 'foo.worker.simplytestable.com',
                     'type' => Task::TYPE_HTML_VALIDATION,
                     'hasOutput' => true,
                 ],

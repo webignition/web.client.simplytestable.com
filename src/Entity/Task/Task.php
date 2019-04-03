@@ -66,13 +66,6 @@ class Task
     /**
      * @var string
      *
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $worker;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(type="string", nullable=false)
      */
     private $type;
@@ -152,26 +145,6 @@ class Task
     public function getState()
     {
         return $this->state;
-    }
-
-    /**
-     * @param string $worker
-     *
-     * @return Task
-     */
-    public function setWorker($worker)
-    {
-        $this->worker = $worker;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getWorker()
-    {
-        return $this->worker;
     }
 
     /**

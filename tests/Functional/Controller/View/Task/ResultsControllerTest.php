@@ -76,7 +76,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
         'id' => 2,
         'url' => 'http://example.com/',
         'state' => Task::STATE_COMPLETED,
-        'worker' => '',
         'type' => Task::TYPE_HTML_VALIDATION,
         'output' => [
             'output' => '',
