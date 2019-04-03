@@ -42,7 +42,6 @@ class TaskFactory
         $task->setTaskId($taskData['id']);
         $task->setUrl($taskData['url']);
         $task->setState($taskData['state']);
-        $task->setWorker($taskData['worker']);
         $task->setType($taskData['type']);
 
         if (array_key_exists('output', $taskData)) {

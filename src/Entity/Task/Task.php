@@ -155,18 +155,6 @@ class Task
     }
 
     /**
-     * @param string $worker
-     *
-     * @return Task
-     */
-    public function setWorker($worker)
-    {
-        $this->worker = $worker;
-
-        return $this;
-    }
-
-    /**
      * @param string $type
      *
      * @return Task
