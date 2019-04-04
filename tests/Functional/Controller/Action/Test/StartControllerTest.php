@@ -5,14 +5,13 @@ namespace App\Tests\Functional\Controller\Action\Test;
 
 use App\Model\Test as TestModel;
 use App\Model\TestIdentifier;
+use App\Services\HoneypotFieldName;
+use App\Tests\Services\ObjectReflector;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Mock;
 use App\Controller\Action\Test\StartController;
-use App\Services\Configuration\LinkIntegrityTestConfiguration;
-use App\Services\Configuration\TestOptionsConfiguration;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
-use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\UserManager;
 use App\Tests\Factory\ConnectExceptionFactory;
 use App\Tests\Factory\HttpResponseFactory;
@@ -29,6 +28,7 @@ class StartControllerTest extends AbstractControllerTest
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;
     const USER_EMAIL = 'user@example.com';
+    const HONEYPOT_FIELD_NAME = 'honeypot-field-name';
 
     /**
      * @var StartController
@@ -90,6 +90,18 @@ class StartControllerTest extends AbstractControllerTest
         $userManager->setUser($user);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
+        $honeyPotFieldNameService = \Mockery::mock(HoneypotFieldName::class);
+        $honeyPotFieldNameService
+            ->shouldReceive('get')
+            ->andReturn(self::HONEYPOT_FIELD_NAME);
+
+        ObjectReflector::setProperty(
+            $this->testStartController,
+            StartController::class,
+            'honeypotFieldName',
+            $honeyPotFieldNameService
+        );
+
         /* @var RedirectResponse $response */
         $response = $this->testStartController->startNewAction($request);
 
@@ -125,10 +137,30 @@ class StartControllerTest extends AbstractControllerTest
         $expectedProgressRedirectUrl = '/http://example.com//1/progress/';
 
         return [
-            'website missing' => [
+            'honeypot field null' => [
                 'httpFixtures' => [],
                 'user' => $publicUser,
                 'request' => new Request(),
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([]),
+                'expectedFlashBagValues' => [],
+                'expectedRequestUrl' => null,
+            ],
+            'honeypot field non-empty' => [
+                'httpFixtures' => [],
+                'user' => $publicUser,
+                'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => 'non-empty',
+                ]),
+                'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([]),
+                'expectedFlashBagValues' => [],
+                'expectedRequestUrl' => null,
+            ],
+            'website missing' => [
+                'httpFixtures' => [],
+                'user' => $publicUser,
+                'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
+                ]),
                 'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
                     'html-validation' => 0,
                     'css-validation' => 0,
@@ -144,6 +176,7 @@ class StartControllerTest extends AbstractControllerTest
                 'httpFixtures' => [],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => '',
                 ]),
                 'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
@@ -161,6 +194,7 @@ class StartControllerTest extends AbstractControllerTest
                 'httpFixtures' => [],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => '   ',
                 ]),
                 'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
@@ -178,6 +212,7 @@ class StartControllerTest extends AbstractControllerTest
                 'httpFixtures' => [],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                 ]),
                 'expectedRedirectUrl' => $this->createExpectedStartFailureRedirectUrl([
@@ -203,6 +238,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
@@ -239,6 +275,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
@@ -272,6 +309,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                     'http-auth-username' => 'user',
@@ -310,6 +348,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
@@ -333,6 +372,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                     'full-single' => 'single',
@@ -357,6 +397,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $privateUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
@@ -380,6 +421,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $privateUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'link-integrity' => 1,
                 ]),
@@ -410,6 +452,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                 ]),
@@ -433,6 +476,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => 'example.com/',
                     'html-validation' => 1,
                 ]),
@@ -456,6 +500,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                     'http-auth-username' => 'user',
@@ -485,6 +530,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                     'http-auth-username' => '',
@@ -510,6 +556,7 @@ class StartControllerTest extends AbstractControllerTest
                 ],
                 'user' => $publicUser,
                 'request' => new Request([], [
+                    self::HONEYPOT_FIELD_NAME => '',
                     'website' => self::WEBSITE,
                     'html-validation' => 1,
                     'cookies' => [
@@ -549,14 +596,6 @@ class StartControllerTest extends AbstractControllerTest
      */
     public function testStartNewActionVerifyUrlToTest(string $url, string $expectedUrlToTest)
     {
-        $router = self::$container->get('router');
-
-        /* @var TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory */
-        $testOptionsRequestAdapterFactory = self::$container->get(TestOptionsRequestAdapterFactory::class);
-        $linkIntegrityTestConfiguration = self::$container->get(LinkIntegrityTestConfiguration::class);
-        $testOptionsConfiguration = self::$container->get(TestOptionsConfiguration::class);
-        $flashBag = self::$container->get(FlashBagInterface::class);
-
         /* @var RemoteTestService|Mock $remoteTestService */
         $remoteTestService = \Mockery::mock(RemoteTestService::class);
         $remoteTestService
@@ -571,13 +610,11 @@ class StartControllerTest extends AbstractControllerTest
                 $expectedUrlToTest
             ));
 
-        $testStartController = new StartController(
-            $router,
-            $remoteTestService,
-            $testOptionsRequestAdapterFactory,
-            $linkIntegrityTestConfiguration,
-            $testOptionsConfiguration,
-            $flashBag
+        ObjectReflector::setProperty(
+            $this->testStartController,
+            StartController::class,
+            'remoteTestService',
+            $remoteTestService
         );
 
         $requestData = [
@@ -587,7 +624,9 @@ class StartControllerTest extends AbstractControllerTest
 
         $request = new Request([], $requestData);
 
-        $testStartController->startNewAction($request);
+        $this->testStartController->startNewAction($request);
+
+        $this->addToAssertionCount(\Mockery::getContainer()->mockery_getExpectationCount());
     }
 
     public function startNewActionVerifyUrlToTestDataProvider(): array
@@ -626,6 +665,12 @@ class StartControllerTest extends AbstractControllerTest
 
     private function createExpectedStartFailureRedirectUrl(array $queryStringParameters): string
     {
-        return '/?' . http_build_query($queryStringParameters);
+        $expectedUrl = '/';
+
+        if (!empty($queryStringParameters)) {
+            $expectedUrl .= '?' . http_build_query($queryStringParameters);
+        }
+
+        return $expectedUrl;
     }
 }

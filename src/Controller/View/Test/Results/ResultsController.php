@@ -11,6 +11,7 @@ use App\Model\DecoratedTest;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
+use App\Services\HoneypotFieldName;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskCollectionFilterService;
@@ -47,6 +48,7 @@ class ResultsController extends AbstractBaseViewController
     private $userManager;
     private $testFactory;
     private $testRetriever;
+    private $honeypotFieldName;
 
     /**
      * @var string[]
@@ -74,7 +76,8 @@ class ResultsController extends AbstractBaseViewController
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         TestFactory $testFactory,
-        TestRetriever $testRetriever
+        TestRetriever $testRetriever,
+        HoneypotFieldName $honeypotFieldName
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -88,6 +91,7 @@ class ResultsController extends AbstractBaseViewController
         $this->userManager = $userManager;
         $this->testFactory = $testFactory;
         $this->testRetriever = $testRetriever;
+        $this->honeypotFieldName = $honeypotFieldName;
     }
 
     /**
@@ -155,6 +159,7 @@ class ResultsController extends AbstractBaseViewController
             'is_public_user_test' => $isPublicUserTest,
             'type' => $taskType,
             'filter' => $filter,
+            'honeypot_field_name' => $this->honeypotFieldName->get(),
         ]);
 
         if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
@@ -209,6 +214,7 @@ class ResultsController extends AbstractBaseViewController
                     'vendor-extensions' => 'warn',
                     'ignore-common-cdns' => 1
                 ],
+                'honeypot_field_name' => $this->honeypotFieldName->get(),
             ],
             $response
         );

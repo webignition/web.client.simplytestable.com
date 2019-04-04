@@ -41,58 +41,60 @@
     </span>
 </div>
 
-<div class="modal" id="http-authentication-options-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" data-name="close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h3>HTTP Authentication</h3>
-                <p>
-                    For when your site or page uses either
-                    <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or
-                    <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> HTTP authentication.
-                    Commonly used for public staging sites. Not safe for
-                    <a href="http://blog.simplytestable.com/html-validation-for-password-protected-sites/#security">sensitive information</a>.
-                </p>
-            </div>
-            <div class="modal-body form-horizontal">
-                <div class="form-group">
-                    <label class="control-label col-lg-2 col-md-2" for="http-auth-username">Username</label>
-                    <div class="col-lg-10 col-md-10">
-                        <input id="http-auth-username"
-                               name="http-auth-username"
-                               class="form-control credential js-disable-readonly"
-                               type="text"
-                               placeholder="Enter required username"
-                               value="{{ http_auth_username }}"
-                               readonly
-                        >
-                    </div>
+{% if is_logged_in %}
+    <div class="modal" id="http-authentication-options-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" data-name="close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>HTTP Authentication</h3>
+                    <p>
+                        For when your site or page uses either
+                        <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or
+                        <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> HTTP authentication.
+                        Commonly used for public staging sites. Not safe for
+                        <a href="http://blog.simplytestable.com/html-validation-for-password-protected-sites/#security">sensitive information</a>.
+                    </p>
                 </div>
+                <div class="modal-body form-horizontal">
+                    <div class="form-group">
+                        <label class="control-label col-lg-2 col-md-2" for="http-auth-username">Username</label>
+                        <div class="col-lg-10 col-md-10">
+                            <input id="http-auth-username"
+                                   name="http-auth-username"
+                                   class="form-control credential js-disable-readonly"
+                                   type="text"
+                                   placeholder="Enter required username"
+                                   value="{{ http_auth_username }}"
+                                   readonly
+                            >
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label class="control-label col-lg-2 col-md-2" for="http-auth-password">Password</label>
-                    <div class="col-lg-10 col-md-10">
-                        <input
-                                id="http-auth-password"
-                                name="http-auth-password"
-                                class="form-control credential js-disable-readonly"
-                                type="password"
-                                placeholder="Enter required password"
-                                value="{{ http_auth_password }}"
-                                readonly
-                        >
+                    <div class="form-group">
+                        <label class="control-label col-lg-2 col-md-2" for="http-auth-password">Password</label>
+                        <div class="col-lg-10 col-md-10">
+                            <input
+                                    id="http-auth-password"
+                                    name="http-auth-password"
+                                    class="form-control credential js-disable-readonly"
+                                    type="password"
+                                    placeholder="Enter required password"
+                                    value="{{ http_auth_password }}"
+                                    readonly
+                            >
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-default" data-dismiss="modal" data-name="clear" aria-hidden="true">
-                    Clear
-                </button>
-                <button class="btn btn-primary" data-dismiss="modal" data-name="apply" aria-hidden="true">
-                    Apply
-                </button>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" data-name="clear" aria-hidden="true">
+                        Clear
+                    </button>
+                    <button class="btn btn-primary" data-dismiss="modal" data-name="apply" aria-hidden="true">
+                        Apply
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+{% endif %}

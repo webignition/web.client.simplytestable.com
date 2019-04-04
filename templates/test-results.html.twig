@@ -30,6 +30,10 @@
                     </h1>
 
                     <form class="retest-form" role="form" method="post" action="{{ path('action_test_start') }}">
+                        <input name="{{ honeypot_field_name }}"
+                               type="hidden"
+                               value="">
+
                         <div class="row details">
                             <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
                                 <div class="row">
