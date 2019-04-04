@@ -72,6 +72,25 @@ class StartControllerTest extends AbstractControllerTest
         $this->assertInstanceOf(RedirectResponse::class, $response);
     }
 
+    public function testStartNewActionInvalidHoneypotValue()
+    {
+        $this->httpMockHandler->appendFixtures([new Response()]);
+
+        $this->client->request(
+            'POST',
+            $this->router->generate('action_test_start'),
+            [
+                'hp' => '1',
+            ]
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals($this->router->generate('view_dashboard'), $response->getTargetUrl());
+    }
+
     /**
      * @dataProvider startNewActionDataProvider
      */
