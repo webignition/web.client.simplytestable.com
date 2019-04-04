@@ -918,6 +918,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'filtered_task_counts',
                 'domain_test_count',
                 'default_css_validation_options',
+                'honeypot_field_name',
             ],
             array_keys($parameters)
         );
