@@ -89,7 +89,7 @@ class StartController extends AbstractController
 
         $honeypotValue = $requestData->get($this->honeypotFieldName->get());
         if (null === $honeypotValue || !empty($honeypotValue)) {
-            return new RedirectResponse($this->createStartErrorRedirectUrl([]));
+            return new RedirectResponse($this->createStartErrorRedirectUrl());
         }
 
         if ($requestData->get(Task::TYPE_KEY_LINK_INTEGRITY)) {
@@ -252,7 +252,7 @@ class StartController extends AbstractController
      *
      * @return string
      */
-    private function createStartErrorRedirectUrl(array $redirectRouteParameters)
+    private function createStartErrorRedirectUrl(array $redirectRouteParameters = [])
     {
         return $this->generateUrl('view_dashboard', $redirectRouteParameters);
     }
