@@ -3,7 +3,6 @@
 
 namespace App\Tests\Functional\Controller\Action\User\User;
 
-use App\Services\HoneypotFieldName;
 use App\Services\Mailer;
 use App\Tests\Factory\PostmarkExceptionFactory;
 use Egulias\EmailValidator\EmailValidator;
@@ -24,7 +23,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 {
     const EMAIL = 'user@example.com';
     const CONFIRMATION_TOKEN = 'confirmation-token-here';
-    const HONEYPOT_FIELD_NAME = 'honeypot-field-name';
 
     public function testSignUpSubmitActionPostRequest()
     {
@@ -34,8 +32,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
 
-        $honeypotFieldNameService = self::$container->get(HoneypotFieldName::class);
-
         $this->client->request(
             'POST',
             $this->router->generate('action_user_sign_up_request'),
@@ -43,7 +39,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 'plan' => 'basic',
                 'email' => self::EMAIL,
                 'password' => 'password',
-                $honeypotFieldNameService->get() => '',
             ]
         );
 
@@ -56,50 +51,11 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         );
     }
 
-    /**
-     * @dataProvider signUpSubmitActionInvalidHoneypotDataProvider
-     */
-    public function testSignUpSubmitActionInvalidHoneypot(Request $request)
-    {
-        $honeypotFieldNameService = \Mockery::mock(HoneypotFieldName::class);
-        $honeypotFieldNameService
-            ->shouldReceive('get')
-            ->andReturn(self::HONEYPOT_FIELD_NAME);
-
-        $response = $this->callSignUpSubmitAction($request, [
-            HoneypotFieldName::class => $honeypotFieldNameService,
-        ]);
-
-        $this->assertEquals('/signup/', $response->getTargetUrl());
-    }
-
-    public function signUpSubmitActionInvalidHoneypotDataProvider(): array
-    {
-        return [
-            'null' => [
-                'request' => new Request(),
-            ],
-            'non-empty' => [
-                'request' => new Request([], [
-                    self::HONEYPOT_FIELD_NAME => 'non-empty',
-                ]),
-            ],
-        ];
-    }
-
     public function testSignUpSubmitActionBadRequest()
     {
-        $request = new Request([], [
-            'plan' => 'personal',
-            self::HONEYPOT_FIELD_NAME => '',
-        ]);
-
-        $honeypotFieldNameService = \Mockery::mock(HoneypotFieldName::class);
-        $honeypotFieldNameService
-            ->shouldReceive('get')
-            ->andReturn(self::HONEYPOT_FIELD_NAME);
-
+        $request = new Request([], ['plan' => 'personal']);
         $userAccountRequestValidator = \Mockery::mock(UserAccountRequestValidator::class);
+
         $userAccountRequestValidator
             ->shouldReceive('validate')
             ->withArgs(function () {
@@ -122,7 +78,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
 
         $response = $this->callSignUpSubmitAction($request, [
             UserAccountRequestValidator::class => $userAccountRequestValidator,
-            HoneypotFieldName::class => $honeypotFieldNameService,
         ]);
 
         $this->assertEquals('/signup/?plan=personal', $response->getTargetUrl());
@@ -144,7 +99,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
-        $honeypotFieldNameService = self::$container->get(HoneypotFieldName::class);
 
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
@@ -152,7 +106,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             'plan' => 'basic',
             'email' => self::EMAIL,
             'password' => 'password',
-            $honeypotFieldNameService->get() => '',
         ]);
 
         $response = $this->callSignUpSubmitAction($request);
@@ -219,7 +172,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         array $expectedFlashBagValues
     ) {
         $flashBag = self::$container->get(FlashBagInterface::class);
-        $honeypotFieldNameService = self::$container->get(HoneypotFieldName::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -239,7 +191,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             'plan' => 'basic',
             'email' => self::EMAIL,
             'password' => 'password',
-            $honeypotFieldNameService->get() => '',
         ]);
 
         $response = $this->callSignUpSubmitAction($request, [
@@ -300,7 +251,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     {
         $flashBag = self::$container->get(FlashBagInterface::class);
         $couponService = self::$container->get(CouponService::class);
-        $honeypotFieldNameService = self::$container->get(HoneypotFieldName::class);
 
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
@@ -317,8 +267,6 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
                 self::EMAIL,
                 self::CONFIRMATION_TOKEN,
             ]);
-
-        $request->request->set($honeypotFieldNameService->get(), '');
 
         $response = $this->callSignUpSubmitAction($request, [
             Mailer::class => $mailer,
@@ -414,22 +362,19 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             $services[UserAccountRequestValidator::class] = new UserAccountRequestValidator(new EmailValidator());
         }
 
-        if (!isset($services[HoneypotFieldName::class])) {
-            $services[HoneypotFieldName::class] = self::$container->get(HoneypotFieldName::class);
-        }
-
         $requestStack = new RequestStack();
         $requestStack->push($request);
 
         $signInRequestFactory = new SignUpRequestFactory($requestStack);
+
+
 
         return $this->userController->signUpSubmitAction(
             $services[Mailer::class],
             $services[CouponService::class],
             $signInRequestFactory,
             $services[UserAccountRequestValidator::class],
-            $request,
-            $services[HoneypotFieldName::class]
+            $request
         );
     }
 }
