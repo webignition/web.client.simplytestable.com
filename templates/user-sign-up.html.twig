@@ -30,6 +30,7 @@
     {% endif %}
 
     <form class="js-form-button-spinner" role="form" method="post" action="{{ path('action_user_sign_up_request') }}" novalidate>
+        {% include 'Partials/hp.html.twig' %}
         {% include 'Partials/User/SignUp/Alert/within-form.html.twig' %}
 
         <div class="form-group-collection">
