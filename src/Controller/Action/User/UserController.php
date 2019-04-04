@@ -81,15 +81,12 @@ class UserController extends AbstractController
      */
     private $flashBag;
 
-    private $honeypotFieldName;
-
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
         UserService $userService,
         RedirectResponseFactory $redirectResponseFactory,
-        FlashBagInterface $flashBag,
-        HoneypotFieldName $honeypotFieldName
+        FlashBagInterface $flashBag
     ) {
         parent::__construct($router);
 
@@ -98,7 +95,6 @@ class UserController extends AbstractController
         $this->router = $router;
         $this->redirectResponseFactory = $redirectResponseFactory;
         $this->flashBag = $flashBag;
-        $this->honeypotFieldName = $honeypotFieldName;
     }
 
     /**
@@ -121,6 +117,7 @@ class UserController extends AbstractController
      * @param SignUpRequestFactory $signUpRequestFactory
      * @param UserAccountRequestValidator $userAccountRequestValidator
      * @param Request $request
+     * @param HoneypotFieldName $honeypotFieldName
      *
      * @return RedirectResponse
      *
@@ -134,8 +131,14 @@ class UserController extends AbstractController
         CouponService $couponService,
         SignUpRequestFactory $signUpRequestFactory,
         UserAccountRequestValidator $userAccountRequestValidator,
-        Request $request
+        Request $request,
+        HoneypotFieldName $honeypotFieldName
     ) {
+        $honeypotValue = $request->request->get($honeypotFieldName->get());
+        if (null === $honeypotValue || !empty($honeypotValue)) {
+            return new RedirectResponse($this->router->generate('view_user_sign_up_request'));
+        }
+
         $signUpRequest = $signUpRequestFactory->create();
         $userAccountRequestValidator->validate($signUpRequest);
 
@@ -146,11 +149,6 @@ class UserController extends AbstractController
         $flashBag = $this->flashBag;
 
         $signUpRedirectResponse = $this->redirectResponseFactory->createSignUpRedirectResponse($signUpRequest);
-
-        $honeypotValue = $request->request->get($this->honeypotFieldName->get());
-        if (null === $honeypotValue || !empty($honeypotValue)) {
-            return $signUpRedirectResponse;
-        }
 
         if (false === $userAccountRequestValidator->getIsValid()) {
             $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, $userAccountRequestValidator->getInvalidFieldName());
