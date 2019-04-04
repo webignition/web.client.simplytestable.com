@@ -131,6 +131,11 @@ class UserController extends AbstractController
         UserAccountRequestValidator $userAccountRequestValidator,
         Request $request
     ) {
+        $honeypotValue = $request->request->get('hp');
+        if (null !== $honeypotValue && !empty($honeypotValue) && (bool) $honeypotValue === true) {
+            return new RedirectResponse($this->router->generate('view_user_sign_up_request'));
+        }
+
         $signUpRequest = $signUpRequestFactory->create();
         $userAccountRequestValidator->validate($signUpRequest);
 

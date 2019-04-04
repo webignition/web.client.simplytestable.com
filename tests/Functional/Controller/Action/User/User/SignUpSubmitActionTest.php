@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Controller\Action\User\User;
 use App\Services\Mailer;
 use App\Tests\Factory\PostmarkExceptionFactory;
 use Egulias\EmailValidator\EmailValidator;
+use GuzzleHttp\Psr7\Response;
 use Postmark\Models\PostmarkException;
 use App\Controller\Action\User\UserController;
 use App\Request\User\SignUpRequest;
@@ -49,6 +50,25 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             '/signup/confirm/user@example.com/',
             $response->getTargetUrl()
         );
+    }
+
+    public function testStartNewActionInvalidHoneypotValue()
+    {
+        $this->httpMockHandler->appendFixtures([new Response()]);
+
+        $this->client->request(
+            'POST',
+            $this->router->generate('action_user_sign_up_request'),
+            [
+                'hp' => '1',
+            ]
+        );
+
+        /* @var RedirectResponse $response */
+        $response = $this->client->getResponse();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertEquals($this->router->generate('view_user_sign_up_request'), $response->getTargetUrl());
     }
 
     public function testSignUpSubmitActionBadRequest()

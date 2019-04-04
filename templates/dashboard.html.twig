@@ -16,6 +16,8 @@
     <div class="header">
         <div class="container">
             <form id="test-start-form" method="post" action="{{ path('action_test_start') }}">
+                {% include 'Partials/hp.html.twig' %}
+
                 <div class="row">
                     <div class="col-lg-12">
                         {% include 'Partials/Dashboard/TestStart/Alert/alerts.html.twig' %}

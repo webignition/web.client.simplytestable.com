@@ -82,6 +82,11 @@ class StartController extends AbstractController
     {
         $requestData = $request->request;
 
+        $honeypotValue = $requestData->get('hp');
+        if (null !== $honeypotValue && !empty($honeypotValue) && (bool) $honeypotValue === true) {
+            return new RedirectResponse($this->createStartErrorRedirectUrl([]));
+        }
+
         if ($requestData->get(Task::TYPE_KEY_LINK_INTEGRITY)) {
             $requestData->set(
                 'link-integrity-excluded-domains',
