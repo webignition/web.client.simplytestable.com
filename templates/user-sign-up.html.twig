@@ -30,6 +30,10 @@
     {% endif %}
 
     <form class="js-form-button-spinner" role="form" method="post" action="{{ path('action_user_sign_up_request') }}" novalidate>
+        <input name="{{ honeypot_field_name }}"
+               type="hidden"
+               value="">
+
         {% include 'Partials/User/SignUp/Alert/within-form.html.twig' %}
 
         <div class="form-group-collection">

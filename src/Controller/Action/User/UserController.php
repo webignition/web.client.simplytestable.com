@@ -2,6 +2,7 @@
 
 namespace App\Controller\Action\User;
 
+use App\Services\HoneypotFieldName;
 use App\Services\Mailer;
 use Postmark\Models\PostmarkException;
 use App\Controller\AbstractController;
@@ -116,6 +117,7 @@ class UserController extends AbstractController
      * @param SignUpRequestFactory $signUpRequestFactory
      * @param UserAccountRequestValidator $userAccountRequestValidator
      * @param Request $request
+     * @param HoneypotFieldName $honeypotFieldName
      *
      * @return RedirectResponse
      *
@@ -129,8 +131,14 @@ class UserController extends AbstractController
         CouponService $couponService,
         SignUpRequestFactory $signUpRequestFactory,
         UserAccountRequestValidator $userAccountRequestValidator,
-        Request $request
+        Request $request,
+        HoneypotFieldName $honeypotFieldName
     ) {
+        $honeypotValue = $request->request->get($honeypotFieldName->get());
+        if (null === $honeypotValue || !empty($honeypotValue)) {
+            return new RedirectResponse($this->router->generate('view_user_sign_up_request'));
+        }
+
         $signUpRequest = $signUpRequestFactory->create();
         $userAccountRequestValidator->validate($signUpRequest);
 

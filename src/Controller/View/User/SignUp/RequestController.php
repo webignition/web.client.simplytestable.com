@@ -10,6 +10,7 @@ use App\Services\CacheableResponseFactory;
 use App\Services\CouponService;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
+use App\Services\HoneypotFieldName;
 use App\Services\PlansService;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,15 +22,9 @@ class RequestController extends AbstractUserController
 {
     const ONE_YEAR_IN_SECONDS = 31536000;
 
-    /**
-     * @var CouponService
-     */
     private $couponService;
-
-    /**
-     * @var PlansService
-     */
     private $plansService;
+    private $honeypotFieldName;
 
     public function __construct(
         RouterInterface $router,
@@ -38,12 +33,14 @@ class RequestController extends AbstractUserController
         CacheableResponseFactory $cacheableResponseFactory,
         FlashBagValues $flashBagValues,
         CouponService $couponService,
-        PlansService $plansService
+        PlansService $plansService,
+        HoneypotFieldName $honeypotFieldName
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory, $flashBagValues);
 
         $this->couponService = $couponService;
         $this->plansService = $plansService;
+        $this->honeypotFieldName = $honeypotFieldName;
     }
 
     /**
@@ -83,6 +80,7 @@ class RequestController extends AbstractUserController
             'redirect' => $redirect,
             'coupon' => $coupon,
             'selected_field' => $selectedField,
+            'honeypot_field_name' => $this->honeypotFieldName->get(),
         ];
 
         $response = $this->cacheableResponseFactory->createResponse($request, $viewData);
