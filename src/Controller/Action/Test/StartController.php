@@ -11,7 +11,6 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\TestOptions;
 use App\Services\Configuration\LinkIntegrityTestConfiguration;
-use App\Services\HoneypotFieldName;
 use App\Services\RemoteTestService;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\Configuration\TestOptionsConfiguration;
@@ -54,16 +53,13 @@ class StartController extends AbstractController
      */
     private $flashBag;
 
-    private $honeypotFieldName;
-
     public function __construct(
         RouterInterface $router,
         RemoteTestService $remoteTestService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         LinkIntegrityTestConfiguration $linkIntegrityTestConfiguration,
         TestOptionsConfiguration $testOptionsConfiguration,
-        FlashBagInterface $flashBag,
-        HoneypotFieldName $honeypotFieldName
+        FlashBagInterface $flashBag
     ) {
         parent::__construct($router);
 
@@ -73,7 +69,6 @@ class StartController extends AbstractController
         $this->testOptionsConfiguration = $testOptionsConfiguration;
         $this->router = $router;
         $this->flashBag = $flashBag;
-        $this->honeypotFieldName = $honeypotFieldName;
     }
 
     /**
@@ -86,11 +81,6 @@ class StartController extends AbstractController
     public function startNewAction(Request $request)
     {
         $requestData = $request->request;
-
-        $honeypotValue = $requestData->get($this->honeypotFieldName->get());
-        if (null === $honeypotValue || !empty($honeypotValue)) {
-            return new RedirectResponse($this->createStartErrorRedirectUrl());
-        }
 
         if ($requestData->get(Task::TYPE_KEY_LINK_INTEGRITY)) {
             $requestData->set(
@@ -252,7 +242,7 @@ class StartController extends AbstractController
      *
      * @return string
      */
-    private function createStartErrorRedirectUrl(array $redirectRouteParameters = [])
+    private function createStartErrorRedirectUrl(array $redirectRouteParameters)
     {
         return $this->generateUrl('view_dashboard', $redirectRouteParameters);
     }

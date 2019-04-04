@@ -7,7 +7,6 @@ use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
 use App\Services\FlashBagValues;
-use App\Services\HoneypotFieldName;
 use App\Services\SystemUserService;
 use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapter as TestOptionsRequestAdapter;
@@ -18,7 +17,6 @@ use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
@@ -59,8 +57,6 @@ class DashboardController extends AbstractBaseViewController
      */
     private $cssValidationTestConfiguration;
 
-    private $honeypotFieldName;
-
     public function __construct(
         RouterInterface $router,
         Twig_Environment $twig,
@@ -72,8 +68,7 @@ class DashboardController extends AbstractBaseViewController
         FlashBagValues $flashBagValues,
         UserManager $userManager,
         TestOptionsConfiguration $testOptionsConfiguration,
-        CssValidationTestConfiguration $cssValidationTestConfiguration,
-        HoneypotFieldName $honeypotFieldName
+        CssValidationTestConfiguration $cssValidationTestConfiguration
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -84,7 +79,6 @@ class DashboardController extends AbstractBaseViewController
         $this->userManager = $userManager;
         $this->testOptionsConfiguration = $testOptionsConfiguration;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
-        $this->honeypotFieldName = $honeypotFieldName;
     }
 
     /**
@@ -118,7 +112,6 @@ class DashboardController extends AbstractBaseViewController
             'test_options' => json_encode($testOptions),
             'css_validation_ignore_common_cdns' => json_encode($cssValidationExcludedDomains),
             'is_logged_in' => !SystemUserService::isPublicUser($user),
-            'honeypot_field_name' => $this->honeypotFieldName->get(),
         ]);
 
         if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
@@ -134,7 +127,6 @@ class DashboardController extends AbstractBaseViewController
                 'css_validation_ignore_common_cdns' => $cssValidationExcludedDomains,
                 'test_start_error' => $testStartError,
                 'website' => $this->urlViewValuesService->create($website),
-                'honeypot_field_name' => $this->honeypotFieldName->get(),
             ],
             $response
         );
