@@ -2,6 +2,7 @@
 
 namespace App\Controller\Action\User;
 
+use App\Services\HoneypotFieldName;
 use App\Services\Mailer;
 use Postmark\Models\PostmarkException;
 use App\Controller\AbstractController;
@@ -80,12 +81,15 @@ class UserController extends AbstractController
      */
     private $flashBag;
 
+    private $honeypotFieldName;
+
     public function __construct(
         RouterInterface $router,
         UserManager $userManager,
         UserService $userService,
         RedirectResponseFactory $redirectResponseFactory,
-        FlashBagInterface $flashBag
+        FlashBagInterface $flashBag,
+        HoneypotFieldName $honeypotFieldName
     ) {
         parent::__construct($router);
 
@@ -94,6 +98,7 @@ class UserController extends AbstractController
         $this->router = $router;
         $this->redirectResponseFactory = $redirectResponseFactory;
         $this->flashBag = $flashBag;
+        $this->honeypotFieldName = $honeypotFieldName;
     }
 
     /**
@@ -141,6 +146,11 @@ class UserController extends AbstractController
         $flashBag = $this->flashBag;
 
         $signUpRedirectResponse = $this->redirectResponseFactory->createSignUpRedirectResponse($signUpRequest);
+
+        $honeypotValue = $request->request->get($this->honeypotFieldName->get());
+        if (null === $honeypotValue || !empty($honeypotValue)) {
+            return $signUpRedirectResponse;
+        }
 
         if (false === $userAccountRequestValidator->getIsValid()) {
             $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, $userAccountRequestValidator->getInvalidFieldName());
