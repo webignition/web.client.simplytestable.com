@@ -233,7 +233,6 @@ class DashboardControllerTest extends AbstractViewControllerTest
                 'css_validation_ignore_common_cdns',
                 'test_start_error',
                 'website',
-                'honeypot_field_name',
             ],
             array_keys($parameters)
         );
