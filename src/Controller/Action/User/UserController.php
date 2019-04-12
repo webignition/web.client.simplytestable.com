@@ -160,6 +160,7 @@ class UserController extends AbstractController
             $sfsResult = $sfsClient->queryIp($request->getClientIp());
 
             if ($sfsResult instanceof ResultInterface && $sfsResultAnalyser->isUntrustworthy($sfsResult)) {
+                $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, $clientIp);
                 $flashBag->set(self::FLASH_SIGN_UP_ERROR_KEY, self::FLASH_SIGN_UP_ERROR_MESSAGE_UNTRUSTWORTHY_IP);
 
                 return $signUpRedirectResponse;
