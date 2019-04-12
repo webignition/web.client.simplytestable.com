@@ -24,6 +24,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use App\Exception\Mail\Configuration\Exception as MailConfigurationException;
 use Symfony\Component\Routing\RouterInterface;
+use webignition\SfsClient\Client as SfsClient;
+use webignition\SfsResultAnalyser\Analyser as SfsResultAnalyser;
+use webignition\SfsResultInterfaces\ResultInterface;
 
 class UserController extends AbstractController
 {
@@ -47,6 +50,7 @@ class UserController extends AbstractController
     const FLASH_SIGN_UP_ERROR_MESSAGE_CREATE_FAILED_UNKNOWN = 'create-failed';
     const FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_NOT_ALLOWED_TO_SEND = 'postmark-not-allowed-to-send';
     const FLASH_SIGN_UP_ERROR_MESSAGE_POSTMARK_INACTIVE_RECIPIENT = 'postmark-inactive-recipient';
+    const FLASH_SIGN_UP_ERROR_MESSAGE_UNTRUSTWORTHY_IP = 'untrustworthy-ip';
 
     const FLASH_SIGN_UP_SUCCESS_KEY = 'user_create_confirmation';
     const FLASH_SIGN_UP_SUCCESS_MESSAGE_USER_EXISTS = 'user-exists';
@@ -116,6 +120,8 @@ class UserController extends AbstractController
      * @param SignUpRequestFactory $signUpRequestFactory
      * @param UserAccountRequestValidator $userAccountRequestValidator
      * @param Request $request
+     * @param SfsClient $sfsClient
+     * @param SfsResultAnalyser $sfsResultAnalyser
      *
      * @return RedirectResponse
      *
@@ -129,7 +135,9 @@ class UserController extends AbstractController
         CouponService $couponService,
         SignUpRequestFactory $signUpRequestFactory,
         UserAccountRequestValidator $userAccountRequestValidator,
-        Request $request
+        Request $request,
+        SfsClient $sfsClient,
+        SfsResultAnalyser $sfsResultAnalyser
     ) {
         $honeypotValue = $request->request->get('hp');
         if (null !== $honeypotValue && !empty($honeypotValue) && (bool) $honeypotValue === true) {
@@ -143,9 +151,20 @@ class UserController extends AbstractController
         $password = $signUpRequest->getPassword();
         $plan = $signUpRequest->getPlan();
 
+        $signUpRedirectResponse = $this->redirectResponseFactory->createSignUpRedirectResponse($signUpRequest);
+
         $flashBag = $this->flashBag;
 
-        $signUpRedirectResponse = $this->redirectResponseFactory->createSignUpRedirectResponse($signUpRequest);
+        $clientIp = $request->getClientIp();
+        if (is_string($clientIp)) {
+            $sfsResult = $sfsClient->queryIp($request->getClientIp());
+
+            if ($sfsResult instanceof ResultInterface && $sfsResultAnalyser->isUntrustworthy($sfsResult)) {
+                $flashBag->set(self::FLASH_SIGN_UP_ERROR_KEY, self::FLASH_SIGN_UP_ERROR_MESSAGE_UNTRUSTWORTHY_IP);
+
+                return $signUpRedirectResponse;
+            }
+        }
 
         if (false === $userAccountRequestValidator->getIsValid()) {
             $flashBag->set(self::FLASH_SIGN_UP_ERROR_FIELD_KEY, $userAccountRequestValidator->getInvalidFieldName());
