@@ -153,6 +153,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
         $this->assertEquals('/signup/?plan=personal', $response->getTargetUrl());
         $this->assertEquals(
             [
+                UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [
+                    '127.0.0.1',
+                ],
                 UserController::FLASH_SIGN_UP_ERROR_KEY => [
                     UserController::FLASH_SIGN_UP_ERROR_MESSAGE_UNTRUSTWORTHY_IP,
                 ],
