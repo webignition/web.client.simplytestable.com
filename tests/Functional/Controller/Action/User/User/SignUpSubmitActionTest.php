@@ -19,6 +19,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Tests\Factory\PostmarkHttpResponseFactory;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use webignition\SfsClient\Client as SfsClient;
+use webignition\SfsResultAnalyser\Analyser as SfsResultAnalyser;
 
 class SignUpSubmitActionTest extends AbstractUserControllerTest
 {
@@ -29,6 +31,17 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     {
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createSuccessResponse(),
+            HttpResponseFactory::createJsonResponse([
+                'success' => 1,
+                'ip' => [
+                    [
+                        'value' => '127.0.0.1',
+                        'frequency' => 0,
+                        'appears' => 0,
+                        'asn' => null,
+                    ],
+                ],
+            ]),
             HttpResponseFactory::createJsonResponse(self::CONFIRMATION_TOKEN),
             PostmarkHttpResponseFactory::createSuccessResponse(),
         ]);
@@ -74,37 +87,78 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
     public function testSignUpSubmitActionBadRequest()
     {
         $request = new Request([], ['plan' => 'personal']);
-        $userAccountRequestValidator = \Mockery::mock(UserAccountRequestValidator::class);
-
-        $userAccountRequestValidator
-            ->shouldReceive('validate')
-            ->withArgs(function () {
-                return true;
-            });
-
-        $userAccountRequestValidator
-            ->shouldReceive('getIsValid')
-            ->andReturn(false);
-
-        $userAccountRequestValidator
-            ->shouldReceive('getInvalidFieldName')
-            ->andReturn('email');
-
-        $userAccountRequestValidator
-            ->shouldReceive('getInvalidFieldState')
-            ->andReturn('empty');
-
         $flashBag = self::$container->get(FlashBagInterface::class);
 
-        $response = $this->callSignUpSubmitAction($request, [
-            UserAccountRequestValidator::class => $userAccountRequestValidator,
-        ]);
+        $response = $this->callSignUpSubmitAction($request);
 
         $this->assertEquals('/signup/?plan=personal', $response->getTargetUrl());
         $this->assertEquals(
             [
                 UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => ['email'],
                 UserController::FLASH_SIGN_UP_ERROR_STATE_KEY => ['empty'],
+            ],
+            $flashBag->peekAll()
+        );
+    }
+
+    public function testSignUpSubmitActionSfsRequestFailure()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createNotFoundResponse(),
+        ]);
+
+        $request = new Request([], ['plan' => 'personal'], [], [], [], [
+            'REMOTE_ADDR' => '127.0.0.1',
+        ]);
+
+        $flashBag = self::$container->get(FlashBagInterface::class);
+
+        $response = $this->callSignUpSubmitAction($request);
+
+        $this->assertEquals('/signup/?plan=personal', $response->getTargetUrl());
+        $this->assertEquals(
+            [
+                UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => ['email'],
+                UserController::FLASH_SIGN_UP_ERROR_STATE_KEY => ['empty'],
+            ],
+            $flashBag->peekAll()
+        );
+    }
+
+    public function testSignUpSubmitActionUntrustworthyClientIp()
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'success' => 1,
+                'ip' => [
+                    [
+                        'value' => '127.0.0.1',
+                        'frequency' => 2000,
+                        'appears' => 1,
+                        'confidence' => 99.9,
+                        'asn' => null,
+                    ],
+                ],
+            ]),
+        ]);
+
+        $request = new Request([], ['plan' => 'personal'], [], [], [], [
+            'REMOTE_ADDR' => '127.0.0.1',
+        ]);
+
+        $flashBag = self::$container->get(FlashBagInterface::class);
+
+        $response = $this->callSignUpSubmitAction($request);
+
+        $this->assertEquals('/signup/?plan=personal', $response->getTargetUrl());
+        $this->assertEquals(
+            [
+                UserController::FLASH_SIGN_UP_ERROR_FIELD_KEY => [
+                    '127.0.0.1',
+                ],
+                UserController::FLASH_SIGN_UP_ERROR_KEY => [
+                    UserController::FLASH_SIGN_UP_ERROR_MESSAGE_UNTRUSTWORTHY_IP,
+                ],
             ],
             $flashBag->peekAll()
         );
@@ -382,6 +436,14 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             $services[UserAccountRequestValidator::class] = new UserAccountRequestValidator(new EmailValidator());
         }
 
+        if (!isset($services[SfsClient::class])) {
+            $services[SfsClient::class] = self::$container->get(SfsClient::class);
+        }
+
+        if (!isset($services[SfsResultAnalyser::class])) {
+            $services[SfsResultAnalyser::class] = self::$container->get(SfsResultAnalyser::class);
+        }
+
         $requestStack = new RequestStack();
         $requestStack->push($request);
 
@@ -394,7 +456,9 @@ class SignUpSubmitActionTest extends AbstractUserControllerTest
             $services[CouponService::class],
             $signInRequestFactory,
             $services[UserAccountRequestValidator::class],
-            $request
+            $request,
+            $services[SfsClient::class],
+            $services[SfsResultAnalyser::class]
         );
     }
 }

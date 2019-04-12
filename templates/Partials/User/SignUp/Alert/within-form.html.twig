@@ -42,6 +42,15 @@
     {% set alert_view = 'Partials/Alert/Content/failed-read-only.html.twig' %}
 {% endif %}
 
+{% if user_create_error == 'untrustworthy-ip' %}
+    {% set alert_type = 'info' %}
+    {% set alert_view = 'Partials/Alert/Content/untrustworthy-ip.html.twig' %}
+    {% set alert_view_parameters = {
+        contact_email: external_links.contact_email,
+        ip: error_field
+    } %}
+{% endif %}
+
 {% if alert_view is not null %}
     {% include 'Partials/alert.html.twig' with {
         type: alert_type,
