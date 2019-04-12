@@ -302,3 +302,5 @@ services:
 
     webignition\SimplyTestableUserManagerInterface\UserManagerInterface:
       alias: App\Services\UserManager
+
+    webignition\SfsClient\Client:
