@@ -304,3 +304,5 @@ services:
       alias: App\Services\UserManager
 
     webignition\SfsClient\Client:
+
+    webignition\SfsResultAnalyser\Analyser:
