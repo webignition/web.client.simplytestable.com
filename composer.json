@@ -42,6 +42,7 @@
         "webignition/php-ie-detector": ">=0.2,<1",
         "webignition/php-stripe-models": ">=0.2.6,<1.0",
         "webignition/resque-bundle": "dev-master",
+        "webignition/sfs-querier": ">=0.1,<1",
         "webignition/simplytestable-pagecache-bundle": "^0.1",
         "webignition/simplytestable-user-hydrator": "^0.1",
         "webignition/simplytestable-user-interface": "^0.2",
