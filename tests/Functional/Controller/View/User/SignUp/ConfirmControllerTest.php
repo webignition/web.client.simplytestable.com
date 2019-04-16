@@ -8,6 +8,7 @@ use App\Controller\View\User\SignUp\ConfirmController;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Services\SymfonyRequestFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Controller\Action\SignUp\User\ConfirmController as ActionConfirmController;
@@ -306,12 +307,9 @@ class ConfirmControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
-        $responseLastModified->modify('+1 hour');
+        $requestFactory = self::$container->get(SymfonyRequestFactory::class);
+        $newRequest = $requestFactory->createFollowUpRequest($request, $response);
 
-        $newRequest = $request->duplicate();
-
-        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
         $newResponse = $confirmController->indexAction(
             $newRequest,
             self::USER_EMAIL

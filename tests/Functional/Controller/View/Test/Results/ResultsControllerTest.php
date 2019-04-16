@@ -5,7 +5,6 @@ namespace App\Tests\Functional\Controller\View\Test\Results;
 
 use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
-use App\Entity\Test;
 use App\Model\Test as TestModel;
 use App\Model\DecoratedTest;
 use App\Services\RemoteTestService;
@@ -17,6 +16,7 @@ use App\Tests\Factory\MockFactory;
 use App\Tests\Factory\OutputFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestModelFactory;
+use App\Tests\Services\SymfonyRequestFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -828,12 +828,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
-        $responseLastModified->modify('+1 hour');
+        $requestFactory = self::$container->get(SymfonyRequestFactory::class);
+        $newRequest = $requestFactory->createFollowUpRequest($request, $response);
 
-        $newRequest = $request->duplicate();
-
-        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
         $newResponse = $resultsController->indexAction(
             $newRequest,
             self::WEBSITE,
