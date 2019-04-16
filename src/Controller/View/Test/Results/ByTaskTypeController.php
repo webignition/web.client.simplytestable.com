@@ -133,7 +133,8 @@ class ByTaskTypeController extends AbstractBaseViewController
             'website' => $website,
             'test_id' => $test_id,
             'task_type' => $selectedTaskType,
-            'filter' => $filter
+            'filter' => $filter,
+            'test_state' => $testModel->getState(),
         ]);
 
         if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {

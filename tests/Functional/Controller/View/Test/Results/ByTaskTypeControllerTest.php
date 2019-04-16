@@ -9,6 +9,7 @@ use App\Entity\Test as TestEntity;
 use App\Model\Test as TestModel;
 use App\Model\DecoratedTest;
 use App\Model\Test\Task\ErrorTaskMapCollection;
+use App\Model\TestInterface;
 use App\Services\SystemUserService;
 use App\Services\TestRetriever;
 use App\Services\UserManager;
@@ -17,6 +18,7 @@ use App\Tests\Factory\MockFactory;
 use App\Tests\Factory\OutputFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestModelFactory;
+use App\Tests\Services\ObjectReflector;
 use App\Tests\Services\SymfonyRequestFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
@@ -620,6 +622,24 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
+
+        ObjectReflector::setProperty(
+            $testModel,
+            TestModel::class,
+            'state',
+            TestInterface::STATE_EXPIRED
+        );
+
+        $newResponse = $byTaskTypeController->indexAction(
+            $newRequest,
+            self::WEBSITE,
+            self::TEST_ID,
+            Task::TYPE_HTML_VALIDATION,
+            ByTaskTypeController::FILTER_BY_ERROR
+        );
+
+        $this->assertInstanceOf(Response::class, $newResponse);
+        $this->assertEquals(200, $newResponse->getStatusCode());
     }
 
     private function assertParameterData(array $expectedParameterData, array $parameters)

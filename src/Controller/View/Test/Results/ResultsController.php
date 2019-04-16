@@ -155,6 +155,7 @@ class ResultsController extends AbstractBaseViewController
             'is_public_user_test' => $isPublicUserTest,
             'type' => $taskType,
             'filter' => $filter,
+            'test_state' => $testModel->getState(),
         ]);
 
         if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
