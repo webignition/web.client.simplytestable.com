@@ -9,6 +9,7 @@ use App\Services\UserManager;
 use App\Services\ViewRenderService;
 use App\Tests\Factory\MockFactory;
 use App\Tests\Functional\Controller\AbstractControllerTest;
+use App\Tests\Services\SymfonyRequestFactory;
 use ReflectionClass;
 use SimplyTestable\PageCacheBundle\Services\CacheableResponseFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -190,12 +191,9 @@ class SignInControllerRenderActionTest extends AbstractControllerTest
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
-        $responseLastModified->modify('+1 hour');
+        $requestFactory = self::$container->get(SymfonyRequestFactory::class);
+        $newRequest = $requestFactory->createFollowUpRequest($request, $response);
 
-        $newRequest = $request->duplicate();
-
-        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
         $newResponse = $signInController->renderAction(
             self::$container->get(FlashBagValues::class),
             self::$container->get(CacheableResponseFactory::class),
