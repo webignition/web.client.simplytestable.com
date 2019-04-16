@@ -7,6 +7,7 @@ use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
 use App\Model\Test as TestModel;
 use App\Model\DecoratedTest;
+use App\Model\TestInterface;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TestRetriever;
@@ -17,6 +18,7 @@ use App\Tests\Factory\OutputFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestModelFactory;
 use App\Tests\Services\SymfonyRequestFactory;
+use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -839,6 +841,22 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
+
+        ObjectReflector::setProperty(
+            $testModel,
+            TestModel::class,
+            'state',
+            TestInterface::STATE_EXPIRED
+        );
+
+        $newResponse = $resultsController->indexAction(
+            $newRequest,
+            self::WEBSITE,
+            self::TEST_ID
+        );
+
+        $this->assertInstanceOf(Response::class, $newResponse);
+        $this->assertEquals(200, $newResponse->getStatusCode());
     }
 
     private function assertParameterData(array $expectedParameterData, array $parameters)
