@@ -17,6 +17,7 @@ class Test implements TestInterface
         self::STATE_CANCELLED,
         self::STATE_COMPLETED,
         self::STATE_FAILED_NO_SITEMAP,
+        self::STATE_EXPIRED,
     );
 
     private $entity;
