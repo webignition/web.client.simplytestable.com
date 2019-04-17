@@ -454,6 +454,9 @@
     "webignition/php-stripe-models": {
         "version": "0.2.6"
     },
+    "webignition/readable-duration": {
+        "version": "2.0"
+    },
     "webignition/resque-bundle": {
         "version": "dev-master"
     },

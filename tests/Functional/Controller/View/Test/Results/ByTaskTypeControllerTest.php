@@ -18,7 +18,6 @@ use App\Tests\Factory\MockFactory;
 use App\Tests\Factory\OutputFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestModelFactory;
-use App\Tests\Services\ObjectReflector;
 use App\Tests\Services\SymfonyRequestFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
@@ -280,6 +279,14 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
                 'taskType' => Task::TYPE_HTML_VALIDATION,
                 'filter' => ByTaskTypeController::FILTER_BY_ERROR,
                 'expectedRedirectUrl' => '/http://example.com//1/results/preparing/',
+            ],
+            'expired' => [
+                'testModelProperties' => [
+                    'state' => TestInterface::STATE_EXPIRED,
+                ],
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'filter' => ByTaskTypeController::FILTER_BY_ERROR,
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
         ];
     }
@@ -622,24 +629,6 @@ class ByTaskTypeControllerTest extends AbstractViewControllerTest
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
-
-        ObjectReflector::setProperty(
-            $testModel,
-            TestModel::class,
-            'state',
-            TestInterface::STATE_EXPIRED
-        );
-
-        $newResponse = $byTaskTypeController->indexAction(
-            $newRequest,
-            self::WEBSITE,
-            self::TEST_ID,
-            Task::TYPE_HTML_VALIDATION,
-            ByTaskTypeController::FILTER_BY_ERROR
-        );
-
-        $this->assertInstanceOf(Response::class, $newResponse);
-        $this->assertEquals(200, $newResponse->getStatusCode());
     }
 
     private function assertParameterData(array $expectedParameterData, array $parameters)
