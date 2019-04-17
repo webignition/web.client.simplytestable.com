@@ -10,6 +10,7 @@ use App\Exception\InvalidCredentialsException;
 use App\Model\TaskOutput\CssTextFileMessage;
 use App\Model\TaskOutput\LinkIntegrityMessage;
 use App\Model\DecoratedTest;
+use App\Model\TestInterface;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\Configuration\DocumentationSiteUrls;
@@ -79,6 +80,16 @@ class ResultsController extends AbstractBaseViewController
     {
         $user = $this->userManager->getUser();
         $testModel = $this->testRetriever->retrieve($test_id);
+
+        if (TestInterface::STATE_EXPIRED === $testModel->getState()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ]
+            ));
+        }
 
         $task = $this->taskService->get($testModel->getEntity(), $testModel->getState(), $task_id);
         if (empty($task)) {
