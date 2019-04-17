@@ -8,6 +8,7 @@ use App\Controller\View\User\SignUp\InviteController;
 use App\Model\Team\Invite;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
+use App\Tests\Services\SymfonyRequestFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
@@ -239,12 +240,9 @@ class InviteControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(SymfonyResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
-        $responseLastModified->modify('+1 hour');
+        $requestFactory = self::$container->get(SymfonyRequestFactory::class);
+        $newRequest = $requestFactory->createFollowUpRequest($request, $response);
 
-        $newRequest = $request->duplicate();
-
-        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
         $newResponse = $inviteController->indexAction($newRequest, self::TOKEN);
 
         $this->assertInstanceOf(SymfonyResponse::class, $newResponse);

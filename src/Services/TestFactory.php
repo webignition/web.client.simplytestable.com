@@ -35,6 +35,8 @@ class TestFactory
         $taskTypeOptions = $testData['task_type_options'] ?? [];
         $taskOptions = $this->testTaskOptionsNormaliser->normalise($taskTypes, $taskTypeOptions);
 
+        $timePeriodData = $testData['time_period'] ?? [];
+
         return new TestModel(
             $entity,
             $testData['website'] ?? '',
@@ -59,7 +61,9 @@ class TestFactory
             $testData['rejection'] ?? [],
             $testData['is_public'] ?? false,
             $taskOptions,
-            $testData['owners'] ?? []
+            $testData['owners'] ?? [],
+            $this->createDateTimeFromString($timePeriodData['start_date_time'] ?? null),
+            $this->createDateTimeFromString($timePeriodData['end_date_time'] ?? null)
         );
     }
 
@@ -82,5 +86,19 @@ class TestFactory
         }
 
         return $state;
+    }
+
+    private function createDateTimeFromString(?string $datetime = null): ?\DateTime
+    {
+        if (null === $datetime) {
+            return null;
+        }
+
+        try {
+            return new \DateTime($datetime);
+        } catch (\Exception $exception) {
+        }
+
+        return null;
     }
 }

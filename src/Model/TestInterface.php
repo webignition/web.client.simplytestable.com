@@ -18,6 +18,7 @@ interface TestInterface
     const STATE_RESOLVING = 'resolving';
     const STATE_RESOLVED = 'resolved';
     const STATE_CRAWLING = 'crawling';
+    const STATE_EXPIRED = 'expired';
     const TYPE_FULL_SITE = 'Full site';
     const TYPE_SINGLE_URL = 'Single URL';
 
@@ -69,4 +70,6 @@ interface TestInterface
     public function getOwners(): array;
     public function isFinished(): bool;
     public function getHash(): string;
+    public function getStartDateTime(): ?\DateTime;
+    public function getEndDateTime(): ?\DateTime;
 }

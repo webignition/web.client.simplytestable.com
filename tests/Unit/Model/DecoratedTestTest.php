@@ -40,6 +40,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
     const OWNERS = [
         self::USER,
     ];
+    const START_DATE_TIME = null;
+    const END_DATE_TIME = null;
 
     private $testProperties = [
         'test_id' => self::TEST_ID,
@@ -61,6 +63,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         'isPublic' => self::IS_PUBLIC,
         'taskOptions' => self::TASK_OPTIONS,
         'owners' => self::OWNERS,
+        'startDateTime' => self::START_DATE_TIME,
+        'endDateTime' => self::END_DATE_TIME,
     ];
 
     public function testGetScalarProperties()
@@ -84,6 +88,8 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(self::COMPLETION_PERCENT, $decoratedTest->getCompletionPercent());
         $this->assertEquals(self::TASK_COUNT_BY_STATE, $decoratedTest->getTaskCountByState());
         $this->assertEquals(self::REJECTION, $decoratedTest->getRejection());
+        $this->assertEquals(self::START_DATE_TIME, $decoratedTest->getStartDateTime());
+        $this->assertEquals(self::END_DATE_TIME, $decoratedTest->getEndDateTime());
     }
 
     /**
@@ -550,7 +556,9 @@ class DecoratedTestTest extends \PHPUnit\Framework\TestCase
             $properties['rejection'],
             $properties['isPublic'],
             $properties['taskOptions'],
-            $properties['owners']
+            $properties['owners'],
+            $properties['startDateTime'],
+            $properties['endDateTime']
         );
     }
 

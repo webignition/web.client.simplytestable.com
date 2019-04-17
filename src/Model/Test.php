@@ -17,6 +17,7 @@ class Test implements TestInterface
         self::STATE_CANCELLED,
         self::STATE_COMPLETED,
         self::STATE_FAILED_NO_SITEMAP,
+        self::STATE_EXPIRED,
     );
 
     private $entity;
@@ -38,6 +39,8 @@ class Test implements TestInterface
     private $isPublic;
     private $taskOptions;
     private $owners;
+    private $startDateTime;
+    private $endDateTime;
 
     public function __construct(
         TestEntity $entity,
@@ -58,7 +61,9 @@ class Test implements TestInterface
         array $rejection,
         bool $isPublic,
         array $taskTypeOptions,
-        array $owners
+        array $owners,
+        ?\DateTime $startDateTime,
+        ?\DateTime $endDateTime
     ) {
         $this->entity = $entity;
         $this->website = $website;
@@ -82,6 +87,8 @@ class Test implements TestInterface
         $this->isPublic = $isPublic;
         $this->taskOptions = $taskTypeOptions;
         $this->owners = $owners;
+        $this->startDateTime = $startDateTime;
+        $this->endDateTime = $endDateTime;
     }
 
     public function getEntity(): TestEntity
@@ -243,5 +250,15 @@ class Test implements TestInterface
             'state' => $this->getState(),
             'requires_remote_tasks' => $this->requiresRemoteTasks(),
         ]));
+    }
+
+    public function getStartDateTime(): ?\DateTime
+    {
+        return $this->startDateTime;
+    }
+
+    public function getEndDateTime(): ?\DateTime
+    {
+        return $this->endDateTime;
     }
 }

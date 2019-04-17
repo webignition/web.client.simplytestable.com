@@ -8,12 +8,14 @@ use App\Entity\Task\Task;
 use App\Entity\Test as TestEntity;
 use App\Model\Test as TestModel;
 use App\Model\DecoratedTest;
+use App\Model\TestInterface;
 use App\Services\SystemUserService;
 use App\Services\TestRetriever;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Factory\MockFactory;
 use App\Tests\Factory\TestModelFactory;
+use App\Tests\Services\SymfonyRequestFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -225,11 +227,15 @@ class ResultsControllerTest extends AbstractViewControllerTest
     /**
      * @dataProvider indexActionRedirectDataProvider
      */
-    public function testIndexActionRedirect(array $httpFixtures, string $expectedRedirectUrl)
-    {
-        $testModel = $this->createTest([
-            'state' => TestModel::STATE_IN_PROGRESS,
-        ]);
+    public function testIndexActionRedirect(
+        array $httpFixtures,
+        array $testModelProperties,
+        string $expectedRedirectUrl
+    ) {
+//        $testModel = $this->createTest([
+//            'state' => TestModel::STATE_IN_PROGRESS,
+//        ]);
+        $testModel = $this->createTest($testModelProperties);
         $this->httpMockHandler->appendFixtures($httpFixtures);
 
         /* @var ResultsController $resultsController */
@@ -261,6 +267,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         ]),
                     ]),
                 ],
+                'testModelProperties' => [],
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'task has no errors and no warnings' => [
@@ -276,6 +283,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         ]),
                     ]),
                 ],
+                'testModelProperties' => [],
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
             ],
             'incomplete task' => [
@@ -286,7 +294,17 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         ]),
                     ]),
                 ],
+                'testModelProperties' => [
+                    'state' => TestInterface::STATE_IN_PROGRESS,
+                ],
                 'expectedRedirectUrl' => '/http://example.com//1/progress/',
+            ],
+            'expired' => [
+                'httpFixtures' => [],
+                'testModelProperties' => [
+                    'state' => TestInterface::STATE_EXPIRED,
+                ],
+                'expectedRedirectUrl' => '/http://example.com//1/results/',
             ],
         ];
     }
@@ -843,12 +861,9 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
 
-        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
-        $responseLastModified->modify('+1 hour');
+        $requestFactory = self::$container->get(SymfonyRequestFactory::class);
+        $newRequest = $requestFactory->createFollowUpRequest($request, $response);
 
-        $newRequest = $request->duplicate();
-
-        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
         $newResponse = $resultsController->indexAction(
             $newRequest,
             self::WEBSITE,

@@ -9,6 +9,7 @@ use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\DecoratedTest;
 use App\Model\Test\Task\ErrorTaskMapCollection;
+use App\Model\TestInterface;
 use App\Services\CacheableResponseFactory;
 use App\Services\DefaultViewParameters;
 use App\Services\SystemUserService;
@@ -90,6 +91,16 @@ class ByTaskTypeController extends AbstractBaseViewController
         $user = $this->userManager->getUser();
         $testModel = $this->testRetriever->retrieve($test_id);
 
+        if (TestInterface::STATE_EXPIRED === $testModel->getState()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_results',
+                [
+                    'website' => $website,
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
         $requestTaskType = str_replace('+', ' ', $task_type);
         $selectedTaskType = $this->getSelectedTaskType($testModel->getTaskTypes(), $requestTaskType);
 
@@ -133,7 +144,7 @@ class ByTaskTypeController extends AbstractBaseViewController
             'website' => $website,
             'test_id' => $test_id,
             'task_type' => $selectedTaskType,
-            'filter' => $filter
+            'filter' => $filter,
         ]);
 
         if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {

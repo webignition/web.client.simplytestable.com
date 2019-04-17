@@ -8,6 +8,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\DecoratedTest;
+use App\Model\TestInterface;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
@@ -27,6 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
+use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
 class ResultsController extends AbstractBaseViewController
 {
@@ -47,6 +49,7 @@ class ResultsController extends AbstractBaseViewController
     private $userManager;
     private $testFactory;
     private $testRetriever;
+    private $readableDurationFactory;
 
     /**
      * @var string[]
@@ -74,7 +77,8 @@ class ResultsController extends AbstractBaseViewController
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         TestFactory $testFactory,
-        TestRetriever $testRetriever
+        TestRetriever $testRetriever,
+        ReadableDurationFactory $readableDurationFactory
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -88,6 +92,7 @@ class ResultsController extends AbstractBaseViewController
         $this->userManager = $userManager;
         $this->testFactory = $testFactory;
         $this->testRetriever = $testRetriever;
+        $this->readableDurationFactory = $readableDurationFactory;
     }
 
     /**
@@ -155,23 +160,31 @@ class ResultsController extends AbstractBaseViewController
             'is_public_user_test' => $isPublicUserTest,
             'type' => $taskType,
             'filter' => $filter,
+            'test_state' => $testModel->getState(),
         ]);
 
         if (Response::HTTP_NOT_MODIFIED === $response->getStatusCode()) {
             return $response;
         }
 
-        $remoteTaskIds = $this->getRemoteTaskIds(
-            $testModel->getEntity(),
-            $filter,
-            $taskType
-        );
+        $expiryDurationString = '';
+        $tasks = [];
 
-        if (empty($remoteTaskIds)) {
-            $remoteTaskIds = $testModel->getTaskIds();
+        if (TestInterface::STATE_EXPIRED === $testModel->getState()) {
+            $expiryDurationString = $this->createExpiryDurationString($testModel);
+        } else {
+            $remoteTaskIds = $this->getRemoteTaskIds(
+                $testModel->getEntity(),
+                $filter,
+                $taskType
+            );
+
+            if (empty($remoteTaskIds)) {
+                $remoteTaskIds = $testModel->getTaskIds();
+            }
+
+            $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
         }
-
-        $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
@@ -209,6 +222,7 @@ class ResultsController extends AbstractBaseViewController
                     'vendor-extensions' => 'warn',
                     'ignore-common-cdns' => 1
                 ],
+                'expiry_duration_string' => $expiryDurationString,
             ],
             $response
         );
@@ -321,5 +335,22 @@ class ResultsController extends AbstractBaseViewController
         }
 
         return $this->taskTypeService->getAvailable();
+    }
+
+    private function createExpiryDurationString(TestInterface $test)
+    {
+        $expiryDuration = $this->readableDurationFactory->createFromDateTime($test->getEndDateTime());
+        $readableExpiryDurationData = $this->readableDurationFactory->getInMostAppropriateUnits($expiryDuration, 1);
+        $readableExpiryDurationValue = $readableExpiryDurationData[0];
+
+        $value = $readableExpiryDurationValue['value'];
+        $unit = $readableExpiryDurationValue['unit'];
+
+        $expiryDurationString = (string) $value . ' ' . $unit;
+        if ($value !== 1) {
+            $expiryDurationString .= 's';
+        }
+
+        return $expiryDurationString;
     }
 }

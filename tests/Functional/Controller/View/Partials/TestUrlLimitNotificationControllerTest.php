@@ -9,6 +9,7 @@ use App\Services\SystemUserService;
 use App\Services\UserManager;
 use App\Tests\Factory\HttpResponseFactory;
 use App\Tests\Functional\Controller\View\AbstractViewControllerTest;
+use App\Tests\Services\SymfonyRequestFactory;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -228,12 +229,9 @@ class TestUrlLimitNotificationControllerTest extends AbstractViewControllerTest
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $responseLastModified = new \DateTime($response->headers->get('last-modified'));
-        $responseLastModified->modify('+1 hour');
+        $requestFactory = self::$container->get(SymfonyRequestFactory::class);
+        $newRequest = $requestFactory->createFollowUpRequest($request, $response);
 
-        $newRequest = $request->duplicate();
-
-        $newRequest->headers->set('if-modified-since', $responseLastModified->format('c'));
         $newResponse = $urlLimitController->indexAction($newRequest, self::TEST_ID);
 
         $this->assertInstanceOf(Response::class, $newResponse);

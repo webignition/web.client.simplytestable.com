@@ -306,3 +306,5 @@ services:
     webignition\SfsClient\Client:
 
     webignition\SfsResultAnalyser\Analyser:
+
+    webignition\ReadableDuration\Factory:

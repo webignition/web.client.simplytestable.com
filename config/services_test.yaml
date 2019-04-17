@@ -27,3 +27,5 @@ services:
   App\Services\StripeNotificationFactory:
 
   App\Services\TestListRetriever:
+
+  App\Tests\Services\SymfonyRequestFactory:
