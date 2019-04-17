@@ -102,7 +102,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     ],
                     [
                         'public@simplytestable.com',
-                    ]
+                    ],
+                    null,
+                    null
                 ),
             ],
             'has tasks' => [
@@ -184,7 +186,76 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [
                         'user@example.com',
                         'member@example.com',
-                    ]
+                    ],
+                    null,
+                    null
+                ),
+            ],
+            'with start and end datetimes' => [
+                'entity' => TestEntity::create(1),
+                'testData' => [
+                    'website' => 'http://example.com/',
+                    'user' => 'public@simplytestable.com',
+                    'state' => TestModel::STATE_COMPLETED,
+                    'type' => TestModel::TYPE_FULL_SITE,
+                    'url_count' => 1,
+                    'task_count' => 0,
+                    'errored_task_count' => 0,
+                    'cancelled_task_count' => 0,
+                    'parameters' => '',
+                    'amendments' => [],
+                    'crawl' => [],
+                    'task_types' => [
+                        [
+                            'name' => Task::TYPE_HTML_VALIDATION,
+                        ],
+                    ],
+                    'task_count_by_state' => [],
+                    'is_public' => true,
+                    'task_type_options' => [],
+                    'owners' => [
+                        'public@simplytestable.com',
+                    ],
+                    'time_period' => [
+                        'start_date_time' => '2019-04-17 14:47',
+                        'end_date_time' => '2019-04-17 15:47',
+                    ],
+                ],
+                'expectedTest' => new TestModel(
+                    TestEntity::create(1),
+                    'http://example.com/',
+                    'public@simplytestable.com',
+                    TestModel::STATE_COMPLETED,
+                    TestModel::TYPE_FULL_SITE,
+                    [
+                        Task::TYPE_HTML_VALIDATION,
+                    ],
+                    1,
+                    0,
+                    0,
+                    0,
+                    '',
+                    [],
+                    0,
+                    [
+                        'in_progress' => 0,
+                        'queued' => 0,
+                        'completed' => 0,
+                        'cancelled' => 0,
+                        'failed' => 0,
+                        'skipped' => 0,
+                    ],
+                    [],
+                    [],
+                    true,
+                    [
+                        'html-validation' => 1,
+                    ],
+                    [
+                        'public@simplytestable.com',
+                    ],
+                    new \DateTime('2019-04-17 14:47'),
+                    new \DateTime('2019-04-17 15:47')
                 ),
             ],
         ];
@@ -236,7 +307,9 @@ class TestFactoryTest extends \PHPUnit\Framework\TestCase
                     [],
                     false,
                     [],
-                    []
+                    [],
+                    null,
+                    null
                 ),
             ],
         ];

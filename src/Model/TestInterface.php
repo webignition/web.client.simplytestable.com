@@ -70,4 +70,6 @@ interface TestInterface
     public function getOwners(): array;
     public function isFinished(): bool;
     public function getHash(): string;
+    public function getStartDateTime(): ?\DateTime;
+    public function getEndDateTime(): ?\DateTime;
 }
