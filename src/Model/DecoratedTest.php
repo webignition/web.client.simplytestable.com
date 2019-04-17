@@ -231,4 +231,14 @@ class DecoratedTest implements \JsonSerializable, TestInterface
             'amendments' => $this->getAmendments(),
         ];
     }
+
+    public function getStartDateTime(): ?\DateTime
+    {
+        return $this->test->getStartDateTime();
+    }
+
+    public function getEndDateTime(): ?\DateTime
+    {
+        return $this->test->getEndDateTime();
+    }
 }
