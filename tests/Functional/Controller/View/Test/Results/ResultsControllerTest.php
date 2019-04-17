@@ -909,6 +909,20 @@ class ResultsControllerTest extends AbstractViewControllerTest
             TestInterface::STATE_EXPIRED
         );
 
+        ObjectReflector::setProperty(
+            $testModel,
+            TestModel::class,
+            'startDateTime',
+            new \DateTime('-11 day')
+        );
+
+        ObjectReflector::setProperty(
+            $testModel,
+            TestModel::class,
+            'endDateTime',
+            new \DateTime('-10 day')
+        );
+
         $newResponse = $resultsController->indexAction(
             $newRequest,
             self::WEBSITE,
