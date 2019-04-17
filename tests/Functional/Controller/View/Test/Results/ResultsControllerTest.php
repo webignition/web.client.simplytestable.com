@@ -487,307 +487,313 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $privateUser = new User(self::USER_EMAIL);
 
         return [
-            'public user, public test, html validation, with errors, null domain test count' => [
-                'testModelProperties' => [
-                    'user' => $publicUser->getUsername(),
-                    'isPublic' => true,
-                    'owners' => [
-                        $publicUser->getUsername(),
-                    ],
-                ],
-                'user' => $publicUser,
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ResultsController::FILTER_WITH_ERRORS,
-                'domainTestCount' => 0,
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'is_public' => true,
-                                    'is_public_user_test' => true,
-                                    'is_owner' => true,
-                                    'type' => Task::TYPE_HTML_VALIDATION,
-                                    'type_label' => Task::TYPE_HTML_VALIDATION,
-                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
-                                    'filter_label' => 'With Errors',
-                                    'available_task_types' => [
-                                        'html-validation',
-                                        'css-validation',
-                                    ],
-                                    'taskIds' => [1, 3],
-                                    'filtered_task_counts' => [
-                                        'all' => 2,
-                                        'with_errors' => 2,
-                                        'with_warnings' => 0,
-                                        'without_errors' => 0,
-                                        'skipped' => 0,
-                                        'cancelled' => 0,
-                                    ],
-                                    'domain_test_count' => null,
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'public user, public test, html validation, with errors, has domain test count' => [
-                'testModelProperties' => [
-                    'user' => $publicUser->getUsername(),
-                    'isPublic' => true,
-                    'owners' => [
-                        $publicUser->getUsername(),
-                    ],
-                ],
-                'user' => $publicUser,
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ResultsController::FILTER_WITH_ERRORS,
-                'domainTestCount' => 99,
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'is_public' => true,
-                                    'is_public_user_test' => true,
-                                    'is_owner' => true,
-                                    'type' => Task::TYPE_HTML_VALIDATION,
-                                    'type_label' => Task::TYPE_HTML_VALIDATION,
-                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
-                                    'filter_label' => 'With Errors',
-                                    'available_task_types' => [
-                                        'html-validation',
-                                        'css-validation',
-                                    ],
-                                    'taskIds' => [1, 3],
-                                    'filtered_task_counts' => [
-                                        'all' => 2,
-                                        'with_errors' => 2,
-                                        'with_warnings' => 0,
-                                        'without_errors' => 0,
-                                        'skipped' => 0,
-                                        'cancelled' => 0,
-                                    ],
-                                    'domain_test_count' => 99,
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'public user, public test, no task type, all' => [
-                'testModelProperties' => [
-                    'user' => $publicUser->getUsername(),
-                    'isPublic' => true,
-                    'owners' => [
-                        $publicUser->getUsername(),
-                    ],
-                ],
-                'user' => $publicUser,
-                'taskType' => null,
-                'filter' => ResultsController::FILTER_ALL,
-                'domainTestCount' => 99,
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'is_public' => true,
-                                    'is_public_user_test' => true,
-                                    'is_owner' => true,
-                                    'type' => '',
-                                    'type_label' => 'All',
-                                    'filter' => ResultsController::FILTER_ALL,
-                                    'filter_label' => 'All',
-                                    'available_task_types' => [
-                                        'html-validation',
-                                        'css-validation',
-                                    ],
-                                    'taskIds' => [1, 2, 3, 4],
-                                    'filtered_task_counts' => [
-                                        'all' => 4,
-                                        'with_errors' => 3,
-                                        'with_warnings' => 0,
-                                        'without_errors' => 1,
-                                        'skipped' => 0,
-                                        'cancelled' => 0,
-                                    ],
-                                    'domain_test_count' => 99,
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'private user, public test' => [
-                'testModelProperties' => [
-                    'user' => $publicUser->getUsername(),
-                    'isPublic' => true,
-                    'owners' => [
-                        $publicUser->getUsername(),
-                    ],
-                ],
-                'user' => $privateUser,
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ResultsController::FILTER_WITH_ERRORS,
-                'domainTestCount' => 99,
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'is_public' => true,
-                                    'is_public_user_test' => true,
-                                    'is_owner' => false,
-                                    'type' => Task::TYPE_HTML_VALIDATION,
-                                    'type_label' => Task::TYPE_HTML_VALIDATION,
-                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
-                                    'filter_label' => 'With Errors',
-                                    'available_task_types' => [
-                                        'html-validation',
-                                    ],
-                                    'taskIds' => [1, 3],
-                                    'filtered_task_counts' => [
-                                        'all' => 2,
-                                        'with_errors' => 2,
-                                        'with_warnings' => 0,
-                                        'without_errors' => 0,
-                                        'skipped' => 0,
-                                        'cancelled' => 0,
-                                    ],
-                                    'domain_test_count' => 99,
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'private user, private test, html validation, with errors' => [
-                'testModelProperties' => [
-                    'user' => $privateUser->getUsername(),
-                    'isPublic' => false,
-                    'owners' => [
-                        $privateUser->getUsername(),
-                    ],
-                ],
-                'user' => $privateUser,
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ResultsController::FILTER_WITH_ERRORS,
-                'domainTestCount' => 99,
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'is_public' => false,
-                                    'is_public_user_test' => false,
-                                    'is_owner' => true,
-                                    'type' => Task::TYPE_HTML_VALIDATION,
-                                    'type_label' => Task::TYPE_HTML_VALIDATION,
-                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
-                                    'filter_label' => 'With Errors',
-                                    'available_task_types' => [
-                                        'html-validation',
-                                        'css-validation',
-                                        'link-integrity',
-                                    ],
-                                    'taskIds' => [1, 3],
-                                    'filtered_task_counts' => [
-                                        'all' => 2,
-                                        'with_errors' => 2,
-                                        'with_warnings' => 0,
-                                        'without_errors' => 0,
-                                        'skipped' => 0,
-                                        'cancelled' => 0,
-                                    ],
-                                    'domain_test_count' => 99,
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'private user, private test, css validation, without errors' => [
-                'testModelProperties' => [
-                    'user' => $privateUser->getUsername(),
-                    'isPublic' => false,
-                    'owners' => [
-                        $privateUser->getUsername(),
-                    ],
-                ],
-                'user' => $privateUser,
-                'taskType' => Task::TYPE_CSS_VALIDATION,
-                'filter' => ResultsController::FILTER_WITHOUT_ERRORS,
-                'domainTestCount' => 99,
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'is_public' => false,
-                                    'is_public_user_test' => false,
-                                    'is_owner' => true,
-                                    'type' => Task::TYPE_CSS_VALIDATION,
-                                    'type_label' => Task::TYPE_CSS_VALIDATION,
-                                    'filter' => ResultsController::FILTER_WITHOUT_ERRORS,
-                                    'filter_label' => 'Without Errors',
-                                    'available_task_types' => [
-                                        'html-validation',
-                                        'css-validation',
-                                        'link-integrity',
-                                    ],
-                                    'taskIds' => [2],
-                                    'filtered_task_counts' => [
-                                        'all' => 2,
-                                        'with_errors' => 1,
-                                        'with_warnings' => 0,
-                                        'without_errors' => 1,
-                                        'skipped' => 0,
-                                        'cancelled' => 0,
-                                    ],
-                                    'domain_test_count' => 99,
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
+//            'public user, public test, html validation, with errors, null domain test count' => [
+//                'testModelProperties' => [
+//                    'user' => $publicUser->getUsername(),
+//                    'isPublic' => true,
+//                    'owners' => [
+//                        $publicUser->getUsername(),
+//                    ],
+//                ],
+//                'user' => $publicUser,
+//                'taskType' => Task::TYPE_HTML_VALIDATION,
+//                'filter' => ResultsController::FILTER_WITH_ERRORS,
+//                'domainTestCount' => 0,
+//                'twig' => MockFactory::createTwig([
+//                    'render' => [
+//                        'withArgs' => function ($viewName, $parameters) {
+//                            $this->assertStandardViewData($viewName, $parameters);
+//
+//                            $this->assertParameterData(
+//                                [
+//                                    'is_public' => true,
+//                                    'is_public_user_test' => true,
+//                                    'is_owner' => true,
+//                                    'type' => Task::TYPE_HTML_VALIDATION,
+//                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+//                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
+//                                    'filter_label' => 'With Errors',
+//                                    'available_task_types' => [
+//                                        'html-validation',
+//                                        'css-validation',
+//                                    ],
+//                                    'taskIds' => [1, 3],
+//                                    'filtered_task_counts' => [
+//                                        'all' => 2,
+//                                        'with_errors' => 2,
+//                                        'with_warnings' => 0,
+//                                        'without_errors' => 0,
+//                                        'skipped' => 0,
+//                                        'cancelled' => 0,
+//                                    ],
+//                                    'domain_test_count' => null,
+//                                    'expiry_duration_string' => '',
+//                                ],
+//                                $parameters
+//                            );
+//
+//                            return true;
+//                        },
+//                        'return' => new Response(),
+//                    ],
+//                ]),
+//            ],
+//            'public user, public test, html validation, with errors, has domain test count' => [
+//                'testModelProperties' => [
+//                    'user' => $publicUser->getUsername(),
+//                    'isPublic' => true,
+//                    'owners' => [
+//                        $publicUser->getUsername(),
+//                    ],
+//                ],
+//                'user' => $publicUser,
+//                'taskType' => Task::TYPE_HTML_VALIDATION,
+//                'filter' => ResultsController::FILTER_WITH_ERRORS,
+//                'domainTestCount' => 99,
+//                'twig' => MockFactory::createTwig([
+//                    'render' => [
+//                        'withArgs' => function ($viewName, $parameters) {
+//                            $this->assertStandardViewData($viewName, $parameters);
+//
+//                            $this->assertParameterData(
+//                                [
+//                                    'is_public' => true,
+//                                    'is_public_user_test' => true,
+//                                    'is_owner' => true,
+//                                    'type' => Task::TYPE_HTML_VALIDATION,
+//                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+//                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
+//                                    'filter_label' => 'With Errors',
+//                                    'available_task_types' => [
+//                                        'html-validation',
+//                                        'css-validation',
+//                                    ],
+//                                    'taskIds' => [1, 3],
+//                                    'filtered_task_counts' => [
+//                                        'all' => 2,
+//                                        'with_errors' => 2,
+//                                        'with_warnings' => 0,
+//                                        'without_errors' => 0,
+//                                        'skipped' => 0,
+//                                        'cancelled' => 0,
+//                                    ],
+//                                    'domain_test_count' => 99,
+//                                    'expiry_duration_string' => '',
+//                                ],
+//                                $parameters
+//                            );
+//
+//                            return true;
+//                        },
+//                        'return' => new Response(),
+//                    ],
+//                ]),
+//            ],
+//            'public user, public test, no task type, all' => [
+//                'testModelProperties' => [
+//                    'user' => $publicUser->getUsername(),
+//                    'isPublic' => true,
+//                    'owners' => [
+//                        $publicUser->getUsername(),
+//                    ],
+//                ],
+//                'user' => $publicUser,
+//                'taskType' => null,
+//                'filter' => ResultsController::FILTER_ALL,
+//                'domainTestCount' => 99,
+//                'twig' => MockFactory::createTwig([
+//                    'render' => [
+//                        'withArgs' => function ($viewName, $parameters) {
+//                            $this->assertStandardViewData($viewName, $parameters);
+//
+//                            $this->assertParameterData(
+//                                [
+//                                    'is_public' => true,
+//                                    'is_public_user_test' => true,
+//                                    'is_owner' => true,
+//                                    'type' => '',
+//                                    'type_label' => 'All',
+//                                    'filter' => ResultsController::FILTER_ALL,
+//                                    'filter_label' => 'All',
+//                                    'available_task_types' => [
+//                                        'html-validation',
+//                                        'css-validation',
+//                                    ],
+//                                    'taskIds' => [1, 2, 3, 4],
+//                                    'filtered_task_counts' => [
+//                                        'all' => 4,
+//                                        'with_errors' => 3,
+//                                        'with_warnings' => 0,
+//                                        'without_errors' => 1,
+//                                        'skipped' => 0,
+//                                        'cancelled' => 0,
+//                                    ],
+//                                    'domain_test_count' => 99,
+//                                    'expiry_duration_string' => '',
+//                                ],
+//                                $parameters
+//                            );
+//
+//                            return true;
+//                        },
+//                        'return' => new Response(),
+//                    ],
+//                ]),
+//            ],
+//            'private user, public test' => [
+//                'testModelProperties' => [
+//                    'user' => $publicUser->getUsername(),
+//                    'isPublic' => true,
+//                    'owners' => [
+//                        $publicUser->getUsername(),
+//                    ],
+//                ],
+//                'user' => $privateUser,
+//                'taskType' => Task::TYPE_HTML_VALIDATION,
+//                'filter' => ResultsController::FILTER_WITH_ERRORS,
+//                'domainTestCount' => 99,
+//                'twig' => MockFactory::createTwig([
+//                    'render' => [
+//                        'withArgs' => function ($viewName, $parameters) {
+//                            $this->assertStandardViewData($viewName, $parameters);
+//
+//                            $this->assertParameterData(
+//                                [
+//                                    'is_public' => true,
+//                                    'is_public_user_test' => true,
+//                                    'is_owner' => false,
+//                                    'type' => Task::TYPE_HTML_VALIDATION,
+//                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+//                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
+//                                    'filter_label' => 'With Errors',
+//                                    'available_task_types' => [
+//                                        'html-validation',
+//                                    ],
+//                                    'taskIds' => [1, 3],
+//                                    'filtered_task_counts' => [
+//                                        'all' => 2,
+//                                        'with_errors' => 2,
+//                                        'with_warnings' => 0,
+//                                        'without_errors' => 0,
+//                                        'skipped' => 0,
+//                                        'cancelled' => 0,
+//                                    ],
+//                                    'domain_test_count' => 99,
+//                                    'expiry_duration_string' => '',
+//                                ],
+//                                $parameters
+//                            );
+//
+//                            return true;
+//                        },
+//                        'return' => new Response(),
+//                    ],
+//                ]),
+//            ],
+//            'private user, private test, html validation, with errors' => [
+//                'testModelProperties' => [
+//                    'user' => $privateUser->getUsername(),
+//                    'isPublic' => false,
+//                    'owners' => [
+//                        $privateUser->getUsername(),
+//                    ],
+//                ],
+//                'user' => $privateUser,
+//                'taskType' => Task::TYPE_HTML_VALIDATION,
+//                'filter' => ResultsController::FILTER_WITH_ERRORS,
+//                'domainTestCount' => 99,
+//                'twig' => MockFactory::createTwig([
+//                    'render' => [
+//                        'withArgs' => function ($viewName, $parameters) {
+//                            $this->assertStandardViewData($viewName, $parameters);
+//
+//                            $this->assertParameterData(
+//                                [
+//                                    'is_public' => false,
+//                                    'is_public_user_test' => false,
+//                                    'is_owner' => true,
+//                                    'type' => Task::TYPE_HTML_VALIDATION,
+//                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+//                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
+//                                    'filter_label' => 'With Errors',
+//                                    'available_task_types' => [
+//                                        'html-validation',
+//                                        'css-validation',
+//                                        'link-integrity',
+//                                    ],
+//                                    'taskIds' => [1, 3],
+//                                    'filtered_task_counts' => [
+//                                        'all' => 2,
+//                                        'with_errors' => 2,
+//                                        'with_warnings' => 0,
+//                                        'without_errors' => 0,
+//                                        'skipped' => 0,
+//                                        'cancelled' => 0,
+//                                    ],
+//                                    'domain_test_count' => 99,
+//                                    'expiry_duration_string' => '',
+//                                ],
+//                                $parameters
+//                            );
+//
+//                            return true;
+//                        },
+//                        'return' => new Response(),
+//                    ],
+//                ]),
+//            ],
+//            'private user, private test, css validation, without errors' => [
+//                'testModelProperties' => [
+//                    'user' => $privateUser->getUsername(),
+//                    'isPublic' => false,
+//                    'owners' => [
+//                        $privateUser->getUsername(),
+//                    ],
+//                ],
+//                'user' => $privateUser,
+//                'taskType' => Task::TYPE_CSS_VALIDATION,
+//                'filter' => ResultsController::FILTER_WITHOUT_ERRORS,
+//                'domainTestCount' => 99,
+//                'twig' => MockFactory::createTwig([
+//                    'render' => [
+//                        'withArgs' => function ($viewName, $parameters) {
+//                            $this->assertStandardViewData($viewName, $parameters);
+//
+//                            $this->assertParameterData(
+//                                [
+//                                    'is_public' => false,
+//                                    'is_public_user_test' => false,
+//                                    'is_owner' => true,
+//                                    'type' => Task::TYPE_CSS_VALIDATION,
+//                                    'type_label' => Task::TYPE_CSS_VALIDATION,
+//                                    'filter' => ResultsController::FILTER_WITHOUT_ERRORS,
+//                                    'filter_label' => 'Without Errors',
+//                                    'available_task_types' => [
+//                                        'html-validation',
+//                                        'css-validation',
+//                                        'link-integrity',
+//                                    ],
+//                                    'taskIds' => [2],
+//                                    'filtered_task_counts' => [
+//                                        'all' => 2,
+//                                        'with_errors' => 1,
+//                                        'with_warnings' => 0,
+//                                        'without_errors' => 1,
+//                                        'skipped' => 0,
+//                                        'cancelled' => 0,
+//                                    ],
+//                                    'domain_test_count' => 99,
+//                                    'expiry_duration_string' => '',
+//                                ],
+//                                $parameters
+//                            );
+//
+//                            return true;
+//                        },
+//                        'return' => new Response(),
+//                    ],
+//                ]),
+//            ],
             'public user, public test, expired' => [
                 'testModelProperties' => [
                     'user' => $publicUser->getUsername(),
@@ -796,6 +802,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
                         $publicUser->getUsername(),
                     ],
                     'state' => TestInterface::STATE_EXPIRED,
+                    'startDateTime' => new \DateTime('-11 day'),
+                    'endDateTime' => new \DateTime('-10 day'),
                 ],
                 'user' => $publicUser,
                 'taskType' => Task::TYPE_HTML_VALIDATION,
@@ -829,6 +837,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => null,
+                                    'expiry_duration_string' => '10 days',
                                 ],
                                 $parameters
                             );
@@ -936,6 +945,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         sort($taskIds);
 
         $this->assertEquals($expectedParameterData['taskIds'], $taskIds);
+        $this->assertEquals($expectedParameterData['expiry_duration_string'], $parameters['expiry_duration_string']);
     }
 
     private function assertStandardViewData(string $viewName, array $parameters)
@@ -984,6 +994,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'filtered_task_counts',
                 'domain_test_count',
                 'default_css_validation_options',
+                'expiry_duration_string',
             ],
             array_keys($parameters)
         );
