@@ -788,6 +788,57 @@ class ResultsControllerTest extends AbstractViewControllerTest
                     ],
                 ]),
             ],
+            'public user, public test, expired' => [
+                'testModelProperties' => [
+                    'user' => $publicUser->getUsername(),
+                    'isPublic' => true,
+                    'owners' => [
+                        $publicUser->getUsername(),
+                    ],
+                    'state' => TestInterface::STATE_EXPIRED,
+                ],
+                'user' => $publicUser,
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'filter' => ResultsController::FILTER_WITH_ERRORS,
+                'domainTestCount' => 0,
+                'twig' => MockFactory::createTwig([
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
+                            $this->assertParameterData(
+                                [
+                                    'is_public' => true,
+                                    'is_public_user_test' => true,
+                                    'is_owner' => true,
+                                    'type' => Task::TYPE_HTML_VALIDATION,
+                                    'type_label' => Task::TYPE_HTML_VALIDATION,
+                                    'filter' => ResultsController::FILTER_WITH_ERRORS,
+                                    'filter_label' => 'With Errors',
+                                    'available_task_types' => [
+                                        'html-validation',
+                                        'css-validation',
+                                    ],
+                                    'taskIds' => [],
+                                    'filtered_task_counts' => [
+                                        'all' => 2,
+                                        'with_errors' => 2,
+                                        'with_warnings' => 0,
+                                        'without_errors' => 0,
+                                        'skipped' => 0,
+                                        'cancelled' => 0,
+                                    ],
+                                    'domain_test_count' => null,
+                                ],
+                                $parameters
+                            );
+
+                            return true;
+                        },
+                        'return' => new Response(),
+                    ],
+                ]),
+            ],
         ];
     }
 

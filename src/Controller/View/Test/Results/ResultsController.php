@@ -8,6 +8,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\DecoratedTest;
+use App\Model\TestInterface;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
@@ -162,17 +163,21 @@ class ResultsController extends AbstractBaseViewController
             return $response;
         }
 
-        $remoteTaskIds = $this->getRemoteTaskIds(
-            $testModel->getEntity(),
-            $filter,
-            $taskType
-        );
+        if (TestInterface::STATE_EXPIRED === $testModel->getState()) {
+            $tasks = [];
+        } else {
+            $remoteTaskIds = $this->getRemoteTaskIds(
+                $testModel->getEntity(),
+                $filter,
+                $taskType
+            );
 
-        if (empty($remoteTaskIds)) {
-            $remoteTaskIds = $testModel->getTaskIds();
+            if (empty($remoteTaskIds)) {
+                $remoteTaskIds = $testModel->getTaskIds();
+            }
+
+            $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
         }
-
-        $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
