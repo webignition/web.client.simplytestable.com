@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "78135654c1929c10996c3a31691b6c8e",
+    "content-hash": "2d372dbe86f6027a2f36c8319a445354",
     "packages": [
         {
             "name": "chrisboulton/php-resque",
@@ -4380,6 +4380,54 @@
                 "stripe"
             ],
             "time": "2018-03-06T12:56:28+00:00"
+        },
+        {
+            "name": "webignition/readable-duration",
+            "version": "2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/readable-duration.git",
+                "reference": "39cb0b8abaa0d68b84a2b77ab75b2b58a07ed922"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/readable-duration/zipball/39cb0b8abaa0d68b84a2b77ab75b2b58a07ed922",
+                "reference": "39cb0b8abaa0d68b84a2b77ab75b2b58a07ed922",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.11.5",
+                "phpunit/phpunit": "~8.0",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\ReadableDuration\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "jon@webignition.net"
+                }
+            ],
+            "description": "Convert a value in seconds into a human-readable convenience duration",
+            "homepage": "https://github.com/webignition/readable-duration",
+            "keywords": [
+                "duration",
+                "humand-readable",
+                "readable",
+                "time"
+            ],
+            "time": "2019-04-17T14:57:47+00:00"
         },
         {
             "name": "webignition/resque-bundle",
