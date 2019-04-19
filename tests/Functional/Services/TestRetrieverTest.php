@@ -11,6 +11,8 @@ use App\Tests\Factory\HttpResponseFactory;
 
 class TestRetrieverTest extends AbstractCoreApplicationServiceTest
 {
+    const TEST_ID = 1;
+
     /**
      * @var TestRetriever
      */
@@ -85,17 +87,102 @@ class TestRetrieverTest extends AbstractCoreApplicationServiceTest
 
     public function testRetrieveSuccess()
     {
-        $testId = 1;
-
         $this->httpMockHandler->appendFixtures([
             HttpResponseFactory::createJsonResponse([
-                'id' => $testId,
+                'id' => self::TEST_ID,
             ]),
         ]);
 
-        $remoteTest = $this->testRetriever->retrieve($testId);
+        $remoteTest = $this->testRetriever->retrieve(self::TEST_ID);
 
         $this->assertInstanceOf(TestModel::class, $remoteTest);
-        $this->assertEquals('http://null/job/1/', $this->httpHistory->getLastRequestUrl());
+        $this->assertEquals('http://null/job/' . self::TEST_ID . '/', $this->httpHistory->getLastRequestUrl());
+    }
+
+    /**
+     * @dataProvider retrieveRemoteTaskIdsNotPreparedStateDataProvider
+     */
+    public function testRetrieveRemoteTaskIdsNotPreparedState(string $state)
+    {
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'id' => self::TEST_ID,
+                'state' => $state,
+            ]),
+        ]);
+
+        $remoteTest = $this->testRetriever->retrieve(self::TEST_ID);
+
+        $this->assertInstanceOf(TestModel::class, $remoteTest);
+        $this->assertSame([], $remoteTest->getTaskIds());
+
+        $this->assertEquals(
+            [
+                'http://null/job/1/'
+            ],
+            $this->httpHistory->getRequestUrlsAsStrings()
+        );
+    }
+
+    public function retrieveRemoteTaskIdsNotPreparedStateDataProvider(): array
+    {
+        return [
+            'new' => [
+                'state' => 'new',
+            ],
+            'preparing' => [
+                'state' => 'preparing',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider retrieveRemoteTaskIdsDataProvider
+     */
+    public function testRetrieveRemoteTaskIds(string $state)
+    {
+        $taskIds = [1,2,3];
+
+        $this->httpMockHandler->appendFixtures([
+            HttpResponseFactory::createJsonResponse([
+                'id' => self::TEST_ID,
+                'state' => $state,
+            ]),
+            HttpResponseFactory::createJsonResponse($taskIds),
+        ]);
+
+        $remoteTest = $this->testRetriever->retrieve(self::TEST_ID);
+
+        $this->assertInstanceOf(TestModel::class, $remoteTest);
+        $this->assertSame($taskIds, $remoteTest->getTaskIds());
+
+        $this->assertEquals(
+            [
+                'http://null/job/1/',
+                'http://null/job/1/tasks/ids/',
+            ],
+            $this->httpHistory->getRequestUrlsAsStrings()
+        );
+    }
+
+    public function retrieveRemoteTaskIdsDataProvider(): array
+    {
+        return [
+            'queued' => [
+                'state' => 'queued',
+            ],
+            'in-progress' => [
+                'state' => 'in-progress',
+            ],
+            'completed' => [
+                'state' => 'completed',
+            ],
+            'cancelled' => [
+                'state' => 'cancelled',
+            ],
+            'expired' => [
+                'state' => 'expired',
+            ],
+        ];
     }
 }
