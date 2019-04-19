@@ -21,6 +21,7 @@ class TestRetriever
     const STATE_REJECTED = 'rejected';
     const STATE_RESOLVING = 'resolving';
     const STATE_RESOLVED = 'resolved';
+    const STATE_EXPIRED  = 'expired';
 
     private $entityManager;
     private $taskService;
@@ -35,6 +36,7 @@ class TestRetriever
         self::STATE_IN_PROGRESS,
         self::STATE_COMPLETED,
         self::STATE_CANCELLED,
+        self::STATE_EXPIRED,
     ];
 
     public function __construct(
