@@ -1,0 +1,17 @@
+{% extends 'abstract-test-results.html.twig' %}
+
+{% block result_content %}
+    <div class="col-lg-12">
+        <h2>Detailed Results No Longer Available</h2>
+
+        <p class="lead">
+            {% if is_public_user_test %}
+                Demo test results are available for <strong>24 hours</strong>.
+            {% else %}
+                Private tests results are available for <strong>one year</strong>.
+            {% endif %}
+
+            These results expired <strong>about {{ expiry_duration_string }}</strong> ago.
+        </p>
+    </div>
+{% endblock %}
