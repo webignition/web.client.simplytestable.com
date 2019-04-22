@@ -38,7 +38,6 @@ class ResultsController extends AbstractResultsController
     const FILTER_CANCELLED = 'cancelled';
 
     private $taskService;
-    private $taskTypeService;
     private $taskCollectionFilterService;
     private $testOptionsRequestAdapterFactory;
     private $cssValidationTestConfiguration;
@@ -80,11 +79,11 @@ class ResultsController extends AbstractResultsController
             $twig,
             $defaultViewParameters,
             $cacheableResponseFactory,
-            $remoteTestService
+            $remoteTestService,
+            $taskTypeService
         );
 
         $this->taskService = $taskService;
-        $this->taskTypeService = $taskTypeService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
@@ -212,7 +211,7 @@ class ResultsController extends AbstractResultsController
                     $testModel->isPublic(),
                     $isOwner
                 ),
-                'task_types' => $this->taskTypeService->get(),
+                'task_types' => $this->getTaskTypes(),
                 'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
                 'css_validation_ignore_common_cdns' =>
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
@@ -319,22 +318,5 @@ class ResultsController extends AbstractResultsController
         }
 
         return $this->taskCollectionFilterService->getRemoteIds($test, $filter, $taskType);
-    }
-
-    private function getAvailableTaskTypes(array $taskTypes, bool $isPublic, bool $isOwner): array
-    {
-        if ($isPublic && !$isOwner) {
-            $availableTaskTypes = $this->taskTypeService->get();
-
-            foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
-                if (!in_array($taskTypeDetails['name'], $taskTypes)) {
-                    unset($availableTaskTypes[$taskTypeKey]);
-                }
-            }
-
-            return $availableTaskTypes;
-        }
-
-        return $this->taskTypeService->getAvailable();
     }
 }

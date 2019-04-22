@@ -28,7 +28,6 @@ use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
 class ExpiredController extends AbstractResultsController
 {
-    private $taskTypeService;
     private $testOptionsRequestAdapterFactory;
     private $cssValidationTestConfiguration;
     private $urlViewValues;
@@ -57,10 +56,10 @@ class ExpiredController extends AbstractResultsController
             $twig,
             $defaultViewParameters,
             $cacheableResponseFactory,
-            $remoteTestService
+            $remoteTestService,
+            $taskTypeService
         );
 
-        $this->taskTypeService = $taskTypeService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
@@ -151,7 +150,7 @@ class ExpiredController extends AbstractResultsController
                     $testModel->isPublic(),
                     $isOwner
                 ),
-                'task_types' => $this->taskTypeService->get(),
+                'task_types' => $this->getTaskTypes(),
                 'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
                 'css_validation_ignore_common_cdns' =>
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
@@ -165,23 +164,6 @@ class ExpiredController extends AbstractResultsController
             ],
             $response
         );
-    }
-
-    private function getAvailableTaskTypes(array $taskTypes, bool $isPublic, bool $isOwner): array
-    {
-        if ($isPublic && !$isOwner) {
-            $availableTaskTypes = $this->taskTypeService->get();
-
-            foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
-                if (!in_array($taskTypeDetails['name'], $taskTypes)) {
-                    unset($availableTaskTypes[$taskTypeKey]);
-                }
-            }
-
-            return $availableTaskTypes;
-        }
-
-        return $this->taskTypeService->getAvailable();
     }
 
     private function createExpiryDurationString(TestInterface $test)
