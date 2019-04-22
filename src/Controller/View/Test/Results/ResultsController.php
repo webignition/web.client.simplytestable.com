@@ -38,7 +38,6 @@ class ResultsController extends AbstractResultsController
 
     private $taskService;
     private $taskCollectionFilterService;
-    private $urlViewValues;
     private $userManager;
     private $testFactory;
     private $testRetriever;
@@ -79,12 +78,12 @@ class ResultsController extends AbstractResultsController
             $remoteTestService,
             $taskTypeService,
             $testOptionsRequestAdapterFactory,
-            $cssValidationTestConfiguration
+            $cssValidationTestConfiguration,
+            $urlViewValues
         );
 
         $this->taskService = $taskService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
-        $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
         $this->testFactory = $testFactory;
         $this->testRetriever = $testRetriever;
@@ -191,7 +190,7 @@ class ResultsController extends AbstractResultsController
         return $this->renderWithDefaultViewParameters(
             'test-results-available.html.twig',
             [
-                'website' => $this->urlViewValues->create($website),
+                'website' => $this->createWebsiteViewValues($website),
                 'test' => $decoratedTest,
                 'is_public' => $testModel->isPublic(),
                 'is_public_user_test' => $isPublicUserTest,

@@ -27,7 +27,6 @@ use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
 class ExpiredController extends AbstractResultsController
 {
-    private $urlViewValues;
     private $userManager;
     private $testFactory;
     private $testRetriever;
@@ -56,10 +55,10 @@ class ExpiredController extends AbstractResultsController
             $remoteTestService,
             $taskTypeService,
             $testOptionsRequestAdapterFactory,
-            $cssValidationTestConfiguration
+            $cssValidationTestConfiguration,
+            $urlViewValues
         );
 
-        $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
         $this->testFactory = $testFactory;
         $this->testRetriever = $testRetriever;
@@ -134,7 +133,7 @@ class ExpiredController extends AbstractResultsController
         return $this->renderWithDefaultViewParameters(
             'test-results-expired.html.twig',
             [
-                'website' => $this->urlViewValues->create($website),
+                'website' => $this->createWebsiteViewValues($website),
                 'test' => $decoratedTest,
                 'is_public' => $testModel->isPublic(),
                 'is_public_user_test' => $isPublicUserTest,

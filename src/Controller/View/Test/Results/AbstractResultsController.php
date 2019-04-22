@@ -10,6 +10,7 @@ use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
+use App\Services\UrlViewValuesService;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
@@ -20,6 +21,7 @@ abstract class AbstractResultsController extends AbstractBaseViewController
     private $taskTypeService;
     private $testOptionsRequestAdapterFactory;
     private $cssValidationTestConfiguration;
+    private $urlViewValues;
 
     public function __construct(
         RouterInterface $router,
@@ -29,7 +31,8 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         RemoteTestService $remoteTestService,
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
-        CssValidationTestConfiguration $cssValidationTestConfiguration
+        CssValidationTestConfiguration $cssValidationTestConfiguration,
+        UrlViewValuesService $urlViewValues
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -37,6 +40,7 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         $this->taskTypeService = $taskTypeService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
+        $this->urlViewValues = $urlViewValues;
     }
 
     protected function getDomainTestCount(string $website): int
@@ -82,5 +86,10 @@ abstract class AbstractResultsController extends AbstractBaseViewController
     protected function getCssValidationExcludedDomains(): array
     {
         return $this->cssValidationTestConfiguration->getExcludedDomains();
+    }
+
+    protected function createWebsiteViewValues(string $website): array
+    {
+        return $this->urlViewValues->create($website);
     }
 }
