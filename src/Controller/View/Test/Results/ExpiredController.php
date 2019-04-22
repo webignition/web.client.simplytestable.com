@@ -13,7 +13,6 @@ use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskTypeService;
-use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
@@ -28,7 +27,6 @@ use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 class ExpiredController extends AbstractResultsController
 {
     private $userManager;
-    private $testFactory;
     private $testRetriever;
     private $readableDurationFactory;
 
@@ -43,7 +41,6 @@ class ExpiredController extends AbstractResultsController
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
-        TestFactory $testFactory,
         TestRetriever $testRetriever,
         ReadableDurationFactory $readableDurationFactory
     ) {
@@ -60,7 +57,6 @@ class ExpiredController extends AbstractResultsController
         );
 
         $this->userManager = $userManager;
-        $this->testFactory = $testFactory;
         $this->testRetriever = $testRetriever;
         $this->readableDurationFactory = $readableDurationFactory;
     }

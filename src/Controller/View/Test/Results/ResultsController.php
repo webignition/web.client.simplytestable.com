@@ -16,7 +16,6 @@ use App\Services\SystemUserService;
 use App\Services\TaskCollectionFilterService;
 use App\Services\TaskService;
 use App\Services\TaskTypeService;
-use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
@@ -39,7 +38,6 @@ class ResultsController extends AbstractResultsController
     private $taskService;
     private $taskCollectionFilterService;
     private $userManager;
-    private $testFactory;
     private $testRetriever;
 
     /**
@@ -67,7 +65,6 @@ class ResultsController extends AbstractResultsController
         TaskCollectionFilterService $taskCollectionFilterService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
-        TestFactory $testFactory,
         TestRetriever $testRetriever
     ) {
         parent::__construct(
@@ -85,7 +82,6 @@ class ResultsController extends AbstractResultsController
         $this->taskService = $taskService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
         $this->userManager = $userManager;
-        $this->testFactory = $testFactory;
         $this->testRetriever = $testRetriever;
     }
 
