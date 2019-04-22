@@ -2,7 +2,6 @@
 
 namespace App\Controller\View\Test\Results;
 
-use App\Controller\AbstractBaseViewController;
 use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -29,7 +28,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 
-class ResultsController extends AbstractBaseViewController
+class ResultsController extends AbstractResultsController
 {
     const FILTER_WITH_ERRORS = 'with-errors';
     const FILTER_WITH_WARNINGS = 'with-warnings';
@@ -38,7 +37,6 @@ class ResultsController extends AbstractBaseViewController
     const FILTER_SKIPPED = 'skipped';
     const FILTER_CANCELLED = 'cancelled';
 
-    private $remoteTestService;
     private $taskService;
     private $taskTypeService;
     private $taskCollectionFilterService;
@@ -77,9 +75,14 @@ class ResultsController extends AbstractBaseViewController
         TestFactory $testFactory,
         TestRetriever $testRetriever
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheableResponseFactory,
+            $remoteTestService
+        );
 
-        $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
         $this->taskTypeService = $taskTypeService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
@@ -215,7 +218,7 @@ class ResultsController extends AbstractBaseViewController
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
                 'tasks' => $tasks,
                 'filtered_task_counts' => $filteredTaskCounts,
-                'domain_test_count' => $this->remoteTestService->getFinishedCount($website),
+                'domain_test_count' => $this->getDomainTestCount($website),
                 'default_css_validation_options' => [
                     'ignore-warnings' => 1,
                     'vendor-extensions' => 'warn',

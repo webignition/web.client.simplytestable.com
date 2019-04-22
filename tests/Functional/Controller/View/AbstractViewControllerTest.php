@@ -92,11 +92,16 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
 
     protected function setRemoteTestServiceOnController(
         AbstractBaseViewController $controller,
-        RemoteTestService $remoteTestService
+        RemoteTestService $remoteTestService,
+        ?string $controllerClass = null
     ) {
+        if (null === $controllerClass) {
+            $controllerClass = get_class($controller);
+        }
+
         ObjectReflector::setProperty(
             $controller,
-            get_class($controller),
+            $controllerClass,
             'remoteTestService',
             $remoteTestService
         );

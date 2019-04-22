@@ -3,6 +3,7 @@
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
+use App\Controller\View\Test\Results\AbstractResultsController;
 use App\Controller\View\Test\Results\ExpiredController;
 use App\Entity\Task\Task;
 use App\Model\Test as TestModel;
@@ -390,7 +391,11 @@ class ExpiredControllerTest extends AbstractViewControllerTest
             ->with(self::WEBSITE)
             ->andReturn($domainTestCount);
 
-        $this->setRemoteTestServiceOnController($expiredController, $remoteTestService);
+        $this->setRemoteTestServiceOnController(
+            $expiredController,
+            $remoteTestService,
+            AbstractResultsController::class
+        );
         $this->setTwigOnController($twig, $expiredController);
 
         $response = $expiredController->indexAction(
@@ -590,7 +595,11 @@ class ExpiredControllerTest extends AbstractViewControllerTest
             ->andReturn(0);
 
         $this->setTestRetrieverOnController($expiredController, $testRetriever);
-        $this->setRemoteTestServiceOnController($expiredController, $remoteTestService);
+        $this->setRemoteTestServiceOnController(
+            $expiredController,
+            $remoteTestService,
+            AbstractResultsController::class
+        );
 
         $response = $expiredController->indexAction(
             $request,

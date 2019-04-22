@@ -2,7 +2,6 @@
 
 namespace App\Controller\View\Test\Results;
 
-use App\Controller\AbstractBaseViewController;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
@@ -27,9 +26,8 @@ use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
-class ExpiredController extends AbstractBaseViewController
+class ExpiredController extends AbstractResultsController
 {
-    private $remoteTestService;
     private $taskTypeService;
     private $testOptionsRequestAdapterFactory;
     private $cssValidationTestConfiguration;
@@ -54,9 +52,14 @@ class ExpiredController extends AbstractBaseViewController
         TestRetriever $testRetriever,
         ReadableDurationFactory $readableDurationFactory
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheableResponseFactory,
+            $remoteTestService
+        );
 
-        $this->remoteTestService = $remoteTestService;
         $this->taskTypeService = $taskTypeService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
@@ -152,7 +155,7 @@ class ExpiredController extends AbstractBaseViewController
                 'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
                 'css_validation_ignore_common_cdns' =>
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
-                'domain_test_count' => $this->remoteTestService->getFinishedCount($website),
+                'domain_test_count' => $this->getDomainTestCount($website),
                 'default_css_validation_options' => [
                     'ignore-warnings' => 1,
                     'vendor-extensions' => 'warn',
