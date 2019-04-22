@@ -18,7 +18,6 @@ use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterF
 use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -28,7 +27,6 @@ use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
 class ExpiredController extends AbstractResultsController
 {
-    private $testOptionsRequestAdapterFactory;
     private $cssValidationTestConfiguration;
     private $urlViewValues;
     private $userManager;
@@ -57,10 +55,10 @@ class ExpiredController extends AbstractResultsController
             $defaultViewParameters,
             $cacheableResponseFactory,
             $remoteTestService,
-            $taskTypeService
+            $taskTypeService,
+            $testOptionsRequestAdapterFactory
         );
 
-        $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
@@ -130,9 +128,6 @@ class ExpiredController extends AbstractResultsController
 
         $expiryDurationString = $this->createExpiryDurationString($testModel);
 
-        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
-        $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
-
         $isOwner = in_array($user->getUsername(), $testModel->getOwners());
 
         $decoratedTest = new DecoratedTest($testModel);
@@ -151,7 +146,7 @@ class ExpiredController extends AbstractResultsController
                     $isOwner
                 ),
                 'task_types' => $this->getTaskTypes(),
-                'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
+                'test_options' => $this->createTestOptions($testModel),
                 'css_validation_ignore_common_cdns' =>
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
                 'domain_test_count' => $this->getDomainTestCount($website),

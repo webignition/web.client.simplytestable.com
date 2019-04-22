@@ -21,7 +21,6 @@ use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterF
 use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -39,7 +38,6 @@ class ResultsController extends AbstractResultsController
 
     private $taskService;
     private $taskCollectionFilterService;
-    private $testOptionsRequestAdapterFactory;
     private $cssValidationTestConfiguration;
     private $urlViewValues;
     private $userManager;
@@ -80,12 +78,12 @@ class ResultsController extends AbstractResultsController
             $defaultViewParameters,
             $cacheableResponseFactory,
             $remoteTestService,
-            $taskTypeService
+            $taskTypeService,
+            $testOptionsRequestAdapterFactory
         );
 
         $this->taskService = $taskService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
-        $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
@@ -187,9 +185,6 @@ class ResultsController extends AbstractResultsController
 
         $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
 
-        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
-        $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
-
         $isOwner = in_array($user->getUsername(), $testModel->getOwners());
 
         $decoratedTest = new DecoratedTest($testModel);
@@ -212,7 +207,7 @@ class ResultsController extends AbstractResultsController
                     $isOwner
                 ),
                 'task_types' => $this->getTaskTypes(),
-                'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
+                'test_options' => $this->createTestOptions($testModel),
                 'css_validation_ignore_common_cdns' =>
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
                 'tasks' => $tasks,
