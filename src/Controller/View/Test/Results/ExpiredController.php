@@ -27,7 +27,6 @@ use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
 class ExpiredController extends AbstractResultsController
 {
-    private $cssValidationTestConfiguration;
     private $urlViewValues;
     private $userManager;
     private $testFactory;
@@ -56,10 +55,10 @@ class ExpiredController extends AbstractResultsController
             $cacheableResponseFactory,
             $remoteTestService,
             $taskTypeService,
-            $testOptionsRequestAdapterFactory
+            $testOptionsRequestAdapterFactory,
+            $cssValidationTestConfiguration
         );
 
-        $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
         $this->testFactory = $testFactory;
@@ -147,8 +146,7 @@ class ExpiredController extends AbstractResultsController
                 ),
                 'task_types' => $this->getTaskTypes(),
                 'test_options' => $this->createTestOptions($testModel),
-                'css_validation_ignore_common_cdns' =>
-                    $this->cssValidationTestConfiguration->getExcludedDomains(),
+                'css_validation_ignore_common_cdns' => $this->getCssValidationExcludedDomains(),
                 'domain_test_count' => $this->getDomainTestCount($website),
                 'default_css_validation_options' => [
                     'ignore-warnings' => 1,

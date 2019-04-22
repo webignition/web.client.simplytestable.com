@@ -38,7 +38,6 @@ class ResultsController extends AbstractResultsController
 
     private $taskService;
     private $taskCollectionFilterService;
-    private $cssValidationTestConfiguration;
     private $urlViewValues;
     private $userManager;
     private $testFactory;
@@ -79,12 +78,12 @@ class ResultsController extends AbstractResultsController
             $cacheableResponseFactory,
             $remoteTestService,
             $taskTypeService,
-            $testOptionsRequestAdapterFactory
+            $testOptionsRequestAdapterFactory,
+            $cssValidationTestConfiguration
         );
 
         $this->taskService = $taskService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
-        $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
         $this->testFactory = $testFactory;
@@ -208,8 +207,7 @@ class ResultsController extends AbstractResultsController
                 ),
                 'task_types' => $this->getTaskTypes(),
                 'test_options' => $this->createTestOptions($testModel),
-                'css_validation_ignore_common_cdns' =>
-                    $this->cssValidationTestConfiguration->getExcludedDomains(),
+                'css_validation_ignore_common_cdns' => $this->getCssValidationExcludedDomains(),
                 'tasks' => $tasks,
                 'filtered_task_counts' => $filteredTaskCounts,
                 'domain_test_count' => $this->getDomainTestCount($website),

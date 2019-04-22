@@ -5,6 +5,7 @@ namespace App\Controller\View\Test\Results;
 use App\Controller\AbstractBaseViewController;
 use App\Model\Test as TestModel;
 use App\Services\CacheableResponseFactory;
+use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\TaskTypeService;
@@ -18,6 +19,7 @@ abstract class AbstractResultsController extends AbstractBaseViewController
     private $remoteTestService;
     private $taskTypeService;
     private $testOptionsRequestAdapterFactory;
+    private $cssValidationTestConfiguration;
 
     public function __construct(
         RouterInterface $router,
@@ -26,13 +28,15 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         CacheableResponseFactory $cacheableResponseFactory,
         RemoteTestService $remoteTestService,
         TaskTypeService $taskTypeService,
-        TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory
+        TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
+        CssValidationTestConfiguration $cssValidationTestConfiguration
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->remoteTestService = $remoteTestService;
         $this->taskTypeService = $taskTypeService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
+        $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
     }
 
     protected function getDomainTestCount(string $website): int
@@ -73,5 +77,10 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         $testOptionsAdapter->setRequestData(new ParameterBag($test->getTaskOptions()));
 
         return $testOptionsAdapter->getTestOptions()->__toKeyArray();
+    }
+
+    protected function getCssValidationExcludedDomains(): array
+    {
+        return $this->cssValidationTestConfiguration->getExcludedDomains();
     }
 }
