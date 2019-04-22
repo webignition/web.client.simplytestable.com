@@ -13,3 +13,4 @@
 - /tasks/ids/$
 - /tasks/ids/unretrieved/
 - ^/test/start/$
+- /expired/$
