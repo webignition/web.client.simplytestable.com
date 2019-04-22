@@ -68,11 +68,16 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
 
     protected function setTestRetrieverOnController(
         $controller,
-        TestRetriever $testRetriever
+        TestRetriever $testRetriever,
+        ?string $controllerClass = null
     ) {
+        if (null === $controllerClass) {
+            $controllerClass = get_class($controller);
+        }
+
         ObjectReflector::setProperty(
             $controller,
-            get_class($controller),
+            $controllerClass,
             'testRetriever',
             $testRetriever
         );

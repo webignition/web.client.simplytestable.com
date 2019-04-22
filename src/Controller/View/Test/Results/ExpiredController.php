@@ -2,9 +2,6 @@
 
 namespace App\Controller\View\Test\Results;
 
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\DecoratedTest;
 use App\Model\TestInterface;
 use App\Services\CacheableResponseFactory;
@@ -26,7 +23,6 @@ use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
 class ExpiredController extends AbstractResultsController
 {
-    private $testRetriever;
     private $readableDurationFactory;
 
     public function __construct(
@@ -53,10 +49,10 @@ class ExpiredController extends AbstractResultsController
             $testOptionsRequestAdapterFactory,
             $cssValidationTestConfiguration,
             $urlViewValues,
-            $userManager
+            $userManager,
+            $testRetriever
         );
 
-        $this->testRetriever = $testRetriever;
         $this->readableDurationFactory = $readableDurationFactory;
     }
 
@@ -66,15 +62,11 @@ class ExpiredController extends AbstractResultsController
      * @param int $test_id
      *
      * @return RedirectResponse|Response
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
         $user = $this->getUser();
-        $testModel = $this->testRetriever->retrieve($test_id);
+        $testModel = $this->retrieveTest($test_id);
 
         if ($website !== $testModel->getWebsite()) {
             return new RedirectResponse($this->generateUrl(

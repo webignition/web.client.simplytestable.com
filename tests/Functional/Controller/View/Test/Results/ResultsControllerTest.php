@@ -349,7 +349,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $resultsController = self::$container->get(ResultsController::class);
 
         $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
-        $this->setTestRetrieverOnController($resultsController, $testRetriever);
+
+        $this->setTestRetrieverOnController(
+            $resultsController,
+            $testRetriever,
+            AbstractResultsController::class
+        );
 
         /* @var RedirectResponse $response */
         $response = $resultsController->indexAction(
@@ -466,7 +471,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $resultsController = self::$container->get(ResultsController::class);
 
         $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
-        $this->setTestRetrieverOnController($resultsController, $testRetriever);
+
+        $this->setTestRetrieverOnController(
+            $resultsController,
+            $testRetriever,
+            AbstractResultsController::class
+        );
 
         $remoteTestService = \Mockery::mock(RemoteTestService::class);
         $remoteTestService
@@ -831,7 +841,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ->with(self::WEBSITE)
             ->andReturn(0);
 
-        $this->setTestRetrieverOnController($resultsController, $testRetriever);
+        $this->setTestRetrieverOnController(
+            $resultsController,
+            $testRetriever,
+            AbstractResultsController::class
+        );
+
         $this->setRemoteTestServiceOnController(
             $resultsController,
             $remoteTestService,

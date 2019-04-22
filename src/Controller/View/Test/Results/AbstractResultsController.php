@@ -10,6 +10,7 @@ use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
+use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -25,6 +26,7 @@ abstract class AbstractResultsController extends AbstractBaseViewController
     private $cssValidationTestConfiguration;
     private $urlViewValues;
     private $userManager;
+    private $testRetriever;
 
     public function __construct(
         RouterInterface $router,
@@ -36,7 +38,8 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         UrlViewValuesService $urlViewValues,
-        UserManager $userManager
+        UserManager $userManager,
+        TestRetriever $testRetriever
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -46,6 +49,7 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
         $this->userManager = $userManager;
+        $this->testRetriever = $testRetriever;
     }
 
     protected function getDomainTestCount(string $website): int
@@ -101,5 +105,10 @@ abstract class AbstractResultsController extends AbstractBaseViewController
     protected function getUser(): UserInterface
     {
         return $this->userManager->getUser();
+    }
+
+    protected function retrieveTest(int $testId): TestModel
+    {
+        return $this->testRetriever->retrieve($testId);
     }
 }
