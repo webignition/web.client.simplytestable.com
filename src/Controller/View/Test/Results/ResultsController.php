@@ -8,6 +8,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\DecoratedTest;
+use App\Model\TestInterface;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
@@ -122,6 +123,16 @@ class ResultsController extends AbstractBaseViewController
                 [
                     'website' => $website,
                     'test_id' => $test_id,
+                ]
+            ));
+        }
+
+        if (TestInterface::STATE_EXPIRED === $testModel->getState()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_expired',
+                [
+                    'website' => $testModel->getWebsite(),
+                    'test_id' => $test_id
                 ]
             ));
         }
