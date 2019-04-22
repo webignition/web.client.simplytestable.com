@@ -13,8 +13,6 @@ use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
-use App\Services\TaskCollectionFilterService;
-use App\Services\TaskService;
 use App\Services\TaskTypeService;
 use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
@@ -32,9 +30,7 @@ use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 class ExpiredController extends AbstractBaseViewController
 {
     private $remoteTestService;
-    private $taskService;
     private $taskTypeService;
-    private $taskCollectionFilterService;
     private $testOptionsRequestAdapterFactory;
     private $cssValidationTestConfiguration;
     private $urlViewValues;
@@ -51,9 +47,7 @@ class ExpiredController extends AbstractBaseViewController
         UrlViewValuesService $urlViewValues,
         UserManager $userManager,
         RemoteTestService $remoteTestService,
-        TaskService $taskService,
         TaskTypeService $taskTypeService,
-        TaskCollectionFilterService $taskCollectionFilterService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
         TestFactory $testFactory,
@@ -63,9 +57,7 @@ class ExpiredController extends AbstractBaseViewController
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
         $this->remoteTestService = $remoteTestService;
-        $this->taskService = $taskService;
         $this->taskTypeService = $taskTypeService;
-        $this->taskCollectionFilterService = $taskCollectionFilterService;
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
@@ -134,9 +126,7 @@ class ExpiredController extends AbstractBaseViewController
             return $response;
         }
 
-        $tasks = [];
         $expiryDurationString = $this->createExpiryDurationString($testModel);
-
 
         $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
         $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
@@ -145,10 +135,8 @@ class ExpiredController extends AbstractBaseViewController
 
         $decoratedTest = new DecoratedTest($testModel);
 
-        return new Response();
-
         return $this->renderWithDefaultViewParameters(
-            'test-results.html.twig',
+            'test-expired.html.twig',
             [
                 'website' => $this->urlViewValues->create($website),
                 'test' => $decoratedTest,
@@ -164,7 +152,6 @@ class ExpiredController extends AbstractBaseViewController
                 'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
                 'css_validation_ignore_common_cdns' =>
                     $this->cssValidationTestConfiguration->getExcludedDomains(),
-                'tasks' => $tasks,
                 'domain_test_count' => $this->remoteTestService->getFinishedCount($website),
                 'default_css_validation_options' => [
                     'ignore-warnings' => 1,
