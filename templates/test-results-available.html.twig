@@ -1,0 +1,42 @@
+{% extends 'abstract-test-results.html.twig' %}
+
+{% block result_content %}
+    {% if test.remoteTaskCount > 0 %}
+        <div class="col-lg-12">
+            <h2>
+                {% if (filter == 'all' and type is empty) %}
+                    All results
+                {% elseif (filter == 'all') %}
+                    <span>{{ type_label }}</span> results
+                {% else %}
+                    <span>{{ type_label }}</span>
+                    {% if filter == 'skipped' or filter == 'cancelled' %}
+                        tests that were
+                    {% else %}
+                        results
+                    {% endif %}
+                    {{ filter_label|lower }}
+                {% endif %}
+            </h2>
+
+            {% if (type is not empty) %}
+                <a class="clear-type badge" href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">
+                    clear &ldquo;{{ type|replace({'html': 'HTML', 'css': 'CSS', 'js': 'JS'}) }}&rdquo; filter
+                    <i class="fa fa-times"></i>
+                </a>
+            {% endif %}
+
+            {% if tasks is empty %}
+                {% include 'Partials/Test/Results/Index/TaskList/none.html.twig' %}
+            {% else %}
+                {% include 'Partials/Test/Results/Index/TaskList/tabs.html.twig' with {
+                    filter: filter,
+                    test: test,
+                    type: type,
+                    filtered_task_counts: filtered_task_counts
+                } only %}
+                {% include 'Partials/Test/TaskList/task-list.html.twig' %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

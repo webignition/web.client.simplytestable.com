@@ -222,6 +222,13 @@ view_test_results:
        website: '.+'
        test_id: '\d+'
 
+view_test_expired:
+  path: /{website}/{test_id}/expired/
+  defaults: { _controller: App\Controller\View\Test\Results\ExpiredController::indexAction }
+  requirements:
+    website: '.+'
+    test_id: '\d+'
+
 view_test_unauthorised:
     path: /{website}/{test_id}/unauthorised/
     defaults: { _controller: App\Controller\View\UnauthorisedTestOwnerController::renderAction }

@@ -6,3 +6,4 @@
 - /.+/[0-9]+/results/.+/by-page/$
 - /.+/[0-9]+/results/failed/no-urls-detected/$
 - /.+/[0-9]+/results/(rejected|preparing)/$
+- /.+/[0-9]+/expired/$

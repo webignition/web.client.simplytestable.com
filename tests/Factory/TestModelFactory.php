@@ -73,6 +73,16 @@ class TestModelFactory extends \PHPUnit\Framework\TestCase
             $properties['entity'] = self::createTestEntity(self::TEST_ID);
         }
 
+        $startDateTime = $properties['startDateTime'] ?? null;
+        if (is_string($startDateTime)) {
+            $startDateTime = new \DateTime($startDateTime);
+        }
+
+        $endDateTime = $properties['endDateTime'] ?? null;
+        if (is_string($endDateTime)) {
+            $endDateTime = new \DateTime($endDateTime);
+        }
+
         return new TestModel(
             $properties['entity'],
             $properties['website'],
@@ -93,8 +103,8 @@ class TestModelFactory extends \PHPUnit\Framework\TestCase
             $properties['isPublic'],
             $properties['taskOptions'],
             $properties['owners'],
-            $properties['startDateTime'],
-            $properties['endDateTime']
+            $startDateTime,
+            $endDateTime
         );
     }
 
