@@ -131,16 +131,24 @@ class ResultsController extends AbstractBaseViewController
             ));
         }
 
-        $filter = trim($request->query->get('filter'));
-        $taskType = trim($request->query->get('type'));
-        $defaultFilter = $this->getDefaultRequestFilter(
-            $testModel->getErrorCount(),
-            $testModel->getWarningCount()
-        );
+        $isExpired = TestInterface::STATE_EXPIRED === $testModel->getState();
+
+        if ($isExpired) {
+            $filter = self::FILTER_ALL;
+            $taskType = '';
+            $defaultFilter = self::FILTER_ALL;
+        } else {
+            $filter = trim($request->query->get('filter'));
+            $taskType = trim($request->query->get('type'));
+            $defaultFilter = $this->getDefaultRequestFilter(
+                $testModel->getErrorCount(),
+                $testModel->getWarningCount()
+            );
+        }
 
         $filteredTaskCounts = $this->createFilteredTaskCounts($testModel->getEntity(), $taskType);
 
-        if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
+        if (!$isExpired && !$this->isFilterValid($filter, $filteredTaskCounts)) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_results',
                 [
