@@ -8,6 +8,7 @@ use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
 use App\Exception\InvalidCredentialsException;
 use App\Model\DecoratedTest;
+use App\Model\TestInterface;
 use App\Services\CacheableResponseFactory;
 use App\Services\Configuration\CssValidationTestConfiguration;
 use App\Services\DefaultViewParameters;
@@ -136,20 +137,6 @@ class ResultsController extends AbstractBaseViewController
             ));
         }
 
-        $isExpired = TestInterface::STATE_EXPIRED === $testModel->getState();
-
-        if ($isExpired) {
-            $filter = self::FILTER_ALL;
-            $taskType = '';
-            $defaultFilter = self::FILTER_ALL;
-        } else {
-            $filter = trim($request->query->get('filter'));
-            $taskType = trim($request->query->get('type'));
-            $defaultFilter = $this->getDefaultRequestFilter(
-                $testModel->getErrorCount(),
-                $testModel->getWarningCount()
-            );
-        }
         $filter = trim($request->query->get('filter'));
         $taskType = trim($request->query->get('type'));
         $defaultFilter = $this->getDefaultRequestFilter(

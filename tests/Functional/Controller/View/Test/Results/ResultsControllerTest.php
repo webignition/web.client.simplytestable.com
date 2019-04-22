@@ -849,36 +849,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
-
-        ObjectReflector::setProperty(
-            $testModel,
-            TestModel::class,
-            'state',
-            TestInterface::STATE_EXPIRED
-        );
-
-        ObjectReflector::setProperty(
-            $testModel,
-            TestModel::class,
-            'startDateTime',
-            new \DateTime('-11 day')
-        );
-
-        ObjectReflector::setProperty(
-            $testModel,
-            TestModel::class,
-            'endDateTime',
-            new \DateTime('-10 day')
-        );
-
-        $newResponse = $resultsController->indexAction(
-            $newRequest,
-            self::WEBSITE,
-            self::TEST_ID
-        );
-
-        $this->assertInstanceOf(Response::class, $newResponse);
-        $this->assertEquals(200, $newResponse->getStatusCode());
     }
 
     private function assertParameterData(array $expectedParameterData, array $parameters)
