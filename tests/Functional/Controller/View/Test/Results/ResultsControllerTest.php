@@ -527,7 +527,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => null,
-                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -578,7 +577,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
-                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -629,7 +627,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
-                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -679,7 +676,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
-                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -731,7 +727,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
-                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -783,61 +778,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
-                                    'expiry_duration_string' => '',
-                                ],
-                                $parameters
-                            );
-
-                            return true;
-                        },
-                        'return' => new Response(),
-                    ],
-                ]),
-            ],
-            'public user, public test, expired' => [
-                'testModelProperties' => [
-                    'user' => $publicUser->getUsername(),
-                    'isPublic' => true,
-                    'owners' => [
-                        $publicUser->getUsername(),
-                    ],
-                    'state' => TestInterface::STATE_EXPIRED,
-                    'startDateTime' => new \DateTime('-11 day'),
-                    'endDateTime' => new \DateTime('-10 day'),
-                ],
-                'user' => $publicUser,
-                'taskType' => Task::TYPE_HTML_VALIDATION,
-                'filter' => ResultsController::FILTER_WITH_ERRORS,
-                'domainTestCount' => 0,
-                'twig' => MockFactory::createTwig([
-                    'render' => [
-                        'withArgs' => function ($viewName, $parameters) {
-                            $this->assertStandardViewData($viewName, $parameters);
-
-                            $this->assertParameterData(
-                                [
-                                    'is_public' => true,
-                                    'is_public_user_test' => true,
-                                    'is_owner' => true,
-                                    'type' => '',
-                                    'type_label' => 'All',
-                                    'filter' => ResultsController::FILTER_ALL,
-                                    'filter_label' => 'All',
-                                    'available_task_types' => [
-                                        'html-validation',
-                                        'css-validation',
-                                    ],
-                                    'taskIds' => [],
-                                    'filtered_task_counts' => [
-                                        'all' => 4,
-                                        'with_errors' => 3,
-                                        'with_warnings' => 0,
-                                        'without_errors' => 1,
-                                        'skipped' => 0,
-                                        'cancelled' => 0,
-                                    ],
-                                    'domain_test_count' => null,
-                                    'expiry_duration_string' => '10 days',
                                 ],
                                 $parameters
                             );
@@ -959,7 +899,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
         sort($taskIds);
 
         $this->assertEquals($expectedParameterData['taskIds'], $taskIds);
-        $this->assertEquals($expectedParameterData['expiry_duration_string'], $parameters['expiry_duration_string']);
     }
 
     private function assertStandardViewData(string $viewName, array $parameters)
@@ -1008,7 +947,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'filtered_task_counts',
                 'domain_test_count',
                 'default_css_validation_options',
-                'expiry_duration_string',
             ],
             array_keys($parameters)
         );
