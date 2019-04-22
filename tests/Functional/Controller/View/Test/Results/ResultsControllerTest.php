@@ -426,6 +426,14 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=with-warnings',
             ],
+            'expired' => [
+                'taskValuesCollection' => [],
+                'testModelProperties' => [
+                    'state' => TestInterface::STATE_EXPIRED,
+                ],
+                'request' => new Request(),
+                'expectedRedirectUrl' => '/http://example.com//1/expired/',
+            ],
         ];
     }
 

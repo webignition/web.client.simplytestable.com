@@ -126,6 +126,30 @@ class ResultsController extends AbstractBaseViewController
             ));
         }
 
+        if (TestInterface::STATE_EXPIRED === $testModel->getState()) {
+            return new RedirectResponse($this->generateUrl(
+                'view_test_expired',
+                [
+                    'website' => $testModel->getWebsite(),
+                    'test_id' => $test_id
+                ]
+            ));
+        }
+
+        $isExpired = TestInterface::STATE_EXPIRED === $testModel->getState();
+
+        if ($isExpired) {
+            $filter = self::FILTER_ALL;
+            $taskType = '';
+            $defaultFilter = self::FILTER_ALL;
+        } else {
+            $filter = trim($request->query->get('filter'));
+            $taskType = trim($request->query->get('type'));
+            $defaultFilter = $this->getDefaultRequestFilter(
+                $testModel->getErrorCount(),
+                $testModel->getWarningCount()
+            );
+        }
         $filter = trim($request->query->get('filter'));
         $taskType = trim($request->query->get('type'));
         $defaultFilter = $this->getDefaultRequestFilter(
