@@ -30,7 +30,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class ResultsControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'test-results.html.twig';
+    const VIEW_NAME = 'test-results-available.html.twig';
     const ROUTE_NAME = 'view_test_results';
     const ROUTE_NAME_VERBOSE = 'view_test_results_verbose';
     const WEBSITE = 'http://example.com/';

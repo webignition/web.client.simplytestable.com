@@ -193,7 +193,7 @@ class ResultsController extends AbstractBaseViewController
         $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
-            'test-results.html.twig',
+            'test-results-available.html.twig',
             [
                 'website' => $this->urlViewValues->create($website),
                 'test' => $decoratedTest,
