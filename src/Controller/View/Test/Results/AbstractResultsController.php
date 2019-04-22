@@ -102,13 +102,15 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         return $this->urlViewValues->create($website);
     }
 
-    protected function getUser(): UserInterface
-    {
-        return $this->userManager->getUser();
-    }
-
     protected function retrieveTest(int $testId): TestModel
     {
         return $this->testRetriever->retrieve($testId);
+    }
+
+    protected function isCurrentUserTestOwner(TestModel $test): bool
+    {
+        $user = $this->userManager->getUser();
+
+        return in_array($user->getUsername(), $test->getOwners());
     }
 }

@@ -96,7 +96,6 @@ class ResultsController extends AbstractResultsController
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $user = $this->getUser();
         $testModel = $this->retrieveTest($test_id);
 
         if ($website !== $testModel->getWebsite()) {
@@ -177,7 +176,7 @@ class ResultsController extends AbstractResultsController
 
         $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
 
-        $isOwner = in_array($user->getUsername(), $testModel->getOwners());
+        $isOwner = $this->isCurrentUserTestOwner($testModel);
 
         $decoratedTest = new DecoratedTest($testModel);
 

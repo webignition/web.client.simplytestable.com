@@ -65,7 +65,6 @@ class ExpiredController extends AbstractResultsController
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $user = $this->getUser();
         $testModel = $this->retrieveTest($test_id);
 
         if ($website !== $testModel->getWebsite()) {
@@ -113,7 +112,7 @@ class ExpiredController extends AbstractResultsController
 
         $expiryDurationString = $this->createExpiryDurationString($testModel);
 
-        $isOwner = in_array($user->getUsername(), $testModel->getOwners());
+        $isOwner = $this->isCurrentUserTestOwner($testModel);
 
         $decoratedTest = new DecoratedTest($testModel);
 
