@@ -2,10 +2,6 @@
 
 namespace App\Controller\View\Test\Results;
 
-use App\Controller\AbstractBaseViewController;
-use App\Exception\CoreApplicationRequestException;
-use App\Exception\InvalidContentTypeException;
-use App\Exception\InvalidCredentialsException;
 use App\Model\DecoratedTest;
 use App\Model\TestInterface;
 use App\Services\CacheableResponseFactory;
@@ -14,12 +10,10 @@ use App\Services\DefaultViewParameters;
 use App\Services\RemoteTestService;
 use App\Services\SystemUserService;
 use App\Services\TaskTypeService;
-use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
-use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -27,16 +21,8 @@ use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
 use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
-class ExpiredController extends AbstractBaseViewController
+class ExpiredController extends AbstractResultsController
 {
-    private $remoteTestService;
-    private $taskTypeService;
-    private $testOptionsRequestAdapterFactory;
-    private $cssValidationTestConfiguration;
-    private $urlViewValues;
-    private $userManager;
-    private $testFactory;
-    private $testRetriever;
     private $readableDurationFactory;
 
     public function __construct(
@@ -50,20 +36,23 @@ class ExpiredController extends AbstractBaseViewController
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
-        TestFactory $testFactory,
         TestRetriever $testRetriever,
         ReadableDurationFactory $readableDurationFactory
     ) {
-        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
+        parent::__construct(
+            $router,
+            $twig,
+            $defaultViewParameters,
+            $cacheableResponseFactory,
+            $remoteTestService,
+            $taskTypeService,
+            $testOptionsRequestAdapterFactory,
+            $cssValidationTestConfiguration,
+            $urlViewValues,
+            $userManager,
+            $testRetriever
+        );
 
-        $this->remoteTestService = $remoteTestService;
-        $this->taskTypeService = $taskTypeService;
-        $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
-        $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
-        $this->urlViewValues = $urlViewValues;
-        $this->userManager = $userManager;
-        $this->testFactory = $testFactory;
-        $this->testRetriever = $testRetriever;
         $this->readableDurationFactory = $readableDurationFactory;
     }
 
@@ -73,15 +62,10 @@ class ExpiredController extends AbstractBaseViewController
      * @param int $test_id
      *
      * @return RedirectResponse|Response
-     *
-     * @throws CoreApplicationRequestException
-     * @throws InvalidContentTypeException
-     * @throws InvalidCredentialsException
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $user = $this->userManager->getUser();
-        $testModel = $this->testRetriever->retrieve($test_id);
+        $testModel = $this->retrieveTest($test_id);
 
         if ($website !== $testModel->getWebsite()) {
             return new RedirectResponse($this->generateUrl(
@@ -128,17 +112,14 @@ class ExpiredController extends AbstractBaseViewController
 
         $expiryDurationString = $this->createExpiryDurationString($testModel);
 
-        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
-        $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
-
-        $isOwner = in_array($user->getUsername(), $testModel->getOwners());
+        $isOwner = $this->isCurrentUserTestOwner($testModel);
 
         $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
             'test-results-expired.html.twig',
             [
-                'website' => $this->urlViewValues->create($website),
+                'website' => $this->createWebsiteViewValues($website),
                 'test' => $decoratedTest,
                 'is_public' => $testModel->isPublic(),
                 'is_public_user_test' => $isPublicUserTest,
@@ -148,11 +129,10 @@ class ExpiredController extends AbstractBaseViewController
                     $testModel->isPublic(),
                     $isOwner
                 ),
-                'task_types' => $this->taskTypeService->get(),
-                'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
-                'css_validation_ignore_common_cdns' =>
-                    $this->cssValidationTestConfiguration->getExcludedDomains(),
-                'domain_test_count' => $this->remoteTestService->getFinishedCount($website),
+                'task_types' => $this->getTaskTypes(),
+                'test_options' => $this->createTestOptions($testModel),
+                'css_validation_ignore_common_cdns' => $this->getCssValidationExcludedDomains(),
+                'domain_test_count' => $this->getDomainTestCount($website),
                 'default_css_validation_options' => [
                     'ignore-warnings' => 1,
                     'vendor-extensions' => 'warn',
@@ -162,23 +142,6 @@ class ExpiredController extends AbstractBaseViewController
             ],
             $response
         );
-    }
-
-    private function getAvailableTaskTypes(array $taskTypes, bool $isPublic, bool $isOwner): array
-    {
-        if ($isPublic && !$isOwner) {
-            $availableTaskTypes = $this->taskTypeService->get();
-
-            foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
-                if (!in_array($taskTypeDetails['name'], $taskTypes)) {
-                    unset($availableTaskTypes[$taskTypeKey]);
-                }
-            }
-
-            return $availableTaskTypes;
-        }
-
-        return $this->taskTypeService->getAvailable();
     }
 
     private function createExpiryDurationString(TestInterface $test)

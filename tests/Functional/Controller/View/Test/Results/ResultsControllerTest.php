@@ -3,6 +3,7 @@
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
+use App\Controller\View\Test\Results\AbstractResultsController;
 use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
 use App\Model\Test as TestModel;
@@ -18,7 +19,6 @@ use App\Tests\Factory\OutputFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestModelFactory;
 use App\Tests\Services\SymfonyRequestFactory;
-use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -349,7 +349,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $resultsController = self::$container->get(ResultsController::class);
 
         $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
-        $this->setTestRetrieverOnController($resultsController, $testRetriever);
+
+        $this->setTestRetrieverOnController(
+            $resultsController,
+            $testRetriever,
+            AbstractResultsController::class
+        );
 
         /* @var RedirectResponse $response */
         $response = $resultsController->indexAction(
@@ -466,7 +471,12 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $resultsController = self::$container->get(ResultsController::class);
 
         $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
-        $this->setTestRetrieverOnController($resultsController, $testRetriever);
+
+        $this->setTestRetrieverOnController(
+            $resultsController,
+            $testRetriever,
+            AbstractResultsController::class
+        );
 
         $remoteTestService = \Mockery::mock(RemoteTestService::class);
         $remoteTestService
@@ -474,7 +484,11 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ->with(self::WEBSITE)
             ->andReturn($domainTestCount);
 
-        $this->setRemoteTestServiceOnController($resultsController, $remoteTestService);
+        $this->setRemoteTestServiceOnController(
+            $resultsController,
+            $remoteTestService,
+            AbstractResultsController::class
+        );
         $this->setTwigOnController($twig, $resultsController);
 
         $response = $resultsController->indexAction(
@@ -827,8 +841,17 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ->with(self::WEBSITE)
             ->andReturn(0);
 
-        $this->setTestRetrieverOnController($resultsController, $testRetriever);
-        $this->setRemoteTestServiceOnController($resultsController, $remoteTestService);
+        $this->setTestRetrieverOnController(
+            $resultsController,
+            $testRetriever,
+            AbstractResultsController::class
+        );
+
+        $this->setRemoteTestServiceOnController(
+            $resultsController,
+            $remoteTestService,
+            AbstractResultsController::class
+        );
 
         $response = $resultsController->indexAction(
             $request,
