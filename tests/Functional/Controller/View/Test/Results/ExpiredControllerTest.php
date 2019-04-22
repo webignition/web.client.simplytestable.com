@@ -29,7 +29,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class ExpiredControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'test-expired.html.twig';
+    const VIEW_NAME = 'test-results-expired.html.twig';
     const ROUTE_NAME = 'view_test_expired';
     const WEBSITE = 'http://example.com/';
     const TEST_ID = 1;

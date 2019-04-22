@@ -136,7 +136,7 @@ class ExpiredController extends AbstractBaseViewController
         $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
-            'test-expired.html.twig',
+            'test-results-expired.html.twig',
             [
                 'website' => $this->urlViewValues->create($website),
                 'test' => $decoratedTest,
