@@ -11,9 +11,11 @@ use App\Services\RemoteTestService;
 use App\Services\TaskTypeService;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\UrlViewValuesService;
+use App\Services\UserManager;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
+use webignition\SimplyTestableUserInterface\UserInterface;
 
 abstract class AbstractResultsController extends AbstractBaseViewController
 {
@@ -22,6 +24,7 @@ abstract class AbstractResultsController extends AbstractBaseViewController
     private $testOptionsRequestAdapterFactory;
     private $cssValidationTestConfiguration;
     private $urlViewValues;
+    private $userManager;
 
     public function __construct(
         RouterInterface $router,
@@ -32,7 +35,8 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         TaskTypeService $taskTypeService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
-        UrlViewValuesService $urlViewValues
+        UrlViewValuesService $urlViewValues,
+        UserManager $userManager
     ) {
         parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
@@ -41,6 +45,7 @@ abstract class AbstractResultsController extends AbstractBaseViewController
         $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
         $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
         $this->urlViewValues = $urlViewValues;
+        $this->userManager = $userManager;
     }
 
     protected function getDomainTestCount(string $website): int
@@ -91,5 +96,10 @@ abstract class AbstractResultsController extends AbstractBaseViewController
     protected function createWebsiteViewValues(string $website): array
     {
         return $this->urlViewValues->create($website);
+    }
+
+    protected function getUser(): UserInterface
+    {
+        return $this->userManager->getUser();
     }
 }

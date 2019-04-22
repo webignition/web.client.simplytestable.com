@@ -37,7 +37,6 @@ class ResultsController extends AbstractResultsController
 
     private $taskService;
     private $taskCollectionFilterService;
-    private $userManager;
     private $testRetriever;
 
     /**
@@ -76,12 +75,12 @@ class ResultsController extends AbstractResultsController
             $taskTypeService,
             $testOptionsRequestAdapterFactory,
             $cssValidationTestConfiguration,
-            $urlViewValues
+            $urlViewValues,
+            $userManager
         );
 
         $this->taskService = $taskService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
-        $this->userManager = $userManager;
         $this->testRetriever = $testRetriever;
     }
 
@@ -98,7 +97,7 @@ class ResultsController extends AbstractResultsController
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $user = $this->userManager->getUser();
+        $user = $this->getUser();
         $testModel = $this->testRetriever->retrieve($test_id);
 
         if ($website !== $testModel->getWebsite()) {

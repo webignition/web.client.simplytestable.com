@@ -26,7 +26,6 @@ use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
 class ExpiredController extends AbstractResultsController
 {
-    private $userManager;
     private $testRetriever;
     private $readableDurationFactory;
 
@@ -53,10 +52,10 @@ class ExpiredController extends AbstractResultsController
             $taskTypeService,
             $testOptionsRequestAdapterFactory,
             $cssValidationTestConfiguration,
-            $urlViewValues
+            $urlViewValues,
+            $userManager
         );
 
-        $this->userManager = $userManager;
         $this->testRetriever = $testRetriever;
         $this->readableDurationFactory = $readableDurationFactory;
     }
@@ -74,7 +73,7 @@ class ExpiredController extends AbstractResultsController
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $user = $this->userManager->getUser();
+        $user = $this->getUser();
         $testModel = $this->testRetriever->retrieve($test_id);
 
         if ($website !== $testModel->getWebsite()) {
