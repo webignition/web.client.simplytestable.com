@@ -12,7 +12,7 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
     "eslint-plugin-standard": "^3.0.1",
-    "node-sass": "^4.8.3",
+    "node-sass": "^4.13.1",
     "sass-loader": "^7.0.1",
     "smooth-scroll": "^14.2.0",
     "spark-md5": "^3.0.0",
