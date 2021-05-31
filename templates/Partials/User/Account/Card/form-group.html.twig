@@ -1,0 +1,33 @@
+{% set placeholder = (placeholder is defined ? placeholder : label) %}
+{% set field_attributes = field_attributes is defined ? field_attributes : '' %}
+{% set label_additional = label_additional is defined ? label_additional : '' %}
+{% set post_field_content = post_field_content is defined ? post_field_content : '' %}
+
+{% set default_field_view_parameters = {
+    field_id: field_id,
+    label: label,
+    stripe_name: stripe_name,
+    value: value,
+    placeholder: placeholder,
+    field_attributes: field_attributes
+} %}
+
+{% set form_group_class = form_group_class is defined ? form_group_class : '' %}
+
+<div class="form-group {{ form_group_class }}">
+    <div class="{{ full_field_width_class }} {{ full_field_width_offset }} error_container" data-for="{{ field_id }}">
+        {% if error_container_content_view is defined %}
+            {% include error_container_content_view with error_container_content_parameters only %}
+        {% endif %}
+    </div>
+    <div class="clearfix"></div>
+    <label for="{{ field_id }}" class="{{ label_width_class }} control-label">
+        {{ label }}
+        {{ label_additional|raw }}
+    </label>
+    <div class="{{ field_width_class }} field">
+        {% set field_view_parameters = field_view_parameters is defined ? field_view_parameters : {} %}
+        {% include field_view with (default_field_view_parameters|merge(field_view_parameters)) only %}
+    </div>
+    {{ post_field_content|raw }}
+</div>

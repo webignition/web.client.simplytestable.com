@@ -1,0 +1,125 @@
+test_is_authorised:
+  path: /job/{test_id}/is-authorised/
+
+test_start:
+  path: /job/start/
+
+test_status:
+  path: /job/{test_id}/
+
+test_cancel:
+  path: /job/{test_id}/cancel/
+
+test_retest:
+  path: /job/{test_id}/re-test/
+
+test_set_public:
+  path: /job/{test_id}/set-public/
+  requirements:
+    canonical_url: ".+"
+
+test_set_private:
+  path: /job/{test_id}/set-private/
+  requirements:
+    canonical_url: ".+"
+
+tests_list:
+  path: /jobs/list/{limit}/{offset}/
+
+tests_list_websites:
+  path: /jobs/list/websites/
+
+tests_list_count:
+  path: /jobs/list/count/
+
+test_latest:
+  path: /job/{canonical_url}/latest/
+  requirements:
+    canonical_url: ".+"
+
+test_tasks:
+  path: /job/{test_id}/tasks/
+
+test_task_ids:
+  path: /job/{test_id}/tasks/ids/
+
+user_card_associate:
+  path: /user/{email}/card/{stripe_card_token}/associate/
+
+user_plan_subscribe:
+  path: /user/{email}/{plan}/subscribe/
+
+user_reset_password:
+  path: /user/reset-password/{token}/
+
+user_authenticate:
+  path: /user/{email}/authenticate/
+
+user_create:
+  path: /user/create/
+
+user_activate:
+  path: /user/activate/{token}/
+
+teaminvite_activateandaccept:
+  path: /team/invite/activate/accept/
+
+user_exists:
+ path: /user/{email}/exists/
+
+user_is_enabled:
+  path: /user/{email}/enabled/
+
+user_get_token:
+  path: /user/{email}/token/
+
+user:
+  path: /user/{email}/
+
+team_create:
+  path: /team/create/
+
+team_get:
+  path: /team/
+
+team_remove:
+  path: /team/remove/{member_email}/
+
+team_leave:
+  path: /team/leave/
+
+teaminvite_get:
+  path: /team/invite/{invitee_email}/
+
+teaminvite_userlist:
+  path: /team/user/invites/
+
+teaminvite_decline:
+  path: /team/invite/decline/
+
+teaminvite_accept:
+  path: /team/invite/accept/
+
+team_invites:
+  path: /team/invites/
+
+teaminvite_remove:
+  path: /team/invite/{invitee_email}/remove/
+
+teaminvite_getbytoken:
+  path: /team/invite/bytoken/{token}/
+
+user_email_change_request_create:
+  path: /user/{email}/email-change-request/{new_email}/create/
+
+user_email_change_request_get:
+  path: /user/{email}/email-change-request/
+
+user_email_change_request_cancel:
+  path: /user/{email}/email-change-request/cancel/
+
+user_email_change_request_confirm:
+  path: /user/{email}/email-change-request/{token}/
+
+user_list_stripe_events:
+  path: /user/{email}/stripe-events/{type}/

@@ -1,0 +1,38 @@
+<p>
+    <strong>Confirm email address change</strong>
+</p>
+<p>
+    We've emailed a confirmation code to  <strong>{{ email }}</strong>.
+</p>
+
+<form role="form" method="post" action="{{ path('action_user_account_emailchange_confirm') }}">
+    <div class="form-group">
+        <label class="control-label" for="token">Confirmation code</label>
+        <input class="form-control" type="text" name="token" id="token" placeholder="Enter your confirmation code" value="{{ token }}">
+    </div>
+    <div class="form-group">
+        <div class="controls">
+            <button name="confirm" value="1" type="submit" class="btn btn-primary">Confirm</button>
+        </div>
+    </div>
+</form>
+
+<div class="secondary">
+    <form class="form-inline pull-left" role="form" method="post" action="{{ path('action_user_account_emailchange_resend') }}">
+        <div class="form-group">
+            <div class="controls">
+                <button name="confirm" value="1" type="submit" class="btn btn-default">Re-send code</button>
+            </div>
+        </div>
+    </form>
+
+    <form class="form-inline pull-right" role="form" method="post" action="{{ path('action_user_account_emailchange_cancel') }}">
+        <div class="form-group">
+            <div class="controls">
+                <button name="confirm" value="1" type="submit" class="btn btn-danger">Cancel change</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="clearfix"></div>
+</div>

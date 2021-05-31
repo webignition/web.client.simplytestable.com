@@ -1,0 +1,18 @@
+.header {
+  .action-badge {
+    margin: 14px 0;
+  }
+
+  .action-badge-filter-options {
+    visibility: hidden;
+
+    &.visible {
+      visibility: visible;
+    }
+  }
+}
+
+input[name=filter],
+.awesomplete {
+  width: 100%;
+}

@@ -1,0 +1,5 @@
+{% for task in tasks %}
+    <div class="task {{ task.stateLabel }}" data-state="{{ task.state }}" data-task-id="{{ task.taskId }}">
+        {% include 'Partials/Test/TaskList/Task/task.html.twig' %}
+    </div>
+{% endfor %}

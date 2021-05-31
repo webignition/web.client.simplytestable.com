@@ -1,0 +1,295 @@
+$color-fix-background: #f8b426;
+$color-fix-background-hover: #f89406;
+
+h1 {
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.header {
+  p {
+    margin-top: 10px;
+  }
+}
+
+.alert-fixes {
+  background-color: $color-fix-background;
+}
+
+.label-fix {
+  background-color: $color-fix-background;
+
+  &[href] {
+    &:hover,
+    &:focus {
+      background-color: $color-fix-background-hover;
+    }
+  }
+}
+
+.label-fixes {
+  background-color: $color-fix-background;
+
+  &[href] {
+    &:hover,
+    &:focus {
+      background-color: $color-fix-background-hover;
+    }
+  }
+}
+
+.prettyprint {
+  background-color: transparent;
+  margin: 10px 0 0 0;
+  padding: 10px 0 10px 10px;
+  border: none;
+  border-radius: 0;
+}
+
+.issue-list {
+  margin-top: 40px;
+  margin-left: 0;
+
+  @media (min-width: 992px) {
+    margin-left: -15px;
+  }
+
+  h2 {
+    .badge {
+      vertical-align: middle;
+    }
+  }
+
+  h3 {
+    word-break: break-all;
+
+    .badge {
+      vertical-align: top;
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @media (min-width: 992px) {
+      padding-left: 0;
+    }
+
+    &:hover {
+      .label-fix {
+        &[href] {
+          background-color: $color-fix-background-hover;
+        }
+      }
+    }
+  }
+
+  .meta {
+    position: static;
+    opacity: 0.6;
+
+    @media (min-width: 992px) {
+      position: absolute;
+    }
+
+    .line,
+    .column {
+      display: inline-block;
+      width: auto;
+    }
+
+    .line {
+      @media (min-width: 992px) {
+        float: left;
+        width: 80px;
+      }
+    }
+
+    .column {
+      @media (min-width: 992px) {
+        float: right;
+        width: 100px;
+      }
+    }
+  }
+
+  .issue {
+    border-bottom: 1px solid #eee;
+    padding: 16px 0;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    &:hover,
+    &.highlight {
+      background-color: #eee;
+
+      .meta {
+        opacity: 1;
+      }
+    }
+
+    &.subtle {
+      border: none;
+      padding: 0;
+    }
+  }
+
+  &.html-validation-issue-list {
+    .issue {
+      .meta {
+        width: 200px;
+      }
+
+      .content {
+        position: relative;
+        padding-right: 50px;
+
+        @media (min-width: 992px) {
+          margin-left: 210px;
+        }
+      }
+
+      .fix {
+        position: absolute;
+        right: 15px;
+        top: 0;
+      }
+    }
+  }
+
+  &.css-validation-issue-list {
+    .issue {
+      .meta {
+        width: 80px;
+      }
+
+      .content {
+        @media (min-width: 992px) {
+          margin-left: 95px;
+        }
+
+        code {
+          white-space: normal;
+        }
+      }
+    }
+  }
+
+  &.link-integrity-issue-list {
+    .prettyprint {
+      padding-left: 0;
+    }
+  }
+}
+
+.error-list {
+  border-left: 3px solid #d9534f;
+}
+
+.fixes-list {
+  border-left: 3px solid #f89406;
+
+  a {
+    display: block;
+    padding: 16px 0;
+  }
+}
+
+.warning-list {
+  border-left: 3px solid #428bca;
+}
+
+.grouped-issues {
+  h3 {
+    padding-left: 5px;
+    font-size: 20px;
+    line-height: 20px;
+    margin-top: 0;
+    padding-top: 40px;
+
+    .fa {
+      display: none;
+
+      @media (min-width: 992px) {
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 18px;
+        opacity: 0.8;
+        margin-left: -5px;
+      }
+    }
+
+    a,
+    a:focus,
+    a:hover {
+      color: #333;
+      text-decoration: none;
+    }
+  }
+}
+
+.summary-stats {
+  .label {
+    @media (min-width: 992px) {
+      display: inline-block;
+      margin-right: 30px;
+    }
+  }
+
+  .icon {
+    @media (min-width: 992px) {
+      vertical-align: middle;
+      display: inline-block;
+      margin-left: 4px;
+    }
+  }
+}
+
+.failed {
+  margin-top: 40px;
+
+  .lead {
+    margin-top: 40px;
+  }
+
+  pre {
+    border: none;
+    border-left: 3px solid #ccc;
+    margin-bottom: 20px;
+    border-radius: 0;
+  }
+}
+
+.no-longer-available {
+  margin-top: 40px;
+}
+
+.filter-notice {
+  margin: 20px 0 -20px 0;
+
+  .message {
+    opacity: 0.8;
+  }
+}
+
+.collapse-control {
+  margin-left: 10px;
+}
+
+&.task-results-failed {
+  .summary-stats {
+    .label {
+      display: inline-block;
+      width: auto;
+    }
+  }
+}

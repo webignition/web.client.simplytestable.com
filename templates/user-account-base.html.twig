@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body_class %} {{ parent() }} user-account {% endblock %}
+
+{% block body%}
+    {{ parent() }}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>{% block heading %}Your account{% endblock %}</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-3 col-md-4 col-sm-5 hidden-xs sidenav js-sticky-nav">
+                {% include 'Partials/User/Account/sidenav.html.twig' %}
+            </div>
+            <div class="col-lg-6 col-md-8 col-sm-7 account-content">
+                {% block account_content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

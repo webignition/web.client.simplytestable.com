@@ -1,0 +1,39 @@
+h1 {
+  margin: 0;
+  font-size: 28px;
+
+  .fa {
+    color: #08c;
+  }
+}
+
+.alert-container {
+  .alert {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    margin-bottom: 0;
+    border-bottom-width: 0;
+
+    &:last-of-type {
+      border-bottom-width: 1px;
+    }
+
+    .fa {
+      width: 15px;
+    }
+  }
+
+  .container {
+    padding-left: 0;
+
+    @media (min-width: 769px) {
+      padding-left: 15px;
+    }
+  }
+}
+
+.header {
+  background-color: #eee;
+  padding: 40px 0;
+}

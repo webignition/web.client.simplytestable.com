@@ -1,0 +1,6 @@
+{% if (has_card and not is_passed_address_line1_check) or (has_card_address_line1_error) %}
+    {% include 'Partials/alert.html.twig' with {
+        type: 'error',
+        view: 'Partials/User/Account/Card/Alert/Content/address-line1-unverified.html.twig'
+    } only %}
+{% endif %}

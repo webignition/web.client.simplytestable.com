@@ -1,0 +1,31 @@
+<div class="summary-stats">
+    {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+        with {
+        count: test.errorCount,
+        name: 'error',
+        anchor: '?filter=with-errors',
+        issue_type: 'error'
+    }
+    %}
+
+    {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+        with {
+        count: test.warningCount,
+        negative:'primary',
+        name:'warning',
+        anchor: '?filter=with-warnings',
+        issue_type: 'warning'
+    }
+    %}
+
+    {% include 'Abstract/Partials/Test/Results/issue-count-zero-negative.html.twig'
+        with {
+        count: test.errorfreetaskcount,
+        name:'test',
+        name_suffix:'without errors',
+        positive: 'danger',
+        negative: 'success',
+        anchor: '?filter=without-errors'
+    }
+    %}
+</div>

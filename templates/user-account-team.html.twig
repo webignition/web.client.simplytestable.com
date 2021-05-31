@@ -1,0 +1,28 @@
+{% extends 'user-account-base.html.twig' %}
+
+{% block body_class %} {{ parent() }} user-account-team {% if user_summary.getTeamSummary.isInTeam %}{{ 'in-team' }}{% if true %} {{ (team.leader == user.username) ? 'team-leader' : 'team-member' }}{% endif %}{% elseif user_summary.getTeamSummary.hasInvite %}{{ 'has-invite' }}{% else %}{{ 'no-team-no-invite' }}{% endif %}
+{% endblock %}
+
+{% block title %}Your team ({{ user.username }}) - {{ parent() }}{% endblock %}
+{% block heading %}
+    <a href="{{ path('view_user_account') }}">{{ parent() }}</a>: your team
+    {% if user_summary.getTeamSummary.isInTeam and team is defined %}
+        ({{ team.name }})
+    {% endif %}
+{% endblock %}
+
+{% block account_content %}
+
+{% if not user_summary.getTeamSummary.isInTeam and not user_summary.getTeamSummary.hasInvite %}
+    {% include 'Partials/User/Account/Team/Manage/no-team-no-invite.html.twig' %}
+{% elseif user_summary.getTeamSummary.hasInvite %}
+    {% include 'Partials/User/Account/Team/Manage/no-team-has-invite.html.twig' %}
+{% elseif user_summary.getTeamSummary.isInTeam %}
+    {% if team.leader == user.username %}
+        {% include 'Partials/User/Account/Team/Manage/leader.html.twig' %}
+    {% else %}
+        {% include 'Partials/User/Account/Team/Manage/member.html.twig' %}
+    {% endif %}
+{% endif %}
+
+{% endblock %}

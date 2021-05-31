@@ -1,12 +1,30 @@
-web/bundles/
-app/bootstrap.php.cache
-app/cache/*
-app/logs/*
-app/config/parameters.yml
-build/
-vendor
-bin
-composer.phar
-/nbproject
-/src/SimplyTestable/WebClientBundle/Resources/public/vendor/
-src/SimplyTestable/WebClientBundle/Resources/config/parameters.yml
+!var/cache/.gitkeep
+/node_modules
+/yarn-error.log
+
+/.idea
+/build
+
+data/queue/test/*
+
+###> phpunit/phpunit ###
+/phpunit.xml
+###< phpunit/phpunit ###
+
+###> symfony/phpunit-bridge ###
+.phpunit
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> symfony/framework-bundle ###
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+/.env*local
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###

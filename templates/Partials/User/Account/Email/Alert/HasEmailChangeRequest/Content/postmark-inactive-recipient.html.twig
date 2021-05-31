@@ -1,0 +1,23 @@
+{% extends 'Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
+
+{% block postmark_inactive_recipent_actions %}
+<div class="actions">
+    <form class="form-inline pull-left" role="form" method="post" action="{{ path('action_user_account_emailchange_resend') }}">
+        <div class="form-group">
+            <div class="controls">
+                <button name="confirm" value="1" type="submit" class="btn btn-default">Re-send code</button>
+            </div>
+        </div>
+    </form>
+
+    <form class="form-inline pull-right" role="form" method="post" action="{{ path('action_user_account_emailchange_cancel') }}">
+        <div class="form-group">
+            <div class="controls">
+                <button name="confirm" value="1" type="submit" class="btn btn-danger">Cancel change</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="clearfix"></div>
+{% endblock %}

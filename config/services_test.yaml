@@ -1,0 +1,31 @@
+services:
+  _defaults:
+      autowire: true
+      autoconfigure: true
+      public: true
+
+  App\Services\HttpClientFactory:
+    class:   App\Tests\Services\TestHttpClientFactory
+    arguments:
+      $mockHandler: '@App\Tests\Services\HttpMockHandler'
+
+  webignition\HttpHistoryContainer\Container:
+
+  App\Tests\Services\HttpMockHandler:
+
+  # Need to inject our guzzle client into the postmark client to enable regular HTTP mocking in tests
+  # We don't to this for the dev/prod service as Postmark\PostmarkClient depends on the client constructor being
+  # passed the base url for correct behaviour.
+  Postmark\PostmarkClient:
+    arguments:
+      - '%env(POSTMARK_API_KEY)%'
+    calls:
+      - [setClient, ['@GuzzleHttp\Client']]
+
+  App\Tests\Services\PostmarkMessageVerifier:
+
+  App\Services\StripeNotificationFactory:
+
+  App\Services\TestListRetriever:
+
+  App\Tests\Services\SymfonyRequestFactory:

@@ -1,0 +1,19 @@
+<ul class="refs grouped-issues collapse in" id="warning-list-content">
+    {% for ref,warnings in warnings_by_ref %}
+        <li>
+            <h3>
+                <a href="{{ ref|escape('html') }}">
+                    <i class="fa fa-file-code-o"></i>{{ (ref is empty) ? task.url : ref }}
+                </a>
+            </h3>
+
+            <ul class="issues css-validation-issues">
+                {% for message in warnings %}
+                    <li>
+                        {% include 'Partials/Test/Results/Task/Succeeded/WarningList/css-validation/warning.html.twig' %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>

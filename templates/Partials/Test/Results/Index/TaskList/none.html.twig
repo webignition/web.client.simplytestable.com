@@ -1,0 +1,15 @@
+{% if filter == 'all' %}
+    {% include 'Partials/Test/Results/Index/TaskList/None/all.html.twig' %}
+{% endif %}
+
+{% if filter == 'with-errors' %}
+    {% include 'Partials/Test/Results/Index/TaskList/None/with-errors.html.twig' %}
+{% endif %}
+
+{% if filter == 'with-warnings' %}
+    {% include 'Partials/Test/Results/Index/TaskList/None/with-warnings.html.twig' %}
+{% endif %}
+
+{% if filter == 'without-errors' %}
+    {% include 'Partials/Test/Results/Index/TaskList/None/without-errors.html.twig' %}
+{% endif %}

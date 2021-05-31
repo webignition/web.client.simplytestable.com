@@ -1,0 +1,32 @@
+{% if user_summary.getTeamSummary.isInTeam %}
+    <p>
+    {% if team.leader == user.username %}
+        You're the leader of team <strong>{{ team.name }}</strong>.
+    {% else %}
+        You're a member of team <strong>{{ team.name }}</strong> managed by <a href="mailto:{{ team.leader }}">{{ team.leader }}</a>.
+    {% endif %}
+    </p>
+
+    <a class="btn btn-default" href="{{ path('view_user_account_team') }}">
+    {% if team.leader == user.username %}
+        Manage members and invites
+    {% else %}
+        List members or leave team
+    {% endif %}
+    <i class="fa fa-caret-right"></i></a>
+
+
+{% elseif user_summary.getTeamSummary.hasInvite %}
+    <h3 id="team-invites">Invites</h3>
+    <p>
+        You have one or more invites to join existing teams.
+    </p>
+    <a class="btn btn-default" href="{{ path('view_user_account_team') }}">Accept or decline your invites <i class="fa fa-caret-right"></i></a>
+{% else %}
+    <p>
+        You don't belong to a team.  Someone already on a team can invite you to join their team, or
+        you can create a new team.
+    </p>
+
+    <a class="btn btn-default" href="{{ path('view_user_account_team') }}">Create your team <i class="fa fa-caret-right"></i></a>
+{% endif %}

@@ -1,0 +1,35 @@
+{% set is_disabled = app.request.get('_route') == 'view_test_progress' or ((is_owner is defined and is_owner == false) and (is_public_user_test is defined and is_public_user_test == false)) %}
+{% set is_enabled = (is_disabled == false) %}
+
+<div class="row test-options-set full-single-options-set">
+    <div class="col-lg-6 col-md-6 col-sm-6 full-single-option">
+        <label class="radio">
+            <input type="radio" name="full-single" value="full" {% if test.isFullSite %}checked{% endif %}> Full site test
+            <span class="help-block">Test your entire site by finding URLs in your sitemap and by crawling your site</span>
+        </label>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6 full-single-option">
+        <label class="radio">
+            <input type="radio" name="full-single" value="single" {% if test.isSingleUrl %}checked{% endif %}> Single URL test
+            <span class="help-block">Test just the above URL only</span>
+        </label>
+    </div>
+</div>
+
+{% for task_type_key, task_type_details in task_types %}
+    {% if not (task_type_key|slice(0, 'test-'|length) == 'test-') %}
+        {% set is_available = task_type_key in available_task_types|keys %}
+
+        {% if task_type_key == 'html-validation' %}
+            {% include 'Partials/Test/Options/html-validation/test-options.html.twig' %}
+        {% endif %}
+
+        {% if task_type_key == 'css-validation' %}
+            {% include 'Partials/Test/Options/css-validation/test-options.html.twig' %}
+        {% endif %}
+
+        {% if task_type_key == 'link-integrity' %}
+            {% include 'Partials/Test/Options/link-integrity/test-options.html.twig' %}
+        {% endif %}
+    {% endif %}
+{% endfor %}

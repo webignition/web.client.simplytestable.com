@@ -1,0 +1,80 @@
+{% set credits_used = userSummary.planConstraints.credits.used %}
+
+{% set next_plan = null %}
+
+{% for plan in plans %}
+    {% if plan.accountPlan.creditsPerMonth > credits_used and next_plan is null %}
+        {% set next_plan = plan.accountPlan %}
+    {% endif %}
+{% endfor %}
+
+{% if next_plan is null %}
+    <p class="lead">
+        You have reached your account's monthly limit of <strong>{{ constraint.limit|number_format }}</strong>
+        credits.
+    </p>
+
+    <p class="lead">
+        You're on our largest standard plan. We can't offer you any direct upgrade options.
+    </p>
+
+    <div class="cta">
+        <a class="btn btn-primary btn-lg" href="{{ [public_site.urls.home, public_site.urls.plans_and_pricing, 'enterprise']|join('') }}">
+            <span class="primary">Find out about our enterprise offerings</span>
+                <span class="byline">
+                    Custom enterprise plans tailored to your needs
+                </span>
+            <i class="fa fa-caret-right"></i>
+        </a>
+    </div>
+{% else %}
+    {% set is_next_plan_free = next_plan.price == 0 %}
+    {% set credit_increase_factor = (next_plan.creditsPerMonth / userSummary.planConstraints.credits.limit) %}
+
+    <p class="lead">
+        You have reached your account's monthly limit of <strong>{{ constraint.limit|number_format }}</strong>
+        credits.
+    </p>
+
+    <p class="lead">
+        Upgrade from the <strong>{{ userSummary.plan.accountplan.name }}</strong> plan
+        to the  <strong>{{ next_plan.name|lower }}</strong> plan to carry out
+        {{ credit_increase_factor|number_format }} times as many tests.
+    </p>
+
+    <div class="cta">
+        <form method="post" action="{{ path('action_user_account_plan_subscribe') }}">
+            <input type="hidden" name="plan" value="{{ next_plan.name|lower }}" />
+            <button type="submit" class="btn btn-primary btn-lg">
+                <span class="primary">Upgrade to the {{ next_plan.name|lower }} plan now</span>
+                <span class="byline">
+                    {% if is_next_plan_free %}
+                        It costs nothing.
+                    {% else %}
+                        {% if userSummary.plan.hasTrialPeriodAvailable %}
+                            {%  set trial_period_days = (userSummary.trialPeriodRemaining / 86400)|round(0, 'ceil') %}
+                            {{ trial_period_days }} day free trial then
+                            &pound;{{ next_plan.price }} per month.
+                        {% endif %}
+                    {% endif %}
+                </span>
+                <i class="fa fa-caret-right"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="additional">
+        <ul class="actions">
+            <li>
+                <p>
+                    <a href="{{ [public_site.urls.home, public_site.urls.plans_and_pricing]|join('') }}">Premium plan options <i class="fa fa-caret-right"></i></a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="{{ path('view_test_history_page1', {'filter': test.website}) }}">Past results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-40.html.twig' with {'url': website} %} <i class="fa fa-caret-right"></i></a>
+                </p>
+            </li>
+        </ul>
+    </div>
+{% endif %}

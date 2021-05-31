@@ -1,0 +1,4 @@
+parameters:
+  currency_map:
+    gbp: "&#163;"
+    usd: "&#36;"

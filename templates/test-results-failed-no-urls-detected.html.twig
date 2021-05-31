@@ -1,0 +1,114 @@
+{% extends 'Abstract/single-page-dialog.html.twig' %}
+
+{% set dialog_width = 8 %}
+
+{% block title %}No URLs detected for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} - {{ parent() }}{% endblock %}
+
+{% block content %}
+
+    <h1>No sitemap or news feed, sign in to crawl this site</h1>
+
+    <p class="lead">
+        The demo finds pages to test by examining your XML sitemap or news feed. This didn't
+        find any pages
+        for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %}.
+    </p>
+
+    <p class="lead">
+        As a registered user you can crawl a site to discover URLs to be tested, allowing you
+        to run full-site tests on sites that have no sitemap and no news feed.
+    </p>
+
+    <div class="cta">
+        <a class="btn btn-primary btn-lg" href="{{ path('sign_in_render', {'redirect' : redirect}) }}">
+            <span class="primary">Sign in</span>
+            <span class="byline">To enable page discovery via crawling.</span>
+            <i class="fa fa-sign-in"></i>
+        </a>
+        <a href="{{ path('view_user_sign_up_request') }}" class="btn btn-lg btn-cta btn-success">
+            <span class="primary">Create an account</span>
+            <span class="byline">Free. Get started in seconds.</span>
+            <i class="fa fa-user"></i>
+        </a>
+    </div>
+
+    <div class="additional">
+        <ul class="actions">
+            <li>
+                <p>
+                    <a href="{{ [public_site.urls.home, public_site.urls.account_benefits]|join('') }}">Benefits of a free account <i class="fa fa-caret-right"></i></a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <a href="{{ [public_site.urls.home, public_site.urls.plans_and_pricing]|join('') }}">Premium plan options <i class="fa fa-caret-right"></i></a>
+                </p>
+            </li>
+            <li>
+                <p>
+                    <span class="collapse-control collapsed link" data-toggle="collapse" data-target="#more-detail">
+                    Why does this happen and what can I do?
+                    </span>
+                </p>
+            </li>
+        </ul>
+
+        <div class="row collapse" id="more-detail">
+            <div class="col-lg-8 col-md-8">
+
+                <h2>Why did this happen?</h2>
+                <p>
+                    URLs for a site-wide test are collected from your sitemap, your RSS
+                    news feed or your ATOM news feed.
+                </p>
+
+                <p>
+                    We looked hard but couldn't find any URLs for {{ website.utf8.raw }} listed in
+                    any sitemaps or news feeds.
+                </p>
+
+                <h2>What you can do</h2>
+                <ul>
+                    <li>
+                        <p>
+                            <a href="{{ path('view_user_sign_up_request', {'redirect': redirect}) }}">create an account</a>
+                            or <a href="{{ path('sign_in_render') }}">sign in</a>: tests
+                            started by registered users will crawl a site to find pages to test
+                        </p>
+                    </li>
+
+                    <li>
+                        <p>
+                            create a <a href="http://support.google.com/webmasters/bin/answer.py?hl=en&amp;answer=183668">sitemap</a>,
+                            either an XML sitemap at <code>{{ website.utf8.raw }}sitemap.xml</code> or a plain text sitemap at
+                            <code>{{ website.utf8.raw }}sitemap.txt</code>
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            update <code>{{ website.utf8.raw }}robots.txt</code> and link to your sitemap if it is at a non-standard location
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            ensure any RSS or ATOM news feed is valid
+                        </p>
+                    </li>
+                    <li>
+                        <p>
+                            ensure links in any sitemap or news feed
+                            are for {{ website.utf8.raw }} specifically
+                            and not any other domain
+                        </p>
+                    </li>
+                </ul>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+{% endblock %}

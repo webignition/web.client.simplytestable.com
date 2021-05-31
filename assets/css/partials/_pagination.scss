@@ -1,0 +1,39 @@
+.pagination {
+  margin-top: 8px;
+
+  li {
+    & > a,
+    & > span {
+      padding: 8px 14px;
+    }
+
+    &:hover {
+      a {
+        background-color: #08c;
+        color: #fff;
+      }
+
+      span {
+        opacity: 0.8;
+      }
+    }
+
+    &.disabled {
+      span {
+        background-color: transparent;
+
+        &:hover {
+          background-color: transparent;
+        }
+      }
+    }
+
+    .fa-caret-left {
+      padding-right: 10px;
+    }
+
+    .fa-caret-right {
+      padding-left: 10px;
+    }
+  }
+}

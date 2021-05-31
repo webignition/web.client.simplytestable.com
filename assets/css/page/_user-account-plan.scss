@@ -1,0 +1,31 @@
+button {
+  .fa-times-circle {
+    opacity: 0.6;
+  }
+}
+
+.plan-allowances {
+  th {
+    font-weight: normal;
+    padding-left: 0;
+    width: 40%;
+  }
+}
+
+#upgrade-downgrade-form {
+  button {
+    margin-top: 30px;
+  }
+}
+
+#plan-upgrade-downgrade {
+  .secondary {
+    border-top: 1px solid #ddd;
+    margin-top: 20px;
+    padding-top: 40px;
+  }
+}
+
+.plan.checked {
+  background-color: #eee;
+}
