@@ -1,0 +1,33 @@
+{% if type is not defined %}
+    {% set type = '' %}
+{% endif %}
+
+<div class="summary-prose hidden-xs">
+    {% if test.errorCount > 0 or test.warningCount > 0 %}
+
+        {% for task_type in test.tasktypes %}
+            {% set task_error_count = test.getErrorCountByTaskType(task_type) %}
+            {% set task_warning_count = test.getWarningCountByTaskType(task_type) %}
+
+            {% if task_error_count or task_warning_count %}
+                    <div class="row {% if task_error_count and task_warning_count %}multiple{% endif %}">
+                        <div class="col-lg-5 col-md-5 col-sm-6 task-type-name">
+                            <span class="">
+                                {{ task_type }}:
+                            </span>
+                        </div>
+                        <div class="col-lg-7 col-md-7 col-sm-6 counts">
+                            <span>
+                                {% if task_error_count %}
+                                    <span class="count">{{ task_error_count }} error{% if task_error_count > 1 %}s{% endif %}</span>
+                                {% endif %}
+                                {% if task_warning_count %}
+                                    <span class="count">{{ task_warning_count }} warning{% if task_warning_count > 1 %}s{% endif %}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>

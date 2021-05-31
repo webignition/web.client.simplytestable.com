@@ -1,0 +1,2 @@
+- /website/.+/test_id/[0-9]+/task_id/[0-9]+/results/$
+- /[0-9]+/[0-9]+/results/$

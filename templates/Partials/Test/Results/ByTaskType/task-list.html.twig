@@ -1,0 +1,34 @@
+<ul class="task-list list-unstyled by-page-list">
+    {% for task in tasks %}
+        {% set schemeless_url = task.url|replace({'http://': '', 'https://': ''}) %}
+        {% set sort_values = {
+            url: schemeless_url,
+            occurrences: task.output.errorCount
+        } %}
+
+        <li class="js-sortable-item" data-sort-values="{{ sort_values|json_encode }}">
+            <a href="{{ path('view_task_results', test_results_route_parameters|merge({task_id: task.taskId})) }}{% block link_hash %}{% endblock %}">
+                <div class="row task">
+                    <div class="meta">
+                        <div class="col-lg-10 url-container">
+                            <span class="url">{{ schemeless_url }}</span>
+                        </div>
+                        <div class="col-lg-2 occurrences-container">
+                            {% block occurrences %}
+                                {% set value = value is defined ? value : 0 %}
+                                {% set singular = singular is defined ? singular : '' %}
+
+                                <span class="label label-danger">
+                                    {% include 'Partials/Generic/single-plural-item.html.twig' with {
+                                        value: value,
+                                        singular: singular
+                                    } %} <i class="fa fa-caret-right"></i>
+                                </span>
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,46 @@
+<div class="task-type-summary">
+
+    {% for task_type_key, task_type_details in task_types %}
+        {% set is_available = task_type_key in available_task_types|keys %}
+        {% set is_selected = test_options[task_type_key] is defined or task_type_details.name in test.tasktypes %}
+
+        {% set task_type_error_count = 0 %}
+        {% set task_type_warning_count = 0 %}
+
+        {% for task_type in test.tasktypes %}
+            {% if task_type_details.name == task_type %}
+                {% set task_type_error_count = test.getErrorCountByTaskType(task_type) %}
+                {% set task_type_warning_count = test.getWarningCountByTaskType(task_type) %}
+            {% endif %}
+        {% endfor %}
+
+        <div class="row">
+            <span class="col-lg-4 col-md-6 col-sm-6 col-xs-6 task-type-name">{{ task_type_details.name }}</span>
+
+            <span class="col-lg-8 col-md-6 col-sm-6 col-xs-6 task-type-count {{ task_type_error_count > 0 and task_type_warning_count > 0 ? 'multiple' : '' }} {{ not is_available ? 'not-available' : '' }}">
+
+                {% if is_selected %}
+                    {% if task_type_error_count == 0 %}
+                        <span class="item"><span class="badge badge-success">0</span> errors <i class="fa fa-check"></i></span>
+                    {% else %}
+                        <a class="item" href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-errors', 'type': task_type_details.name|lower }) }}">
+                            <span class="badge badge-errors">{{ task_type_error_count|number_format }}</span> error{% if task_type_error_count != 1 %}s{% endif %}
+                        </a>
+                    {% endif %}
+
+                    {% if task_type_warning_count > 0 %}
+                    <a href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': 'with-warnings', 'type': task_type_details.name|lower }) }}">
+                        <span class="badge badge-warnings">{{ task_type_warning_count|number_format }}</span> warning{% if task_type_warning_count != 1 %}s{% endif %}
+                    </a>
+                    {% endif %}
+                {% else %}
+                    {% if not is_available %}
+                    sign in to enable
+                    {% endif %}
+                {% endif %}
+            </span>
+        </div>
+
+    {% endfor %}
+
+</div>

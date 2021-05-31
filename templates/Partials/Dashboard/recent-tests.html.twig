@@ -1,0 +1,18 @@
+{% set test_finished_states = [
+'completed',
+'cancelled',
+'failed-no-sitemap',
+'rejected'
+] %}
+
+{% for test in test_list %}
+    {% if test.state in test_finished_states %}
+        {% include 'Partials/Test/Summary/finished.html.twig' %}
+    {% else %}
+        {% if test.state == 'crawling' %}
+            {% include 'Partials/Test/Summary/crawling.html.twig' %}
+        {% else %}
+            {% include 'Partials/Test/Summary/incomplete.html.twig' %}
+        {% endif %}
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit
+    backupGlobals               = "false"
+    backupStaticAttributes      = "false"
+    colors                      = "true"
+    convertErrorsToExceptions   = "true"
+    convertNoticesToExceptions  = "true"
+    convertWarningsToExceptions = "true"
+    processIsolation            = "false"
+    stopOnFailure               = "true"
+    bootstrap                   = "vendor/autoload.php" >
+
+    <testsuites>
+        <testsuite name="Project Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+        <testsuite name="Controllers">
+            <directory>Tests/App/Unit/Controller</directory>
+            <directory>Tests/App/Functional/Controller</directory>
+        </testsuite>
+        <testsuite name="Services">
+            <directory>Tests/App/Unit/Services</directory>
+            <directory>Tests/App/Functional/Services</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <server name="KERNEL_CLASS" value="App\Kernel" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
+
+        <env name="DATABASE_URL" value="mysql://root:@127.0.0.1:3306/myapp_test"/>
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_SECRET" value="Secret!"/>
+        <env name="SESSION_SAVE_PATH" value="/tmp"/>
+        <env name="MARKETING_SITE" value="https://simplytestable.com/"/>
+        <env name="STRIPE_KEY" value="stripe_key_value"/>
+        <env name="CORE_URL" value="http://null"/>
+        <env name="MAILCHIMP_API_KEY" value="mailchimp_api_key_value-us5"/>
+        <env name="ADMIN_USER_USERNAME" value="admin"/>
+        <env name="ADMIN_USER_PASSWORD" value="admin_password_value"/>
+        <env name="POSTMARK_API_KEY" value="postmark_api_key_value"/>
+        <env name="RESQUE_PREFIX" value="web.client.simplytestable.com"/>
+
+        <server name="DOTENV_PATH" value="../../../.env.travis-ci" />
+    </php>
+
+    <filter>
+        <whitelist>
+            <directory>src</directory>
+            <exclude>
+                <directory>src/*Bundle/Resources</directory>
+                <directory>src/*/*Bundle/Resources</directory>
+                <directory>src/*/Bundle/*Bundle/Resources</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+</phpunit>

@@ -1,0 +1,25 @@
+parameters:
+  test_options:
+    features:
+      http-authentication:
+        enabled: true
+        form_key: http-auth
+      cookies:
+        enabled: true
+        form_key: cookies
+    ignore_on_error:
+      - http-auth-password
+    names_and_default_values:
+      http-auth-username: ""
+      http-auth-password: ""
+      cookies: [{name: "", value: "", secure: false, path: "/", domain: ""}]
+      html-validation: 1
+      css-validation: 1
+      css-validation-ignore-warnings: 1
+      css-validation-ignore-common-cdns: 1
+      css-validation-vendor-extensions: warn
+      css-validation-domains-to-ignore:
+        - ""
+      link-integrity: 0
+      link-integrity-excluded-domains:
+        - ""

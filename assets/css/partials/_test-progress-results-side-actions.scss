@@ -1,0 +1,11 @@
+.side-actions {
+  text-align: left;
+
+  @media (min-width: 768px) {
+    text-align: right;
+  }
+
+  @media (min-width: 992px) {
+    position: static;
+  }
+}

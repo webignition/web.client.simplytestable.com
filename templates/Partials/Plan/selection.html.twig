@@ -1,0 +1,49 @@
+{% if has_active_discount is not defined %}
+    {% set has_active_discount = false %}
+{% endif %}
+
+{% if current_plan is not defined %}
+    {% set current_plan = '' %}
+{% endif %}
+
+{% if has_active_discount %}
+    <p>
+        You have a {{ user_summary.stripecustomer.discount.coupon.percentoff }}% lifetime discount from coupon {{ user_summary.stripecustomer.discount.coupon.id }}.
+    </p>
+{% endif %}
+
+{% for currentPlan in plans|reverse %}
+    {% set account_plan = currentPlan.accountPlan %}
+    {% set plan_name = account_plan.name|lower %}
+    {% set is_selected = plan_name == selected_plan %}
+    {% set is_current = plan_name == current_plan %}
+    {% set plan_id = 'plan-' ~ loop.index0 %}
+    {% set plan_full_price = (account_plan.price / 100)|number_format(2) %}
+    {% set plan_discounted_price = (currentPlan.price / 100)|number_format(2) %}
+
+    <div class="plan">
+        <input type="radio"
+               name="plan"
+               value="{{ plan_name }}"
+               id="{{ plan_id }}"
+                {{ is_selected ? 'checked' : '' }}>
+
+        <label for="{{ plan_id }}">
+            {% if has_coupon %}
+                <span class="name">
+                    {{ account_plan.name }}
+                    - <del>&pound;{{ plan_full_price }}</del> &pound;{{ plan_discounted_price }} per month
+                    (Save &pound;{{ (((account_plan.price - currentPlan.price) * 12) / 100)|number_format(2) }} per year)
+                </span>
+            {% else %}
+                <span class="name">
+                    {{ account_plan.name }}
+                    - &pound;{{ plan_full_price }} per month
+                </span>
+            {% endif %}
+            <span class="features">
+                {{ account_plan.urlsPerJob|number_format }} pages per test, {{ account_plan.creditsPerMonth|number_format }} credits
+            </span>
+        </label>
+    </div>
+{% endfor %}

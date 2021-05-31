@@ -1,0 +1,269 @@
+$color-with-errors: #d9534f;
+$color-with-warnings: #428bca;
+$color-without-errors: #5cb85c;
+
+h1 {
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+h2 {
+  margin: 20px 0 20px 0;
+  font-size: 28px;
+  display: inline-block;
+}
+
+.header {
+  padding-top: 15px;
+  margin-bottom: 40px;
+
+  @media (min-width: 768px) {
+    padding: 40px 0;
+  }
+
+  .details {
+    margin-top: 30px;
+    position: relative;
+  }
+}
+
+.summary-stats {
+  margin-top: 0;
+
+  .label {
+    position: relative;
+
+    @media (min-width: 992px) {
+      padding-right: 25px;
+    }
+  }
+
+  .name {
+    padding-left: 0;
+  }
+
+  .icon {
+    top: 6px;
+
+    @media (min-width: 992px) {
+      position: absolute;
+      right: 15px;
+      top: 16px;
+    }
+  }
+
+  .count {
+    @media (min-width: 992px) {
+      margin-bottom: -6px;
+    }
+  }
+}
+
+.side-actions {
+  margin-top: 0;
+
+  @media (min-width: 768px) and (max-width: 992px) {
+    margin-top: 40px;
+  }
+
+  .buttons {
+    margin: 20px 0;
+
+    @media (min-width: 768px) {
+      margin: 0;
+    }
+  }
+}
+
+.test-options {
+  @media (min-width: 992px) {
+    position: absolute;
+    bottom: 10px;
+    width: auto;
+  }
+}
+
+.test-option {
+  margin: 0 0 10px 0;
+}
+
+.retest-col {
+  padding-left: 0;
+
+  @media (min-width: 768px) {
+    padding-left: 15px;
+  }
+}
+
+.task-type-summary {
+  .task-type-name {
+    text-align: right;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .task-type-count {
+    padding-right: 0;
+  }
+
+  .not-available {
+    opacity: 0.6;
+  }
+
+  .row {
+    margin-bottom: 15px;
+  }
+
+  .badge {
+    text-align: right;
+    color: #fff;
+  }
+
+  .fa-check {
+    color: #5cb85c;
+  }
+
+  .badge-errors {
+    background-color: #d9534f;
+  }
+
+  .badge-warnings {
+    background-color: #428bca;
+  }
+
+  .badge-success {
+    background-color: #5cb85c;
+  }
+
+  .item {
+    &:hover {
+      .badge-errors {
+        background-color: #c9302c;
+      }
+
+      .badge-warnings {
+        background-color: #3071a9;
+      }
+    }
+  }
+
+  .multiple {
+    .item {
+      display: block;
+      margin-bottom: 4px;
+
+      @media (min-width: 1200px) {
+        display: inline;
+        margin: 0;
+      }
+    }
+  }
+}
+
+.tabs {
+  .btn {
+    margin-right: 15px;
+    margin-bottom: 10px;
+  }
+
+  .selected {
+    box-shadow: 0 0 4px 1px #08c;
+  }
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #999;
+
+  &.with-errors {
+    border-bottom: 1px solid $color-with-errors;
+  }
+
+  &.with-warnings {
+    border-bottom: 1px solid $color-with-warnings;
+  }
+
+  &.without-errors {
+    border-bottom: 1px solid $color-without-errors;
+  }
+
+  a {
+    &:hover,
+    &:focus {
+      border: 1px solid #999;
+    }
+  }
+
+  .active {
+    a {
+      border: 1px solid #999;
+      border-bottom-color: transparent;
+    }
+  }
+
+  .tasks-with-errors {
+    &:hover,
+    &:focus,
+    &.active {
+      a {
+        color: $color-with-errors;
+        border-top-color: $color-with-errors;
+        border-left-color: $color-with-errors;
+        border-right-color: $color-with-errors;
+      }
+    }
+  }
+
+  .tasks-with-warnings {
+    &.active,
+    &:hover,
+    &:focus {
+      a {
+        color: $color-with-warnings;
+        border-top-color: $color-with-warnings;
+        border-left-color: $color-with-warnings;
+        border-right-color: $color-with-warnings;
+      }
+    }
+  }
+
+  .tasks-without-errors {
+    &.active,
+    &:hover,
+    &:focus {
+      a {
+        color: $color-without-errors;
+        border-top-color: $color-without-errors;
+        border-left-color: $color-without-errors;
+        border-right-color: $color-without-errors;
+      }
+    }
+  }
+}
+
+.clear-type {
+  background-color: #ddd;
+  font-weight: normal;
+  color: #333;
+  display: inline-block;
+  margin-bottom: 20px;
+  opacity: 0.8;
+
+  @media (min-width: 768px) {
+    margin-left: 10px;
+    margin-bottom: 2px;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.task-list {
+  margin-top: 20px;
+}
+
+.btn-lock-unlock {
+  b {
+    font-weight: normal;
+  }
+}

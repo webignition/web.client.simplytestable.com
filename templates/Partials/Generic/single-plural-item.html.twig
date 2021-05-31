@@ -1,0 +1,2 @@
+{% if value is not defined %}{% set value = 0 %}{% endif %}{% if singular is not defined %}{% set singular = 'thing' %}{% endif %}{% if plural is not defined %}{% set plural = [singular, 's']|join %}
+{% endif %}{% if value == 1 %}{{ value }} {{ singular }}{% else %}{{ value }} {{ plural }}{% endif %}

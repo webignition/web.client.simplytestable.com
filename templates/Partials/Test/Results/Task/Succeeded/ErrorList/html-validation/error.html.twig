@@ -1,0 +1,25 @@
+<div class="meta">
+    <div class="line">
+        {% if error.lineNumber > -1 %}
+            <span class="text">Line</span>
+            <span class="digit">{{ error.lineNumber }}</span>
+        {% endif %}
+    </div>
+    <div class="column">
+        {% if error.columnNumber > -1 %}
+            <span class="text">Column</span>
+            <span class="digit">{{ error.columnNumber }}</span>
+        {% endif %}
+    </div>
+</div>
+<div class="content">
+
+    <p>
+        {{ error }}
+    </p>
+    {% if (documentation_urls[ loop.index0 ].exists) %}
+        <a class="fix label label-fix" href="{{documentation_urls[ loop.index0 ].url}}">
+            Fix <i class="fa fa-caret-right"></i>
+        </a>
+    {% endif %}
+</div>

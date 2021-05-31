@@ -1,0 +1,21 @@
+.btn {
+  &.btn-significant {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+
+    @media (min-width: 768px) {
+      width: 220px;
+    }
+
+    span {
+      display: block;
+      opacity: 0.7;
+      font-size: 12px;
+
+      @media (min-width: 768px) {
+        display: inline;
+      }
+    }
+  }
+}

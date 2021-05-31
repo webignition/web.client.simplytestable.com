@@ -1,0 +1,36 @@
+<span class="badge action-badge action-badge-filter-options {% if filter is not empty %}action-badge-enabled{% endif %}">
+    <i class="fa fa-filter icon-primary"></i>
+    <span class="action-badge-label">{% if filter is empty %}Showing all results{% else %}Showing results for <strong>{{ filter }}</strong>{% endif %}</span>
+    {% if filter %}<a class="btn" href="{{ path('view_test_history_page1') }}">clear filter <i class="fa fa-times"></i></a>{% endif %}
+    <span class="modal-control filter-modal-control" data-toggle="modal">
+        {% if filter %}modify filter{% else %}filter by url{% endif %}
+        <i class="fa fa-caret-right"></i>
+    </span>
+</span>
+
+<div class="modal" id="filter-options-modal" data-source-url="{{ websites_source }}" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-hidden="true">&times;</button>
+                <h3>Filter by URL</h3>
+                <p>
+                Filter the test list to those made against a given URL.
+                </p>
+            </div>
+            <div class="modal-body">
+                <input name="filter"
+                id="input-filter"
+                class="form-control"
+                type="text"
+                placeholder="URL to filter by &hellip;"
+                value="{{ filter }}"                >
+                <input name="closed_by" type="hidden">
+            </div>
+            <div class="modal-footer">
+                <button id="clear-filter-button" type="button" class="btn btn-default" data-dismiss="modal">Clear filter</button>
+                <button id="apply-filter-button" type="button" class="btn btn-primary" data-dismiss="modal">Apply filter</button>
+            </div>
+        </div>
+    </div>
+</div>

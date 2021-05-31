@@ -1,0 +1,52 @@
+.test-options-set {
+  margin: 0 0 20px 0;
+  border-left: 3px solid #ddd;
+  padding: 5px 10px 5px 10px;
+  background-color: #e7e7e7;
+  border-top-right-radius: 7px;
+  border-bottom-right-radius: 7px;
+
+  &:hover {
+    border-left: 3px solid #ccc;
+    background-color: #e2e2e2;
+  }
+
+  .collapse-control {
+    display: inline-block;
+    margin: 0 0 6px 0;
+  }
+
+  h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: bold;
+    opacity: 0.8;
+  }
+
+  .snug-heading {
+    margin-bottom: -2px;
+  }
+}
+
+.test-options-advanced {
+  margin-left: 20px;
+}
+
+.ignore-common-cdn-domains {
+  .domain {
+    opacity: 0.8;
+  }
+}
+
+.full-single-option {
+  padding-left: 0;
+}
+
+.css-validator-option-set {
+  .css-common-cdn-domains {
+    @media (min-width: 1200px) {
+      margin-left: -6%;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+.listed-test {
+  .fa {
+    &.primary {
+      margin-right: 6px;
+    }
+  }
+
+  &.finished {
+    .primary {
+      color: #5cb85c;
+    }
+  }
+
+  &.incomplete {
+    .primary {
+      color: #428bca;
+    }
+  }
+
+  &.state-crawling {
+    .primary {
+      color: #f8b426;
+    }
+  }
+
+  &.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  &.fade-in {
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out;
+  }
+}

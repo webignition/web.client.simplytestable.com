@@ -1,0 +1,27 @@
+<p class="lead">
+    Sorry, I can't test <a title="{{website.raw}}" href="{{ website.raw }}">{% include 'Partials/url/utf8-raw-possibly-truncated-40.html.twig' with {'url': website} %}</a> because it can't be accessed over the Internet.
+</p>
+
+<p class="lead">
+    This happens if you try to test a website:
+</p>
+
+<ul class="lead">
+    <li>
+        <p>
+            that's accessed by IP address and where the IP address is not routable
+        </p>
+    </li>
+    <li>
+        <p>
+            that contains an invalid domain name (such as <a href="http://example/">http://example/</a>)
+        </p>
+    </li>
+</ul>
+
+<div class="cta">
+    <a href="{{ path('view_dashboard') }}" class="btn btn-primary btn-lg">
+        <i class="fa fa-caret-right"></i>
+        <span class="primary">Try testing a different site</span>
+    </a>
+</div>

@@ -1,0 +1,348 @@
+stripe_event:
+  path: /stripe/event/
+  defaults: { _controller: App\Controller\Stripe\EventController::indexAction, _format: json }
+
+mailchimp_event:
+  path: /mailchimp/event/
+  defaults: { _controller: App\Controller\MailChimp\EventController::indexAction, _format: json }
+
+action_user_sign_out:
+    path: /signout/
+    defaults: { _controller: App\Controller\Action\User\UserController::signOutSubmitAction }
+
+sign_in_render:
+    path: /signin/
+    defaults: { _controller: App\Controller\User\SignInController::renderAction }
+    methods: [GET]
+
+sign_in_action:
+    path: /signin/
+    defaults: { _controller: App\Controller\User\SignInController::signInAction }
+    methods: [POST]
+
+view_user_reset_password_request:
+    path: /reset-password/
+    defaults: { _controller: App\Controller\View\User\ResetPasswordController::requestAction }
+
+action_user_reset_password_request:
+    path: /reset-password/submit/
+    defaults: { _controller: App\Controller\Action\User\ResetPasswordController::requestAction }
+
+action_user_reset_password_choose:
+    path: /reset-password/choose/submit/
+    defaults: { _controller: App\Controller\Action\User\ResetPasswordController::chooseAction }
+
+view_user_reset_password_choose:
+    path: /reset-password/{email}/{token}/
+    defaults: { _controller: App\Controller\View\User\ResetPasswordController::chooseAction }
+
+view_user_sign_up_request:
+    path: /signup/
+    defaults: { _controller: App\Controller\View\User\SignUp\RequestController::indexAction }
+
+action_user_sign_up_request:
+    path: /signup/submit/
+    defaults: { _controller: App\Controller\Action\User\UserController::signUpSubmitAction }
+
+view_user_sign_up_confirm:
+    path: /signup/confirm/{email}/
+    defaults: { _controller: App\Controller\View\User\SignUp\ConfirmController::indexAction }
+
+view_user_sign_up_invite:
+    path: /signup/invite/{token}/
+    defaults: { _controller: App\Controller\View\User\SignUp\InviteController::indexAction }
+
+action_user_sign_up_confirm:
+    path: /signup/confirm/{email}/submit/
+    defaults: { _controller: App\Controller\Action\User\UserController::signUpConfirmSubmitAction }
+
+action_sign_up_team_invite_accept:
+    path: /signup/invite/{token}/accept/
+    defaults: { _controller: App\Controller\Action\SignUp\Team\InviteController::acceptAction }
+
+action_sign_up_user_confirm_resend:
+    path: /signup/confirm/{email}/resend/
+    defaults: { _controller: App\Controller\Action\SignUp\User\ConfirmController::resendAction }
+
+action_user_account_news_subscriptions_update:
+    path: /account/news-subscriptions/update/
+    defaults: { _controller: App\Controller\Action\User\Account\NewsSubscriptionsController::updateAction }
+
+action_user_account_emailchange_request:
+    path: /account/details/update/email/request/
+    defaults: { _controller: App\Controller\Action\User\Account\EmailChangeController::requestAction }
+
+action_user_account_emailchange_resend:
+    path: /account/details/update/email/resend/
+    defaults: { _controller: App\Controller\Action\User\Account\EmailChangeController::resendAction }
+
+action_user_account_emailchange_confirm:
+    path: /account/details/update/email/confirm/
+    defaults: { _controller: App\Controller\Action\User\Account\EmailChangeController::confirmAction }
+
+action_user_account_emailchange_cancel:
+    path: /account/details/update/email/cancel/
+    defaults: { _controller: App\Controller\Action\User\Account\EmailChangeController::cancelAction }
+
+action_user_account_passwordchange_request:
+    path: /account/details/update/password/request/
+    defaults: { _controller: App\Controller\Action\User\Account\PasswordChangeController::requestAction }
+
+view_user_account:
+    path: /account/
+    defaults: { _controller: App\Controller\View\User\Account\AccountController::indexAction }
+
+view_user_account_card:
+    path: /account/card/
+    defaults: { _controller: App\Controller\View\User\Account\CardController::indexAction }
+
+view_user_account_team:
+    path: /account/team/
+    defaults: { _controller: App\Controller\View\User\Account\TeamController::indexAction }
+
+action_user_account_team_create:
+    path: /account/team/create/
+    defaults: { _controller: App\Controller\Action\User\Account\TeamController::createAction }
+
+action_user_account_team_invitemember:
+    path: /account/team/invite-member/
+    defaults: { _controller: App\Controller\Action\User\Account\TeamInviteController::inviteMemberAction }
+
+action_user_account_team_respondinvite:
+    path: /account/team/invite/respond/
+    defaults: { _controller: App\Controller\Action\User\Account\TeamInviteController::respondInviteAction }
+
+action_user_account_team_removeinvite:
+    path: /account/team/invite/remove/
+    defaults: { _controller: App\Controller\Action\User\Account\TeamInviteController::removeInviteAction }
+
+action_user_account_team_resendinvite:
+    path: /account/team/invite/resend/
+    defaults: { _controller: App\Controller\Action\User\Account\TeamInviteController::resendInviteAction }
+
+action_user_account_team_removemember:
+    path: /account/team/member/remove/
+    defaults: { _controller: App\Controller\Action\User\Account\TeamController::removeMemberAction }
+
+action_user_account_team_leave:
+    path: /account/team/leave/
+    defaults: { _controller: App\Controller\Action\User\Account\TeamController::leaveAction }
+
+view_user_account_plan:
+    path: /account/plan/
+    defaults: { _controller: App\Controller\View\User\Account\PlanController::indexAction }
+
+action_user_account_card_associate:
+    path: /account/card/{stripe_card_token}/associate/
+    defaults: { _controller: App\Controller\Action\User\Account\CardController::associateAction }
+
+action_user_account_plan_subscribe:
+    path: /account/plan/subscribe/
+    defaults: { _controller: App\Controller\Action\User\Account\PlanController::subscribeAction }
+
+view_dashboard:
+    path: /
+    defaults: { _controller: App\Controller\View\Dashboard\DashboardController::indexAction }
+
+view_partials_recenttests:
+    path: /recent-tests/
+    defaults: { _controller: App\Controller\View\Partials\RecentTestsController::indexAction }
+
+view_test_history_page1:
+    path: /history/
+    defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction, page_number: 1 }
+
+view_test_history:
+    path: /history/{page_number}/
+    defaults: { _controller: App\Controller\View\Test\HistoryController::indexAction }
+    requirements:
+        page_number: '\d+'
+
+view_website_list:
+    path: /history/websites/
+    defaults: { _controller: App\Controller\View\WebsiteListController::indexAction, _format: json }
+
+view_partials_test_finished_summary:
+    path: /{website}/{test_id}/finished-summary/
+    defaults: { _controller: App\Controller\View\Partials\TestFinishedSummaryController::indexAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+view_task_results_verbose:
+    path: /website/{website}/test_id/{test_id}/task_id/{task_id}/results/
+    defaults: { _controller: App\Controller\View\Task\ResultsController::indexAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+        task_id: '\d+'
+
+view_task_results:
+    path: /{website}/{test_id}/{task_id}/results/{trailingSlash}
+    defaults: { _controller: App\Controller\View\Task\ResultsController::indexAction, trailingSlash : "/" }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+        task_id: '\d+'
+        trailingSlash : "[/]{0,1}"
+
+view_partials_test_url_limit_notification:
+    path: /{test_id}/url-limit-notification/
+    defaults: { _controller: App\Controller\View\Partials\TestUrlLimitNotificationController::indexAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+redirect_task:
+    path: /{website}/{test_id}/{task_id}/
+    defaults: { _controller: App\Controller\RedirectController::taskAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+        task_id: '\d+'
+
+view_test_progress:
+    path: /{website}/{test_id}/progress/
+    defaults: { _controller: App\Controller\View\Test\ProgressController::indexAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+view_test_results_verbose:
+    path: /website/{website}/test_id/{test_id}/results/
+    defaults: { _controller: App\Controller\View\Test\Results\ResultsController::indexAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+view_test_results:
+    path: /{website}/{test_id}/results/
+    defaults: { _controller: App\Controller\View\Test\Results\ResultsController::indexAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+view_test_unauthorised:
+    path: /{website}/{test_id}/unauthorised/
+    defaults: { _controller: App\Controller\View\UnauthorisedTestOwnerController::renderAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+action_test_lock:
+    path: /{test_id}/lock/
+    defaults: { _controller: App\Controller\Action\Test\TestController::lockAction }
+    requirements:
+      test_id: '\d+'
+
+action_test_unlock:
+    path: /{test_id}/unlock/
+    defaults: { _controller: App\Controller\Action\Test\TestController::unlockAction }
+    requirements:
+      test_id: '\d+'
+
+action_test_retest:
+    path: /{test_id}/re-test/
+    defaults: { _controller: App\Controller\Action\Test\TestController::retestAction }
+    requirements:
+      test_id: '\d+'
+
+view_test_results_failed_no_urls_detected:
+    path: /{website}/{test_id}/results/failed/no-urls-detected/
+    defaults: { _controller: App\Controller\View\Test\Results\FailedNoUrlsDetectedController::indexAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+view_test_results_rejected:
+    path: /{website}/{test_id}/results/rejected/
+    defaults: { _controller: App\Controller\View\Test\Results\RejectedController::indexAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+view_test_results_preparing:
+    path: /{website}/{test_id}/results/preparing/
+    defaults: { _controller: App\Controller\View\Test\Results\PreparingController::indexAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+view_test_results_preparing_stats:
+    path: /{test_id}/results/preparing/stats/
+    defaults: { _controller: App\Controller\View\Test\Results\PreparingStatsController::indexAction, _format: json }
+    requirements:
+       test_id: '\d+'
+
+task_results_retrieve:
+    path: /{test_id}/results/retrieve/
+    defaults: { _controller: App\Controller\TaskController::retrieveAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+view_test_results_by_task_type:
+    path: /{website}/{test_id}/results/{task_type}/
+    defaults: { _controller: App\Controller\View\Test\Results\ByTaskTypeController::indexAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+view_test_results_by_task_type_filter:
+    path: /{website}/{test_id}/results/{task_type}/{filter}/
+    defaults: { _controller: App\Controller\View\Test\Results\ByTaskTypeController::indexAction }
+    requirements:
+       website: '.+'
+       test_id: '\d+'
+
+view_partials_test_task_list:
+    path: /{website}/{test_id}/tasklist/
+    defaults: { _controller: App\Controller\View\Partials\TestTaskListController::indexAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+test_task_ids:
+    path: /{test_id}/tasks/ids/
+    defaults: { _controller: App\Controller\TaskController::idCollectionAction, _format: json }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+test_task_ids_unretrieved:
+    path: /{test_id}/tasks/ids/unretrieved/{limit}/
+    defaults: { _controller: App\Controller\TaskController::unretrievedIdCollectionAction, _format: json }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+action_test_start:
+    path: /test/start/
+    defaults: { _controller: App\Controller\Action\Test\StartController::startNewAction }
+
+action_test_cancel:
+    path: /test/{website}/{test_id}/cancel/
+    defaults: { _controller: App\Controller\Action\Test\TestController::cancelAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+action_test_cancel_crawl:
+    path: /test/{website}/{test_id}/cancel-crawl/
+    defaults: { _controller: App\Controller\Action\Test\TestController::cancelCrawlAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+redirect_website_test:
+    path: /{website}/{test_id}/
+    defaults: { _controller: App\Controller\RedirectController::testAction }
+    requirements:
+        website: '.+'
+        test_id: '\d+'
+
+redirect_website:
+    path: /{website}/
+    defaults: { _controller: App\Controller\RedirectController::testAction }
+    requirements:
+        website: '.+'

@@ -1,0 +1,98 @@
+{% set http_auth_username = '' %}
+{% set http_auth_password = '' %}
+
+{% if test is defined %}
+    {% set http_auth_username = test.getParameter('http-auth-username')|default('') %}
+    {% set http_auth_password = test.getParameter('http-auth-password')|default('') %}
+
+{% else %}
+    {% set has_http_auth_username = test_options['http-auth-username'] is defined and test_options['http-auth-username'] is not empty %}
+    {% set has_http_auth_password = test_options['http-auth-password'] is defined and test_options['http-auth-password'] is not empty %}
+    {% set http_auth_username = has_http_auth_username ? test_options['http-auth-password'] : '' %}
+    {% set http_auth_password = has_http_auth_password ? test_options['http-auth-password'] : '' %}
+{% endif %}
+
+{% set test_authentication_enabled = http_auth_username is not empty or http_auth_password is not empty %}
+
+{% if read_only is not defined %}
+    {% set read_only = false %}
+{% endif %}
+
+{% if data_target_id is not defined %}
+    {% set data_target_id = 'http-authentication-options-modal' %}
+{% endif %}
+
+<div id="http-authentication-action-badge" class="modal-launcher {{ (test_authentication_enabled) ? 'action-badge-enabled' : '' }}">
+    <i class="fa fa-fw fa-lock icon-primary"></i>
+
+    <span class="content">
+        HTTP authentication
+
+        <span class="actions">
+            <span class="status">{{ (test_authentication_enabled) ? 'enabled' : 'not enabled' }}</span>
+
+            {% if not read_only %}
+            <span class="modal-control" data-toggle="modal" data-target="#{{ data_target_id }}">
+                change
+                <i class="fa fa-caret-right"></i>
+            </span>
+            {% endif %}
+        </span>
+    </span>
+</div>
+
+<div class="modal" id="http-authentication-options-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" data-name="close" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>HTTP Authentication</h3>
+                <p>
+                    For when your site or page uses either
+                    <a href="http://en.wikipedia.org/wiki/Basic_access_authentication">basic</a> or
+                    <a href="http://en.wikipedia.org/wiki/Digest_access_authentication">digest</a> HTTP authentication.
+                    Commonly used for public staging sites. Not safe for
+                    <a href="http://blog.simplytestable.com/html-validation-for-password-protected-sites/#security">sensitive information</a>.
+                </p>
+            </div>
+            <div class="modal-body form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-lg-2 col-md-2" for="http-auth-username">Username</label>
+                    <div class="col-lg-10 col-md-10">
+                        <input id="http-auth-username"
+                               name="http-auth-username"
+                               class="form-control credential js-disable-readonly"
+                               type="text"
+                               placeholder="Enter required username"
+                               value="{{ http_auth_username }}"
+                               readonly
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-lg-2 col-md-2" for="http-auth-password">Password</label>
+                    <div class="col-lg-10 col-md-10">
+                        <input
+                                id="http-auth-password"
+                                name="http-auth-password"
+                                class="form-control credential js-disable-readonly"
+                                type="password"
+                                placeholder="Enter required password"
+                                value="{{ http_auth_password }}"
+                                readonly
+                        >
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal" data-name="clear" aria-hidden="true">
+                    Clear
+                </button>
+                <button class="btn btn-primary" data-dismiss="modal" data-name="apply" aria-hidden="true">
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

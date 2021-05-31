@@ -1,0 +1,38 @@
+<div class="account-section">
+    <h2 id="members">Members</h2>
+
+    <ul class="list-unstyled members items">
+        <li class="person leader item">
+            <i class="fa fa-user"></i>
+            {{ team.leader }}
+            (team leader{% if team.leader == user.username %}, you{% endif %})
+        </li>
+
+        {% for member in team.members %}
+            <li class="person member item">
+                {% if team.leader == user.username %}
+                    <div class="row">
+                        <div class="col-lg-8 col-md-6 col-sm-6 col-xs-12 user">
+                            <i class="fa fa-user"></i>
+                            {{ member }}
+                        </div>
+                        <div class="col-lg-4 col-md-3 col-sm-3 col-xs-4 action remove">
+                            <form role="form" method="post" action="{{ path('action_user_account_team_removemember') }}">
+                                <input type="hidden" name="user" value="{{ member }}">
+                                <button type="submit" class="btn btn-xs btn-danger">
+                                    Remove
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <i class="fa fa-user"></i>
+                    {{ member }}
+                    {% if member == user.username %}
+                        (you)
+                    {% endif %}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</div>

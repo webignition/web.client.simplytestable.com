@@ -1,0 +1,23 @@
+{% set task_type_key = task.type|split(' ')|join('-')|lower %}
+
+{% if task.output.hasErrors %}
+    {% if task.output.hasErrors and not task.output.result.hasErrors %}
+        <div class="row no-longer-available">
+            <div class="col-xs-12">
+                <p class="lead">
+                    Detailed results from this test are no longer available.
+                </p>
+            </div>
+        </div>
+    {% else %}
+        {% include 'Partials/Test/Results/Task/Succeeded/ErrorList/error-list.html.twig' %}
+    {% endif %}
+{% endif %}
+
+{% if task.output.hasWarnings and task.output.result.hasWarnings %}
+    {% include 'Partials/Test/Results/Task/Succeeded/WarningList/warning-list.html.twig' %}
+{% endif %}
+
+{% if distinct_fixes is defined and distinct_fixes | length > 0 %}
+    {% include 'Partials/Test/Results/Task/Succeeded/FixesList/fixes-list.html.twig' %}
+{% endif %}

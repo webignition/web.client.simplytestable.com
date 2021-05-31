@@ -1,0 +1,14 @@
+{% set heading = 'No Markup Found!' %}
+
+{% set content %}
+<p id="reason">
+    The page at <a href="{{ task.url }}">{% include 'Partials/url/utf8-raw-possibly-truncated-64.html.twig' with {'url': task_url} %}</a> is being served as HTML
+    but did not return any HTML.
+</p>
+
+<p>
+    This tends to happen if the page being tested generates a plain text error.
+</p>
+{% endset %}
+
+{% include 'Abstract/Partials/Test/Results/Task/Failed/failure-message.html.twig' %}

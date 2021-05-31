@@ -1,0 +1,9 @@
+parameters:
+  css-validation-ignore-common-cdns:
+    - ajax.aspnetcdn.com
+    - ajax.googleapis.com
+    - cdnjs.cloudflare.com
+    - netdna.bootstrapcdn.com
+    - static.nrelate.com
+    - maxcdn.bootstrapcdn.com
+    - use.fontawesome.com

@@ -1,0 +1,149 @@
+@import "../../node_modules/awesomplete/awesomplete.css";
+@import "modules/variables";
+@import "components/buttons";
+@import "components/modal";
+@import "components/action-badge";
+@import "components/modal-launcher";
+@import "partials/navbar";
+@import "partials/ctas";
+@import "partials/defaults";
+@import "partials/pagination";
+@import "partials/plan-selection";
+@import "partials/summary-stats";
+@import "partials/task-list";
+@import "partials/listed-test";
+@import "partials/test-list";
+@import "partials/test-options";
+
+body {
+  &.single-page-dialog {
+    @import "page/single-page-dialog";
+
+    background-color: #eee;
+    margin-top: 0;
+
+    @media (min-width: 768px) {
+      background-color: #4f4f4f;
+      margin-top: 40px;
+    }
+  }
+
+  &.not-logged-in {
+    .navbar {
+      @import "partials/navbar-not-logged-in";
+    }
+  }
+
+  &.logged-in {
+    .navbar {
+      @import "partials/navbar-logged-in";
+    }
+  }
+
+  &.full-width {
+    @import "page/full-width";
+
+    margin-top: 51px;
+  }
+
+  &.sign-in {
+    @import "page/sign-in";
+  }
+
+  &.sign-up {
+    @import "page/sign-up";
+  }
+
+  &.sign-up-invite {
+    @import "page/sign-up-invite";
+  }
+
+  &.sign-up-confirm {
+    @import "page/sign-up-confirm";
+  }
+
+  &.dashboard {
+    @import "page/dashboard";
+  }
+
+  &.user-account {
+    @import "page/user-account";
+
+    position: relative;
+    margin-top: 40px;
+    background-color: #eee;
+
+    @media (min-width: 769px) {
+      margin-top: 80px;
+      background-color: #fff;
+    }
+  }
+
+  &.user-account-card {
+    @import "page/user-account-card";
+
+    padding-bottom: 40px;
+  }
+
+  &.user-account-team {
+    @import "page/user-account-team";
+
+    &.no-team-no-invite {
+      @import "page/user-account-team-no-team-no-invite";
+    }
+
+    &.team-leader {
+      @import "page/user-account-team-team-leader";
+    }
+
+    &.has-invite {
+      @import "page/user-account-team-has-invite";
+    }
+  }
+
+  &.user-account-plan {
+    @import "page/user-account-plan";
+  }
+
+  &.user-account-index {
+    @import "page/user-account-index";
+  }
+
+  &.test-history {
+    @import "page/test-history";
+  }
+
+  &.test-progress,
+  &.test-results {
+    @import "partials/test-progress-results-side-actions";
+    @import "partials/test-progress-results-test-options";
+  }
+
+  &.test-progress {
+    @import "page/test-progress";
+  }
+
+  &.test-results {
+    @import "page/test-results";
+  }
+
+  &.test-results-by-task-type {
+    @import "page/test-results-by-task-type";
+  }
+
+  &.task-results {
+    @import "page/task-results";
+  }
+
+  &.test-results-preparing {
+    @import "page/test-results-preparing";
+  }
+
+  &.test-results-rejected {
+    @import "page/test-results-rejected";
+  }
+}
+
+.prettyprint {
+  @import "~color-themes-for-google-code-prettify/src/themes/github";
+}

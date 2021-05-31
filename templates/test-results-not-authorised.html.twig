@@ -1,0 +1,23 @@
+{% extends 'Abstract/single-page-dialog.html.twig' %}
+
+{% set dialog_width = 8 %}
+
+{% block title %}Not authorised - {{ parent() }}{% endblock %}
+
+{% block content %}
+
+    <h1>I don't think that belongs to you</h1>
+
+    <p class="lead">
+        Hello!
+    </p>
+
+    <p class="lead">
+        You're not authorised to view test #{{ test_id }} for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %}.
+    </p>
+
+    <p class="lead">
+        You'll need to sign in as the user who started this test to view the progress
+        or results.
+    </p>
+{% endblock %}

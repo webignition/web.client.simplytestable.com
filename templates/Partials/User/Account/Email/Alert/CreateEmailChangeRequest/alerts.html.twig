@@ -1,0 +1,57 @@
+{% set alert_type = 'error' %}
+{% set alert_field_selector = 'email' %}
+{% set alert_view = null %}
+{% set alert_view_parameters = {} %}
+{% set alert_dismissable = true %}
+
+{% set has_request_notice = user_account_details_update_email_request_notice is defined and user_account_details_update_email_request_notice is not empty %}
+
+{% if has_request_notice and user_account_details_update_email_request_notice == 'blank-email' %}
+    {% set alert_type = 'info' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-empty.html.twig' %}
+{% endif %}
+
+{% if has_request_notice and user_account_details_update_email_request_notice == 'same-email' %}
+    {% set alert_type = 'info' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-same.html.twig' %}
+{% endif %}
+
+{% if has_request_notice and user_account_details_update_email_request_notice == 'email-taken' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/email-taken.html.twig' %}
+    {% set alert_view_parameters = {email: user_account_details_update_email} %}
+{% endif %}
+
+{% if has_request_notice and user_account_details_update_email_request_notice == 'invalid-email' %}
+    {% set alert_view = 'Partials/Alert/Content/email-invalid.html.twig' %}
+    {% set alert_view_parameters = {email: user_account_details_update_email} %}
+{% endif %}
+
+{% if has_request_notice and user_account_details_update_email_request_notice == 'unknown' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/Content/failure-unknown.html.twig' %}
+{% endif %}
+
+{% if has_request_notice and user_account_details_update_email_request_notice == 'postmark-failure' %}
+    {% set alert_view = 'Partials/User/Account/Email/Alert/CreateEmailChangeRequest/Content/postmark-failure.html.twig' %}
+    {% set alert_view_parameters = {email: user_account_details_update_email} %}
+{% endif %}
+
+{% if has_request_notice and user_account_details_update_email_request_notice == 'postmark-not-allowed-to-send' %}
+    {% set alert_type  = 'info' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-not-allowed-to-send.html.twig' %}
+    {% set alert_view_parameters = {contact_email: external_links.contact_email} %}
+{% endif %}
+
+{% if has_request_notice and user_account_details_update_email_request_notice == 'postmark-inactive-recipient' %}
+    {% set alert_view = 'Partials/Alert/Content/postmark-inactive-recipient.html.twig' %}
+    {% set alert_view_parameters = {email: user_account_details_update_email} %}
+{% endif %}
+
+{% if alert_view is not null %}
+    {% include 'Partials/alert.html.twig' with {
+        type: alert_type,
+        field_selector: alert_field_selector,
+        view: alert_view,
+        view_parameters: alert_view_parameters,
+        dismissable: alert_dismissable
+    } only %}
+{% endif %}

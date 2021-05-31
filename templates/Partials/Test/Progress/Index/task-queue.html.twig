@@ -1,0 +1,23 @@
+{% set name = name is defined ? name : 'Name' %}
+{% set value = value is defined ? value : 0 %}
+{% set label_type = label_type is defined ? label_type : 'default' %}
+{% set id = name|lower|replace({' ': '_'}) %}
+{% set width = test.remoteTaskCount == 0 ? 0 : (value / test.remoteTaskCount * 100)|round(0, 'ceil')  %}
+
+<div class="row queue" id="task-queue-{{ id }}" data-queue-id="{{ id }}">
+    <div class="col-lg-2 col-md-2 col-sm-4 col-xs-3 name">
+        <span class="label label-{{ label_type }}">{{ name }}</span>
+    </div>
+    <div class="col-lg-10 col-md-10 col-sm-8 col-xs-9 bar">
+        <span class="wrapper">
+            <span class="label label-value label-{{ label_type }}"
+                  data-width="{{ width }}"
+                  style="width: {{ width }}%"
+            >
+                <span class="value">
+                    {{ value|number_format }}
+                </span>
+            </span>
+        </span>
+    </div>
+</div>

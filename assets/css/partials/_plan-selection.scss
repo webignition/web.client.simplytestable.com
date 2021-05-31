@@ -1,0 +1,37 @@
+.plan-selection {
+  .plan {
+    position: relative;
+    margin: 0 -15px;
+  }
+
+  input[type=radio] {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+  }
+
+  label {
+    display: block;
+    padding: 15px 15px 15px 40px;
+    margin: 0;
+    opacity: 0.8;
+  }
+
+  .name {
+    display: block;
+  }
+
+  .features {
+    display: block;
+    opacity: 0.8;
+  }
+
+  del {
+    opacity: 0.8;
+  }
+
+  input[type=radio]:checked ~ label {
+    background: #ddd;
+    opacity: 1;
+  }
+}

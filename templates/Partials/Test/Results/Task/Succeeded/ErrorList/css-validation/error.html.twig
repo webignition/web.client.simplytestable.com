@@ -1,0 +1,15 @@
+<div class="meta">
+    {% if message.lineNumber > -1 %}
+        <span class="text">Line</span>
+        <span class="digit">{{ message.lineNumber }}</span>
+    {% endif %}
+</div>
+<div class="content">
+    {% if not message.context == ''%}
+        <code>{{ message.context|raw }}</code><br>
+    {% endif %}
+
+    <span class="message">
+        {{ message|raw }}
+    </span>
+</div>

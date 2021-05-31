@@ -1,0 +1,46 @@
+{% set invoice = stripe_event_data['invoice'] %}
+
+<p class="invoice-date">
+    {{ stripe_event_data['invoice'].date|date("j F Y") }} - 
+
+    {% if stripe_event_data['invoice'].isPaid %}
+    paid <i class="fa fa-check"></i>
+    {% else %}
+    unpaid  
+    {% endif %}
+</p>
+
+<table class="table invoice">
+    <tbody>
+        {% for line in invoice.getLines.getItems %}
+        <tr>
+            <td>
+                {% if line.type == 'subscription' %}
+                    Subscription to {{ line.plan.name|lower }} plan {% if line.amount == 0 %}(free trial){% endif %}
+                    <br><span>{{ line.period.start|date("j F Y") }} to {{ line.period.end|date("j F Y") }}</span>
+                {% endif %}
+            </td>
+            <td class="value">&pound;{{ (line.amount / 100)|number_format(2) }}</td>
+        </tr>            
+        {% endfor %}
+
+        {% if invoice.hasDiscount and invoice.total > 0 %}
+            <tr>
+                <td>
+                    {{ invoice.discount.coupon.id }}
+                    {{ invoice.discount.coupon.percentoff }}% off
+                </td>
+                <td class="value">
+                    {% set discount = invoice.subtotal * (invoice.discount.coupon.percentoff / 100) %}
+                    -&pound;{{ (discount / 100)|number_format(2) }}
+                </td>
+            </tr>
+        {% endif %}
+
+
+        <tr>
+            <td>Total</td>
+            <td class="value">&pound;{{ (stripe_event_data['invoice'].total/100)|number_format(2) }}</td>
+        </tr>
+    </tbody>
+</table>

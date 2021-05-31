@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% set is_failed = task.state in ['failed',  'failed-retry-available', 'failed-no-retry-available', 'failed-retry-limit-reached'] %}
+{% set task_type_key = task.type|lower|replace({' ': '-'}) %}
+{% set filter_selectors = {
+    'html-validation':'p',
+    'css-validation':'.message',
+    'link-integrity':'.raw-error-message'
+} %}
+{% set fix_count = distinct_fixes is defined ? distinct_fixes|length : 0 %}
+
+{% block title %}Results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website_url} %} (Test#{{test.testId}} Task#{{task.taskId}}) - {{ parent() }}{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+{% endblock %}
+
+{% block body_class %} {{ parent() }} {{ task_type_key }} full-width task-results {{ is_failed ? 'task-results-failed' : '' }} {% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="alert-container">
+        {% include 'Partials/Generic/Notification/Conditional/read-only-test.html.twig' %}
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>
+                        {{ task.type }} report for
+                        <a href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId }) }}">
+                            {{ website_url.utf8.schemeless.raw }}
+                            <span id="test-id">(#{{ test.testId }})</span>
+                        </a>
+                        task
+                        <span id="task-id">#{{task.taskId}}</span>
+                    </h1>
+
+                    <p>
+                        Page tested: <a href="{{ task.url }}">{{ task.formattedUrl }}</a><span class="fade"></span>
+                    </p>
+
+                    {% if task.state == 'completed' %}
+                        <div class="summary-stats hidden-xs hidden-sm">
+                            {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+                            with {
+                                count: task.output.errorCount,
+                                name:'error',
+                                anchor: '#errors',
+                                issue_type: 'error'
+                            } %}
+
+                            {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+                            with {
+                                count: task.output.warningCount,
+                                negative:'primary',
+                                name:'warning',
+                                anchor: '#warnings',
+                                issue_type: 'warning'
+                            } %}
+
+                            {% if fix_count > 0 %}
+                                {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+                                with {
+                                    count: fix_count,
+                                    negative:'fixes',
+                                    name:'fix',
+                                    plural_suffix:'es',
+                                    anchor:'#fixes',
+                                    issue_type: 'fix'
+                                } %}
+                            {%  endif %}
+                        </div>
+
+                        <div class="summary-stats hidden-lg hidden-md">
+                        {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+                            with {
+                                count: task.output.errorCount,
+                                name:'error',
+                                anchor: '#errors',
+                                stacked: true,
+                                issue_type: 'error'
+                            } %}
+
+                            {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+                            with {
+                                count: task.output.warningCount,
+                                negative:'primary',
+                                name:'warning',
+                                anchor: '#warnings',
+                                stacked: true,
+                                issue_type: 'warning'
+                            } %}
+
+                            {% if fix_count > 0 %}
+                                {% include 'Abstract/Partials/Test/Results/issue-count-zero-positive.html.twig'
+                                with {
+                                    count: fix_count,
+                                    negative:'fixes',
+                                    name:'fix',
+                                    plural_suffix:'es',
+                                    anchor:'#fixes',
+                                    stacked: true,
+                                    issue_type: 'fix'
+                                } %}
+                            {%  endif %}
+                        </div>
+                    {% else %}
+                        <div class="summary-stats">
+                            <span class="label label-danger">
+                                Failed to perform test
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container issue-content" {% if filter_selectors[task_type_key] is defined %}" {% endif %}>
+        {% if is_failed %}
+            {% include 'Partials/Test/Results/Task/Failed/failed.html.twig' %}
+        {% else %}
+            {% include 'Partials/Test/Results/Task/Succeeded/succeeded.html.twig' %}
+        {% endif %}
+    </div>
+
+{% endblock %}

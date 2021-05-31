@@ -1,0 +1,209 @@
+{% extends 'base.html.twig' %}
+
+{% set is_readonly = (is_owner == false) %}
+{% set is_expired = test.state == 'expired' %}
+
+{% block title %}Results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
+
+{% block body_class %} {{ parent() }} full-width test-results {% endblock %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="alert-container">
+        {% include 'Partials/Generic/Notification/Conditional/url-limit.html.twig' %}
+        {% include 'Partials/Generic/Notification/Conditional/read-only-test.html.twig' %}
+    </div>
+
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <span id="device-size-lg"></span>
+                    <span id="device-size-md"></span>
+                    <span id="device-size-sm"></span>
+                    <span id="device-size-xs"></span>
+
+                    <h1>
+                        Report for
+                        <span id="test-url" title="{{website.raw}}">{{ website.utf8.schemeless.raw }}</span>
+                        <span id="test-id">(#{{ test.testId }})</span>
+                    </h1>
+
+                    <form class="retest-form" role="form" method="post" action="{{ path('action_test_start') }}">
+                        <div class="row details">
+                            <div class="col-lg-8 col-md-7 col-sm-12 col-xs-12">
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-5 col-sm-6 col-xs-12">
+                                        {% include 'Partials/Test/Results/Index/summary-stats.html.twig' with {'stacked': true} %}
+                                    </div>
+                                    <div class="col-lg-8 col-md-7 col-sm-6 col-xs-12">
+                                        {% include 'Partials/Test/Results/Index/task-type-summary.html.twig' %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix visible-xs"></div>
+                            <div class="col-lg-4 col-md-5 col-sm-12 side-actions">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-4 col-xs-12 col-md-push-0 col-sm-push-8 col-xs-push-0 buttons">
+                                        <div class="row">
+                                            {% if is_owner or is_public_user_test %}
+                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-push-0 col-md-push-0 col-sm-push-0 col-xs-push-6 retest-col">
+                                                    <button type="submit" class="btn btn-default btn-significant side-action" data-offset="0">
+                                                        <i class="fa fa-fw fa-refresh"></i>
+                                                        Re-test
+                                                        <span>Using selected settings</span>
+                                                    </button>
+                                                </div>
+                                            {% endif %}
+
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-6 col-lg-pull-0 col-md-pull-0 col-sm-pull-0 col-xs-pull-6">
+                                                {% if is_owner and not is_public_user_test %}
+                                                    {% set route_parameters = { 'website': test.website, 'test_id': test.testId } %}
+
+                                                    {% set data_locked = {
+                                                        icon: 'unlock',
+                                                        action: 'Unlock',
+                                                        description: 'Make this test public',
+                                                        url: path('action_test_unlock', route_parameters)
+                                                    } %}
+
+                                                    {% set data_unlocked = {
+                                                        icon: 'lock',
+                                                        action: 'Lock',
+                                                        description: 'Make this test private',
+                                                        url: path('action_test_lock', route_parameters)
+                                                    } %}
+
+                                                    {% set locked_state = is_public ? 'unlocked' : 'locked' %}
+                                                    <button class="btn btn-default btn-significant side-action invisible btn-lock-unlock"
+                                                            data-state="{{ locked_state }}"
+                                                            data-locked="{{ data_locked|json_encode }}"
+                                                            data-unlocked="{{ data_unlocked|json_encode }}"
+                                                    >
+                                                        <i class="fa fa-fw"></i>
+                                                        <b class="action"></b>
+                                                        <span class="description"></span>
+                                                    </button>
+                                                {% endif %}
+
+                                                {% if is_owner or is_public_user_test %}
+                                                    <div class="history {% if is_owner and is_public_user_test == false %}history-with-owner{% endif %}">
+                                                        <a href="{{ path('view_test_history_page1', {'filter': website.raw}) }}">
+                                                            {{ domain_test_count }} {% if is_public_user_test %}demo{% endif %} test{% if domain_test_count != 1%}s{% endif %} for this URL
+                                                            <i class="fa fa-caret-right"></i>
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-12 col-md-12 col-sm-8 col-xs-12 col-md-pull-0 col-sm-pull-4 col-xs-pull-0 test-options">
+                                        {% if test_options['http-authentication'] is defined %}
+                                            <div class="test-option http-authentication-test-option">
+                                                {% if not is_logged_in %}
+                                                    {% set data_target_id = 'http-authentication-account-required-modal' %}
+                                                    {% include 'Modal/Notification/AccountRequired/http-authentication.html.twig' %}
+                                                {% endif %}
+
+                                                {% include 'Partials/Test/Options/HttpAuthentication/http-authentication.html.twig' with {'read_only': not is_owner and not is_public_user_test} %}
+                                            </div>
+                                        {% endif %}
+
+                                        {% if test_options['cookies'] is defined %}
+                                            <div class="test-option cookies-test-option">
+                                                {% if not is_logged_in %}
+                                                    {% set data_target_id = 'cookies-account-required-modal' %}
+                                                    {% include 'Modal/Notification/AccountRequired/cookies.html.twig' %}
+                                                {% endif %}
+
+                                                {% include 'Partials/Test/Options/Cookies/cookies.html.twig' with {'read_only': not is_owner and not is_public_user_test } %}
+                                            </div>
+                                        {% endif %}
+
+                                        <span id="test-options-control" class="collapse-control collapsed link" data-toggle="collapse" data-target="#test-options">
+                                            {% if is_owner or is_public_user_test %}
+                                                Choose what to test (with advanced options)
+                                            {% else %}
+                                                See what was tested
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="website" value="{{ test.website }}" />
+
+                        <div id="test-options" class="collapse">
+                            {% include 'Partials/Test/Options/results-test-options.html.twig' %}
+                        </div>
+
+                        {% if 'link-integrity' not in available_task_types|keys %}
+                            {% include 'Modal/Notification/AccountRequired/link-integrity.html.twig' %}
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            {% if test.remoteTaskCount > 0 %}
+                <div class="col-lg-12">
+                    {% if is_expired %}
+                        <h2>Detailed Results No Longer Available</h2>
+
+                        <p class="lead">
+                            {% if is_public_user_test %}
+                                Demo test results are available for <strong>24 hours</strong>.
+                            {% else %}
+                                Private tests results are available for <strong>one year</strong>.
+                            {% endif %}
+
+                            These results expired <strong>about {{ expiry_duration_string }}</strong> ago.
+                        </p>
+                    {% else %}
+                        <h2>
+                            {% if (filter == 'all' and type is empty) %}
+                                All results
+                            {% elseif (filter == 'all') %}
+                                <span>{{ type_label }}</span> results
+                            {% else %}
+                                <span>{{ type_label }}</span>
+                                {% if filter == 'skipped' or filter == 'cancelled' %}
+                                    tests that were
+                                {% else %}
+                                    results
+                                {% endif %}
+                                {{ filter_label|lower }}
+                            {% endif %}
+                        </h2>
+
+                        {% if (type is not empty) %}
+                            <a class="clear-type badge" href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">
+                                clear &ldquo;{{ type|replace({'html': 'HTML', 'css': 'CSS', 'js': 'JS'}) }}&rdquo; filter
+                                <i class="fa fa-times"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if tasks is empty %}
+                            {% include 'Partials/Test/Results/Index/TaskList/none.html.twig' %}
+                        {% else %}
+                            {% include 'Partials/Test/Results/Index/TaskList/tabs.html.twig' with {
+                                filter: filter,
+                                test: test,
+                                type: type,
+                                filtered_task_counts: filtered_task_counts
+                            } only %}
+                            {% include 'Partials/Test/TaskList/task-list.html.twig' %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

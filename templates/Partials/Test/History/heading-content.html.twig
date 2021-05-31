@@ -1,0 +1,9 @@
+{% if test_list.maxresults == 0 %}
+    {% if filter is empty %}
+        There are no finished tests to list.
+    {% else %}
+        There are no finished tests to list. Try changing the URL filter.
+    {% endif %}
+{% else %}
+    {{ test_list.maxresults|number_format }} finished test{% if test_list.maxresults != 1%}s{% endif %}<span class="hidden-xs">{% if test_list.pagecount > 1 %}, displaying {{ test_list|length }} on page {{ test_list.pagenumber|number_format }} of {{ test_list.pagecount|number_format }}{% endif %}</span>
+{% endif %}

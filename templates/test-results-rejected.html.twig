@@ -1,0 +1,48 @@
+{% extends 'Abstract/single-page-dialog.html.twig' %}
+
+{% set dialog_width = 8 %}
+
+{% set constraint = test.rejection.constraint is defined ? test.rejection.constraint : null %}
+{% set constraint_name = constraint ? constraint.name : null %}
+{% set reason = test.rejection.reason %}
+
+{% set title %}
+    {% if constraint_name is not null %}
+        {% if is_logged_in %}
+            Plan limit reached
+        {% else %}
+            Demo limit reached
+        {% endif %}
+    {% elseif test.rejection.reason|slice(0, 4) == 'curl' %}
+        Sorry, that can't be accessed at the moment
+    {% else %}
+        Oops, I can't do that
+    {% endif %}
+{% endset %}
+
+{% block title %}{{ title }} - {{ parent() }} {% endblock %}
+{% block body_class %} {{ parent() }} test-results-rejected {% endblock %}
+
+{% block content %}
+    <h1>{{ title }}</h1>
+
+    {% if constraint_name == 'credits_per_month' %}
+        {% include 'Partials/Test/Results/Rejected/CreditLimit/credit-limit.html.twig' %}
+    {% endif %}
+
+    {% if constraint_name == 'full_site_jobs_per_site' %}
+        {% include 'Partials/Test/Results/Rejected/full-site.html.twig' %}
+    {% endif %}
+
+    {% if constraint_name == 'single_url_jobs_per_url' %}
+        {% include 'Partials/Test/Results/Rejected/single-page.html.twig' %}
+    {% endif %}
+
+    {% if constraint_name is empty and reason == 'unroutable' %}
+        {% include 'Partials/Test/Results/Rejected/unroutable.html.twig' %}
+    {% endif %}
+
+    {% if constraint_name is empty and reason|slice(0, 4) == 'curl' %}
+        {% include 'Partials/Test/Results/Rejected/curl-error.html.twig' %}
+    {% endif %}
+{% endblock %}
