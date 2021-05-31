@@ -2,6 +2,7 @@
 
 namespace App\Controller\View\Test\Results;
 
+use App\Controller\AbstractBaseViewController;
 use App\Entity\Test;
 use App\Exception\CoreApplicationRequestException;
 use App\Exception\InvalidContentTypeException;
@@ -16,17 +17,20 @@ use App\Services\SystemUserService;
 use App\Services\TaskCollectionFilterService;
 use App\Services\TaskService;
 use App\Services\TaskTypeService;
+use App\Services\TestFactory;
 use App\Services\TestOptions\RequestAdapterFactory as TestOptionsRequestAdapterFactory;
 use App\Services\TestRetriever;
 use App\Services\UrlViewValuesService;
 use App\Services\UserManager;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Twig_Environment;
+use webignition\ReadableDuration\Factory as ReadableDurationFactory;
 
-class ResultsController extends AbstractResultsController
+class ResultsController extends AbstractBaseViewController
 {
     const FILTER_WITH_ERRORS = 'with-errors';
     const FILTER_WITH_WARNINGS = 'with-warnings';
@@ -35,8 +39,17 @@ class ResultsController extends AbstractResultsController
     const FILTER_SKIPPED = 'skipped';
     const FILTER_CANCELLED = 'cancelled';
 
+    private $remoteTestService;
     private $taskService;
+    private $taskTypeService;
     private $taskCollectionFilterService;
+    private $testOptionsRequestAdapterFactory;
+    private $cssValidationTestConfiguration;
+    private $urlViewValues;
+    private $userManager;
+    private $testFactory;
+    private $testRetriever;
+    private $readableDurationFactory;
 
     /**
      * @var string[]
@@ -63,24 +76,23 @@ class ResultsController extends AbstractResultsController
         TaskCollectionFilterService $taskCollectionFilterService,
         TestOptionsRequestAdapterFactory $testOptionsRequestAdapterFactory,
         CssValidationTestConfiguration $cssValidationTestConfiguration,
-        TestRetriever $testRetriever
+        TestFactory $testFactory,
+        TestRetriever $testRetriever,
+        ReadableDurationFactory $readableDurationFactory
     ) {
-        parent::__construct(
-            $router,
-            $twig,
-            $defaultViewParameters,
-            $cacheableResponseFactory,
-            $remoteTestService,
-            $taskTypeService,
-            $testOptionsRequestAdapterFactory,
-            $cssValidationTestConfiguration,
-            $urlViewValues,
-            $userManager,
-            $testRetriever
-        );
+        parent::__construct($router, $twig, $defaultViewParameters, $cacheableResponseFactory);
 
+        $this->remoteTestService = $remoteTestService;
         $this->taskService = $taskService;
+        $this->taskTypeService = $taskTypeService;
         $this->taskCollectionFilterService = $taskCollectionFilterService;
+        $this->testOptionsRequestAdapterFactory = $testOptionsRequestAdapterFactory;
+        $this->cssValidationTestConfiguration = $cssValidationTestConfiguration;
+        $this->urlViewValues = $urlViewValues;
+        $this->userManager = $userManager;
+        $this->testFactory = $testFactory;
+        $this->testRetriever = $testRetriever;
+        $this->readableDurationFactory = $readableDurationFactory;
     }
 
     /**
@@ -96,7 +108,8 @@ class ResultsController extends AbstractResultsController
      */
     public function indexAction(Request $request, string $website, int $test_id): Response
     {
-        $testModel = $this->retrieveTest($test_id);
+        $user = $this->userManager->getUser();
+        $testModel = $this->testRetriever->retrieve($test_id);
 
         if ($website !== $testModel->getWebsite()) {
             return new RedirectResponse($this->generateUrl(
@@ -118,26 +131,24 @@ class ResultsController extends AbstractResultsController
             ));
         }
 
-        if (TestInterface::STATE_EXPIRED === $testModel->getState()) {
-            return new RedirectResponse($this->generateUrl(
-                'view_test_expired',
-                [
-                    'website' => $testModel->getWebsite(),
-                    'test_id' => $test_id
-                ]
-            ));
-        }
+        $isExpired = TestInterface::STATE_EXPIRED === $testModel->getState();
 
-        $filter = trim($request->query->get('filter'));
-        $taskType = trim($request->query->get('type'));
-        $defaultFilter = $this->getDefaultRequestFilter(
-            $testModel->getErrorCount(),
-            $testModel->getWarningCount()
-        );
+        if ($isExpired) {
+            $filter = self::FILTER_ALL;
+            $taskType = '';
+            $defaultFilter = self::FILTER_ALL;
+        } else {
+            $filter = trim($request->query->get('filter'));
+            $taskType = trim($request->query->get('type'));
+            $defaultFilter = $this->getDefaultRequestFilter(
+                $testModel->getErrorCount(),
+                $testModel->getWarningCount()
+            );
+        }
 
         $filteredTaskCounts = $this->createFilteredTaskCounts($testModel->getEntity(), $taskType);
 
-        if (!$this->isFilterValid($filter, $filteredTaskCounts)) {
+        if (!$isExpired && !$this->isFilterValid($filter, $filteredTaskCounts)) {
             return new RedirectResponse($this->generateUrl(
                 'view_test_results',
                 [
@@ -164,26 +175,36 @@ class ResultsController extends AbstractResultsController
             return $response;
         }
 
-        $remoteTaskIds = $this->getRemoteTaskIds(
-            $testModel->getEntity(),
-            $filter,
-            $taskType
-        );
+        $expiryDurationString = '';
+        $tasks = [];
 
-        if (empty($remoteTaskIds)) {
-            $remoteTaskIds = $testModel->getTaskIds();
+        if (TestInterface::STATE_EXPIRED === $testModel->getState()) {
+            $expiryDurationString = $this->createExpiryDurationString($testModel);
+        } else {
+            $remoteTaskIds = $this->getRemoteTaskIds(
+                $testModel->getEntity(),
+                $filter,
+                $taskType
+            );
+
+            if (empty($remoteTaskIds)) {
+                $remoteTaskIds = $testModel->getTaskIds();
+            }
+
+            $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
         }
 
-        $tasks = $this->taskService->getCollection($testModel->getEntity(), $testModel->getState(), $remoteTaskIds);
+        $testOptionsAdapter = $this->testOptionsRequestAdapterFactory->create();
+        $testOptionsAdapter->setRequestData(new ParameterBag($testModel->getTaskOptions()));
 
-        $isOwner = $this->isCurrentUserTestOwner($testModel);
+        $isOwner = in_array($user->getUsername(), $testModel->getOwners());
 
         $decoratedTest = new DecoratedTest($testModel);
 
         return $this->renderWithDefaultViewParameters(
-            'test-results-available.html.twig',
+            'test-results.html.twig',
             [
-                'website' => $this->createWebsiteViewValues($website),
+                'website' => $this->urlViewValues->create($website),
                 'test' => $decoratedTest,
                 'is_public' => $testModel->isPublic(),
                 'is_public_user_test' => $isPublicUserTest,
@@ -197,17 +218,19 @@ class ResultsController extends AbstractResultsController
                     $testModel->isPublic(),
                     $isOwner
                 ),
-                'task_types' => $this->getTaskTypes(),
-                'test_options' => $this->createTestOptions($testModel),
-                'css_validation_ignore_common_cdns' => $this->getCssValidationExcludedDomains(),
+                'task_types' => $this->taskTypeService->get(),
+                'test_options' => $testOptionsAdapter->getTestOptions()->__toKeyArray(),
+                'css_validation_ignore_common_cdns' =>
+                    $this->cssValidationTestConfiguration->getExcludedDomains(),
                 'tasks' => $tasks,
                 'filtered_task_counts' => $filteredTaskCounts,
-                'domain_test_count' => $this->getDomainTestCount($website),
+                'domain_test_count' => $this->remoteTestService->getFinishedCount($website),
                 'default_css_validation_options' => [
                     'ignore-warnings' => 1,
                     'vendor-extensions' => 'warn',
                     'ignore-common-cdns' => 1
                 ],
+                'expiry_duration_string' => $expiryDurationString,
             ],
             $response
         );
@@ -303,5 +326,39 @@ class ResultsController extends AbstractResultsController
         }
 
         return $this->taskCollectionFilterService->getRemoteIds($test, $filter, $taskType);
+    }
+
+    private function getAvailableTaskTypes(array $taskTypes, bool $isPublic, bool $isOwner): array
+    {
+        if ($isPublic && !$isOwner) {
+            $availableTaskTypes = $this->taskTypeService->get();
+
+            foreach ($availableTaskTypes as $taskTypeKey => $taskTypeDetails) {
+                if (!in_array($taskTypeDetails['name'], $taskTypes)) {
+                    unset($availableTaskTypes[$taskTypeKey]);
+                }
+            }
+
+            return $availableTaskTypes;
+        }
+
+        return $this->taskTypeService->getAvailable();
+    }
+
+    private function createExpiryDurationString(TestInterface $test)
+    {
+        $expiryDuration = $this->readableDurationFactory->createFromDateTime($test->getEndDateTime());
+        $readableExpiryDurationData = $this->readableDurationFactory->getInMostAppropriateUnits($expiryDuration, 1);
+        $readableExpiryDurationValue = $readableExpiryDurationData[0];
+
+        $value = $readableExpiryDurationValue['value'];
+        $unit = $readableExpiryDurationValue['unit'];
+
+        $expiryDurationString = (string) $value . ' ' . $unit;
+        if ($value !== 1) {
+            $expiryDurationString .= 's';
+        }
+
+        return $expiryDurationString;
     }
 }

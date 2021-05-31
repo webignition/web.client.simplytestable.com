@@ -68,16 +68,11 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
 
     protected function setTestRetrieverOnController(
         $controller,
-        TestRetriever $testRetriever,
-        ?string $controllerClass = null
+        TestRetriever $testRetriever
     ) {
-        if (null === $controllerClass) {
-            $controllerClass = get_class($controller);
-        }
-
         ObjectReflector::setProperty(
             $controller,
-            $controllerClass,
+            get_class($controller),
             'testRetriever',
             $testRetriever
         );
@@ -97,16 +92,11 @@ abstract class AbstractViewControllerTest extends AbstractControllerTest
 
     protected function setRemoteTestServiceOnController(
         AbstractBaseViewController $controller,
-        RemoteTestService $remoteTestService,
-        ?string $controllerClass = null
+        RemoteTestService $remoteTestService
     ) {
-        if (null === $controllerClass) {
-            $controllerClass = get_class($controller);
-        }
-
         ObjectReflector::setProperty(
             $controller,
-            $controllerClass,
+            get_class($controller),
             'remoteTestService',
             $remoteTestService
         );

@@ -3,7 +3,6 @@
 
 namespace App\Tests\Functional\Controller\View\Test\Results;
 
-use App\Controller\View\Test\Results\AbstractResultsController;
 use App\Controller\View\Test\Results\ResultsController;
 use App\Entity\Task\Task;
 use App\Model\Test as TestModel;
@@ -19,6 +18,7 @@ use App\Tests\Factory\OutputFactory;
 use App\Tests\Factory\TaskFactory;
 use App\Tests\Factory\TestModelFactory;
 use App\Tests\Services\SymfonyRequestFactory;
+use App\Tests\Services\ObjectReflector;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\MockInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -30,7 +30,7 @@ use webignition\SimplyTestableUserModel\User;
 
 class ResultsControllerTest extends AbstractViewControllerTest
 {
-    const VIEW_NAME = 'test-results-available.html.twig';
+    const VIEW_NAME = 'test-results.html.twig';
     const ROUTE_NAME = 'view_test_results';
     const ROUTE_NAME_VERBOSE = 'view_test_results_verbose';
     const WEBSITE = 'http://example.com/';
@@ -349,12 +349,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $resultsController = self::$container->get(ResultsController::class);
 
         $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
-
-        $this->setTestRetrieverOnController(
-            $resultsController,
-            $testRetriever,
-            AbstractResultsController::class
-        );
+        $this->setTestRetrieverOnController($resultsController, $testRetriever);
 
         /* @var RedirectResponse $response */
         $response = $resultsController->indexAction(
@@ -431,14 +426,6 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 ]),
                 'expectedRedirectUrl' => '/http://example.com//1/results/?filter=with-warnings',
             ],
-            'expired' => [
-                'taskValuesCollection' => [],
-                'testModelProperties' => [
-                    'state' => TestInterface::STATE_EXPIRED,
-                ],
-                'request' => new Request(),
-                'expectedRedirectUrl' => '/http://example.com//1/expired/',
-            ],
         ];
     }
 
@@ -471,12 +458,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         $resultsController = self::$container->get(ResultsController::class);
 
         $testRetriever = $this->createTestRetriever(self::TEST_ID, $testModel);
-
-        $this->setTestRetrieverOnController(
-            $resultsController,
-            $testRetriever,
-            AbstractResultsController::class
-        );
+        $this->setTestRetrieverOnController($resultsController, $testRetriever);
 
         $remoteTestService = \Mockery::mock(RemoteTestService::class);
         $remoteTestService
@@ -484,11 +466,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ->with(self::WEBSITE)
             ->andReturn($domainTestCount);
 
-        $this->setRemoteTestServiceOnController(
-            $resultsController,
-            $remoteTestService,
-            AbstractResultsController::class
-        );
+        $this->setRemoteTestServiceOnController($resultsController, $remoteTestService);
         $this->setTwigOnController($twig, $resultsController);
 
         $response = $resultsController->indexAction(
@@ -549,6 +527,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => null,
+                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -599,6 +578,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
+                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -649,6 +629,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
+                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -698,6 +679,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
+                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -749,6 +731,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
+                                    'expiry_duration_string' => '',
                                 ],
                                 $parameters
                             );
@@ -800,6 +783,61 @@ class ResultsControllerTest extends AbstractViewControllerTest
                                         'cancelled' => 0,
                                     ],
                                     'domain_test_count' => 99,
+                                    'expiry_duration_string' => '',
+                                ],
+                                $parameters
+                            );
+
+                            return true;
+                        },
+                        'return' => new Response(),
+                    ],
+                ]),
+            ],
+            'public user, public test, expired' => [
+                'testModelProperties' => [
+                    'user' => $publicUser->getUsername(),
+                    'isPublic' => true,
+                    'owners' => [
+                        $publicUser->getUsername(),
+                    ],
+                    'state' => TestInterface::STATE_EXPIRED,
+                    'startDateTime' => new \DateTime('-11 day'),
+                    'endDateTime' => new \DateTime('-10 day'),
+                ],
+                'user' => $publicUser,
+                'taskType' => Task::TYPE_HTML_VALIDATION,
+                'filter' => ResultsController::FILTER_WITH_ERRORS,
+                'domainTestCount' => 0,
+                'twig' => MockFactory::createTwig([
+                    'render' => [
+                        'withArgs' => function ($viewName, $parameters) {
+                            $this->assertStandardViewData($viewName, $parameters);
+
+                            $this->assertParameterData(
+                                [
+                                    'is_public' => true,
+                                    'is_public_user_test' => true,
+                                    'is_owner' => true,
+                                    'type' => '',
+                                    'type_label' => 'All',
+                                    'filter' => ResultsController::FILTER_ALL,
+                                    'filter_label' => 'All',
+                                    'available_task_types' => [
+                                        'html-validation',
+                                        'css-validation',
+                                    ],
+                                    'taskIds' => [],
+                                    'filtered_task_counts' => [
+                                        'all' => 4,
+                                        'with_errors' => 3,
+                                        'with_warnings' => 0,
+                                        'without_errors' => 1,
+                                        'skipped' => 0,
+                                        'cancelled' => 0,
+                                    ],
+                                    'domain_test_count' => null,
+                                    'expiry_duration_string' => '10 days',
                                 ],
                                 $parameters
                             );
@@ -841,17 +879,8 @@ class ResultsControllerTest extends AbstractViewControllerTest
             ->with(self::WEBSITE)
             ->andReturn(0);
 
-        $this->setTestRetrieverOnController(
-            $resultsController,
-            $testRetriever,
-            AbstractResultsController::class
-        );
-
-        $this->setRemoteTestServiceOnController(
-            $resultsController,
-            $remoteTestService,
-            AbstractResultsController::class
-        );
+        $this->setTestRetrieverOnController($resultsController, $testRetriever);
+        $this->setRemoteTestServiceOnController($resultsController, $remoteTestService);
 
         $response = $resultsController->indexAction(
             $request,
@@ -872,6 +901,36 @@ class ResultsControllerTest extends AbstractViewControllerTest
 
         $this->assertInstanceOf(Response::class, $newResponse);
         $this->assertEquals(304, $newResponse->getStatusCode());
+
+        ObjectReflector::setProperty(
+            $testModel,
+            TestModel::class,
+            'state',
+            TestInterface::STATE_EXPIRED
+        );
+
+        ObjectReflector::setProperty(
+            $testModel,
+            TestModel::class,
+            'startDateTime',
+            new \DateTime('-11 day')
+        );
+
+        ObjectReflector::setProperty(
+            $testModel,
+            TestModel::class,
+            'endDateTime',
+            new \DateTime('-10 day')
+        );
+
+        $newResponse = $resultsController->indexAction(
+            $newRequest,
+            self::WEBSITE,
+            self::TEST_ID
+        );
+
+        $this->assertInstanceOf(Response::class, $newResponse);
+        $this->assertEquals(200, $newResponse->getStatusCode());
     }
 
     private function assertParameterData(array $expectedParameterData, array $parameters)
@@ -900,6 +959,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
         sort($taskIds);
 
         $this->assertEquals($expectedParameterData['taskIds'], $taskIds);
+        $this->assertEquals($expectedParameterData['expiry_duration_string'], $parameters['expiry_duration_string']);
     }
 
     private function assertStandardViewData(string $viewName, array $parameters)
@@ -948,6 +1008,7 @@ class ResultsControllerTest extends AbstractViewControllerTest
                 'filtered_task_counts',
                 'domain_test_count',
                 'default_css_validation_options',
+                'expiry_duration_string',
             ],
             array_keys($parameters)
         );

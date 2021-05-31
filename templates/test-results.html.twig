@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% set is_readonly = (is_owner == false) %}
+{% set is_expired = test.state == 'expired' %}
 
 {% block title %}Results for {% include 'Partials/url/utf8-schemeless-possibly-truncated-64.html.twig' with {'url': website} %} (#{{test.testId}}) - {{ parent() }}{% endblock %}
 
@@ -151,8 +152,58 @@
 
     <div class="container">
         <div class="row">
-            {% block result_content %}
-            {% endblock %}
+            {% if test.remoteTaskCount > 0 %}
+                <div class="col-lg-12">
+                    {% if is_expired %}
+                        <h2>Detailed Results No Longer Available</h2>
+
+                        <p class="lead">
+                            {% if is_public_user_test %}
+                                Demo test results are available for <strong>24 hours</strong>.
+                            {% else %}
+                                Private tests results are available for <strong>one year</strong>.
+                            {% endif %}
+
+                            These results expired <strong>about {{ expiry_duration_string }}</strong> ago.
+                        </p>
+                    {% else %}
+                        <h2>
+                            {% if (filter == 'all' and type is empty) %}
+                                All results
+                            {% elseif (filter == 'all') %}
+                                <span>{{ type_label }}</span> results
+                            {% else %}
+                                <span>{{ type_label }}</span>
+                                {% if filter == 'skipped' or filter == 'cancelled' %}
+                                    tests that were
+                                {% else %}
+                                    results
+                                {% endif %}
+                                {{ filter_label|lower }}
+                            {% endif %}
+                        </h2>
+
+                        {% if (type is not empty) %}
+                            <a class="clear-type badge" href="{{ path('view_test_results', { 'website': test.website, 'test_id': test.testId, 'filter': filter }) }}">
+                                clear &ldquo;{{ type|replace({'html': 'HTML', 'css': 'CSS', 'js': 'JS'}) }}&rdquo; filter
+                                <i class="fa fa-times"></i>
+                            </a>
+                        {% endif %}
+
+                        {% if tasks is empty %}
+                            {% include 'Partials/Test/Results/Index/TaskList/none.html.twig' %}
+                        {% else %}
+                            {% include 'Partials/Test/Results/Index/TaskList/tabs.html.twig' with {
+                                filter: filter,
+                                test: test,
+                                type: type,
+                                filtered_task_counts: filtered_task_counts
+                            } only %}
+                            {% include 'Partials/Test/TaskList/task-list.html.twig' %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
